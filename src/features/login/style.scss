@@ -1,0 +1,31 @@
+.login-card {
+  .login-card__header {
+    .login-card__header--logo-text {
+      color: #0a3351;
+      font-family: "Rubik Glitch" !important;
+      font-size: 24px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: normal;
+    }
+
+    .login-card__header--title {
+      color: #0a3351 !important;
+      text-align: center;
+      font-family: "Baloo 2" !important;
+      font-size: 48px !important;
+      font-style: normal !important;
+      font-weight: 800 !important;
+      line-height: 70px !important;
+    }
+  }
+  .login-card__body {
+    .login-card__button--submit {
+      font-family: 'Roboto' !important;
+      font-size: 20px !important;
+      font-style: normal !important;
+      font-weight: 700 !important;
+      line-height: normal !important;
+    }
+  }
+}
