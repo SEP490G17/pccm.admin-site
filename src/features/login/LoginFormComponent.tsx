@@ -25,7 +25,7 @@ function LoginFormComponent() {
         }}
       >
         {({ handleSubmit, isValid, isSubmitting }) => (
-          <Box px={{ base: 0, md: "7.188rem" }}>
+          <Box px={{ base: 0, lg: "7.188rem" }}>
             <Form onSubmit={handleSubmit}>
               <Box mb={4}>
                 <FloatingInputAtom

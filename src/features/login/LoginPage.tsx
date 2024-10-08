@@ -13,10 +13,10 @@ import LoginFormComponent from "./LoginFormComponent";
 function LoginPage() {
   return (
     <Card
-      borderRadius={{ base: 0, md: "3.125rem" }}
+      borderRadius={{ base: 0, lg: "3.125rem" }}
       backgroundColor="white"
-      width={{base:'100vw', md:'44.6875rem'}}
-      height={{ base: "100vh", md: "50rem" }}
+      width={{base:'100vw', lg:'44.6875rem'}}
+      height={{ base: "100vh", lg: "50rem" }}
       paddingTop={"4.188rem"}
       paddingBottom={"4.563rem"}
       className="login-card"

@@ -6,7 +6,7 @@ function AuthLayout() {
   return (
     <>
       <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
-      <Flex align='center' justifyContent='flex-end' pr={{ base: 0, md: '5rem' }} className="auth-background">
+      <Flex align='center' justifyContent='flex-end' pr={{ base: 0, lg: '5rem' }} className="auth-background">
         <Outlet />
       </Flex>
     </>
