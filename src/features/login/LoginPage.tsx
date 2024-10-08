@@ -17,8 +17,8 @@ function LoginPage() {
       backgroundColor="white"
       width={{base:'100vw', md:'44.6875rem'}}
       height={{ base: "100vh", md: "50rem" }}
-      paddingTop={"4.188"}
-      paddingBottom={"4.563"}
+      paddingTop={"4.188rem"}
+      paddingBottom={"4.563rem"}
       className="login-card"
     >
       <CardHeader
