@@ -63,7 +63,11 @@ function LoginFormComponent() {
               justifyContent={"space-between"}
             >
               <Flex gap="2" align={"center"} justifyContent={"center"}>
-                <Checkbox colorScheme="green" /> Ghi nhớ đăng nhập
+                <Checkbox
+                  colorScheme="green"
+                  onChange={() => authStore.setRememberMe()}
+                />{" "}
+                Ghi nhớ đăng nhập
               </Flex>
               <Flex align={"center"} justifyContent={"center"}>
                 <Link href="">Quên mật khẩu?</Link>

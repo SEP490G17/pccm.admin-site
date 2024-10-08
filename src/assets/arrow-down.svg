@@ -1,0 +1,32 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="24" height="24" fill="#1E1E1E"/>
+<g id="Admin site dashboard" clip-path="url(#clip0_0_1)">
+<rect width="1920" height="1080" transform="translate(-1810 -38)" fill="#F5F6F7"/>
+<g id="Header">
+<mask id="path-1-inside-1_0_1" fill="white">
+<path d="M-1810 -38H110V62H-1810V-38Z"/>
+</mask>
+<path d="M-1810 -38H110V62H-1810V-38Z" fill="#E7EDF3"/>
+<path d="M110 59H-1810V65H110V59Z" fill="#E7EDF3" mask="url(#path-1-inside-1_0_1)"/>
+<rect id="Rectangle 171" x="-1810" y="-38" width="1920" height="100" fill="white"/>
+<g id="Frame 611">
+<g id="Frame 610">
+<g id="Frame 609">
+<g id="arrow-down">
+<g id="vuesax/linear/arrow-down">
+<g id="arrow-down_2">
+<path id="Vector" d="M19.92 8.95001L13.4 15.47C12.63 16.24 11.37 16.24 10.6 15.47L4.08002 8.95001" stroke="#292D32" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_1">
+<rect width="1920" height="1080" fill="white" transform="translate(-1810 -38)"/>
+</clipPath>
+</defs>
+</svg>

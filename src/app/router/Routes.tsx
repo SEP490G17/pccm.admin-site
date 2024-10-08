@@ -2,7 +2,7 @@ import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
 import TestErrors from "@/features/errors/TestError";
 import NotFound from "@/features/errors/NotFound";
 import ServerError from "@/features/errors/ServerError";
-import App from "@/app/layout/MainLayout";
+import MainLayout from "@/app/layout/MainLayout";
 import AuthLayout from "../layout/AuthLayout";
 import LoginPage from "@/features/login/LoginPage";
 
@@ -23,7 +23,7 @@ export const routes: RouteObject[] = [
   },
   {
     path: "/",
-    element: <App />,
+    element: <MainLayout />,
     children: [
       {
         path: "errors",

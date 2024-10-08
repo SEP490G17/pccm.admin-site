@@ -6,7 +6,7 @@ import { router } from "../router/Routes";
 
 export default class AuthStore {
   userApp: User | null = null;
-
+  rememberMe: boolean = false;
   constructor() {
     makeAutoObservable(this);
   }
@@ -15,10 +15,15 @@ export default class AuthStore {
     return !!this.userApp;
   }
 
-  login = async (creds: UserFormValues, rememberMe: boolean) => {
+  setRememberMe = () => {
+    this.rememberMe = !this.rememberMe;
+    console.log(this.rememberMe);
+  };
+
+  login = async (creds: UserFormValues) => {
     try {
       const user = await agent.Account.login(creds);
-      if (rememberMe) {
+      if (this.rememberMe) {
         store.commonStore.setToken(user.token);
       } else {
         store.commonStore.setTokenSession(user.token);
@@ -33,21 +38,10 @@ export default class AuthStore {
     }
   };
 
-  register = async (creds: UserFormValues) => {
-    try {
-      const user = await agent.Account.register(creds);
-      store.commonStore.setToken(user.token);
-      runInAction(() => (this.userApp = user));
-      router.navigate("/");
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  };
-
   logout = () => {
     store.commonStore.setToken(null);
     localStorage.removeItem("jwt");
+    sessionStorage.removeItem("jwt");
     this.userApp = null;
     router.navigate("/");
   };
