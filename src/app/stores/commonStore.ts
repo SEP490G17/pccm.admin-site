@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction} from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import { ServeError } from "../models/serverError.model";
 
 export default class CommonStore {
@@ -27,9 +27,11 @@ export default class CommonStore {
     if (token) localStorage.setItem("jwt", token);
     this.token = token;
   };
+  setTokenSession = (token: string | null) => {
+    if (token) sessionStorage.setItem("jwt", token);
+  };
 
   setAppLoaded = () => {
     this.appLoaded = true;
   };
-
 }

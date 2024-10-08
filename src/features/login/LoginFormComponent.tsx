@@ -1,38 +1,44 @@
 import FloatingInputAtom from "@/app/common/form/FloatingInputAtom";
+import { UserFormValues } from "@/app/models/user.model";
+import { useStore } from "@/app/stores/store";
 import { Box, Button, Checkbox, Flex, Link } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
 function LoginFormComponent() {
   const validationSchema = Yup.object().shape({
-    username: Yup.string().required("Email/SDT bắt buộc"),
+    username: Yup.string().required("Username/SDT bắt buộc"),
     password: Yup.string().required("Password bắt buộc"),
   });
-
+  const { authStore } = useStore();
+  const handleSubmit = async (value: UserFormValues) => {
+    await authStore.login(value, false);
+  };
   return (
     <>
       <Formik
-        initialValues={{ username: "", password: "" }}
+        initialValues={{ username: "administrator", password: "123456aA@" }}
         validationSchema={validationSchema}
         onSubmit={(values) => {
+          handleSubmit(values);
           console.log(values);
         }}
       >
-        {() => (
-          <Box px={{ base: 0, md: "115px" }}>
-            <Form>
+        {({ handleSubmit, isValid, isSubmitting }) => (
+          <Box px={{ base: 0, md: "7.188rem" }}>
+            <Form onSubmit={handleSubmit}>
               <Box mb={4}>
                 <FloatingInputAtom
                   name="username"
-                  label="SDT/Email"
-                  height={"57px"}
+                  label="SDT/Username"
+                  height={"3.563rem"}
                 />
               </Box>
               <Box mb={4}>
                 <FloatingInputAtom
                   name="password"
                   label="Mật khẩu"
-                  height={"57px"}
+                  height={"3.563rem"}
                   type="password"
                 />
               </Box>
@@ -42,7 +48,9 @@ function LoginFormComponent() {
                   className="login-card__button--submit"
                   type="submit"
                   colorScheme="primary"
-                  height={"57px"}
+                  height={"3.563rem"}
+                  disabled={!isValid || isSubmitting}
+                  isLoading={isSubmitting}
                 >
                   ĐĂNG NHẬP
                 </Button>
@@ -55,7 +63,7 @@ function LoginFormComponent() {
               justifyContent={"space-between"}
             >
               <Flex gap="2" align={"center"} justifyContent={"center"}>
-                <Checkbox /> Ghi nhớ đăng nhập
+                <Checkbox colorScheme="green" /> Ghi nhớ đăng nhập
               </Flex>
               <Flex align={"center"} justifyContent={"center"}>
                 <Link href="">Quên mật khẩu?</Link>

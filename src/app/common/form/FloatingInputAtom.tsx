@@ -1,10 +1,10 @@
-import { Field, ErrorMessage } from "formik";
+import { Field, useField} from "formik";
 import {
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Input,
   InputProps,
-  FormErrorMessage,
 } from "@chakra-ui/react";
 
 interface FloatingInputProps extends InputProps {
@@ -14,11 +14,11 @@ interface FloatingInputProps extends InputProps {
 function FloatingInputAtom({ label, ...props }: FloatingInputProps) {
   return (
     <Field name={props.name}>
-      {({ field, form }: any) => (
+      {({ field, form }: any ) => (
         <FormControl
         isInvalid={form.errors[field.name] && form.touched[field.name]}
         position="relative"
-        mb={4}
+        mb={5}
       >
         <Input
           {...field}
@@ -28,7 +28,7 @@ function FloatingInputAtom({ label, ...props }: FloatingInputProps) {
           _focus={{ boxShadow: "none", borderColor: "blue.500" }}
           borderColor="gray.300"
           size="lg"
-          height={props.height || "40px"} // Chiều cao động
+          height={props.height || "2.5rem"} // Chiều cao động
           sx={{
             "&:not(:placeholder-shown) + label, &:focus + label": {
               top: "0.3rem",
@@ -40,7 +40,7 @@ function FloatingInputAtom({ label, ...props }: FloatingInputProps) {
         />
         <FormLabel
           position="absolute"
-          top="50%"
+          top="35%"
           left="0.75rem"
           transform="translateY(-50%)"
           transition="0.2s ease-in-out"
@@ -52,6 +52,7 @@ function FloatingInputAtom({ label, ...props }: FloatingInputProps) {
         >
           {label}
         </FormLabel>
+        <FormErrorMessage paddingLeft={5}>{form.errors[field.name]}</FormErrorMessage>
       </FormControl>
       )}
     </Field>

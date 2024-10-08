@@ -13,28 +13,28 @@ import LoginFormComponent from "./LoginFormComponent";
 function LoginPage() {
   return (
     <Card
-      borderRadius={{ base: 0, md: "50px" }}
+      borderRadius={{ base: 0, md: "3.125rem" }}
       backgroundColor="white"
-      width={{base:'100vw', md:'600px', xl:'715px'}}
-      height={{ base: "100vh", md: "720px", xl:'800px' }}
-      paddingTop={"67px"}
-      paddingBottom={"73px"}
+      width={{base:'100vw', md:'44.6875rem'}}
+      height={{ base: "100vh", md: "50rem" }}
+      paddingTop={"4.188"}
+      paddingBottom={"4.563"}
       className="login-card"
     >
       <CardHeader
         display={"flex"}
         alignItems={"center"}
         flexDirection={"column"}
-        rowGap={"50px"}
+        rowGap={"3.125rem"}
         className="login-card__header"
       >
         <Flex flexDirection={"row"} alignItems={"center"}>
-          <Image src={pickerballIcon} width={"65.468px"} height={"43.447px"} />
+          <Image src={pickerballIcon} width={"4.092rem"} height={"2.715rem"} />
           <Heading className="login-card__header--logo-text" size="md">
             Pickerball
           </Heading>
         </Flex>
-        <Box width={"303px"} height={"140px"}>
+        <Box width={"18.938rem"} height={"8.75rem"}>
           <Heading className="login-card__header--title">
             CHÀO MỪNG QUAY TRỞ LẠI
           </Heading>
