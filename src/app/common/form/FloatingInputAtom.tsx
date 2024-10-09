@@ -1,4 +1,4 @@
-import { Field, useField} from "formik";
+import { Field} from "formik";
 import {
   FormControl,
   FormErrorMessage,
@@ -8,8 +8,8 @@ import {
 } from "@chakra-ui/react";
 
 interface FloatingInputProps extends InputProps {
-  label: string;
-  name: string;
+  label?: string;
+  name?: string;
 }
 function FloatingInputAtom({ label, ...props }: FloatingInputProps) {
   return (
@@ -23,7 +23,7 @@ function FloatingInputAtom({ label, ...props }: FloatingInputProps) {
         <Input
           {...field}
           {...props}
-          placeholder=" "
+          placeholder={props.placeholder || " "}
           variant="outline"
           _focus={{ boxShadow: "none", borderColor: "blue.500" }}
           borderColor="gray.300"

@@ -1,0 +1,25 @@
+.wrap {
+  border-radius: 1rem;
+  border: 1px solid rgba(51, 51, 51, 0.30);
+  background: #FFF;
+  width: 22.8125rem;
+  height: 3.75rem;
+}
+
+.input {
+  border: 0;
+  outline: 0;
+  margin-right: 4px;
+  margin-top: 4px;
+  background-color: rgb(198, 198, 198);
+  width: 100px;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.item_text {
+  margin-right: 4px;
+  margin-top: 4px;
+}

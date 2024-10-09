@@ -24,7 +24,7 @@ function Sidebar() {
       key: "3",
       icon: <Image src={defaultIcon} width={"1.5rem"} height={"1.5rem"} />,
       label: "Cụm sân",
-      path: "/staffs",
+      path: "/courts",
     },
     {
       key: "4",
@@ -62,7 +62,7 @@ function Sidebar() {
       key: "9",
       icon: <Image src={defaultIcon} width={"1.5rem"} height={"1.5rem"} />,
       label: "Tin tức",
-      path: "/logout",
+      path: "/events",
     },
   ];
   return (

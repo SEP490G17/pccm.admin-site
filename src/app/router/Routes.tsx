@@ -5,6 +5,8 @@ import ServerError from "@/features/errors/ServerError";
 import MainLayout from "@/app/layout/MainLayout";
 import AuthLayout from "../layout/AuthLayout";
 import LoginPage from "@/features/login/LoginPage";
+import ListCourtsComponent from "@/features/components/ListCourt/ListCourtsComponent";
+import CreateEventComponent from "@/features/components/EventNews/CreateEventComponent";
 
 export const routes: RouteObject[] = [
   {
@@ -25,6 +27,14 @@ export const routes: RouteObject[] = [
     path: "/",
     element: <MainLayout />,
     children: [
+      {
+        path: "courts",
+        element: <ListCourtsComponent/>,
+      },
+      {
+        path: "events",
+        element: <CreateEventComponent/>,
+      },
       {
         path: "errors",
         element: <TestErrors key="errors" />,

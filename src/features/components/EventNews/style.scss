@@ -1,0 +1,56 @@
+.linkPage {
+    display: flex;
+    width: 30rem;
+    height: 3.9375rem;
+    padding: 0.625rem 3.75rem;
+    align-items: center;
+    gap: 0.625rem;
+    flex-shrink: 0;
+}
+
+.prevPage {
+    color: var(--Prussian-Blue-950, rgba(10, 51, 81, 0.50));
+    font-family: Roboto;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.isCurrentPage {
+    color: var(--Prussian-Blue-950, #0A3351);
+    font-family: Roboto;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.createEvents_header {
+    display: inline-flex;
+    padding: 0.625rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.625rem;
+    color: var(--Prussian-Blue-950, #0A3351);
+    font-family: Roboto;
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.title_label {
+    color: #333;
+    font-family: Roboto;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    display: flex;
+    padding: 0.625rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.625rem;
+}
+

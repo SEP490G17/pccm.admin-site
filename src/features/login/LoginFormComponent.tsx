@@ -12,7 +12,7 @@ function LoginFormComponent() {
   });
   const { authStore } = useStore();
   const handleSubmit = async (value: UserFormValues) => {
-    await authStore.login(value, false);
+    await authStore.login(value);
   };
   return (
     <>
