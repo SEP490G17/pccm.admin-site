@@ -1,8 +1,8 @@
-import { observer } from "mobx-react-lite";
-import { useStore } from "../../app/stores/store";
-import { Container, Heading, Wrap, WrapItem } from "@chakra-ui/react";
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../app/stores/store';
+import { Container, Heading, Wrap, WrapItem } from '@chakra-ui/react';
 
-export default observer(function ServerError() {
+const ServerError = observer(function ServerError() {
   const { commonStore } = useStore();
   return (
     <Container>
@@ -21,3 +21,5 @@ export default observer(function ServerError() {
     </Container>
   );
 });
+
+export default ServerError;

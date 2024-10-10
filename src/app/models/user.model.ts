@@ -4,8 +4,7 @@ export interface User {
   token: string;
 }
 export interface UserFormValues {
-    username: string;
-    password: string;
-    displayName?: string;
-  }
-  
+  username: string;
+  password: string;
+  displayName?: string;
+}
