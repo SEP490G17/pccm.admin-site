@@ -1,11 +1,4 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Flex,
-} from "@chakra-ui/react";
+import { Alert, AlertDescription, AlertIcon, AlertTitle, Flex } from '@chakra-ui/react';
 
 interface Props {
   errors: string[];
@@ -18,8 +11,8 @@ function ValidationError({ errors }: Props) {
       {errors && (
         <Alert status="error">
           {errors && (
-            <Flex direction="column" >
-              <Flex direction='row' marginBottom={2}>
+            <Flex direction="column">
+              <Flex direction="row" marginBottom={2}>
                 <AlertIcon marginRight={1} /> <AlertTitle>Validation Errors</AlertTitle>
               </Flex>
               <AlertDescription paddingLeft="6">

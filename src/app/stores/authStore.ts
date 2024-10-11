@@ -1,8 +1,8 @@
-import { makeAutoObservable, runInAction } from "mobx";
-import { User, UserFormValues } from "../models/user.model";
-import agent from "../api/agent";
-import { store } from "./store";
-import { router } from "../router/Routes";
+import { makeAutoObservable, runInAction } from 'mobx';
+import { User, UserFormValues } from '../models/user.model';
+import agent from '../api/agent';
+import { store } from './store';
+import { router } from '../router/Routes';
 
 export default class AuthStore {
   userApp: User | null = null;
@@ -30,7 +30,7 @@ export default class AuthStore {
       }
       runInAction(() => {
         this.userApp = user;
-        router.navigate("/");
+        router.navigate('/');
       });
     } catch (error) {
       console.log(error);
@@ -40,10 +40,10 @@ export default class AuthStore {
 
   logout = () => {
     store.commonStore.setToken(null);
-    localStorage.removeItem("jwt");
-    sessionStorage.removeItem("jwt");
+    localStorage.removeItem('jwt');
+    sessionStorage.removeItem('jwt');
     this.userApp = null;
-    router.navigate("/");
+    router.navigate('/');
   };
 
   getUser = async () => {

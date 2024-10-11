@@ -1,5 +1,5 @@
 export interface ServeError {
-    statusCode: number;
-    message: string;
-    details: string;
+  statusCode: number;
+  message: string;
+  details: string;
 }
