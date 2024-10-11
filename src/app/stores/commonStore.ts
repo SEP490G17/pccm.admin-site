@@ -1,9 +1,9 @@
-import { makeAutoObservable, reaction } from "mobx";
-import { ServeError } from "../models/serverError.model";
+import { makeAutoObservable, reaction } from 'mobx';
+import { ServeError } from '../models/serverError.model';
 
 export default class CommonStore {
   error: ServeError | null = null;
-  token: string | null = localStorage.getItem("jwt");
+  token: string | null = localStorage.getItem('jwt');
   appLoaded = false;
 
   constructor() {
@@ -12,11 +12,11 @@ export default class CommonStore {
       () => this.token,
       (token) => {
         if (token) {
-          localStorage.setItem("jwt", token);
+          localStorage.setItem('jwt', token);
         } else {
-          localStorage.removeItem("jwt");
+          localStorage.removeItem('jwt');
         }
-      }
+      },
     );
   }
   setServerError(err: ServeError) {
@@ -24,11 +24,11 @@ export default class CommonStore {
   }
 
   setToken = (token: string | null) => {
-    if (token) localStorage.setItem("jwt", token);
+    if (token) localStorage.setItem('jwt', token);
     this.token = token;
   };
   setTokenSession = (token: string | null) => {
-    if (token) sessionStorage.setItem("jwt", token);
+    if (token) sessionStorage.setItem('jwt', token);
   };
 
   setAppLoaded = () => {

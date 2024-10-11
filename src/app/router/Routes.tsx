@@ -1,31 +1,20 @@
-import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
-import TestErrors from "@/features/errors/TestError";
-import NotFound from "@/features/errors/NotFound";
-import ServerError from "@/features/errors/ServerError";
-import MainLayout from "@/app/layout/MainLayout";
-import AuthLayout from "../layout/AuthLayout";
-import LoginPage from "@/features/login/LoginPage";
+import { createBrowserRouter, Navigate, RouteObject } from 'react-router-dom';
+import TestErrors from '@/features/errors/TestError';
+import NotFound from '@/features/errors/NotFound';
+import ServerError from '@/features/errors/ServerError';
+import MainLayout from '@/app/layout/MainLayout';
+import LoginPage from '@/features/login/LoginPage';
 import ListCourtsComponent from "@/features/components/Court/ListCourtsComponent";
 import CreateEventComponent from "@/features/components/EventNews/CreateEventComponent";
 import CreateCourtComponent from "@/features/components/Court/CreateCourtComponent";
 
 export const routes: RouteObject[] = [
   {
-    path: "/auth",
-    element: <AuthLayout />,
-    children: [
-      {
-        path: "login",
-        element: <LoginPage key="login" />,
-      },
-    ],
+    path: '/login',
+    element: <LoginPage key="login" />,
   },
   {
-    path: "/auth/",
-    element: <Navigate replace to="/auth/login" />,
-  },
-  {
-    path: "/",
+    path: '/',
     element: <MainLayout />,
     children: [
       {
@@ -45,15 +34,15 @@ export const routes: RouteObject[] = [
         element: <TestErrors key="errors" />,
       },
       {
-        path: "not-found",
+        path: 'not-found',
         element: <NotFound key="not-found" />,
       },
       {
-        path: "server-error",
+        path: 'server-error',
         element: <ServerError key="not-found" />,
       },
       {
-        path: "*",
+        path: '*',
         element: <Navigate replace to="/not-found" />,
       },
     ],
