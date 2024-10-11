@@ -5,7 +5,7 @@ export default class CommonStore {
   error: ServeError | null = null;
   token: string | null = localStorage.getItem('jwt');
   appLoaded = false;
-
+  isCollapsed = false;
   constructor() {
     makeAutoObservable(this);
     reaction(
@@ -33,5 +33,9 @@ export default class CommonStore {
 
   setAppLoaded = () => {
     this.appLoaded = true;
+  };
+
+  toggleSidebar = () => {
+    this.isCollapsed =!this.isCollapsed;
   };
 }

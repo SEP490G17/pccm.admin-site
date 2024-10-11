@@ -5,7 +5,7 @@ import { Flex } from '@chakra-ui/react';
 function AuthLayout() {
   return (
     <>
-      <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
+      <ToastContainer position="top-right" hideProgressBar theme="colored" />
       <Flex
         align="center"
         justifyContent="flex-end"

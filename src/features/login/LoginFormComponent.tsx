@@ -11,18 +11,15 @@ function LoginFormComponent() {
     password: Yup.string().required('Password bắt buộc'),
   });
   const { authStore } = useStore();
-  const handleSubmit = async (value: UserFormValues) => {
-    await authStore.login(value);
+  const handleSubmit = async (value: UserFormValues, { isSubmitting }: any) => {
+    await authStore.login(value).finally(() => (isSubmitting(false)));
   };
   return (
     <>
       <Formik
         initialValues={{ username: 'administrator', password: '123456aA@' }}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          handleSubmit(values);
-          console.log(values);
-        }}
+        onSubmit={handleSubmit}
       >
         {({ handleSubmit, isValid, isSubmitting }) => (
           <Box px={{ base: 0, lg: '7.188rem' }}>

@@ -1,17 +1,34 @@
-import { Avatar, Center, Divider, Flex, Image, Text } from '@chakra-ui/react';
+import { Avatar, Button, Center, Divider, Flex, Image, Text } from '@chakra-ui/react';
 import notificationIcon from '@/assets/notification.svg';
 import defaultUserIcon from '@/assets/defaultUser.png';
 import arrowDownIcon from '@/assets/arrow-down.svg';
+import { useStore } from '../stores/store';
+import { observer } from 'mobx-react-lite';
+import { AiOutlineMenuFold, AiOutlineMenuUnfold } from 'react-icons/ai';
+const Header = () => {
+  const { commonStore } = useStore();
 
-function Header() {
   return (
     <Flex
       width={'100%'}
       height={'100%'}
-      justifyContent={'flex-end'}
+      justifyContent={'space-between'}
       alignItems={'center'}
       pr={'5.375rem'}
+      pl={'1rem'}
     >
+      <Button
+        p={0}
+        _hover={{ backgroundColor: 'transparent' }}
+        onClick={() => commonStore.toggleSidebar()}
+        bgColor={'transparent'}
+      >
+        {commonStore.isCollapsed ? (
+          <AiOutlineMenuUnfold fontSize={'2rem'} color="#63748A" />
+        ) : (
+          <AiOutlineMenuFold fontSize={'2rem'} color="#63748A" />
+        )}
+      </Button>
       <Flex flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} gap={6}>
         <Flex
           display={'inline-flex'}
@@ -44,6 +61,6 @@ function Header() {
       </Flex>
     </Flex>
   );
-}
+};
 
-export default Header;
+export default observer(Header);

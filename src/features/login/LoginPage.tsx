@@ -8,7 +8,7 @@ import { ToastContainer } from 'react-toastify';
 const LoginPage = observer(function Page() {
   return (
     <>
-      <ToastContainer position="bottom-right" hideProgressBar theme="colored" />
+      <ToastContainer position="top-right" hideProgressBar theme="colored" />
       <Flex
         align="center"
         justifyContent="flex-end"

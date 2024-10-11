@@ -43,7 +43,7 @@ export default class AuthStore {
     localStorage.removeItem('jwt');
     sessionStorage.removeItem('jwt');
     this.userApp = null;
-    router.navigate('/');
+    router.navigate('/login');
   };
 
   getUser = async () => {
