@@ -54,3 +54,63 @@
     gap: 0.625rem;
 }
 
+.input_text {
+    height: 3rem !important;
+    flex-shrink: 0 !important;
+    background: #FFF !important;
+    border-radius: 1rem !important;
+}
+
+.box_banner {
+    display: flex;
+    padding: 0.625rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.625rem;
+    flex-shrink: 0;
+    border-radius: 1rem;
+    border: 1px dashed rgba(51, 51, 51, 0.30) !important;
+    background: #FFF;
+    width: 44.75rem;
+}
+
+.text_upload {
+    color: #939393;
+    font-family: Roboto;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.upload_file {
+    display: flex;
+    padding: 0.625rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.625rem;
+    border-radius: 0.25rem;
+    border: 1px solid #CBCBCB;
+    background: #EEEAEA;
+}
+
+.create {
+    display: flex;
+    width: 11.375rem !important;
+    height: 3rem !important;
+    padding: 0.62988rem !important;
+    justify-content: center;
+    align-items: center;
+    gap: 0.62988rem;
+    flex-shrink: 0;
+    color: '#FFF' !important;
+    background-color: #00423D !important;
+    border-radius: 0.50394rem !important;
+    color: #FFF !important;
+    font-family: Roboto !important;
+    font-size: 1.25rem !important;
+    font-style: normal !important;
+    font-weight: 700 !important;
+    line-height: normal !important;
+    margin-bottom: -3rem;
+}
