@@ -7,6 +7,9 @@ import LoginPage from '@/features/login/LoginPage';
 import ListCourtsComponent from "@/features/components/Court/ListCourtsComponent";
 import CreateEventComponent from "@/features/components/EventNews/CreateEventComponent";
 import CreateCourtComponent from "@/features/components/Court/CreateCourtComponent";
+import CourtList from '@/features/court/CourtList';
+import BannerList from '@/features/banner/BannerList';
+import NewsList from '@/features/news/NewsList';
 
 export const routes: RouteObject[] = [
   {
@@ -30,8 +33,20 @@ export const routes: RouteObject[] = [
         element: <CreateCourtComponent/>,
       },
       {
+        path: "News",
+        element: <NewsList/>,
+      },
+      {
         path: "errors",
         element: <TestErrors key="errors" />,
+      },
+      {
+        path: "court",
+        element: <CourtList></CourtList>,
+      },
+      {
+        path: "banner",
+        element: <BannerList></BannerList>,
       },
       {
         path: 'not-found',

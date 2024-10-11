@@ -25,10 +25,6 @@ function Sidebar() {
       icon: <Image src={defaultIcon} width={"1.5rem"} height={"1.5rem"} />,
       label: "Cụm sân",
       path: "/courts",
-      key: "3",
-      icon: <Image src={defaultIcon} width={"1.5rem"} height={"1.5rem"} />,
-      label: "Cụm sân",
-      path: "/Court",
     },
     {
       key: "4",
@@ -60,11 +56,6 @@ function Sidebar() {
       key: "8",
       icon: <Image src={defaultIcon} width={"1.5rem"} height={"1.5rem"} />,
       label: "Banner",
-      path: "/logout",
-<<<<<<< HEAD
-      key: "8",
-      icon: <Image src={defaultIcon} width={"1.5rem"} height={"1.5rem"} />,
-      label: "Banner",
       path: "/Banner",
     },
     {
@@ -72,18 +63,12 @@ function Sidebar() {
       icon: <Image src={defaultIcon} width={"1.5rem"} height={"1.5rem"} />,
       label: "Tin tức",
       path: "/News",
-=======
-      key: '8',
-      icon: <Image src={defaultIcon} width={'1.5rem'} height={'1.5rem'} />,
-      label: 'Banner',
-      path: '/logout',
     },
     {
       key: "9",
       icon: <Image src={defaultIcon} width={"1.5rem"} height={"1.5rem"} />,
       label: "Tin tức",
       path: "/events",
->>>>>>> 7a5b9f83a237d285e0ab4bd19772ebd551bd72e5
     },
   ];
   return (
