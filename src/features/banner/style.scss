@@ -1,0 +1,134 @@
+.table-layout {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid black;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgb(224, 224, 224);
+
+}
+
+.table-layout th,
+.table-layout td {
+    border: 1px solid #9F9E9E;
+    padding: 12px;
+    text-align: center;
+}
+
+.table-layout th {
+    background: rgba(255, 255, 255, 0.05);
+    color: #333;
+    font-family: 'Roboto';
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.table-layout td {
+    background-color: white;
+    color: #252525;
+    font-family: 'Roboto';
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.cell-layout {
+    padding: 12px;
+}
+
+.image-cell {
+    width: 80px;
+    height: 80px;
+}
+
+.pagination-button {
+    border-radius: 8px;
+    border: 1px solid #00423D;
+    width: 40px;
+    height: 40px;
+    margin: 0 4px;
+
+    &.active {
+        background-color: #00423D;
+        color: #fff;
+    }
+
+    &.disabled {
+        background-color: transparent;
+        color: #00423D;
+        pointer-events: none;
+    }
+}
+
+.breadcrumb-styles {
+    margin-bottom: 6px;
+    separator: '>';
+}
+
+.heading-styles {
+    display: inline-flex;
+    padding: 10px 0px;
+    align-items: center;
+    gap: 10px;
+    color: var(--Prussian-Blue-950, #0A3351);
+    font-family: 'Roboto';
+    font-size: 32px;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.subheading-styles {
+    display: inline-flex;
+    padding: 10px 0px;
+    align-items: center;
+    gap: 10px;
+    color: var(--Prussian-Blue-950, #0A3351);
+    font-family: 'Roboto';
+    font-size: 16px;
+    font-weight: 500;
+    line-height: normal;
+    margin-bottom: 9px;
+}
+
+.search-input-styles {
+    color: #333;
+    font-family: 'Roboto';
+    font-size: 16px;
+    font-weight: 500;
+    line-height: normal;
+    width: 250px;
+    height: 40px;
+    border-radius: 6px;
+    background: white;
+}
+
+.select-styles {
+    display: flex;
+    width: 201px;
+    padding: 4px 16px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 12px;
+    border: 0.5px solid rgba(51, 51, 51, 0.30);
+    background: #FFF;
+    font-family: 'Roboto';
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+}
+
+.button-styles {
+    display: flex;
+    width: 182px;
+    height: 48px;
+    padding: 10.078px;
+    justify-content: center;
+    align-items: center;
+    gap: 10.078px;
+    border-radius: 8.063px;
+    background: #00423D;
+    color: #FFF;
+    font-family: 'Roboto';
+    font-size: 16px;
+    font-weight: 500;
+    line-height: normal;
+}
