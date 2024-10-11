@@ -2,8 +2,8 @@ import { Field } from 'formik';
 import { FormControl, FormErrorMessage, FormLabel, Input, InputProps } from '@chakra-ui/react';
 
 interface FloatingInputProps extends InputProps {
-  label: string;
-  name: string;
+  label?: string;
+  name?: string;
 }
 function FloatingInputAtom({ label, ...props }: FloatingInputProps) {
   return (
