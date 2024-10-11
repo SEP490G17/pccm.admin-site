@@ -38,7 +38,7 @@ export const routes: RouteObject[] = [
         element: <ServerError key="not-found" />,
       },
       {
-        path: "*",
+        path: '*',
         element: <Navigate replace to="/not-found" />,
       },
     ],
