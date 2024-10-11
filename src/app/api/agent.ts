@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { router } from "../router/Routes";
 import { store } from "../stores/store";
@@ -7,13 +6,6 @@ import { User, UserFormValues } from "../models/user.model";
 import { News } from "../models/news.models";
 import { Banner} from "../models/banner.model";
 import { Court } from "../models/court.model";
-=======
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import { router } from '../router/Routes';
-import { store } from '../stores/store';
-import { toast } from 'react-toastify';
-import { User, UserFormValues } from '../models/user.model';
->>>>>>> 7a5b9f83a237d285e0ab4bd19772ebd551bd72e5
 
 const sleep = (ms: number) => {
   return new Promise((resolve) => {

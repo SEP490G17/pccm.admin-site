@@ -53,7 +53,6 @@ function Sidebar() {
       path: '/logout',
     },
     {
-<<<<<<< HEAD
       key: "8",
       icon: <Image src={defaultIcon} width={"1.5rem"} height={"1.5rem"} />,
       label: "Banner",
@@ -64,18 +63,6 @@ function Sidebar() {
       icon: <Image src={defaultIcon} width={"1.5rem"} height={"1.5rem"} />,
       label: "Tin tức",
       path: "/News",
-=======
-      key: '8',
-      icon: <Image src={defaultIcon} width={'1.5rem'} height={'1.5rem'} />,
-      label: 'Banner',
-      path: '/logout',
-    },
-    {
-      key: '9',
-      icon: <Image src={defaultIcon} width={'1.5rem'} height={'1.5rem'} />,
-      label: 'Tin tức',
-      path: '/logout',
->>>>>>> 7a5b9f83a237d285e0ab4bd19772ebd551bd72e5
     },
   ];
   return (
