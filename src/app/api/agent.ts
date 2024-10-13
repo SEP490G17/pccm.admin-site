@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { User, UserFormValues } from "../models/user.model";
 import { News } from "../models/news.models";
 import { Banner} from "../models/banner.model";
-import { Court } from "../models/court.model";
+import { Court, ICourt } from "../models/court.model";
 
 const sleep = (ms: number) => {
   return new Promise((resolve) => {
@@ -89,7 +89,7 @@ const BannerAgent = {
   delete: (id: number): Promise<void> => requests.del(`/banner/${id}`),
 };
 const CourtAgent = {
-  list: (): Promise<Court[]> => requests.get(`/courts`),
+  list: (): Promise<ICourt[]> => requests.get(`/courts`),
   details: (id: number): Promise<Court> => requests.get(`/courts/${id}`),
   create: (court: Court): Promise<void> => requests.post(`/courts`, court),
   update: (court: Court): Promise<void> => requests.put(`/courts/${court.id}`, court),

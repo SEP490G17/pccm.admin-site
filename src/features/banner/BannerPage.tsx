@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Button,
   Flex,
@@ -23,62 +23,18 @@ import { useStore } from '../../app/stores/store';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import './style.scss';
 
-const sampleBannerData = [
-  {
-    id: 1,
-    title: 'Banner 1',
-    imageUrl: 'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274132.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1727827200&semt=ais_hybrid',
-    description: 'Mô tả banner 1',
-    startDate: '2024-10-10T20:00:00',
-    endDate: '2024-10-11T20:00:00',
-    status: 'Hiển thị',
-    link: 'https://example.com',
-  },
-  {
-    id: 2,
-    title: 'Banner 2',
-    imageUrl: 'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
-    description: 'Mô tả banner 2',
-    startDate: '2024-10-11T08:00:00',
-    endDate: '2024-10-12T08:00:00',
-    status: 'Ẩn',
-    link: 'https://example.com',
-  },
-];
-
-const PAGE_SIZE = 3;
-
-const BannerList = observer(() => {
+const BannerPage = observer(() => {
   const { bannerStore } = useStore();
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(sampleBannerData.length / PAGE_SIZE);
-  const [filterOption, setFilterOption] = useState('title');
-
+  const { mockLoadBanners, bannerPageParams, setPageIndex, bannerArray, loading } = bannerStore;
   useEffect(() => {
-    bannerStore.loadBanners = () => {
-      bannerStore.banners = sampleBannerData;
-    };
-    bannerStore.loadBanners();
-  }, [bannerStore]);
+    mockLoadBanners();
+  }, [mockLoadBanners]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    bannerStore.setSearchTerm(e.target.value, filterOption);
+    console.log(e.target.value);
+    bannerStore.setSearchTerm(e.target.value);
   };
-
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterOption(e.target.value);
-    bannerStore.setSearchTerm(bannerStore.searchTerm, e.target.value);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const paginatedBanners = bannerStore.filteredBanners.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
-
+  if (loading) return <>Loading ...</>;
   return (
     <Flex direction="column" p={8} bg="#F4F4F4" borderRadius="12px" mx="30px">
       <div className="linkPage" style={{ marginBottom: '16px' }}>
@@ -144,7 +100,6 @@ const BannerList = observer(() => {
           />
 
           <Select
-            onChange={handleFilterChange}
             width="201px"
             height="40px"
             borderRadius="12px"
@@ -172,7 +127,7 @@ const BannerList = observer(() => {
         <Button
           colorScheme="teal"
           size="md"
-          onClick={bannerStore.addBanner}
+          // onClick={bannerStore.addBanner}
           sx={{
             display: 'flex',
             width: '182px',
@@ -209,54 +164,69 @@ const BannerList = observer(() => {
           </Tr>
         </Thead>
         <Tbody>
-          {paginatedBanners.map((banner, index) => (
+          {bannerArray.map((banner, index) => (
             <Tr key={banner.id}>
-              <Td>{(currentPage - 1) * PAGE_SIZE + index + 1}</Td>
+              <Td>{(bannerPageParams.pageIndex - 1) * bannerPageParams.pageSize + index + 1}</Td>
               <Td>
-                <Image src={banner.imageUrl} alt={banner.title} width='120px' />
+                <Image src={banner.imageUrl} alt={banner.title} width="120px" />
               </Td>
               <Td>{banner.title}</Td>
               <Td>{banner.description}</Td>
               <Td>
-          Từ ngày: {new Date(banner.startDate).toLocaleString('vi-VN', {
-            hour: '2-digit',
-            minute: '2-digit',
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-          })}
-          <br />
-          Đến ngày: {new Date(banner.endDate).toLocaleString('vi-VN', {
-            hour: '2-digit',
-            minute: '2-digit',
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-          })}
-        </Td>
+                Từ ngày:{' '}
+                {new Date(banner.startDate).toLocaleString('vi-VN', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })}
+                <br />
+                Đến ngày:{' '}
+                {new Date(banner.endDate).toLocaleString('vi-VN', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })}
+              </Td>
               <Td>{banner.status}</Td>
               <Td>{banner.link}</Td>
               <Td>
-                <IconButton icon={<FaEdit />} aria-label="Edit" colorScheme="teal" size="sm" mr={2} />
-                <IconButton icon={<FaTrash />} aria-label="Delete" colorScheme="red" size="sm" />
+                <IconButton
+                  key={`edit-banner${banner.id}`}
+                  icon={<FaEdit />}
+                  aria-label="Edit"
+                  colorScheme="teal"
+                  size="sm"
+                  mr={2}
+                />
+                <IconButton
+                  key={`delete-banner${banner.id}`}
+                  icon={<FaTrash />}
+                  aria-label="Delete"
+                  colorScheme="red"
+                  size="sm"
+                />
               </Td>
             </Tr>
           ))}
         </Tbody>
       </Table>
 
-      {paginatedBanners.length === 0 && bannerStore.searchTerm && (
+      {bannerArray.length === 0 && (
         <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
-          Không tìm thấy banner cần tìm
+          Danh sách banner rỗng
         </Box>
       )}
 
       <Flex mt={6} justify="center" align="center">
-        {Array.from({ length: totalPages }, (_, index) => (
+        {Array.from({ length: bannerPageParams.totalPages ?? 1 }, (_, index) => (
           <Button
-            key={index + 1}
-            onClick={() => handlePageChange(index + 1)}
-            className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
+            key={`paginatrion-button-${index + 1}`}
+            className={`pagination-button ${bannerPageParams.pageIndex === index + 1 ? 'active' : ''}`}
+            onClick={() => setPageIndex(index + 1)}
           >
             {index + 1}
           </Button>
@@ -266,4 +236,4 @@ const BannerList = observer(() => {
   );
 });
 
-export default BannerList;
+export default BannerPage;

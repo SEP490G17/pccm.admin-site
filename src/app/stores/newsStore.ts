@@ -1,31 +1,30 @@
-import { makeAutoObservable, runInAction } from "mobx";
-import agent from "../api/agent";
-import { News } from "../models/news.models";
+import { makeAutoObservable, runInAction } from 'mobx';
+import agent from '../api/agent';
+import { News } from '../models/news.models';
+import { sampleNewsData } from '../mock/news.mock';
+import { PageParams } from '../models/pageParams.model';
+import _ from 'lodash';
 
 export default class NewsStore {
-  news: News[] = [];
+  newsRegistry = new Map<number, News>();
+  newsArray: News[] = [];
   selectedNews: News | undefined = undefined;
-  searchTerm: string = "";
-  currentPage: number = 1;
-  totalPages: number = 1;
-  pageSize: number = 10;
   loading: boolean = false;
+  newsPageParams = new PageParams();
 
   constructor() {
+    this.newsPageParams.pageSize = 5;
     makeAutoObservable(this);
   }
-
-  setSearchTerm(term: string) {
-    this.searchTerm = term;
-  }
+  //#region CRUD
 
   loadNews = async () => {
     this.loading = true;
     try {
       const news = await agent.News.list();
       runInAction(() => {
-        this.news = news;
-        this.totalPages = Math.ceil(news.length / this.pageSize);
+        news.forEach(this.setNews);
+        this.newsPageParams.totalPages = Math.ceil(news.length / this.newsPageParams.pageSize);
         this.loading = false;
       });
     } catch (error) {
@@ -41,7 +40,7 @@ export default class NewsStore {
     try {
       await agent.News.create(news);
       runInAction(() => {
-        this.news.push(news);
+        this.setNews(news);
         this.loading = false;
       });
     } catch (error) {
@@ -57,7 +56,7 @@ export default class NewsStore {
     try {
       await agent.News.update(news);
       runInAction(() => {
-        this.news = this.news.map(n => (n.id === news.id ? news : n));
+        this.setNews(news);
         this.selectedNews = news;
         this.loading = false;
       });
@@ -74,7 +73,7 @@ export default class NewsStore {
     try {
       await agent.News.delete(id);
       runInAction(() => {
-        this.news = this.news.filter(n => n.id !== id);
+        this.newsRegistry.delete(id);
         this.loading = false;
       });
     } catch (error) {
@@ -84,20 +83,64 @@ export default class NewsStore {
       });
     }
   };
+  //#endregion
 
-  get filteredNews() {
-    return this.news.filter(news =>
-      news.title.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
-  }
-
-  get paginatedNews() {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    return this.filteredNews.slice(startIndex, endIndex);
-  }
-
-  setPage = (page: number) => {
-    this.currentPage = page;
+  //#region mockup
+  loadMockNews = () => {
+    this.loading = true;
+    try {
+      sampleNewsData.forEach(this.setNews);
+      runInAction(() => {
+        this.newsPageParams.totalPages = Math.ceil(this.newsRegistry.size / this.newsPageParams.pageSize);
+        this.newsPageParams.totalElement = this.newsRegistry.size;
+        this.loadNewsArray();
+      });
+    } catch (error) {
+      runInAction(() => {
+        console.error('Error loading banners:', error);
+      });
+    } finally {
+      this.loading = false;
+    }
   };
+
+  //#endregion
+
+  //#region common function
+
+  setSearchTerm(term: string) {
+    runInAction(() => {
+      console.log('check term:',term);
+      this.newsPageParams.searchTerm = term;
+      this.loadNewsArray();
+    });
+  }
+
+  setCurrentPage = (page: number) => {
+    runInAction(() => {
+      this.newsPageParams.pageIndex = page;
+      this.loadNewsArray();
+    });
+  };
+
+  loadNewsArray = async () => {
+    const { pageSize, pageIndex, searchTerm, totalElement } = this.newsPageParams;
+    const startIndex = (pageIndex - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    console.log('total element:', totalElement);
+    if (pageSize * pageIndex > this.newsRegistry.size && this.newsRegistry.size < totalElement!) {
+      await this.loadNews();
+    }
+    this.newsArray = Array.from(this.newsRegistry.values())
+      .filter((news) => _.includes(news.title.toLocaleLowerCase(), searchTerm?.toLocaleLowerCase() ?? ''))
+      .slice(startIndex, endIndex);
+  };
+
+  //#region private function
+  private setNews = (news: News) => {
+    this.newsRegistry.set(news.id, news);
+  };
+  //#endregion
+
+  //#endregion
 }

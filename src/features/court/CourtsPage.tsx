@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Button,
   Flex,
@@ -22,70 +22,19 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import './style.scss';
+import { router } from '@/app/router/Routes';
 
-const sampleCourtData = [
-  {
-    id: 1,
-    name: 'Sân A',
-    image: 'https://file.hstatic.net/1000341630/file/1_1799610e954e47d8a0aa43d0a70fe4fa.jpg',
-    manager: 'Nguyễn Văn A',
-    location: '123 Đường ABC',
-    status: 'Hoạt động',
-    createdAt: '2024-10-08',
-  },
-  {
-    id: 2,
-    name: 'Sân B',
-    image: 'https://thethaokhoinguyen.com/wp-content/uploads/2024/07/san-Pickleball-tieu-chuan-thi-dau-quoc-te.jpg',
-    manager: 'Trần Văn B',
-    location: '456 Đường DEF',
-    status: 'Tạm dừng',
-    createdAt: '2024-10-08',
-  },
-  {
-    id: 3,
-    name: 'Sân C',
-    image: 'https://www.thethaothientruong.vn/uploads/he-thong-anh-sang-san-Pickleball.jpg',
-    manager: 'Lê Văn C',
-    location: '789 Đường GHI',
-    status: 'Hoạt động',
-    createdAt: '2024-10-08',
-  },
-];
-
-const PAGE_SIZE = 3;
-
-const CourtList = observer(() => {
+const CourtsPage = observer(() => {
   const { courtStore } = useStore();
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(sampleCourtData.length / PAGE_SIZE);
-  const [filterOption, setFilterOption] = useState('name'); 
+  const { courtArray, mockLoadCourts, pageParams, setSearchTerm, setPageNumber } = courtStore;
 
   useEffect(() => {
-    courtStore.loadCourts = () => {
-      courtStore.courts = sampleCourtData;
-    };
-    courtStore.loadCourts();
-  }, [courtStore]);
-
+    mockLoadCourts();
+  }, [mockLoadCourts]);
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    courtStore.setSearchTerm(e.target.value, filterOption);
+    console.log(e.target.value);
+    setSearchTerm(e.target.value);
   };
-
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilterOption(e.target.value);
-    courtStore.setSearchTerm(courtStore.searchTerm, e.target.value); 
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const paginatedCourts = courtStore.filteredCourts.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
-
   return (
     <Flex direction="column" p={8} bg="#F4F4F4" borderRadius="12px" mx="30px">
       <div className="linkPage" style={{ marginBottom: '16px' }}>
@@ -151,7 +100,7 @@ const CourtList = observer(() => {
           />
 
           <Select
-            onChange={handleFilterChange}
+            // onChange={handleFilterChange}
             width="201px"
             height="40px"
             borderRadius="12px"
@@ -179,7 +128,7 @@ const CourtList = observer(() => {
         <Button
           colorScheme="teal"
           size="md"
-          onClick={courtStore.addCourt}
+          onClick={() => router.navigate('/cum-san/tao')}
           sx={{
             display: 'flex',
             width: '182px',
@@ -216,11 +165,17 @@ const CourtList = observer(() => {
           </Tr>
         </Thead>
         <Tbody>
-          {paginatedCourts.map((court, index) => (
+          {courtArray.map((court, index) => (
             <Tr key={court.id}>
-              <Td>{(currentPage - 1) * PAGE_SIZE + index + 1}</Td>
+              <Td>{(pageParams.pageIndex - 1) * pageParams.pageSize + index + 1}</Td>
               <Td>
-                <Image src={court.image} alt={court.name} width='120px' objectFit="cover" borderRadius="8px" />
+                <Image
+                  src={court.image}
+                  alt={court.name}
+                  width="120px"
+                  objectFit="cover"
+                  borderRadius="8px"
+                />
               </Td>
               <Td>{court.name}</Td>
               <Td>{court.location}</Td>
@@ -228,7 +183,13 @@ const CourtList = observer(() => {
               <Td>{court.status}</Td>
               <Td>{court.createdAt}</Td>
               <Td>
-                <IconButton icon={<FaEdit />} aria-label="Edit" colorScheme="teal" size="sm" mr={2} />
+                <IconButton
+                  icon={<FaEdit />}
+                  aria-label="Edit"
+                  colorScheme="teal"
+                  size="sm"
+                  mr={2}
+                />
                 <IconButton icon={<FaTrash />} aria-label="Delete" colorScheme="red" size="sm" />
               </Td>
             </Tr>
@@ -236,18 +197,18 @@ const CourtList = observer(() => {
         </Tbody>
       </Table>
 
-      {paginatedCourts.length === 0 && courtStore.searchTerm && (
+      {courtArray.length === 0 && (
         <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
           Không tìm thấy cụm sân cần tìm
         </Box>
       )}
 
       <Flex mt={6} justify="center" align="center">
-        {Array.from({ length: totalPages }, (_, index) => (
+        {Array.from({ length: pageParams.totalPages! }, (_, index) => (
           <Button
             key={index + 1}
-            onClick={() => handlePageChange(index + 1)}
-            className={`pagination-button ${currentPage === index + 1 ? 'active' : ''}`}
+            onClick={() => setPageNumber(index + 1)}
+            className={`pagination-button ${pageParams.pageIndex === index + 1 ? 'active' : ''}`}
           >
             {index + 1}
           </Button>
@@ -257,4 +218,4 @@ const CourtList = observer(() => {
   );
 });
 
-export default CourtList;
+export default CourtsPage;

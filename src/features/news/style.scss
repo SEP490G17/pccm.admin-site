@@ -2,20 +2,19 @@
   width: 100%;
   border-collapse: collapse;
   border: 2px solid black;
-  border-radius: 12px; 
-  overflow: hidden; 
-  background : rgb(224, 224, 224);
-  
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgb(224, 224, 224);
 }
 
 .table-layout th,
 .table-layout td {
-  border: 1px solid #9F9E9E;
+  border: 1px solid #9f9e9e;
   padding: 12px;
   text-align: center;
 }
 .table-layout th {
-  background: rgba(255, 255, 255, 0.05) ;
+  background: rgba(255, 255, 255, 0.05);
   color: #333;
   font-family: 'Roboto';
   font-size: 16px;
@@ -41,19 +40,19 @@
 
 .pagination-button {
   border-radius: 8px;
-  border: 1px solid #00423D;
+  border: 1px solid #00423d;
   width: 40px;
   height: 40px;
   margin: 0 4px;
 
   &.active {
-    background-color: #00423D;
+    background-color: #00423d;
     color: #fff;
   }
 
   &.disabled {
     background-color: transparent;
-    color: #00423D;
+    color: #00423d;
     pointer-events: none;
   }
 }
@@ -68,7 +67,7 @@
   padding: 10px 0px;
   align-items: center;
   gap: 10px;
-  color: var(--Prussian-Blue-950, #0A3351);
+  color: var(--Prussian-Blue-950, #0a3351);
   font-family: 'Roboto';
   font-size: 32px;
   font-weight: 700;
@@ -80,7 +79,7 @@
   padding: 10px 0px;
   align-items: center;
   gap: 10px;
-  color: var(--Prussian-Blue-950, #0A3351);
+  color: var(--Prussian-Blue-950, #0a3351);
   font-family: 'Roboto';
   font-size: 16px;
   font-weight: 500;
@@ -107,8 +106,8 @@
   justify-content: space-between;
   align-items: center;
   border-radius: 12px;
-  border: 0.5px solid rgba(51, 51, 51, 0.30);
-  background: #FFF;
+  border: 0.5px solid rgba(51, 51, 51, 0.3);
+  background: #fff;
   font-family: 'Roboto';
   font-size: 16px;
   font-weight: 500;
@@ -124,11 +123,129 @@
   align-items: center;
   gap: 10.078px;
   border-radius: 8.063px;
-  background: #00423D;
-  color: #FFF;
+  background: #00423d;
+  color: #fff;
   font-family: 'Roboto';
   font-size: 16px;
   font-weight: 500;
   line-height: normal;
 }
 
+// create event page
+
+// .linkPage {
+//   display: flex;
+//   width: 30rem;
+//   height: 3.9375rem;
+//   padding: 0.625rem 3.75rem;
+//   align-items: center;
+//   gap: 0.625rem;
+//   flex-shrink: 0;
+// }
+
+// .prevPage {
+//   color: var(--Prussian-Blue-950, rgba(10, 51, 81, 0.5));
+//   font-family: Roboto;
+//   font-size: 1rem;
+//   font-style: normal;
+//   font-weight: 400;
+//   line-height: normal;
+// }
+
+// .isCurrentPage {
+//   color: var(--Prussian-Blue-950, #0a3351);
+//   font-family: Roboto;
+//   font-size: 1rem;
+//   font-style: normal;
+//   font-weight: 500;
+//   line-height: normal;
+// }
+
+// .createEvents_header {
+//   display: inline-flex;
+//   padding: 0.625rem;
+//   justify-content: center;
+//   align-items: center;
+//   gap: 0.625rem;
+//   color: var(--Prussian-Blue-950, #0a3351);
+//   font-family: Roboto;
+//   font-size: 2rem;
+//   font-style: normal;
+//   font-weight: 700;
+//   line-height: normal;
+// }
+
+// .title_label {
+//   color: #333;
+//   font-family: Roboto;
+//   font-size: 1rem;
+//   font-style: normal;
+//   font-weight: 500;
+//   line-height: normal;
+//   display: flex;
+//   padding: 0.625rem;
+//   justify-content: center;
+//   align-items: center;
+//   gap: 0.625rem;
+// }
+
+// .input_text {
+//   height: 3rem !important;
+//   flex-shrink: 0 !important;
+//   background: #fff !important;
+//   border-radius: 1rem !important;
+// }
+
+// .box_banner {
+//   display: flex;
+//   padding: 0.625rem 1rem;
+//   flex-direction: column;
+//   align-items: flex-start;
+//   gap: 0.625rem;
+//   flex-shrink: 0;
+//   border-radius: 1rem;
+//   border: 1px dashed rgba(51, 51, 51, 0.3) !important;
+//   background: #fff;
+//   width: 44.75rem;
+// }
+
+// .text_upload {
+//   color: #939393;
+//   font-family: Roboto;
+//   font-size: 1rem;
+//   font-style: normal;
+//   font-weight: 400;
+//   line-height: normal;
+// }
+
+// .upload_file {
+//   display: flex;
+//   padding: 0.625rem;
+//   justify-content: center;
+//   align-items: center;
+//   gap: 0.625rem;
+//   border-radius: 0.25rem;
+//   border: 1px solid #cbcbcb;
+//   background: #eeeaea;
+// }
+
+// .create {
+//   display: flex;
+//   width: 11.375rem !important;
+//   height: 3rem !important;
+//   padding: 0.62988rem !important;
+//   justify-content: center;
+//   align-items: center;
+//   gap: 0.62988rem;
+//   flex-shrink: 0;
+//   color: '#FFF' !important;
+//   background-color: #00423d !important;
+//   border-radius: 0.50394rem !important;
+//   color: #fff !important;
+//   font-family: Roboto !important;
+//   font-size: 1.25rem !important;
+//   font-style: normal !important;
+//   font-weight: 700 !important;
+//   line-height: normal !important;
+//   margin-bottom: -3rem;
+// }

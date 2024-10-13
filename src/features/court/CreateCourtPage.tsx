@@ -14,7 +14,7 @@ import {
   import { Form, Formik } from "formik";
   import ReactQuillComponent from "@/app/common/input/ReactQuill";
 import ImageUpload from "@/app/common/input/ImageUpload";
-  const CreateCourtComponent = () => {
+  const CreateCourtPage = () => {
     return (
       <div>
         <div className="linkPage">
@@ -132,5 +132,5 @@ import ImageUpload from "@/app/common/input/ImageUpload";
     );
   };
   
-  export default CreateCourtComponent;
+  export default CreateCourtPage;
   

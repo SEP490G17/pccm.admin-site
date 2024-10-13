@@ -7,3 +7,13 @@ export interface Court {
   courts: number;
   services: string[];
 }
+
+export interface ICourt {
+  id: number;
+  name: string;
+  image: string;
+  manager: string;
+  location: string;
+  status: string;
+  createdAt: string;
+}

@@ -1,0 +1,156 @@
+export const sampleBannerData = [
+  {
+    id: 1,
+    title: 'Banner 1',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274132.jpg?size=626&ext=jpg&ga=GA1.1.2008272138.1727827200&semt=ais_hybrid',
+    description: 'Mô tả banner 1',
+    startDate: '2024-10-10T20:00:00',
+    endDate: '2024-10-11T20:00:00',
+    status: 'Hiển thị',
+    link: 'https://example.com',
+  },
+  {
+    id: 2,
+    title: 'Banner 2',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 3,
+    title: 'Banner 3',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 4,
+    title: 'Banner 4',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 5,
+    title: 'Banner 5',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 6,
+    title: 'Banner 6',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 7,
+    title: 'Banner 7',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 8,
+    title: 'Banner 8',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 9,
+    title: 'Banner 9',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 10,
+    title: 'Banner 10',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 11,
+    title: 'Banner 11',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 12,
+    title: 'Banner 12',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 13,
+    title: 'Banner 13',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+  {
+    id: 14,
+    title: 'Banner 14',
+    imageUrl:
+      'https://img.freepik.com/free-psd/flat-design-paddle-tennis-lessons-banner-template_23-2149274130.jpg',
+    description: 'Mô tả banner 2',
+    startDate: '2024-10-11T08:00:00',
+    endDate: '2024-10-12T08:00:00',
+    status: 'Ẩn',
+    link: 'https://example.com',
+  },
+];

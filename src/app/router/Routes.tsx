@@ -4,12 +4,11 @@ import NotFound from '@/features/errors/NotFound';
 import ServerError from '@/features/errors/ServerError';
 import MainLayout from '@/app/layout/MainLayout';
 import LoginPage from '@/features/login/LoginPage';
-import ListCourtsComponent from "@/features/components/Court/ListCourtsComponent";
-import CreateEventComponent from "@/features/components/EventNews/CreateEventComponent";
-import CreateCourtComponent from "@/features/components/Court/CreateCourtComponent";
-import CourtList from '@/features/court/CourtList';
-import BannerList from '@/features/banner/BannerList';
-import NewsList from '@/features/news/NewsList';
+import CreateCourtPage from '@/features/court/CreateCourtPage';
+import CourtsPage from '@/features/court/CourtsPage';
+import BannerPage from '@/features/banner/BannerPage';
+import NewsPage from '@/features/news/NewsPage';
+import CreateEventPage from '@/features/news/CreateEventPage';
 
 export const routes: RouteObject[] = [
   {
@@ -21,46 +20,43 @@ export const routes: RouteObject[] = [
     element: <MainLayout />,
     children: [
       {
-        path: "courts",
-        element: <ListCourtsComponent/>,
+        path: 'cum-san',
+        element: <CourtsPage />,
       },
       {
-        path: "events",
-        element: <CreateEventComponent/>,
+        path: 'cum-san/tao',
+        element: <CreateCourtPage />,
       },
       {
-        path: "courts/create",
-        element: <CreateCourtComponent/>,
+        path: 'tin-tuc',
+        element: <NewsPage />,
       },
       {
-        path: "News",
-        element: <NewsList/>,
+        path: 'tin-tuc/tao',
+        element: <CreateEventPage />,
       },
       {
-        path: "errors",
+        path: 'errors',
         element: <TestErrors key="errors" />,
       },
+
       {
-        path: "court",
-        element: <CourtList></CourtList>,
-      },
-      {
-        path: "banner",
-        element: <BannerList></BannerList>,
-      },
-      {
-        path: 'not-found',
-        element: <NotFound key="not-found" />,
-      },
-      {
-        path: 'server-error',
-        element: <ServerError key="not-found" />,
-      },
-      {
-        path: '*',
-        element: <Navigate replace to="/not-found" />,
+        path: 'banner',
+        element: <BannerPage />,
       },
     ],
+  },
+  {
+    path: 'not-found',
+    element: <NotFound key="not-found" />,
+  },
+  {
+    path: 'server-error',
+    element: <ServerError key="not-found" />,
+  },
+  {
+    path: '*',
+    element: <Navigate replace to="/not-found" />,
   },
 ];
 

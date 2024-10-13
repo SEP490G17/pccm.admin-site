@@ -16,7 +16,7 @@ import InputTag from "@/app/common/input/InputTag";
 import FileUpload from "@/app/common/input/FileUpload";
 import SelectComponent from "@/app/common/input/Select";
 import ReactQuillComponent from "@/app/common/input/ReactQuill";
-const CreateEventComponent = () => {
+const CreateEventPage = () => {
   return (
     <div>
       <div className="linkPage">
@@ -144,4 +144,4 @@ const CreateEventComponent = () => {
   );
 };
 
-export default CreateEventComponent;
+export default CreateEventPage;
