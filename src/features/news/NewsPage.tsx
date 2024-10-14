@@ -22,6 +22,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import './style.scss';
+import { router } from '@/app/router/Routes';
 
 const NewsPage = observer(() => {
   const { newsStore } = useStore();
@@ -135,6 +136,7 @@ const NewsPage = observer(() => {
 
         <Button
           colorScheme="teal"
+          onClick={() => router.navigate('/tin-tuc/tao')}
           size="md"
           sx={{
             display: 'flex',
