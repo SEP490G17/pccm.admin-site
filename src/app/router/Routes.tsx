@@ -9,6 +9,7 @@ import CourtsPage from '@/features/court/CourtsPage';
 import BannerPage from '@/features/banner/BannerPage';
 import NewsPage from '@/features/news/NewsPage';
 import CreateEventPage from '@/features/news/CreateEventPage';
+import CreateBannerPage from '@/features/banner/CreateBannerPage';
 
 export const routes: RouteObject[] = [
   {
@@ -43,6 +44,10 @@ export const routes: RouteObject[] = [
       {
         path: 'banner',
         element: <BannerPage />,
+      },
+      {
+        path: 'banner/tao',
+        element: <CreateBannerPage />,
       },
     ],
   },
