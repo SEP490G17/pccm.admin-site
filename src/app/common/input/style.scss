@@ -27,10 +27,10 @@
 .quill {
   margin-top: 1rem;
   height: 20rem;
-  width: 74.5625rem;
+  width: auto;
   align-self: stretch;
   border-radius: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 4.5rem;
 }
 
 .box_court {
@@ -52,4 +52,16 @@
   height: 15.625rem !important;
   border-radius: 1rem !important;
   background: url(<path-to-image>) lightgray 50% / cover no-repeat !important;
+}
+
+.badge {
+  display: flex;
+  width: 8.6875rem;
+  padding: 0.625rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625rem;
+  border-radius: 0.25rem;
+  border: 0.5px solid rgba(51, 51, 51, 0.30);
+  background: #FEF2F2;
 }

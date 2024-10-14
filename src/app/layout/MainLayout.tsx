@@ -31,7 +31,8 @@ const App = () => {
           marginLeft={commonStore.isCollapsed ? '8rem' : '18rem'}
           width={commonStore.isCollapsed ? 'calc(100vw - 8rem)' : 'calc(100vw - 18rem)'}
           height={'6.25rem'}
-          position={'fixed'}
+          position={'fixed'} 
+          zIndex={999}
         >
           <Header />
         </GridItem>
@@ -43,6 +44,7 @@ const App = () => {
           width={commonStore.isCollapsed ? '8rem' : '18rem'}
           transition="all 0.3s ease"
           position={'fixed'}
+          zIndex={999}
         >
           <Sidebar />
         </GridItem>

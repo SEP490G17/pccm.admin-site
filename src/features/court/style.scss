@@ -153,6 +153,20 @@
     }
 }
 
+.title_label_court {
+    color: #333;
+    font-family: Roboto;
+    font-size: 1.25rem !important;
+    font-style: normal;
+    font-weight: 600 !important;
+    line-height: normal;
+    display: flex;
+    padding: 0.625rem 0rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.625rem;
+}
+
 .card_left {
     width: 49.5rem;
     height: 14.1875rem;
@@ -175,4 +189,70 @@
     flex-shrink: 0;
     background: #D9D9D9;
     margin-left: 2.44rem;
+}
+
+.services {
+    display: flex;
+    width: 55.8125rem;
+    padding: 1rem;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-radius: 0.25rem;
+    border: 1px solid var(--Color-Text-Xanh-32, rgba(59, 89, 152, 0.32));
+}
+
+.create_court {
+    display: flex;
+    padding: 0.625rem 0.75rem !important;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem !important;
+    border-radius: 0.25rem !important;
+    border: 1px solid var(--Jade-950, #03301F) !important;
+    background: #FFF !important;
+    color: var(--Jade-950, #03301F) !important;
+    ;
+    font-family: Roboto;
+    font-size: 0.875rem !important;
+    font-style: normal;
+    font-weight: 400 !important;
+    ;
+    line-height: 1.3125rem !important;
+    ;
+}
+
+.save {
+    display: flex;
+    width: 6.25rem !important;
+    height: 3rem !important;
+    padding: 0.75rem !important;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem !important;
+    border-radius: 0.75rem !important;
+    background: #00423D !important;
+    color: #FFF !important;
+    font-family: Roboto;
+    font-size: 1rem !important;
+    font-style: normal;
+    font-weight: 400 !important;
+    line-height: normal;
+}
+
+.delete {
+    display: flex;
+    width: 6.25rem !important;
+    height: 3rem !important;
+    padding: 0.75rem !important;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem !important;
+    border-radius: 0.75rem !important;
+    border: 1px solid #C50000 !important;
+    color: #C50000 !important;
+    font-family: Roboto;
+    font-size: 1rem !important;
+    font-style: normal;
+    font-weight: 400 !important;
+    line-height: normal;
 }

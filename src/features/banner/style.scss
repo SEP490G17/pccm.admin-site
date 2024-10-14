@@ -16,8 +16,9 @@
 }
 
 .table-layout th {
-    background: rgba(255, 255, 255, 0.05);
-    color: #333;
+    border: 0.923px solid var(--Color-Text-White-100, #FFF) !important;
+    background: var(--Jade-950, #03301F) !important;
+    color: var(--Color-Text-White-100, #FFF) !important;
     font-family: 'Roboto';
     font-size: 16px;
     font-weight: 500;
