@@ -21,6 +21,7 @@ import {
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import CreateBannerPage from './CreateBannerPage';
 import './style.scss';
 
 const BannerPage = observer(() => {
@@ -146,7 +147,7 @@ const BannerPage = observer(() => {
             lineHeight: 'normal',
           }}
         >
-          Thêm banner
+          <CreateBannerPage />
         </Button>
       </Flex>
 
