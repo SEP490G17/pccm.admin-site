@@ -3,7 +3,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
 import { sampleBannerData } from '../mock/banner.mock';
 import { PageParams } from '../models/pageParams.model';
-import _ from 'lodash';
+import { sleep } from '../helper/utils';
 export default class BannerStore {
   bannerRegistry = new Map<number, Banner>();
   bannerArray: Banner[] = [];
@@ -15,7 +15,7 @@ export default class BannerStore {
   constructor() {
     console.log('banner store initialized');
     makeAutoObservable(this);
-    this.cleanupInterval = window.setInterval(this.cleanBannerCache, 30000);
+    // this.cleanupInterval = window.setInterval(this.cleanBannerCache, 30000);
   }
 
   //#region CRUD
@@ -94,6 +94,7 @@ export default class BannerStore {
     this.loading = true;
     try {
       sampleBannerData.forEach(this.setBanner);
+      await sleep(1000);
       runInAction(() => {
         this.bannerPageParams.totalPages = Math.ceil(
           this.bannerRegistry.size / this.bannerPageParams.pageSize,
@@ -115,8 +116,8 @@ export default class BannerStore {
   setSearchTerm = (term: string) => {
     runInAction(() => {
       console.log('begin banner store');
-      // this.cleanBannerCache();
       this.bannerPageParams.searchTerm = term;
+      this.cleanBannerCache();
       this.loadBannerArray();
       console.log('term:', term);
     });
@@ -130,7 +131,7 @@ export default class BannerStore {
   };
 
   loadBannerArray = async () => {
-    const { pageSize, pageIndex, searchTerm, totalElement } = this.bannerPageParams;
+    const { pageSize, pageIndex, totalElement } = this.bannerPageParams;
     const startIndex = (pageIndex - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     console.log('total element:', totalElement);
@@ -141,7 +142,7 @@ export default class BannerStore {
       await this.loadBanners();
     }
     this.bannerArray = Array.from(this.bannerRegistry.values())
-      .filter((banner) => _.includes(banner.title, searchTerm ?? ''))
+      .sort((a, b) => a.id - b.id)
       .slice(startIndex, endIndex);
   };
 

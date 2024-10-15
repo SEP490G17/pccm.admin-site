@@ -9,24 +9,24 @@ import {
   Tr,
   Th,
   Td,
-  Heading,
   Image,
   Box,
   IconButton,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
   Select,
+  TableContainer,
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import './style.scss';
 import { router } from '@/app/router/Routes';
+import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
+import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
 
 const CourtsPage = observer(() => {
   const { courtStore } = useStore();
-  const { courtArray, mockLoadCourts, pageParams, setSearchTerm, setPageNumber } = courtStore;
+  const { courtArray, mockLoadCourts, pageParams, setSearchTerm, setPageNumber, loading } =
+    courtStore;
 
   useEffect(() => {
     mockLoadCourts();
@@ -37,46 +37,7 @@ const CourtsPage = observer(() => {
   };
   return (
     <Flex direction="column" p={8} bg="#F4F4F4" borderRadius="12px" mx="30px">
-      <div className="linkPage" style={{ marginBottom: '16px' }}>
-        <Breadcrumb separator="/">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/" className="prevPage">
-              Home
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-
-          <BreadcrumbItem>
-            <BreadcrumbLink
-              href="Courts"
-              className="prevPage"
-              style={{
-                color: window.location.pathname === '/Courts' ? '#0A3351' : 'inherit',
-              }}
-            >
-              Danh sách cụm sân
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </div>
-
-      <Heading
-        as="h2"
-        size="md"
-        mb="16px"
-        sx={{
-          display: 'inline-flex',
-          padding: '10px 0px',
-          alignItems: 'center',
-          gap: '10px',
-          color: 'var(--Prussian-Blue-950, #0A3351)',
-          fontFamily: 'Roboto',
-          fontSize: '32px',
-          fontWeight: '700',
-          lineHeight: 'normal',
-        }}
-      >
-        Danh sách cụm sân
-      </Heading>
+      <PageHeadingAtoms title="Danh sách cụm sân" />
 
       <Flex justifyContent="space-between" alignItems="center" mb="50px">
         <Flex gap="16px">
@@ -151,53 +112,89 @@ const CourtsPage = observer(() => {
         </Button>
       </Flex>
 
-      <Table variant="simple" className="table-layout">
-        <Thead>
-          <Tr>
-            <Th>STT</Th>
-            <Th>Ảnh đại diện</Th>
-            <Th>Tên cụm sân</Th>
-            <Th>Địa chỉ</Th>
-            <Th>Người quản lý</Th>
-            <Th>Trạng thái</Th>
-            <Th>Ngày tạo</Th>
-            <Th>Tùy chọn</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {courtArray.map((court, index) => (
-            <Tr key={court.id}>
-              <Td>{(pageParams.pageIndex - 1) * pageParams.pageSize + index + 1}</Td>
-              <Td>
-                <Image
-                  src={court.image}
-                  alt={court.name}
-                  width="120px"
-                  objectFit="cover"
-                  borderRadius="8px"
-                />
-              </Td>
-              <Td>{court.name}</Td>
-              <Td>{court.location}</Td>
-              <Td>{court.manager}</Td>
-              <Td>{court.status}</Td>
-              <Td>{court.createdAt}</Td>
-              <Td>
-                <IconButton
-                  icon={<FaEdit />}
-                  aria-label="Edit"
-                  colorScheme="teal"
-                  size="sm"
-                  mr={2}
-                />
-                <IconButton icon={<FaTrash />} aria-label="Delete" colorScheme="red" size="sm" />
-              </Td>
+      <TableContainer bg={'white'} borderRadius={'8px'} padding={0} border={'1px solid #000'}>
+        <Table variant="simple" cellPadding={'1rem'} padding={0}>
+          <Thead backgroundColor={'#03301F'}>
+            <Tr>
+              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
+                STT
+              </Th>
+              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
+                Ảnh đại diện
+              </Th>
+              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
+                Tên cụm sân
+              </Th>
+              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
+                Địa chỉ
+              </Th>
+              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
+                Người quản lý
+              </Th>
+              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
+                Trạng thái
+              </Th>
+              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
+                Ngày tạo
+              </Th>
+              <Th color={'white'}>Tùy chọn</Th>
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
-
-      {courtArray.length === 0 && (
+          </Thead>
+          <Tbody>
+            {loading ? (
+              <SkeletonTableAtoms numOfColumn={7} pageSize={pageParams.pageSize} />
+            ) : (
+              courtArray.map((court, index) => (
+                <Tr key={court.id}>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {(pageParams.pageIndex - 1) * pageParams.pageSize + index + 1}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    <Image
+                      src={court.image}
+                      alt={court.name}
+                      width="120px"
+                      objectFit="cover"
+                      borderRadius="8px"
+                    />
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {court.name}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {court.location}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {court.manager}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {court.status}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {court.createdAt}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'}>
+                    <IconButton
+                      icon={<FaEdit />}
+                      aria-label="Edit"
+                      colorScheme="teal"
+                      size="sm"
+                      mr={2}
+                    />
+                    <IconButton
+                      icon={<FaTrash />}
+                      aria-label="Delete"
+                      colorScheme="red"
+                      size="sm"
+                    />
+                  </Td>
+                </Tr>
+              ))
+            )}
+          </Tbody>
+        </Table>
+      </TableContainer>
+      {courtArray.length === 0 && !loading && (
         <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
           Không tìm thấy cụm sân cần tìm
         </Box>

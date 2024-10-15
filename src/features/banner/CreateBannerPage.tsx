@@ -18,25 +18,24 @@ import {
   VStack,
   HStack,
   Badge,
-} from "@chakra-ui/react";
-import React, { useState } from "react";
-
+} from '@chakra-ui/react';
+import React, { useState } from 'react';
 
 const CreateBannerPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [bannerData, setBannerData] = useState({
-    title: "",
-    description: "",
+    title: '',
+    description: '',
     image: null,
-    link: "",
-    startDate: "",
-    endDate: "",
-    status: "",
-    position: "",
-    destination: "",
+    link: '',
+    startDate: '',
+    endDate: '',
+    status: '',
+    position: '',
+    destination: '',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | HTMLSelectElement) => {
     const { name, value } = e.target;
     setBannerData({
       ...bannerData,
@@ -55,18 +54,34 @@ const CreateBannerPage = () => {
 
   return (
     <>
-      <Button onClick={onOpen} bg="#00423D" color="white">
+      <Button
+        onClick={onOpen}
+        bg="#00423D"
+        color="white" 
+        sx={{
+          display: 'flex',
+          width: '182px',
+          height: '40px',
+          padding: '10.078px',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '10.078px',
+          borderRadius: '8.063px',
+          background: '#00423D',
+          color: '#FFF',
+          fontFamily: 'Roboto',
+          fontSize: '16px',
+          fontStyle: 'normal',
+          fontWeight: '500',
+          lineHeight: 'normal',
+        }}
+      >
         Thêm banner
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">
         <ModalOverlay />
-        <ModalContent
-          width="1164px"
-          flexShrink="0"
-          borderRadius="20px"
-          bg="#FFF"
-        >
+        <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
           <ModalHeader bg="#00423D" color="white" borderRadius="20px 20px 0 0">
             Thêm Banner
           </ModalHeader>
@@ -116,11 +131,7 @@ const CreateBannerPage = () => {
                   fontWeight="400"
                   lineHeight="normal"
                 >
-                  <Flex
-                    justifyContent="space-between"
-                    alignItems="center"
-                    alignSelf="stretch"
-                  >
+                  <Flex justifyContent="space-between" alignItems="center" alignSelf="stretch">
                     <Box>Kéo hình ảnh hoặc upload hình ảnh tại đây</Box>
                     <Input
                       type="file"
@@ -128,12 +139,7 @@ const CreateBannerPage = () => {
                       display="none"
                       id="upload-banner-image"
                     />
-                    <Button
-                      as="label"
-                      htmlFor="upload-banner-image"
-                      bg="#E2E8F0"
-                      color="black"
-                    >
+                    <Button as="label" htmlFor="upload-banner-image" bg="#E2E8F0" color="black">
                       Upload file
                     </Button>
                   </Flex>
@@ -181,14 +187,10 @@ const CreateBannerPage = () => {
               </FormControl>
 
               {/* Trang đích, Vị trí, Trạng thái */}
-              <Flex justifyContent="space-between"  gap="100px">
+              <Flex justifyContent="space-between" gap="100px">
                 <FormControl>
                   <FormLabel>Trang đích</FormLabel>
-                  <Select
-                    name="destination"
-                    onChange={handleChange}
-                    bg="#FFF"
-                  >
+                  <Select name="destination" onChange={handleChange} bg="#FFF">
                     <option value="Trang chủ">Trang chủ</option>
                     <option value="Trang sản phẩm">Trang sản phẩm</option>
                   </Select>
@@ -196,11 +198,7 @@ const CreateBannerPage = () => {
 
                 <FormControl>
                   <FormLabel>Vị trí</FormLabel>
-                  <Select
-                    name="position"
-                    onChange={handleChange}
-                    bg="#FFF"
-                  >
+                  <Select name="position" onChange={handleChange} bg="#FFF">
                     <option value="Đầu trang">Đầu trang</option>
                     <option value="Cuối trang">Cuối trang</option>
                   </Select>
@@ -208,11 +206,7 @@ const CreateBannerPage = () => {
 
                 <FormControl>
                   <FormLabel>Trạng thái</FormLabel>
-                  <Select
-                    name="status"
-                    onChange={handleChange}
-                    bg="#FFF"
-                  >
+                  <Select name="status" onChange={handleChange} bg="#FFF">
                     <option value="Hiển thị">Hiển thị</option>
                     <option value="Ẩn">Ẩn</option>
                   </Select>

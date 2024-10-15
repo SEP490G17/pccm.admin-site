@@ -6,12 +6,8 @@ import { User, UserFormValues } from "../models/user.model";
 import { News } from "../models/news.models";
 import { Banner} from "../models/banner.model";
 import { Court, ICourt } from "../models/court.model";
+import { sleep } from "../helper/utils";
 
-const sleep = (ms: number) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-};
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 

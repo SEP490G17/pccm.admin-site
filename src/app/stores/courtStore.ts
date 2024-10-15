@@ -3,7 +3,7 @@ import { Court, ICourt } from '../models/court.model';
 import agent from '../api/agent';
 import { PageParams } from '../models/pageParams.model';
 import { sampleCourtData } from '../mock/court.mock';
-import _ from 'lodash';
+import { sleep } from '../helper/utils';
 
 export default class CourtStore {
   courtRegistry = new Map<number, ICourt>();
@@ -90,9 +90,10 @@ export default class CourtStore {
   //#endregion
 
   //#region mock-up
-  mockLoadCourts = () => {
+  mockLoadCourts = async () => {
     this.loading = true;
-    console.log('mock-up');
+    await sleep(1000);
+
     try {
       runInAction(() => {
         sampleCourtData.forEach(this.setCourt);
@@ -114,7 +115,7 @@ export default class CourtStore {
   //#region common functions
 
   loadCourtArray = async () => {
-    const { pageSize, pageIndex, searchTerm, totalElement } = this.pageParams;
+    const { pageSize, pageIndex, totalElement } = this.pageParams;
     const startIndex = (pageIndex - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     console.log('total element:', totalElement);
@@ -122,7 +123,6 @@ export default class CourtStore {
       await this.loadCourts();
     }
     this.courtArray = Array.from(this.courtRegistry.values())
-      .filter((court) => _.includes(court.name, searchTerm ?? ''))
       .slice(startIndex, endIndex);
   };
 
@@ -130,6 +130,7 @@ export default class CourtStore {
     runInAction(() => {
       this.loading = true;
       this.pageParams.searchTerm = term;
+      this.courtRegistry.clear();
       this.loadCourtArray();
       this.loading = false;
     });

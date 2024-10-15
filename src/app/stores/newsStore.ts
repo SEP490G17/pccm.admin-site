@@ -4,6 +4,7 @@ import { News } from '../models/news.models';
 import { sampleNewsData } from '../mock/news.mock';
 import { PageParams } from '../models/pageParams.model';
 import _ from 'lodash';
+import { sleep } from '../helper/utils';
 
 export default class NewsStore {
   newsRegistry = new Map<number, News>();
@@ -86,8 +87,9 @@ export default class NewsStore {
   //#endregion
 
   //#region mockup
-  loadMockNews = () => {
+  loadMockNews = async () => {
     this.loading = true;
+    await sleep(1000);
     try {
       sampleNewsData.forEach(this.setNews);
       runInAction(() => {

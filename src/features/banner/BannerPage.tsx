@@ -9,20 +9,19 @@ import {
   Tr,
   Th,
   Td,
-  Heading,
   Image,
   Box,
   IconButton,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
   Select,
+  TableContainer,
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import CreateBannerPage from './CreateBannerPage';
 import './style.scss';
+import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
+import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
 
 const BannerPage = observer(() => {
   const { bannerStore } = useStore();
@@ -35,50 +34,10 @@ const BannerPage = observer(() => {
     console.log(e.target.value);
     bannerStore.setSearchTerm(e.target.value);
   };
-  if (loading) return <>Loading ...</>;
+  // if (loading) return <>Loading ...</>;
   return (
-    <Flex direction="column" p={8} bg="#F4F4F4" borderRadius="12px" mx="30px">
-      <div className="linkPage" style={{ marginBottom: '16px' }}>
-        <Breadcrumb separator="/">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/" className="prevPage">
-              Home
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-
-          <BreadcrumbItem>
-            <BreadcrumbLink
-              href="banner"
-              className="prevPage"
-              style={{
-                color: window.location.pathname === '/banner' ? '#0A3351' : 'inherit',
-              }}
-            >
-              Danh sách banner
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </div>
-
-      <Heading
-        as="h2"
-        size="md"
-        mb="16px"
-        sx={{
-          display: 'inline-flex',
-          padding: '10px 0px',
-          alignItems: 'center',
-          gap: '10px',
-          color: 'var(--Prussian-Blue-950, #0A3351)',
-          fontFamily: 'Roboto',
-          fontSize: '32px',
-          fontWeight: '700',
-          lineHeight: 'normal',
-        }}
-      >
-        Danh sách banner
-      </Heading>
-
+    <Flex direction="column" p={8} bg="#F4F4F4">
+      <PageHeadingAtoms title={'Danh sách banner'} />
       <Flex justifyContent="space-between" alignItems="center" mb="50px">
         <Flex gap="16px">
           <Input
@@ -124,99 +83,105 @@ const BannerPage = observer(() => {
             <option value="startDate">Ngày bắt đầu</option>
           </Select>
         </Flex>
-
-        <Button
-          colorScheme="teal"
-          size="md"
-          // onClick={bannerStore.addBanner}
-          sx={{
-            display: 'flex',
-            width: '182px',
-            height: '40px',
-            padding: '10.078px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10.078px',
-            borderRadius: '8.063px',
-            background: '#00423D',
-            color: '#FFF',
-            fontFamily: 'Roboto',
-            fontSize: '16px',
-            fontStyle: 'normal',
-            fontWeight: '500',
-            lineHeight: 'normal',
-          }}
-        >
-          <CreateBannerPage />
-        </Button>
+        <CreateBannerPage />
       </Flex>
 
-      <Table variant="simple" className="table-layout">
-        <Thead>
-          <Tr>
-            <Th>STT</Th>
-            <Th>Ảnh</Th>
-            <Th>Tên banner</Th>
-            <Th>Mô tả</Th>
-            <Th>Khoảng ngày</Th>
-            <Th>Trạng thái</Th>
-            <Th>Link</Th>
-            <Th>Tùy chọn</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {bannerArray.map((banner, index) => (
-            <Tr key={banner.id}>
-              <Td>{(bannerPageParams.pageIndex - 1) * bannerPageParams.pageSize + index + 1}</Td>
-              <Td>
-                <Image src={banner.imageUrl} alt={banner.title} width="120px" />
-              </Td>
-              <Td>{banner.title}</Td>
-              <Td>{banner.description}</Td>
-              <Td>
-                Từ ngày:{' '}
-                {new Date(banner.startDate).toLocaleString('vi-VN', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                })}
-                <br />
-                Đến ngày:{' '}
-                {new Date(banner.endDate).toLocaleString('vi-VN', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric',
-                })}
-              </Td>
-              <Td>{banner.status}</Td>
-              <Td>{banner.link}</Td>
-              <Td>
-                <IconButton
-                  key={`edit-banner${banner.id}`}
-                  icon={<FaEdit />}
-                  aria-label="Edit"
-                  colorScheme="teal"
-                  size="sm"
-                  mr={2}
-                />
-                <IconButton
-                  key={`delete-banner${banner.id}`}
-                  icon={<FaTrash />}
-                  aria-label="Delete"
-                  colorScheme="red"
-                  size="sm"
-                />
-              </Td>
+      <TableContainer bg={'white'} borderRadius={'8px'} border={'1px solid #000'}>
+        <Table variant="simple" cellPadding={'1rem'}>
+          <Thead backgroundColor={'#03301F'}>
+            <Tr>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                STT
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Ảnh
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Tên banner
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Mô tả
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Khoảng ngày
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Trạng thái
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Link
+              </Th>
+              <Th color={'white'}>Tùy chọn</Th>
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
+          </Thead>
+          <Tbody>
+            {loading ? (
+              <SkeletonTableAtoms numOfColumn={7} pageSize={bannerPageParams.pageSize} />
+            ) : (
+              bannerArray.map((banner, index) => (
+                <Tr key={banner.id}>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {(bannerPageParams.pageIndex - 1) * bannerPageParams.pageSize + index + 1}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    <Image src={banner.imageUrl} alt={banner.title} width="120px" />
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {banner.title}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {banner.description}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    Từ ngày:{' '}
+                    {new Date(banner.startDate).toLocaleString('vi-VN', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    })}
+                    <br />
+                    Đến ngày:{' '}
+                    {new Date(banner.endDate).toLocaleString('vi-VN', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    })}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {banner.status}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {banner.link}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'}>
+                    <IconButton
+                      key={`edit-banner${banner.id}`}
+                      icon={<FaEdit />}
+                      aria-label="Edit"
+                      colorScheme="teal"
+                      size="sm"
+                      mr={2}
+                    />
+                    <IconButton
+                      key={`delete-banner${banner.id}`}
+                      icon={<FaTrash />}
+                      aria-label="Delete"
+                      colorScheme="red"
+                      size="sm"
+                    />
+                  </Td>
+                </Tr>
+              ))
+            )}
+          </Tbody>
+        </Table>
+      </TableContainer>
 
-      {bannerArray.length === 0 && (
+      {bannerArray.length === 0 && !loading &&  (
         <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
           Danh sách banner rỗng
         </Box>

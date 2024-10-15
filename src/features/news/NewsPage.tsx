@@ -9,24 +9,29 @@ import {
   Tr,
   Th,
   Td,
-  Heading,
   Image,
   Box,
   IconButton,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
   Select,
+  TableContainer,
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import './style.scss';
 import { router } from '@/app/router/Routes';
+import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
+import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
 
 const NewsPage = observer(() => {
   const { newsStore } = useStore();
-  const { loadMockNews, newsArray, setCurrentPage: setPage, newsPageParams: pageParams } = newsStore;
+  const {
+    loadMockNews,
+    newsArray,
+    setCurrentPage: setPage,
+    newsPageParams: pageParams,
+    loading,
+  } = newsStore;
   useEffect(() => {
     loadMockNews();
   }, [loadMockNews]);
@@ -46,47 +51,7 @@ const NewsPage = observer(() => {
 
   return (
     <Flex direction="column" p={8} bg="#F4F4F4" borderRadius="12px" mx="30px">
-      <div className="linkPage" style={{ marginBottom: '16px' }}>
-        <Breadcrumb separator="/">
-          <BreadcrumbItem>
-            <BreadcrumbLink href="/" className="prevPage">
-              Home
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-
-          <BreadcrumbItem>
-            <BreadcrumbLink
-              href="News"
-              className="prevPage"
-              style={{
-                color: window.location.pathname === '/News' ? '#0A3351' : 'inherit',
-              }}
-            >
-              Danh sách tin tức
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-        </Breadcrumb>
-      </div>
-
-      <Heading
-        as="h2"
-        size="md"
-        mb="16px"
-        sx={{
-          display: 'inline-flex',
-          padding: '10px 0px',
-          alignItems: 'center',
-          gap: '10px',
-          color: 'var(--Prussian-Blue-950, #0A3351)',
-          fontFamily: 'Roboto',
-          fontSize: '32px',
-          fontWeight: '700',
-          lineHeight: 'normal',
-        }}
-      >
-        Danh sách tin tức
-      </Heading>
-
+      <PageHeadingAtoms title={'Danh sách tin tức'} />
       <Flex justifyContent="space-between" alignItems="center" mb="50px">
         <Flex gap="16px">
           <Input
@@ -160,52 +125,90 @@ const NewsPage = observer(() => {
         </Button>
       </Flex>
 
-      <Table variant="simple" className="table-layout">
-        <Thead>
-          <Tr>
-            <Th>STT</Th>
-            <Th>Ảnh đại diện</Th>
-            <Th>Tiêu đề bài viết</Th>
-            <Th>Danh mục</Th>
-            <Th>Người đăng</Th>
-            <Th>Trạng thái</Th>
-            <Th>Ngày đăng bài</Th>
-            <Th>Tùy chọn</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {newsArray.map((news, index) => (
-            <Tr key={news.id}>
-              <Td>{(pageParams.pageIndex - 1) * pageParams.pageSize + index + 1}</Td>
-              <Td>
-                <Image
-                  src={news.imageUrl}
-                  alt={news.title}
-                  width="120px"
-                  objectFit="cover"
-                  borderRadius="8px"
-                />
-              </Td>
-              <Td>{news.title}</Td>
-              <Td>{news.category}</Td>
-              <Td>{news.author}</Td>
-              <Td>{news.status}</Td>
-              <Td>{news.date}</Td>
-              <Td>
-                <IconButton
-                  icon={<FaEdit />}
-                  aria-label="Edit"
-                  colorScheme="teal"
-                  size="sm"
-                  mr={2}
-                />
-                <IconButton icon={<FaTrash />} aria-label="Delete" colorScheme="red" size="sm" />
-              </Td>
+      <TableContainer bg={'white'} borderRadius={'8px'} padding={0} border={'1px solid #000'}>
+        <Table variant="simple" cellPadding={'1rem'} padding={0}>
+          <Thead backgroundColor={'#03301F'}>
+            <Tr>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                STT
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Ảnh đại diện
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Tiêu đề bài viết
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Danh mục
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Người đăng
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Trạng thái
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Ngày đăng bài
+              </Th>
+              <Th color={'white'}>Tùy chọn</Th>
             </Tr>
-          ))}
-        </Tbody>
-      </Table>
-      {newsArray.length === 0 && (
+          </Thead>
+          <Tbody>
+            {loading ? (
+              <SkeletonTableAtoms numOfColumn={7} pageSize={pageParams.pageSize} />
+            ) : (
+              newsArray.map((news, index) => (
+                <Tr key={news.id}>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {(pageParams.pageIndex - 1) * pageParams.pageSize + index + 1}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    <Image
+                      src={news.imageUrl}
+                      alt={news.title}
+                      width="120px"
+                      objectFit="cover"
+                      borderRadius="8px"
+                    />
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {news.title}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {news.category}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {news.author}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {news.status}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {news.date}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'}>
+                    <IconButton
+                      icon={<FaEdit />}
+                      aria-label="Edit"
+                      colorScheme="teal"
+                      size="sm"
+                      mr={2}
+                    />
+                    <IconButton
+                      icon={<FaTrash />}
+                      aria-label="Delete"
+                      colorScheme="red"
+                      size="sm"
+                    />
+                  </Td>
+                </Tr>
+              ))
+            )}
+          </Tbody>
+        </Table>
+      </TableContainer>
+
+      {newsArray.length === 0 && !loading &&  (
         <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
           Danh sách rỗng
         </Box>
