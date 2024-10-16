@@ -170,7 +170,7 @@ const CourtPage = observer(() => {
             <option value="all">Tất cả</option>
           </Select>
 
-          <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={() => router.navigate('/san-choi/tao')}>
+          <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={() => router.navigate('/cum-san/tao')}>
             Thêm mới
           </Button>
         </Flex>

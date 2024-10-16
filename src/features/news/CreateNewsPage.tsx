@@ -23,33 +23,13 @@ import InputTag from "@/app/common/input/InputTag";
 import FileUpload from "@/app/common/input/FileUpload";
 import SelectComponent from "@/app/common/input/Select";
 import ReactQuillComponent from "@/app/common/input/ReactQuill";
+import { FaEdit } from "react-icons/fa";
 const CreateNewsPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   return (
     <>
-      <Button
-        colorScheme="teal"
-        size="md"
-        onClick={onOpen}
-        sx={{
-          display: 'flex',
-          width: '182px',
-          height: '40px',
-          padding: '10.078px',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '10.078px',
-          borderRadius: '8.063px',
-          background: '#00423D',
-          color: '#FFF',
-          fontFamily: 'Roboto',
-          fontSize: '16px',
-          fontStyle: 'normal',
-          fontWeight: '500',
-          lineHeight: 'normal',
-        }}
-      >
-        Thêm bài viết
+      <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={onOpen}>
+        Thêm mới
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">

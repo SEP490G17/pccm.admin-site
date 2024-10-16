@@ -19,9 +19,9 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import { FaEdit, FaTrash, FaSearch, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from 'react-icons/fa';
 import './style.scss';
-import { router } from '@/app/router/Routes';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
+import CreateProductPage from './CreateProductPage';
 
 const ProductPage = observer(() => {
     const { productStore } = useStore();
@@ -170,9 +170,7 @@ const ProductPage = observer(() => {
                         <option value="all">Tất cả</option>
                     </Select>
 
-                    <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={() => router.navigate('/san-pham/tao')}>
-                        Thêm mới
-                    </Button>
+                    <CreateProductPage/>
                 </Flex>
 
                 <Box textAlign="right">

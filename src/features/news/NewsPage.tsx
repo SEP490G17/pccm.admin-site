@@ -21,7 +21,7 @@ import { FaEdit, FaTrash, FaSearch, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight
 import './style.scss';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
-import { router } from '@/app/router/Routes';
+import CreateNewsPage from './CreateNewsPage';
 
 const NewsPage = observer(() => {
   const { newsStore } = useStore();
@@ -182,10 +182,7 @@ const NewsPage = observer(() => {
           <Select width="149px" height="35px" borderRadius="4px" border="1px solid #ADADAD" bg="#FFF" color="#03301F">
             <option value="all">Tất cả</option>
           </Select>
-
-          <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={() => router.navigate('/tin-tuc/tao')}>
-            Thêm mới
-          </Button>
+          <CreateNewsPage></CreateNewsPage>
         </Flex>
 
         <Box textAlign="right">
