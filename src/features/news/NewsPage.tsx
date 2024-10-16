@@ -19,9 +19,9 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import './style.scss';
-import { router } from '@/app/router/Routes';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
+import CreateServicePage from '../service/CreateServicePage';
 
 const NewsPage = observer(() => {
   const { newsStore } = useStore();
@@ -99,30 +99,7 @@ const NewsPage = observer(() => {
           </Select>
         </Flex>
 
-        <Button
-          colorScheme="teal"
-          onClick={() => router.navigate('/tin-tuc/tao')}
-          size="md"
-          sx={{
-            display: 'flex',
-            width: '182px',
-            height: '40px',
-            padding: '10.078px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10.078px',
-            borderRadius: '8.063px',
-            background: '#00423D',
-            color: '#FFF',
-            fontFamily: 'Roboto',
-            fontSize: '16px',
-            fontStyle: 'normal',
-            fontWeight: '500',
-            lineHeight: 'normal',
-          }}
-        >
-          Thêm bài viết
-        </Button>
+        <CreateServicePage/>
       </Flex>
 
       <TableContainer bg={'white'} borderRadius={'8px'} padding={0} border={'1px solid #000'}>
