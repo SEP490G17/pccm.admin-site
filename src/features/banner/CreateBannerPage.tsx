@@ -20,6 +20,7 @@ import {
   Badge,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import { FaEdit } from 'react-icons/fa';
 
 const CreateBannerPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -35,7 +36,7 @@ const CreateBannerPage = () => {
     destination: '',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | HTMLSelectElement) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setBannerData({
       ...bannerData,
@@ -54,30 +55,9 @@ const CreateBannerPage = () => {
 
   return (
     <>
-      <Button
-        onClick={onOpen}
-        bg="#00423D"
-        color="white" 
-        sx={{
-          display: 'flex',
-          width: '182px',
-          height: '40px',
-          padding: '10.078px',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '10.078px',
-          borderRadius: '8.063px',
-          background: '#00423D',
-          color: '#FFF',
-          fontFamily: 'Roboto',
-          fontSize: '16px',
-          fontStyle: 'normal',
-          fontWeight: '500',
-          lineHeight: 'normal',
-        }}
-      >
-        Thêm banner
-      </Button>
+      <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={onOpen}>
+            Thêm mới
+          </Button>
 
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">
         <ModalOverlay />
@@ -85,7 +65,7 @@ const CreateBannerPage = () => {
           <ModalHeader bg="#00423D" color="white" borderRadius="20px 20px 0 0">
             Thêm Banner
           </ModalHeader>
-          <ModalCloseButton />
+          <ModalCloseButton color='#FFF'/>
           <ModalBody>
             <VStack spacing="20px" align="stretch">
               {/* Phần nhập tiêu đề */}

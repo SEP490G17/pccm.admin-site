@@ -164,6 +164,7 @@
 }
 
 .title_label {
+  margin-top: 1rem;
   color: #333;
   font-family: Roboto;
   font-size: 1rem !important;
@@ -174,27 +175,26 @@
   padding: 0.625rem;
   justify-content: center;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.625rem !important;
 }
 
 .input_text {
-  height: 3rem !important;
+  height: 2.97675rem !important;
   flex-shrink: 0 !important;
   background: #fff !important;
-  border-radius: 1rem !important;
+  align-self: stretch !important;
 }
 
 .box_banner {
   display: flex;
-  padding: 0.625rem 1rem;
+  padding: 0.625rem 1rem !important;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.625rem;
-  flex-shrink: 0;
-  border-radius: 1rem;
+  align-self: stretch;
+  border-radius: 0.25rem;
   border: 1px dashed rgba(51, 51, 51, 0.3) !important;
   background: #fff;
-  width: 44.75rem;
 }
 
 .text_upload {

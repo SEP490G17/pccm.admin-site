@@ -8,7 +8,6 @@ import CreateCourtPage from '@/features/court/CreateCourtPage';
 import CourtsPage from '@/features/court/CourtsPage';
 import BannerPage from '@/features/banner/BannerPage';
 import NewsPage from '@/features/news/NewsPage';
-import CreateEventPage from '@/features/news/CreateEventPage';
 import CreateBannerPage from '@/features/banner/CreateBannerPage';
 import ProductPage from '@/features/product/ProductPage';
 import ServicePage from '@/features/service/ServicePage';
@@ -35,10 +34,6 @@ export const routes: RouteObject[] = [
       {
         path: 'tin-tuc',
         element: <NewsPage />,
-      },
-      {
-        path: 'tin-tuc/tao',
-        element: <CreateEventPage />,
       },
       {
         path: 'errors',

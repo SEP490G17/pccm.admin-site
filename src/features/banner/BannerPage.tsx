@@ -19,9 +19,9 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import { FaEdit, FaTrash, FaSearch, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from 'react-icons/fa';
 import './style.scss';
-import { router } from '@/app/router/Routes';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
+import CreateBannerPage from './CreateBannerPage';
 
 const BannerPage = observer(() => {
   const { bannerStore } = useStore();
@@ -172,9 +172,8 @@ const BannerPage = observer(() => {
             <option value="all">Tất cả</option>
           </Select>
 
-          <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={() => router.navigate('/banner/tao')}>
-            Thêm mới
-          </Button>
+          <CreateBannerPage />
+
         </Flex>
 
         <Box textAlign="right">

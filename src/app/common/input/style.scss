@@ -1,16 +1,15 @@
-.wrap {
-  border-radius: 1rem;
+.input-tag {
+  border-radius: 0.25rem;
   border: 1px solid rgba(51, 51, 51, 0.30);
   background: #FFF;
-  width: 22.8125rem;
-  height: 3.75rem;
+  width: 44.9375rem;
+  height: 3rem;
+  flex-shrink: 0;
 }
 
 .input {
   border: 0;
   outline: 0;
-  margin-right: 4px;
-  margin-top: 4px;
   background-color: rgb(198, 198, 198);
   width: 100px;
 }
@@ -20,8 +19,10 @@
 }
 
 .item_text {
-  margin-right: 4px;
-  margin-top: 4px;
+  padding: 0.25rem 0.5rem !important;
+  align-items: center !important;
+  border-radius: 0.4375rem !important;
+  background: var(--Color-Text-en-15, rgba(0, 0, 0, 0.15));
 }
 
 .quill {
