@@ -9,6 +9,10 @@ import CourtsPage from '@/features/court/CourtsPage';
 import BannerPage from '@/features/banner/BannerPage';
 import NewsPage from '@/features/news/NewsPage';
 import CreateBannerPage from '@/features/banner/CreateBannerPage';
+import ProductPage from '@/features/product/ProductPage';
+import ServicePage from '@/features/service/ServicePage';
+import StaffPage from '@/features/staff/StaffPage';
+import UserManagerPage from '@/features/user/UserManagerPage';
 
 export const routes: RouteObject[] = [
   {
@@ -44,6 +48,22 @@ export const routes: RouteObject[] = [
         path: 'banner/tao',
         element: <CreateBannerPage />,
       },
+      {
+        path: 'hang-hoa',
+        element: <ProductPage />
+      },
+      {
+        path: 'dich-vu',
+        element: <ServicePage />
+      },
+      {
+        path: 'nhan-vien',
+        element: <StaffPage />
+      },
+      {
+        path: 'users',
+        element: <UserManagerPage />
+      }
     ],
   },
   {

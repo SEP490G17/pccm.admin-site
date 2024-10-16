@@ -17,11 +17,11 @@ import {
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaSearch, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from 'react-icons/fa';
 import './style.scss';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
-import CreateServicePage from '../service/CreateServicePage';
+import { router } from '@/app/router/Routes';
 
 const NewsPage = observer(() => {
   const { newsStore } = useStore();
@@ -29,7 +29,8 @@ const NewsPage = observer(() => {
     loadMockNews,
     newsArray,
     setCurrentPage: setPage,
-    newsPageParams: pageParams,
+    newsPageParams: newsPageParams,
+    setPageSize,
     loading,
   } = newsStore;
   useEffect(() => {
@@ -49,60 +50,159 @@ const NewsPage = observer(() => {
     setPage(page);
   };
 
-  return (
-    <Flex direction="column" p={8} bg="#F4F4F4" borderRadius="12px" mx="30px">
-      <PageHeadingAtoms title={'Danh sách tin tức'} />
-      <Flex justifyContent="space-between" alignItems="center" mb="50px">
-        <Flex gap="16px">
-          <Input
-            placeholder="Nhập từ khóa tìm kiếm"
-            onChange={handleSearch}
-            width="380px"
-            height="40px"
-            borderRadius="12px"
-            padding="4px 16px"
-            bg="white"
-            sx={{
-              color: '#333',
-              fontFamily: 'Roboto',
-              fontSize: '16px',
-              fontWeight: '500',
-              lineHeight: 'normal',
-              marginRight: '10px',
-              border: '0.5px solid rgba(51, 51, 51, 0.30)',
-            }}
-          />
+  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSize = parseInt(e.target.value);
+    setPageSize(newSize);
+    loadMockNews();
+  };
 
-          <Select
-            width="201px"
-            height="40px"
-            borderRadius="12px"
-            padding=""
-            bg="white"
-            border="0.5px solid rgba(51, 51, 51, 0.30)"
-            sx={{
-              color: '#333',
-              fontFamily: 'Roboto',
-              fontSize: '16px',
-              fontWeight: '500',
-              lineHeight: 'normal',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
+  const renderPaginationButtons = () => {
+    const { pageIndex, totalPages } = newsPageParams;
+    const buttons = [];
+
+    if (!totalPages || totalPages === 0) {
+      return null;
+    }
+
+    // Nút về trang đầu tiên
+    buttons.push(
+      <IconButton
+        key="first"
+        aria-label="First Page"
+        icon={<FaAngleDoubleLeft />}
+        onClick={() => handlePageChange(1)}
+        isDisabled={pageIndex === 1}
+        mr={2}
+      />
+    );
+
+    // Nút lùi 1 trang
+    buttons.push(
+      <IconButton
+        key="previous"
+        aria-label="Previous Page"
+        icon={<FaAngleLeft />}
+        onClick={() => handlePageChange(pageIndex - 1)}
+        isDisabled={pageIndex === 1}
+        mr={2}
+      />
+    );
+
+    if (totalPages <= 3) {
+      // Nếu tổng số trang ít hơn hoặc bằng 3, hiển thị tất cả các trang
+      for (let i = 1; i <= totalPages; i++) {
+        buttons.push(
+          <Button
+            key={i}
+            onClick={() => handlePageChange(i)}
+            className={`pagination-button ${pageIndex === i ? 'active' : ''}`}
           >
-            <option value="title">Tìm kiếm theo</option>
-            <option value="author">Người đăng</option>
-            <option value="category">Danh mục</option>
-            <option value="status">Trạng thái</option>
-            <option value="date">Ngày đăng</option>
+            {i}
+          </Button>
+        );
+      }
+    } else {
+      // Nếu có nhiều hơn 3 trang, hiển thị trang đầu, trang hiện tại và trang cuối cùng với dấu "..."
+      buttons.push(
+        <Button
+          key={1}
+          onClick={() => handlePageChange(1)}
+          className={`pagination-button ${pageIndex === 1 ? 'active' : ''}`}
+        >
+          1
+        </Button>
+      );
+
+      // Hiển thị dấu "..." nếu cách xa trang đầu hơn 1 trang
+      if (pageIndex > 2) {
+        buttons.push(<span key="ellipsis1">...</span>);
+      }
+
+      // Hiển thị trang hiện tại nếu nó không phải trang đầu hoặc cuối
+      if (pageIndex > 1 && pageIndex < totalPages) {
+        buttons.push(
+          <Button
+            key={pageIndex}
+            onClick={() => handlePageChange(pageIndex)}
+            className="pagination-button active"
+          >
+            {pageIndex}
+          </Button>
+        );
+      }
+
+      // Hiển thị dấu "..." nếu cách xa trang cuối hơn 1 trang
+      if (pageIndex < totalPages - 1) {
+        buttons.push(<span key="ellipsis2">...</span>);
+      }
+
+      // Hiển thị trang cuối
+      buttons.push(
+        <Button
+          key={totalPages}
+          onClick={() => handlePageChange(totalPages)}
+          className={`pagination-button ${pageIndex === totalPages ? 'active' : ''}`}
+        >
+          {totalPages}
+        </Button>
+      );
+    }
+
+    // Nút tiến 1 trang
+    buttons.push(
+      <IconButton
+        key="next"
+        aria-label="Next Page"
+        icon={<FaAngleRight />}
+        onClick={() => handlePageChange(pageIndex + 1)}
+        isDisabled={pageIndex === totalPages}
+        ml={2}
+      />
+    );
+
+    // Nút về trang cuối
+    buttons.push(
+      <IconButton
+        key="last"
+        aria-label="Last Page"
+        icon={<FaAngleDoubleRight />}
+        onClick={() => handlePageChange(totalPages)}
+        isDisabled={pageIndex === totalPages}
+        ml={2}
+      />
+    );
+
+    return buttons;
+  };
+  return (
+    <Flex direction="column" p={8} bg="#F4F4F4">
+      <PageHeadingAtoms title={'Danh sách tin tức'} />
+      <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
+        <Flex gap="30px" alignItems="center">
+          <Select width="149px" height="35px" borderRadius="4px" border="1px solid #ADADAD" bg="#FFF" color="#03301F">
+            <option value="all">Tất cả</option>
           </Select>
+
+          <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={() => router.navigate('/tin-tuc/tao')}>
+            Thêm mới
+          </Button>
         </Flex>
 
-        <CreateServicePage/>
+        <Box textAlign="right">
+          <Box color="#00423D" fontFamily="Roboto" fontSize="12px" mb="0.5rem">
+            Tìm kiếm nâng cao
+          </Box>
+
+          <Flex padding="3px 10px" alignItems="center" gap="16px" borderRadius="4px" border="0.5px solid #ADADAD" background="#FFF">
+            <Input placeholder="Nhập từ khóa tìm kiếm" onChange={handleSearch} border="none" height="30px" outline="none" />
+            <Button>
+              <FaSearch />
+            </Button>
+          </Flex>
+        </Box>
       </Flex>
 
-      <TableContainer bg={'white'} borderRadius={'8px'} padding={0} border={'1px solid #000'}>
+      <TableContainer bg={'white'} borderRadius={'8px'} padding={0} border={'1px solid #000'} mb="1.5rem">
         <Table variant="simple" cellPadding={'1rem'} padding={0}>
           <Thead backgroundColor={'#03301F'}>
             <Tr>
@@ -132,12 +232,12 @@ const NewsPage = observer(() => {
           </Thead>
           <Tbody>
             {loading ? (
-              <SkeletonTableAtoms numOfColumn={7} pageSize={pageParams.pageSize} />
+              <SkeletonTableAtoms numOfColumn={7} pageSize={newsPageParams.pageSize} />
             ) : (
               newsArray.map((news, index) => (
                 <Tr key={news.id}>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {(pageParams.pageIndex - 1) * pageParams.pageSize + index + 1}
+                    {(newsPageParams.pageIndex - 1) * newsPageParams.pageSize + index + 1}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
                     <Image
@@ -185,21 +285,33 @@ const NewsPage = observer(() => {
         </Table>
       </TableContainer>
 
-      {newsArray.length === 0 && !loading &&  (
+      {newsArray.length === 0 && !loading && (
         <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
           Danh sách rỗng
         </Box>
       )}
-      <Flex mt={6} justify="center" align="center">
-        {Array.from({ length: pageParams.totalPages! }, (_, index) => (
-          <Button
-            key={index + 1}
-            onClick={() => handlePageChange(index + 1)}
-            className={`pagination-button ${pageParams.pageIndex === index + 1 ? 'active' : ''}`}
+      <Flex justifyContent="space-between" alignItems="center" mb="1rem">
+
+        <Box display="flex" alignItems="center">
+          Hiển thị
+          <Select
+            width="70px"
+            height="35px"
+            value={newsPageParams.pageSize}
+            onChange={handlePageSizeChange}
+            marginLeft="10px"
+            marginRight="10px"
           >
-            {index + 1}
-          </Button>
-        ))}
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+          </Select>
+          tài liệu
+        </Box>
+
+        <Flex justifyContent={'flex-end'}>
+          {renderPaginationButtons()}
+        </Flex>
       </Flex>
     </Flex>
   );

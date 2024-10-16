@@ -4,6 +4,10 @@ import AuthStore from "./authStore";
 import NewsStore from "./newsStore";
 import BannerStore from "./bannerStore"; 
 import CourtStore from "./courtStore";
+import ProductStore from "./productStore"
+import ServiceStore from "./serviceStore";
+import StaffStore from "./staffStore";
+import UserStore from "./userStore";
 
 interface Store {
   commonStore: CommonStore;
@@ -11,6 +15,10 @@ interface Store {
   newsStore: NewsStore;
   bannerStore: BannerStore; 
   courtStore: CourtStore;
+  productStore: ProductStore;
+  serviceStore: ServiceStore;
+  staffStore: StaffStore;
+  userStore: UserStore;
 }
 
 export const store: Store = {
@@ -19,6 +27,10 @@ export const store: Store = {
   newsStore: new NewsStore(),
   bannerStore: new BannerStore(),
   courtStore: new CourtStore(),
+  productStore: new ProductStore(),
+  serviceStore: new ServiceStore(),
+  staffStore: new StaffStore(),
+  userStore: new UserStore(),
 };
 
 export const StoreContext = createContext(store);
