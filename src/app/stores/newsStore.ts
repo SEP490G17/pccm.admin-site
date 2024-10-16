@@ -125,6 +125,14 @@ export default class NewsStore {
     });
   };
 
+  setPageSize = (size: number) => {
+    runInAction(() => {
+      this.newsPageParams.pageSize = size;
+      this.newsPageParams.pageIndex = 1; 
+      this.loadNewsArray();
+    });
+  };  
+
   loadNewsArray = async () => {
     const { pageSize, pageIndex, searchTerm, totalElement } = this.newsPageParams;
     const startIndex = (pageIndex - 1) * pageSize;

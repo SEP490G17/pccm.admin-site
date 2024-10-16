@@ -17,137 +17,214 @@ import {
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaSearch, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from 'react-icons/fa';
 import './style.scss';
 import { router } from '@/app/router/Routes';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
 
-const CourtsPage = observer(() => {
+const CourtPage = observer(() => {
   const { courtStore } = useStore();
-  const { courtArray, mockLoadCourts, pageParams, setSearchTerm, setPageNumber, loading } =
-    courtStore;
+  const {
+    mockLoadCourts,
+    courtArray,
+    setCurrentPage: setPage,
+    courtPageParams,
+    setPageSize,
+    loading,
+  } = courtStore;
 
   useEffect(() => {
     mockLoadCourts();
   }, [mockLoadCourts]);
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
-    setSearchTerm(e.target.value);
+    courtStore.setSearchTerm(e.target.value);
   };
-  return (
-    <Flex direction="column" p={8} bg="#F4F4F4" borderRadius="12px" mx="30px">
-      <PageHeadingAtoms title="Danh sách cụm sân" />
 
-      <Flex justifyContent="space-between" alignItems="center" mb="50px">
-        <Flex gap="16px">
-          <Input
-            placeholder="Nhập từ khóa tìm kiếm"
-            onChange={handleSearch}
-            width="380px"
-            height="40px"
-            borderRadius="12px"
-            padding="4px 16px"
-            bg="white"
-            sx={{
-              color: '#333',
-              fontFamily: 'Roboto',
-              fontSize: '16px',
-              fontWeight: '500',
-              lineHeight: 'normal',
-              marginRight: '10px',
-              border: '0.5px solid rgba(51, 51, 51, 0.30)',
-            }}
-          />
+  const handlePageChange = (page: number) => {
+    setPage(page);
+  };
 
-          <Select
-            // onChange={handleFilterChange}
-            width="201px"
-            height="40px"
-            borderRadius="12px"
-            padding=""
-            bg="white"
-            border="0.5px solid rgba(51, 51, 51, 0.30)"
-            sx={{
-              color: '#333',
-              fontFamily: 'Roboto',
-              fontSize: '16px',
-              fontWeight: '500',
-              lineHeight: 'normal',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
+  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSize = parseInt(e.target.value);
+    setPageSize(newSize);
+    mockLoadCourts();
+  };
+
+  const renderPaginationButtons = () => {
+    const { pageIndex, totalPages } = courtPageParams;
+    const buttons = [];
+
+    if (!totalPages || totalPages === 0) {
+      return null;
+    }
+
+    buttons.push(
+      <IconButton
+        key="first"
+        aria-label="First Page"
+        icon={<FaAngleDoubleLeft />}
+        onClick={() => handlePageChange(1)}
+        isDisabled={pageIndex === 1}
+        mr={2}
+      />
+    );
+
+    buttons.push(
+      <IconButton
+        key="previous"
+        aria-label="Previous Page"
+        icon={<FaAngleLeft />}
+        onClick={() => handlePageChange(pageIndex - 1)}
+        isDisabled={pageIndex === 1}
+        mr={2}
+      />
+    );
+
+    if (totalPages <= 3) {
+      for (let i = 1; i <= totalPages; i++) {
+        buttons.push(
+          <Button
+            key={i}
+            onClick={() => handlePageChange(i)}
+            className={`pagination-button ${pageIndex === i ? 'active' : ''}`}
           >
-            <option value="name">Tìm kiếm theo</option>
-            <option value="manager">Người quản lý</option>
-            <option value="location">Địa chỉ</option>
-            <option value="status">Trạng thái</option>
+            {i}
+          </Button>
+        );
+      }
+    } else {
+      buttons.push(
+        <Button
+          key={1}
+          onClick={() => handlePageChange(1)}
+          className={`pagination-button ${pageIndex === 1 ? 'active' : ''}`}
+        >
+          1
+        </Button>
+      );
+
+      if (pageIndex > 2) {
+        buttons.push(<span key="ellipsis1">...</span>);
+      }
+
+      if (pageIndex > 1 && pageIndex < totalPages) {
+        buttons.push(
+          <Button
+            key={pageIndex}
+            onClick={() => handlePageChange(pageIndex)}
+            className="pagination-button active"
+          >
+            {pageIndex}
+          </Button>
+        );
+      }
+
+      if (pageIndex < totalPages - 1) {
+        buttons.push(<span key="ellipsis2">...</span>);
+      }
+
+      buttons.push(
+        <Button
+          key={totalPages}
+          onClick={() => handlePageChange(totalPages)}
+          className={`pagination-button ${pageIndex === totalPages ? 'active' : ''}`}
+        >
+          {totalPages}
+        </Button>
+      );
+    }
+
+    buttons.push(
+      <IconButton
+        key="next"
+        aria-label="Next Page"
+        icon={<FaAngleRight />}
+        onClick={() => handlePageChange(pageIndex + 1)}
+        isDisabled={pageIndex === totalPages}
+        ml={2}
+      />
+    );
+
+    buttons.push(
+      <IconButton
+        key="last"
+        aria-label="Last Page"
+        icon={<FaAngleDoubleRight />}
+        onClick={() => handlePageChange(totalPages)}
+        isDisabled={pageIndex === totalPages}
+        ml={2}
+      />
+    );
+
+    return buttons;
+  };
+
+  return (
+    <Flex direction="column" p={8} bg="#F4F4F4">
+      <PageHeadingAtoms title={'Danh sách sân chơi'} />
+      <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
+        <Flex gap="30px" alignItems="center">
+          <Select width="149px" height="35px" borderRadius="4px" border="1px solid #ADADAD" bg="#FFF" color="#03301F">
+            <option value="all">Tất cả</option>
           </Select>
+
+          <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={() => router.navigate('/san-choi/tao')}>
+            Thêm mới
+          </Button>
         </Flex>
 
-        <Button
-          colorScheme="teal"
-          size="md"
-          onClick={() => router.navigate('/cum-san/tao')}
-          sx={{
-            display: 'flex',
-            width: '182px',
-            height: '40px',
-            padding: '10.078px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10.078px',
-            borderRadius: '8.063px',
-            background: '#00423D',
-            color: '#FFF',
-            fontFamily: 'Roboto',
-            fontSize: '16px',
-            fontStyle: 'normal',
-            fontWeight: '500',
-            lineHeight: 'normal',
-          }}
-        >
-          Thêm cụm sân
-        </Button>
+        <Box textAlign="right">
+          <Box color="#00423D" fontFamily="Roboto" fontSize="12px" mb="0.5rem">
+            Tìm kiếm nâng cao
+          </Box>
+
+          <Flex padding="3px 10px" alignItems="center" gap="16px" borderRadius="4px" border="0.5px solid #ADADAD" background="#FFF">
+            <Input placeholder="Nhập từ khóa tìm kiếm" onChange={handleSearch} border="none" height="30px" outline="none" />
+            <Button>
+              <FaSearch />
+            </Button>
+          </Flex>
+        </Box>
       </Flex>
 
-      <TableContainer bg={'white'} borderRadius={'8px'} padding={0} border={'1px solid #000'}>
+      <TableContainer bg={'white'} borderRadius={'8px'} padding={0} border={'1px solid #000'} mb="1.5rem">
         <Table variant="simple" cellPadding={'1rem'} padding={0}>
           <Thead backgroundColor={'#03301F'}>
             <Tr>
-              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
                 STT
               </Th>
-              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
-                Ảnh đại diện
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Ảnh
               </Th>
-              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
-                Tên cụm sân
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Tên sân
               </Th>
-              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
                 Địa chỉ
               </Th>
-              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
-                Người quản lý
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Giờ mở cửa
               </Th>
-              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
-                Trạng thái
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Số sân
               </Th>
-              <Th borderRight={'0.923px solid #FFF'} color={'white'}>
-                Ngày tạo
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Dịch vụ
               </Th>
               <Th color={'white'}>Tùy chọn</Th>
             </Tr>
           </Thead>
           <Tbody>
             {loading ? (
-              <SkeletonTableAtoms numOfColumn={7} pageSize={pageParams.pageSize} />
+              <SkeletonTableAtoms numOfColumn={8} pageSize={courtPageParams.pageSize} />
             ) : (
               courtArray.map((court, index) => (
                 <Tr key={court.id}>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {(pageParams.pageIndex - 1) * pageParams.pageSize + index + 1}
+                    {(courtPageParams.pageIndex - 1) * courtPageParams.pageSize + index + 1}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
                     <Image
@@ -162,16 +239,16 @@ const CourtsPage = observer(() => {
                     {court.name}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {court.location}
+                    {court.address}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {court.manager}
+                    {court.openHours}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {court.status}
+                    {court.courts}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {court.createdAt}
+                    {court.services.join(', ')}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'}>
                     <IconButton
@@ -194,25 +271,38 @@ const CourtsPage = observer(() => {
           </Tbody>
         </Table>
       </TableContainer>
+
       {courtArray.length === 0 && !loading && (
         <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
-          Không tìm thấy cụm sân cần tìm
+          Danh sách rỗng
         </Box>
       )}
+      <Flex justifyContent="space-between" alignItems="center" mb="1rem">
 
-      <Flex mt={6} justify="center" align="center">
-        {Array.from({ length: pageParams.totalPages! }, (_, index) => (
-          <Button
-            key={index + 1}
-            onClick={() => setPageNumber(index + 1)}
-            className={`pagination-button ${pageParams.pageIndex === index + 1 ? 'active' : ''}`}
+        <Box display="flex" alignItems="center">
+          Hiển thị
+          <Select
+            width="70px"
+            height="35px"
+            value={courtPageParams.pageSize}
+            onChange={handlePageSizeChange}
+            marginLeft="10px"
+            marginRight="10px"
           >
-            {index + 1}
-          </Button>
-        ))}
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+          </Select>
+          sân chơi
+        </Box>
+
+        {/* Phần phân trang */}
+        <Flex justifyContent={'flex-end'}>
+          {renderPaginationButtons()}
+        </Flex>
       </Flex>
     </Flex>
   );
 });
 
-export default CourtsPage;
+export default CourtPage;

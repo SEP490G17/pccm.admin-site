@@ -1,152 +1,98 @@
+import { Court } from './../models/court.model';
 import { makeAutoObservable, runInAction } from 'mobx';
-import { Court, ICourt } from '../models/court.model';
-import agent from '../api/agent';
-import { PageParams } from '../models/pageParams.model';
 import { sampleCourtData } from '../mock/court.mock';
+import { PageParams } from '../models/pageParams.model';
 import { sleep } from '../helper/utils';
 
 export default class CourtStore {
-  courtRegistry = new Map<number, ICourt>();
-  courtArray: ICourt[] = [];
-  selectedCourt: ICourt | undefined = undefined;
-  loading = false;
-  pageParams = new PageParams();
+  courtRegistry = new Map<number, Court>();
+  courtArray: Court[] = [];
+  selectedCourt: Court | undefined = undefined;
+  loading: boolean = false;
+  courtPageParams = new PageParams();
+  cleanupInterval: number | undefined = undefined;
 
   constructor() {
+    console.log('court store initialized');
     makeAutoObservable(this);
   }
 
-  //#region CRUD
-
-  loadCourts = async () => {
-    this.loading = true;
-    try {
-      const courts = await agent.Court.list();
-      runInAction(() => {
-        courts.forEach(this.setCourt);
-        this.pageParams.totalPages = Math.ceil(courts.length / this.pageParams.pageSize);
-        this.loading = false;
-      });
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.error('Failed to load courts', error);
-      });
-    }
-  };
-
-  createCourt = async (court: Court) => {
-    this.loading = true;
-    try {
-      await agent.Court.create(court);
-      runInAction(() => {
-        // this.courtRegistry.set(court.id, );
-      });
-    } catch (error) {
-      runInAction(() => {
-        console.error('Failed to create court', error);
-      });
-    } finally {
-      runInAction(() => {
-        this.loading = false;
-      });
-    }
-  };
-
-  updateCourt = async (court: Court) => {
-    this.loading = true;
-    try {
-      await agent.Court.update(court);
-      runInAction(() => {
-        // this.courtRegistry.set(court.id, );
-      });
-    } catch (error) {
-      runInAction(() => {
-        console.error('Failed to update court', error);
-      });
-    } finally {
-      this.loading = false;
-    }
-  };
-
-  deleteCourt = async (id: number) => {
-    this.loading = true;
-    try {
-      await agent.Court.delete(id);
-      runInAction(() => {
-        this.courtRegistry.delete(id);
-      });
-    } catch (error) {
-      runInAction(() => {
-        console.error('Failed to delete court', error);
-      });
-    } finally {
-      runInAction(() => {
-        this.loading = false;
-      });
-    }
-  };
-
-  //#endregion
-
-  //#region mock-up
   mockLoadCourts = async () => {
     this.loading = true;
-    await sleep(1000);
-
     try {
+      sampleCourtData.forEach(this.setCourt);
+      await sleep(1000);
       runInAction(() => {
-        sampleCourtData.forEach(this.setCourt);
-        this.pageParams.totalPages = Math.ceil(this.courtRegistry.size / this.pageParams.pageSize);
+        this.courtPageParams.totalPages = Math.ceil(
+          this.courtRegistry.size / this.courtPageParams.pageSize,
+        );
+        this.courtPageParams.totalElement = this.courtRegistry.size;
         this.loadCourtArray();
       });
     } catch (error) {
       runInAction(() => {
-        console.error('Failed to load courts', error);
+        console.error('Error loading courts:', error);
       });
     } finally {
-      runInAction(() => {
-        this.loading = false;
-      });
+      this.loading = false;
     }
   };
-  //#endregion
 
-  //#region common functions
+  setSearchTerm = (term: string) => {
+    runInAction(() => {
+      console.log('begin court store');
+      this.courtPageParams.searchTerm = term;
+      this.cleanCourtCache();
+      this.loadCourtArray();
+      console.log('term:', term);
+    });
+  };
+
+  setCurrentPage = (pageIndex: number) => {
+    runInAction(() => {
+      this.courtPageParams.pageIndex = pageIndex;
+      this.loadCourtArray();
+    });
+  };
+
+  setPageSize = (size: number) => {
+    runInAction(() => {
+      this.courtPageParams.pageSize = size;
+      this.courtPageParams.pageIndex = 1;
+      this.loadCourtArray();
+    });
+  };
 
   loadCourtArray = async () => {
-    const { pageSize, pageIndex, totalElement } = this.pageParams;
+    const { pageSize, pageIndex, totalElement } = this.courtPageParams;
     const startIndex = (pageIndex - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     console.log('total element:', totalElement);
-    if (pageSize * pageIndex > this.courtRegistry.size && this.courtRegistry.size < totalElement!) {
-      await this.loadCourts();
+    if (
+      pageSize * pageIndex > this.courtRegistry.size &&
+      this.courtRegistry.size < totalElement!
+    ) {
+      await this.mockLoadCourts();
     }
     this.courtArray = Array.from(this.courtRegistry.values())
+      .sort((a, b) => a.id - b.id)
       .slice(startIndex, endIndex);
   };
 
-  setSearchTerm = async (term: string) => {
-    runInAction(() => {
-      this.loading = true;
-      this.pageParams.searchTerm = term;
-      this.courtRegistry.clear();
-      this.loadCourtArray();
-      this.loading = false;
-    });
-  };
-
-  setPageNumber = (page: number) => {
-    runInAction(() => {
-      this.loading = true;
-      this.pageParams.pageIndex = page;
-      this.loadCourtArray();
-      this.loading = false;
-    });
-  };
-
-  private setCourt = (court: ICourt) => {
+  private setCourt = (court: Court) => {
     this.courtRegistry.set(court.id, court);
   };
-  //#endregion
+
+  private cleanCourtCache = () => {
+    runInAction(() => {
+      console.log('cleanCourtCache');
+      this.courtRegistry.clear();
+    });
+  };
+
+  dispose() {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+    }
+  }
 }

@@ -123,13 +123,21 @@ export default class BannerStore {
     });
   };
 
-  setPageIndex = (pageIndex: number) => {
+  setCurrentPage = (pageIndex: number) => {
     runInAction(() => {
       this.bannerPageParams.pageIndex = pageIndex;
       this.loadBannerArray();
     });
   };
 
+ setPageSize = (size: number) => {
+    runInAction(() => {
+      this.bannerPageParams.pageSize = size;
+      this.bannerPageParams.pageIndex = 1; 
+      this.loadBannerArray();
+    });
+  };  
+  
   loadBannerArray = async () => {
     const { pageSize, pageIndex, totalElement } = this.bannerPageParams;
     const startIndex = (pageIndex - 1) * pageSize;

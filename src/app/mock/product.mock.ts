@@ -1,0 +1,118 @@
+import { Product } from "../models/product.model";
+
+export const sampleProductData: Product[] = [
+  {
+    id: 1,
+    name: 'BuiQuocTruong',
+    imageUrl:
+      'https://pickleball.vn/uploads/images/86/thumbs/vot-pickleball-joola-1_500x330xcrop.webp',
+    description: 'Mô tả sản phẩm BuiQuocTruong',
+    category: 'Pickerball',
+    stockQuantity: 10,
+    price: 500000,
+  },
+  {
+    id: 2,
+    name: 'BuiQuocTruong2',
+    imageUrl: 'https://pickleball.vn/uploads/images/1333/thumbs/agassi-x-joola_500x330xcrop.webp',
+    description: 'Mô tả sản phẩm BuiQuocTruong2',
+    category: 'Pickerball',
+    stockQuantity: 8,
+    price: 600000,
+  },
+  {
+    id: 3,
+    name: 'BuiQuocTruong3',
+    imageUrl:
+      'https://static-images.vnncdn.net/vps_images_publish/000001/000003/2024/8/20/vi-sao-mon-the-thao-moi-la-pickleball-gay-sot-o-viet-nam-1446.jpg?width=0&s=dNftsakz0pqo_apdJxiUoA',
+    description: 'Mô tả sản phẩm BuiQuocTruong3',
+    category: 'Pickerball',
+    stockQuantity: 5,
+    price: 550000,
+  },
+  {
+    id: 4,
+    name: 'BuiQuocTruong4',
+    imageUrl: 'https://via.placeholder.com/100',
+    description: 'Mô tả sản phẩm BuiQuocTruong4',
+    category: 'Pickerball',
+    stockQuantity: 12,
+    price: 450000,
+  },
+  {
+    id: 5,
+    name: 'BuiQuocTruong5',
+    imageUrl:
+      'https://pickleball.vn/uploads/images/86/thumbs/vot-pickleball-joola-1_500x330xcrop.webp',
+    description: 'Mô tả sản phẩm BuiQuocTruong5',
+    category: 'Pickerball',
+    stockQuantity: 10,
+    price: 500000,
+  },
+  {
+    id: 6,
+    name: 'BuiQuocTruong6',
+    imageUrl: 'https://pickleball.vn/uploads/images/1333/thumbs/agassi-x-joola_500x330xcrop.webp',
+    description: 'Mô tả sản phẩm BuiQuocTruong6',
+    category: 'Pickerball',
+    stockQuantity: 8,
+    price: 600000,
+  },
+  {
+    id: 7,
+    name: 'BuiQuocTruong7',
+    imageUrl:
+      'https://static-images.vnncdn.net/vps_images_publish/000001/000003/2024/8/20/vi-sao-mon-the-thao-moi-la-pickleball-gay-sot-o-viet-nam-1446.jpg?width=0&s=dNftsakz0pqo_apdJxiUoA',
+    description: 'Mô tả sản phẩm BuiQuocTruong7',
+    category: 'Pickerball',
+    stockQuantity: 5,
+    price: 550000,
+  },
+  {
+    id: 8,
+    name: 'BuiQuocTruong8',
+    imageUrl: 'https://via.placeholder.com/100',
+    description: 'Mô tả sản phẩm BuiQuocTruong8',
+    category: 'Pickerball',
+    stockQuantity: 12,
+    price: 450000,
+  },
+  {
+    id: 9,
+    name: 'BuiQuocTruong9',
+    imageUrl:
+      'https://pickleball.vn/uploads/images/86/thumbs/vot-pickleball-joola-1_500x330xcrop.webp',
+    description: 'Mô tả sản phẩm BuiQuocTruong9',
+    category: 'Pickerball',
+    stockQuantity: 10,
+    price: 500000,
+  },
+  {
+    id: 10,
+    name: 'BuiQuocTruong10',
+    imageUrl: 'https://pickleball.vn/uploads/images/1333/thumbs/agassi-x-joola_500x330xcrop.webp',
+    description: 'Mô tả sản phẩm BuiQuocTruong10',
+    category: 'Pickerball',
+    stockQuantity: 8,
+    price: 600000,
+  },
+  {
+    id: 11,
+    name: 'BuiQuocTruong11',
+    imageUrl:
+      'https://static-images.vnncdn.net/vps_images_publish/000001/000003/2024/8/20/vi-sao-mon-the-thao-moi-la-pickleball-gay-sot-o-viet-nam-1446.jpg?width=0&s=dNftsakz0pqo_apdJxiUoA',
+    description: 'Mô tả sản phẩm BuiQuocTruong11',
+    category: 'Pickerball',
+    stockQuantity: 5,
+    price: 550000,
+  },
+  {
+    id: 12,
+    name: 'BuiQuocTruong12',
+    imageUrl: 'https://via.placeholder.com/100',
+    description: 'Mô tả sản phẩm BuiQuocTruong12',
+    category: 'Pickerball',
+    stockQuantity: 12,
+    price: 450000,
+  },
+];

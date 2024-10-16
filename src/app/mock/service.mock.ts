@@ -1,0 +1,88 @@
+import { Service } from "../models/service.model";
+
+export const sampleServiceData: Service[] = [
+  {
+    id: 1,
+    name: 'Dịch vụ BuiQuocTruong',
+    description: 'Mô tả dịch vụ BuiQuocTruong',
+    price: 100000,
+    fieldCluster: 'Pickerball',
+  },
+  {
+    id: 2,
+    name: 'Dịch vụ BuiQuocTruong2',
+    description: 'Mô tả dịch vụ BuiQuocTruong2',
+    price: 150000,
+    fieldCluster: 'Pickerball',
+  },
+  {
+    id: 3,
+    name: 'Dịch vụ BuiQuocTruong3',
+    description: 'Mô tả dịch vụ BuiQuocTruong3',
+    price: 200000,
+    fieldCluster: 'Pickerball',
+  },
+  {
+    id: 4,
+    name: 'Dịch vụ BuiQuocTruong4',
+    description: 'Mô tả dịch vụ BuiQuocTruong4',
+    price: 250000,
+    fieldCluster: 'Pickerball',
+  },
+  {
+    id: 5,
+    name: 'Dịch vụ BuiQuocTruong5',
+    description: 'Mô tả dịch vụ BuiQuocTruong5',
+    price: 300000,
+    fieldCluster: 'Pickerball',
+  },
+  {
+    id: 6,
+    name: 'Dịch vụ BuiQuocTruong6',
+    description: 'Mô tả dịch vụ BuiQuocTruong6',
+    price: 350000,
+    fieldCluster: 'Pickerball',
+  },
+  {
+    id: 7,
+    name: 'Dịch vụ BuiQuocTruong7',
+    description: 'Mô tả dịch vụ BuiQuocTruong7',
+    price: 400000,
+    fieldCluster: 'Pickerball',
+  },
+  {
+    id: 8,
+    name: 'Dịch vụ BuiQuocTruong8',
+    description: 'Mô tả dịch vụ BuiQuocTruong8',
+    price: 450000,
+    fieldCluster: 'Pickerball',
+  },
+  {
+    id: 9,
+    name: 'Dịch vụ BuiQuocTruong9',
+    description: 'Mô tả dịch vụ BuiQuocTruong9',
+    price: 500000,
+    fieldCluster: 'Pickerball',
+  },
+  {
+    id: 10,
+    name: 'Dịch vụ BuiQuocTruong10',
+    description: 'Mô tả dịch vụ BuiQuocTruong10',
+    price: 550000,
+    fieldCluster: 'Pickerball',
+  },
+  {
+    id: 11,
+    name: 'Dịch vụ BuiQuocTruong11',
+    description: 'Mô tả dịch vụ BuiQuocTruong11',
+    price: 600000,
+    fieldCluster: 'Pickerball',
+  },
+  {
+    id: 12,
+    name: 'Dịch vụ BuiQuocTruong12',
+    description: 'Mô tả dịch vụ BuiQuocTruong12',
+    price: 650000,
+    fieldCluster: 'Pickerball',
+  },
+];
