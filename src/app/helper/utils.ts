@@ -7,5 +7,5 @@ export const sleep = (ms: number) => {
 };
 
 export const customFormatDate = (date: Date): string => {
-  return date.toLocaleString('vi-VN', dateFormatOptions).split('lúc ')[1].trim();
+  return date.toLocaleString('vi-VN', dateFormatOptions).trim();
 };

@@ -14,6 +14,7 @@ export default class ProductStore {
 
   constructor() {
     console.log('product store initialized');
+    this.productPageParams.pageIndex = 1;
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanProductCache, 30000);
   }
@@ -62,10 +63,10 @@ export default class ProductStore {
   setPageSize = (size: number) => {
     runInAction(() => {
       this.productPageParams.pageSize = size;
-      this.productPageParams.pageIndex = 1; 
+      this.productPageParams.pageIndex = 1;
       this.loadProductArray();
     });
-  };  
+  };
 
   loadProductArray = async () => {
     const { pageSize, pageIndex, totalElement } = this.productPageParams;

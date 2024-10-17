@@ -162,7 +162,7 @@ const StaffPage = observer(() => {
 
     return (
         <Flex direction="column" p={8} bg="#F4F4F4">
-            <PageHeadingAtoms title={'Danh sách nhân viên'} />
+            <PageHeadingAtoms breadCrumb={[{title:'Danh sách nhân viên',to:'/nhan-vien'}]} />
             <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
                 <Flex gap="30px" alignItems="center">
                     <Select width="149px" height="35px" borderRadius="4px" border="1px solid #ADADAD" bg="#FFF" color="#03301F">
@@ -216,7 +216,7 @@ const StaffPage = observer(() => {
                     </Thead>
                     <Tbody>
                         {loading ? (
-                            <SkeletonTableAtoms numOfColumn={8} pageSize={staffPageParams.pageSize} />
+                            <SkeletonTableAtoms numOfColumn={7} pageSize={staffPageParams.pageSize} />
                         ) : (
                             staffArray.map((staff, index) => (
                                 <Tr key={staff.id}>

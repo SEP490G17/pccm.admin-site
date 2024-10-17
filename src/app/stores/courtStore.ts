@@ -13,6 +13,7 @@ export default class CourtStore {
   cleanupInterval: number | undefined = undefined;
 
   constructor() {
+    this.courtPageParams.pageIndex = 1;
     console.log('court store initialized');
     makeAutoObservable(this);
   }

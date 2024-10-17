@@ -1,7 +1,7 @@
 export interface Service {
   id: number;
-  name: string;          
+  serviceName: string;          
   description: string;  
   price: number;        
-  fieldCluster: string;  
+  courtClusterName: string;  
 }

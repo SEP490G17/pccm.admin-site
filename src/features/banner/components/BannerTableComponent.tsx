@@ -57,68 +57,55 @@ const BannerTableComponent = () => {
             {loadingInitial && (
               <SkeletonTableAtoms numOfColumn={7} pageSize={bannerPageParams.pageSize} />
             )}
-            {!loadingInitial && bannerArray.map((banner, index) => (
-              <Tr key={banner.id}>
-                <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                  {index + 1}
-                </Td>
-                <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                  <Image src={banner.imageUrl} alt={banner.title} width="120px" />
-                </Td>
-                <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                  {banner.title}
-                </Td>
-                <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                  {banner.description}
-                </Td>
-                <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                  Từ ngày:{' '}
-                  {new Date(banner.startDate).toLocaleString('vi-VN', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  })}
-                  <br />
-                  Đến ngày:{' '}
-                  {new Date(banner.endDate).toLocaleString('vi-VN', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  })}
-                </Td>
-                <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                  {banner.linkUrl}
-                </Td>
-                <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                  <Center>
-                    <Switch isChecked={getBannerStatus(banner.status)} />
-                  </Center>
-                </Td>
-                <Td borderBottom={'0.923px solid #BDBDBD'}>
-                  <Center>
-                    <IconButton
-                      key={`edit-banner${banner.id}`}
-                      icon={<FaEdit />}
-                      aria-label="Edit"
-                      colorScheme="teal"
-                      size="sm"
-                      mr={2}
-                    />
-                    <IconButton
-                      key={`delete-banner${banner.id}`}
-                      icon={<FaTrash />}
-                      aria-label="Delete"
-                      colorScheme="red"
-                      size="sm"
-                    />
-                  </Center>
-                </Td>
-              </Tr>
-            ))}
+            {!loadingInitial &&
+              bannerArray.map((banner, index) => (
+                <Tr key={banner.id}>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {index + 1}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    <Image src={banner.imageUrl} alt={banner.title} width="120px" />
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {banner.title}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {banner.description}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    Từ ngày: {banner.startDate}
+                    <br />
+                    Đến ngày: {banner.endDate}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    {banner.linkUrl}
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                    <Center>
+                      <Switch isChecked={getBannerStatus(banner.status)} />
+                    </Center>
+                  </Td>
+                  <Td borderBottom={'0.923px solid #BDBDBD'}>
+                    <Center>
+                      <IconButton
+                        key={`edit-banner${banner.id}`}
+                        icon={<FaEdit />}
+                        aria-label="Edit"
+                        colorScheme="teal"
+                        size="sm"
+                        mr={2}
+                      />
+                      <IconButton
+                        key={`delete-banner${banner.id}`}
+                        icon={<FaTrash />}
+                        aria-label="Delete"
+                        colorScheme="red"
+                        size="sm"
+                      />
+                    </Center>
+                  </Td>
+                </Tr>
+              ))}
           </Tbody>
         </Table>
       </TableContainer>

@@ -34,7 +34,7 @@ export default class NewsStore {
       } else {
         this.isOrigin = true;
       }
-      const { count, data } = await agent.News.list(`?${queryParams.toString()}`);
+      const { count, data } = await agent.NewsAgent.list(`?${queryParams.toString()}`);
       runInAction(() => {
         data.forEach(this.setNews);
 
@@ -54,7 +54,7 @@ export default class NewsStore {
   createNews = async (news: News) => {
     this.loading = true;
     try {
-      await agent.News.create(news);
+      await agent.NewsAgent.create(news);
       runInAction(() => {
         this.setNews(news);
         this.loading = false;
@@ -70,7 +70,7 @@ export default class NewsStore {
   updateNews = async (news: News) => {
     this.loading = true;
     try {
-      await agent.News.update(news);
+      await agent.NewsAgent.update(news);
       runInAction(() => {
         this.setNews(news);
         this.selectedNews = news;
@@ -87,7 +87,7 @@ export default class NewsStore {
   deleteNews = async (id: number) => {
     this.loading = true;
     try {
-      await agent.News.delete(id);
+      await agent.NewsAgent.delete(id);
       runInAction(() => {
         this.newsRegistry.delete(id);
         this.loading = false;
