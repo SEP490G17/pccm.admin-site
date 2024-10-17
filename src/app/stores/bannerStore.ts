@@ -1,39 +1,50 @@
 import { Banner } from './../models/banner.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
-import { sampleBannerData } from '../mock/banner.mock';
 import { PageParams } from '../models/pageParams.model';
-import { sleep } from '../helper/utils';
+import { toast } from 'react-toastify';
+import _ from 'lodash';
 export default class BannerStore {
   bannerRegistry = new Map<number, Banner>();
   bannerArray: Banner[] = [];
   selectedBanner: Banner | undefined = undefined;
   loading: boolean = false;
+  loadingInitial: boolean = false;
   bannerPageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
-
+  isOrigin: boolean = true;
   constructor() {
     console.log('banner store initialized');
+    this.bannerPageParams.pageSize = 4;
     makeAutoObservable(this);
-    // this.cleanupInterval = window.setInterval(this.cleanBannerCache, 30000);
   }
 
   //#region CRUD
   loadBanners = async () => {
     this.loading = true;
     try {
-      const banners = await agent.Banner.list();
+      const queryParams = new URLSearchParams();
+      queryParams.append('skip', `${this.bannerPageParams.skip ?? 0}`);
+      queryParams.append('pageSize', `${this.bannerPageParams.pageSize}`);
+      if (this.bannerPageParams.searchTerm) {
+        queryParams.append('search', this.bannerPageParams.searchTerm);
+        this.isOrigin = false;
+      } else {
+        this.isOrigin = true;
+      }
+      const { count, data } = await agent.Banner.list(`?${queryParams.toString()}`);
       runInAction(() => {
-        banners.forEach(this.setBanner);
-        this.bannerPageParams.totalPages = Math.ceil(
-          banners.length / this.bannerPageParams.pageSize,
-        );
+        data.forEach(this.setBanner);
+
+        this.bannerPageParams.totalElement = count;
+        this.loadBannerArray();
         this.loading = false;
       });
     } catch (error) {
       runInAction(() => {
         this.loading = false;
-        console.error('Error loading banners:', error);
+        console.log(error);
+        toast.error('Error loading banners');
       });
     }
   };
@@ -91,68 +102,87 @@ export default class BannerStore {
 
   //#region mock-up
   mockLoadBanners = async () => {
-    this.loading = true;
-    try {
-      sampleBannerData.forEach(this.setBanner);
-      await sleep(1000);
-      runInAction(() => {
-        this.bannerPageParams.totalPages = Math.ceil(
-          this.bannerRegistry.size / this.bannerPageParams.pageSize,
-        );
-        this.bannerPageParams.totalElement = this.bannerRegistry.size;
-        this.loadBannerArray();
-      });
-    } catch (error) {
-      runInAction(() => {
-        console.error('Error loading banners:', error);
-      });
-    } finally {
-      this.loading = false;
-    }
+    // this.loading = true;
+    // try {
+    //   sampleBannerData.forEach(this.setBanner);
+    //   await sleep(1000);
+    //   runInAction(() => {
+    //     this.bannerPageParams.totalPages = Math.ceil(
+    //       this.bannerRegistry.size / this.bannerPageParams.pageSize,
+    //     );
+    //     this.bannerPageParams.totalElement = this.bannerRegistry.size;
+    //     this.mockLoadBannerArray();
+    //   });
+    // } catch (error) {
+    //   runInAction(() => {
+    //     console.error('Error loading banners:', error);
+    //   });
+    // } finally {
+    //   this.loading = false;
+    // }
+  };
+
+  mockLoadBannerArray = async () => {
+    const { pageSize, skip = 0, totalElement } = this.bannerPageParams;
+    const endIndex = skip + pageSize;
+    console.log('total element:', totalElement);
+    this.bannerArray = Array.from(this.bannerRegistry.values())
+      .sort((a, b) => a.id - b.id)
+      .slice(skip, endIndex);
   };
   //#endregion
 
   //#region common
-  setSearchTerm = (term: string) => {
+  setLoadingInitial = (isLoad: boolean) => {
     runInAction(() => {
-      console.log('begin banner store');
+      this.loadingInitial = isLoad;
+    });
+  };
+
+  // setCurrentPage = (pageIndex: number) => {
+  //   runInAction(() => {
+  //     this.bannerPageParams.pageIndex = pageIndex;
+  //     this.loadBanners();
+  //   });
+  // };
+
+  // setPageSize = (size: number) => {
+  //   runInAction(() => {
+  //     this.bannerPageParams.pageSize = size;
+  //     this.bannerPageParams.pageIndex = 1;
+  //     this.loadBanners();
+  //   });
+  // };
+
+  setSearchTerm = async (term: string) => {
+    await runInAction(async () => {
+      this.loadingInitial = true;
+      if (this.bannerPageParams.totalElement === this.bannerRegistry.size && this.isOrigin) {
+        console.log('checking');
+        this.bannerPageParams.searchTerm = term;
+        this.loadBannerArray();
+        return;
+      }
+      this.bannerRegistry.clear();
+      this.bannerPageParams.clearLazyPage();
       this.bannerPageParams.searchTerm = term;
-      this.cleanBannerCache();
-      this.loadBannerArray();
-      console.log('term:', term);
-    });
-  };
-
-  setCurrentPage = (pageIndex: number) => {
-    runInAction(() => {
-      this.bannerPageParams.pageIndex = pageIndex;
-      this.loadBannerArray();
-    });
-  };
-
- setPageSize = (size: number) => {
-    runInAction(() => {
-      this.bannerPageParams.pageSize = size;
-      this.bannerPageParams.pageIndex = 1; 
-      this.loadBannerArray();
-    });
-  };  
-  
-  loadBannerArray = async () => {
-    const { pageSize, pageIndex, totalElement } = this.bannerPageParams;
-    const startIndex = (pageIndex - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    console.log('total element:', totalElement);
-    if (
-      pageSize * pageIndex > this.bannerRegistry.size &&
-      this.bannerRegistry.size < totalElement!
-    ) {
       await this.loadBanners();
-    }
-    this.bannerArray = Array.from(this.bannerRegistry.values())
-      .sort((a, b) => a.id - b.id)
-      .slice(startIndex, endIndex);
+      this.loadingInitial = false;
+    });
   };
+
+  loadBannerArray() {
+    runInAction(() => {
+      const { searchTerm } = this.bannerPageParams;
+      if (this.bannerRegistry.size === this.bannerPageParams.totalElement && searchTerm) {
+        this.bannerArray = Array.from(this.bannerRegistry.values()).filter(
+          (b) => _.includes(b.title, searchTerm) || _.includes(b.description, searchTerm),
+        );
+        return;
+      }
+      this.bannerArray = Array.from(this.bannerRegistry.values());
+    });
+  }
 
   //#region private methods
   private setBanner = (banner: Banner) => {
