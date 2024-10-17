@@ -249,7 +249,7 @@ const UserManagerPage = observer(() => {
                     </Thead>
                     <Tbody>
                         {loading ? (
-                            <SkeletonTableAtoms numOfColumn={7} pageSize={userPageParams.pageSize} />
+                            <SkeletonTableAtoms numOfColumn={9} pageSize={userPageParams.pageSize} />
                         ) : (
                             userArray.map((user, index) => (
                                 <Tr key={user.id}>

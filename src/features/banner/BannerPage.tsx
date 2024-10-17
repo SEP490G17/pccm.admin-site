@@ -17,11 +17,12 @@ import {
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
-import { FaEdit, FaTrash, FaSearch, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from 'react-icons/fa';
+import { FaTrash, FaSearch, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from 'react-icons/fa';
 import './style.scss';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
 import CreateBannerPage from './CreateBannerPage';
+import UpdateBannerPage from './UpdateBannerPage';
 
 const BannerPage = observer(() => {
   const { bannerStore } = useStore();
@@ -262,14 +263,7 @@ const BannerPage = observer(() => {
                     {banner.link}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'}>
-                    <IconButton
-                      key={`edit-banner${banner.id}`}
-                      icon={<FaEdit />}
-                      aria-label="Edit"
-                      colorScheme="teal"
-                      size="sm"
-                      mr={2}
-                    />
+                    <UpdateBannerPage/>
                     <IconButton
                       key={`delete-banner${banner.id}`}
                       icon={<FaTrash />}

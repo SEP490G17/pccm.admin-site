@@ -17,11 +17,12 @@ import {
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
-import { FaEdit, FaTrash, FaSearch, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from 'react-icons/fa';
+import { FaTrash, FaSearch, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from 'react-icons/fa';
 import './style.scss';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
 import CreateNewsPage from './CreateNewsPage';
+import UpdateNewsPage from './UpdateNewsPage';
 
 const NewsPage = observer(() => {
   const { newsStore } = useStore();
@@ -238,7 +239,7 @@ const NewsPage = observer(() => {
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
                     <Image
-                      src={news.imageUrl}
+                      src={news.imageUrl[0]}
                       alt={news.title}
                       width="120px"
                       objectFit="cover"
@@ -261,13 +262,7 @@ const NewsPage = observer(() => {
                     {news.date}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'}>
-                    <IconButton
-                      icon={<FaEdit />}
-                      aria-label="Edit"
-                      colorScheme="teal"
-                      size="sm"
-                      mr={2}
-                    />
+                    <UpdateNewsPage news={news}/>
                     <IconButton
                       icon={<FaTrash />}
                       aria-label="Delete"

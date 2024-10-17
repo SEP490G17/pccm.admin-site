@@ -1,6 +1,6 @@
 export interface News {
   id: number;
-  imageUrl: string;
+  imageUrl: string[];
   title: string;
   category: string;
   author: string;
