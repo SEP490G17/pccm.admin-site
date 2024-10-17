@@ -12,12 +12,12 @@ function SkeletonTableAtoms({ numOfColumn, pageSize }: IProp) {
       {Array.from({ length: pageSize }, (_,index) => (
         <Tr key={`tr${index}`}>
           {Array.from({ length: numOfColumn }, (_,index) => (
-            <Td key={`td${index}`} borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+            <Td key={`td${index}`} borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'} height={'5.7rem'}>
               <Skeleton height="20px" borderRadius={'2rem'} />
             </Td>
           ))}
 
-          <Td borderBottom={'0.923px solid #BDBDBD'}>
+          <Td borderBottom={'0.923px solid #BDBDBD'} height={'5.7rem'}>
             <Skeleton height="20px" borderRadius={'2rem'} />
           </Td>
         </Tr>

@@ -5,6 +5,15 @@ export interface Banner {
   description: string;
   startDate: string;
   endDate: string;
-  status: string;
-  link: string;
+  status: BannerStatus;
+  linkUrl: string;
+}
+
+export enum BannerStatus {
+  Hidden,
+  Display,
+}
+
+export function getBannerStatus(status: BannerStatus): boolean {
+  return status === BannerStatus.Hidden;
 }

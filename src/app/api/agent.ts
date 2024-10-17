@@ -1,13 +1,14 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { router } from "../router/Routes";
-import { store } from "../stores/store";
-import { toast } from "react-toastify";
-import { User, UserFormValues } from "../models/user.model";
-import { News } from "../models/news.models";
-import { Banner} from "../models/banner.model";
-import { Court, ICourt } from "../models/court.model";
-import { sleep } from "../helper/utils";
-
+import { PaginationModel } from './../models/pagination.model';
+import axios, { AxiosError, AxiosResponse } from 'axios';
+import { router } from '../router/Routes';
+import { store } from '../stores/store';
+import { toast } from 'react-toastify';
+import { User, UserFormValues } from '../models/user.model';
+import { News } from '../models/news.models';
+import { Banner } from '../models/banner.model';
+import { Court, ICourt } from '../models/court.model';
+import { sleep } from '../helper/utils';
+import { PageParams } from '../models/pageParams.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -73,13 +74,13 @@ const requests = {
 };
 
 const NewsAgent = {
- list: (): Promise<News[]> => requests.get(`/news`),
+  list: (queryParams:string = ''): Promise<PaginationModel<News>> => requests.get(`/news${queryParams}`),
   create: (news: News): Promise<void> => requests.post(`/news`, news),
   update: (news: News): Promise<void> => requests.put(`/news/${news.id}`, news),
   delete: (id: number): Promise<void> => requests.del(`/news/${id}`),
 };
 const BannerAgent = {
-  list: (): Promise<Banner[]> => requests.get(`/banner`),
+  list: (queryParams:string = ''): Promise<PaginationModel<Banner>> =>  requests.get(`/banner${queryParams}`)  ,
   create: (banner: Banner): Promise<void> => requests.post(`/banner`, banner),
   update: (banner: Banner): Promise<void> => requests.put(`/banner/${banner.id}`, banner),
   delete: (id: number): Promise<void> => requests.del(`/banner/${id}`),
@@ -97,6 +98,6 @@ const Account = {
   login: (user: UserFormValues) => requests.post<User>('/account/login', user),
   register: (user: UserFormValues) => requests.post<User>('/account/register', user),
 };
-const agent = { requests, Account, News: NewsAgent , Banner : BannerAgent, Court : CourtAgent};
+const agent = { requests, Account, News: NewsAgent, Banner: BannerAgent, Court: CourtAgent };
 
 export default agent;

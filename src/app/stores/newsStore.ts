@@ -4,14 +4,17 @@ import { News } from '../models/news.models';
 import { sampleNewsData } from '../mock/news.mock';
 import { PageParams } from '../models/pageParams.model';
 import _ from 'lodash';
-import { sleep } from '../helper/utils';
+import { customFormatDate, sleep } from '../helper/utils';
+import { toast } from 'react-toastify';
 
 export default class NewsStore {
   newsRegistry = new Map<number, News>();
   newsArray: News[] = [];
   selectedNews: News | undefined = undefined;
   loading: boolean = false;
+  loadingInitial: boolean = false;
   newsPageParams = new PageParams();
+  isOrigin: boolean = true;
 
   constructor() {
     this.newsPageParams.pageSize = 5;
@@ -22,16 +25,28 @@ export default class NewsStore {
   loadNews = async () => {
     this.loading = true;
     try {
-      const news = await agent.News.list();
+      const queryParams = new URLSearchParams();
+      queryParams.append('skip', `${this.newsPageParams.skip ?? 0}`);
+      queryParams.append('pageSize', `${this.newsPageParams.pageSize}`);
+      if (this.newsPageParams.searchTerm) {
+        queryParams.append('search', this.newsPageParams.searchTerm);
+        this.isOrigin = false;
+      } else {
+        this.isOrigin = true;
+      }
+      const { count, data } = await agent.News.list(`?${queryParams.toString()}`);
       runInAction(() => {
-        news.forEach(this.setNews);
-        this.newsPageParams.totalPages = Math.ceil(news.length / this.newsPageParams.pageSize);
+        data.forEach(this.setNews);
+
+        this.newsPageParams.totalElement = count;
+        this.loadNewsArray();
         this.loading = false;
       });
     } catch (error) {
       runInAction(() => {
         this.loading = false;
-        console.error('Error loading news:', error);
+        console.log(error);
+        toast.error('Error loading news');
       });
     }
   };
@@ -93,7 +108,9 @@ export default class NewsStore {
     try {
       sampleNewsData.forEach(this.setNews);
       runInAction(() => {
-        this.newsPageParams.totalPages = Math.ceil(this.newsRegistry.size / this.newsPageParams.pageSize);
+        this.newsPageParams.totalPages = Math.ceil(
+          this.newsRegistry.size / this.newsPageParams.pageSize,
+        );
         this.newsPageParams.totalElement = this.newsRegistry.size;
         this.loadNewsArray();
       });
@@ -110,44 +127,44 @@ export default class NewsStore {
 
   //#region common function
 
-  setSearchTerm(term: string) {
-    runInAction(() => {
-      console.log('check term:',term);
-      this.newsPageParams.searchTerm = term;
-      this.loadNewsArray();
-    });
-  }
-
-  setCurrentPage = (page: number) => {
-    runInAction(() => {
-      this.newsPageParams.pageIndex = page;
-      this.loadNewsArray();
-    });
+  setLoadingInitial = (isLoad: boolean) => {
+    this.loadingInitial = isLoad;
   };
 
-  setPageSize = (size: number) => {
-    runInAction(() => {
-      this.newsPageParams.pageSize = size;
-      this.newsPageParams.pageIndex = 1; 
-      this.loadNewsArray();
+  setSearchTerm = async (term: string) => {
+    await runInAction(async () => {
+      this.loadingInitial = true;
+      if (this.newsPageParams.totalElement === this.newsRegistry.size && this.isOrigin) {
+        console.log('checking');
+        this.newsPageParams.searchTerm = term;
+        this.loadNewsArray();
+        return;
+      }
+      this.newsRegistry.clear();
+      this.newsPageParams.clearLazyPage();
+      this.newsPageParams.searchTerm = term;
+      await this.loadNews();
+      this.loadingInitial = false;
     });
-  };  
+    console.groupEnd();
+  };
 
   loadNewsArray = async () => {
-    const { pageSize, pageIndex, searchTerm, totalElement } = this.newsPageParams;
-    const startIndex = (pageIndex - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    console.log('total element:', totalElement);
-    if (pageSize * pageIndex > this.newsRegistry.size && this.newsRegistry.size < totalElement!) {
-      await this.loadNews();
-    }
-    this.newsArray = Array.from(this.newsRegistry.values())
-      .filter((news) => _.includes(news.title.toLocaleLowerCase(), searchTerm?.toLocaleLowerCase() ?? ''))
-      .slice(startIndex, endIndex);
+    runInAction(() => {
+      const { searchTerm } = this.newsPageParams;
+      if (this.newsRegistry.size === this.newsPageParams.totalElement && searchTerm) {
+        this.newsArray = Array.from(this.newsRegistry.values()).filter(
+          (b) => _.includes(b.title, searchTerm) || _.includes(b.tags, searchTerm),
+        );
+        return;
+      }
+      this.newsArray = Array.from(this.newsRegistry.values());
+    });
   };
 
   //#region private function
   private setNews = (news: News) => {
+    news.createdAt = customFormatDate(new Date(news.createdAt));
     this.newsRegistry.set(news.id, news);
   };
   //#endregion

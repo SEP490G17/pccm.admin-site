@@ -77,7 +77,7 @@ const Sidebar = () => {
   const { authStore, commonStore } = useStore();
 
   return (
-    <Flex direction="column" transition="all 0.3s ease" h="100vh" 
+    <Flex direction="column" h="100vh" 
     width={commonStore.isCollapsed? '8rem':'18rem'} > 
       <Flex flexDirection={'column'}>
         <Flex

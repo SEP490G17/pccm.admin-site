@@ -8,7 +8,7 @@ export const sampleBannerData = [
     startDate: '2024-10-10T20:00:00',
     endDate: '2024-10-11T20:00:00',
     status: 'Hiển thị',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 2,
@@ -19,7 +19,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 3,
@@ -30,7 +30,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 4,
@@ -41,7 +41,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 5,
@@ -52,7 +52,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 6,
@@ -63,7 +63,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 7,
@@ -74,7 +74,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 8,
@@ -85,7 +85,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 9,
@@ -96,7 +96,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 10,
@@ -107,7 +107,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 11,
@@ -118,7 +118,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 12,
@@ -129,7 +129,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 13,
@@ -140,7 +140,7 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
   {
     id: 14,
@@ -151,6 +151,6 @@ export const sampleBannerData = [
     startDate: '2024-10-11T08:00:00',
     endDate: '2024-10-12T08:00:00',
     status: 'Ẩn',
-    link: 'https://example.com',
+    linkUrl: 'https://example.com',
   },
 ];

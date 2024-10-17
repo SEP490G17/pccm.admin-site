@@ -22,8 +22,7 @@ const App = () => {
         color="blackAlpha.700"
         fontWeight="bold"
         minHeight="100vh"
-        transition="all 0.3s ease"
-
+        transition="width 0.3s ease"
       >
         <GridItem
           bg="white"
@@ -31,7 +30,7 @@ const App = () => {
           marginLeft={commonStore.isCollapsed ? '8rem' : '18rem'}
           width={commonStore.isCollapsed ? 'calc(100vw - 8rem)' : 'calc(100vw - 18rem)'}
           height={'6.25rem'}
-          position={'fixed'} 
+          position={'fixed'}
           zIndex={999}
         >
           <Header />
@@ -42,13 +41,12 @@ const App = () => {
           area={'nav'}
           h="100vh"
           width={commonStore.isCollapsed ? '8rem' : '18rem'}
-          transition="all 0.3s ease"
           position={'fixed'}
           zIndex={999}
-        >
+          >
           <Sidebar />
         </GridItem>
-        <GridItem area={'main'} bg={'#F5F6F7'}>
+        <GridItem area={'main'} bg={'#F5F6F7'} paddingBottom={'5rem'}>
           <Outlet />
         </GridItem>
       </Grid>
