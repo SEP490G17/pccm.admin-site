@@ -184,7 +184,7 @@ const UserManagerPage = observer(() => {
 
     return (
         <Flex direction="column" p={8} bg="#F4F4F4">
-            <PageHeadingAtoms title={'Danh sách người dùng'} />
+            <PageHeadingAtoms breadCrumb={[{title:'Danh sách người dùng',to:'#'}]} />
             <Flex width="100%" flexDirection="column" gap="1.5rem" mb="1.5rem">
                 <Flex justifyContent="space-between" alignItems="center" gap="30px">
 
@@ -249,7 +249,7 @@ const UserManagerPage = observer(() => {
                     </Thead>
                     <Tbody>
                         {loading ? (
-                            <SkeletonTableAtoms numOfColumn={7} pageSize={userPageParams.pageSize} />
+                            <SkeletonTableAtoms numOfColumn={9} pageSize={userPageParams.pageSize} />
                         ) : (
                             userArray.map((user, index) => (
                                 <Tr key={user.id}>

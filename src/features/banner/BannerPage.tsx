@@ -82,7 +82,7 @@ const BannerPage = observer(() => {
       {bannerPageParams.totalElement > bannerRegistry.size && (
         <Flex justifyContent="end" alignItems="center" mb="1rem">
           <Button
-            colorScheme="primary"
+            colorScheme="gray"
             isLoading={loading}
             onClick={() => {
               bannerPageParams.skip = bannerRegistry.size;

@@ -1,173 +1,58 @@
-import React, { useEffect } from 'react';
-import {
-  Button,
-  Flex,
-  Input,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Image,
-  Box,
-  IconButton,
-  Select,
-  TableContainer,
-} from '@chakra-ui/react';
+import { useCallback, useEffect, useState } from 'react';
+import { Flex, Box, Select, Button } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
-import {
-  FaEdit,
-  FaTrash,
-  FaSearch,
-  FaAngleDoubleLeft,
-  FaAngleLeft,
-  FaAngleRight,
-  FaAngleDoubleRight,
-} from 'react-icons/fa';
 import './style.scss';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
-import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
 import CreateProductPage from './CreateProductPage';
+import { debounce } from 'lodash';
+import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
+import ProductTableComponent from './components/ProductTableComponent';
 
 const ProductPage = observer(() => {
   const { productStore } = useStore();
-  const {
-    mockLoadProducts,
-    productArray,
-    setCurrentPage: setPage,
-    productPageParams,
-    setPageSize,
-    loading,
-  } = productStore;
+  const { loadProducts, setLoadingInitial, productPageParams, productRegistry, setSearchTerm, loading } =
+    productStore;
+
+  const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
-    mockLoadProducts();
-  }, [mockLoadProducts]);
+    setLoadingInitial(true);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    productStore.setSearchTerm(e.target.value);
-  };
+    loadProducts().finally(() => setLoadingInitial(false));
+  }, []);
 
-  const handlePageChange = (page: number) => {
-    setPage(page);
-  };
+  const handleScroll = useCallback(() => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
 
-  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSize = parseInt(e.target.value);
-    setPageSize(newSize);
-    mockLoadProducts();
-  };
-
-  const renderPaginationButtons = () => {
-    const { pageIndex, totalPages } = productPageParams;
-    const buttons = [];
-
-    if (!totalPages || totalPages === 0) {
-      return null;
+    // Kiểm tra nếu cuộn gần đến cuối (có thể điều chỉnh giá trị 100 theo nhu cầu)
+    if (scrollPosition >= documentHeight - 50) {
+      productPageParams.skip = productRegistry.size;
+      if (productPageParams.totalElement > productRegistry.size) {
+        loadProducts();
+      }
     }
-
-    buttons.push(
-      <IconButton
-        key="first"
-        aria-label="First Page"
-        icon={<FaAngleDoubleLeft />}
-        onClick={() => handlePageChange(1)}
-        isDisabled={pageIndex === 1}
-        mr={2}
-      />,
-    );
-
-    buttons.push(
-      <IconButton
-        key="previous"
-        aria-label="Previous Page"
-        icon={<FaAngleLeft />}
-        onClick={() => handlePageChange(pageIndex - 1)}
-        isDisabled={pageIndex === 1}
-        mr={2}
-      />,
-    );
-
-    if (totalPages <= 3) {
-      for (let i = 1; i <= totalPages; i++) {
-        buttons.push(
-          <Button
-            key={i}
-            onClick={() => handlePageChange(i)}
-            className={`pagination-button ${pageIndex === i ? 'active' : ''}`}
-          >
-            {i}
-          </Button>,
-        );
-      }
-    } else {
-      buttons.push(
-        <Button
-          key={1}
-          onClick={() => handlePageChange(1)}
-          className={`pagination-button ${pageIndex === 1 ? 'active' : ''}`}
-        >
-          1
-        </Button>,
-      );
-
-      if (pageIndex > 2) {
-        buttons.push(<span key="ellipsis1">...</span>);
-      }
-
-      if (pageIndex > 1 && pageIndex < totalPages) {
-        buttons.push(
-          <Button
-            key={pageIndex}
-            onClick={() => handlePageChange(pageIndex)}
-            className="pagination-button active"
-          >
-            {pageIndex}
-          </Button>,
-        );
-      }
-
-      if (pageIndex < totalPages - 1) {
-        buttons.push(<span key="ellipsis2">...</span>);
-      }
-
-      buttons.push(
-        <Button
-          key={totalPages}
-          onClick={() => handlePageChange(totalPages)}
-          className={`pagination-button ${pageIndex === totalPages ? 'active' : ''}`}
-        >
-          {totalPages}
-        </Button>,
-      );
-    }
-
-    buttons.push(
-      <IconButton
-        key="next"
-        aria-label="Next Page"
-        icon={<FaAngleRight />}
-        onClick={() => handlePageChange(pageIndex + 1)}
-        isDisabled={pageIndex === totalPages}
-        ml={2}
-      />,
-    );
-
-    buttons.push(
-      <IconButton
-        key="last"
-        aria-label="Last Page"
-        icon={<FaAngleDoubleRight />}
-        onClick={() => handlePageChange(totalPages)}
-        isDisabled={pageIndex === totalPages}
-        ml={2}
-      />,
-    );
-
-    return buttons;
+  }, []);
+  const handleSearch = useCallback(
+    debounce(async (e) => {
+      setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
+      await setSearchTerm(e.target.value);
+    }, 500), // Debounce với thời gian 1 giây
+    [],
+  );
+  const onSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
+    await handleSearch(e); // Gọi hàm debounce
   };
+  // Gắn sự kiện cuộn
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [handleScroll]);
 
   return (
     <Flex direction="column" p={8} bg="#F4F4F4">
@@ -182,154 +67,41 @@ const ProductPage = observer(() => {
             bg="#FFF"
             color="#03301F"
           >
-            <option value="all">Tất cả</option>
+            <option value="">Cụm sân</option>
           </Select>
-
+          <Select
+            width="149px"
+            height="35px"
+            borderRadius="4px"
+            border="1px solid #ADADAD"
+            bg="#FFF"
+            color="#03301F"
+          >
+            <option value="">Thể loại</option>
+            
+          </Select>
           <CreateProductPage />
         </Flex>
 
         <Box textAlign="right">
-          <Box color="#00423D" fontFamily="Roboto" fontSize="12px" mb="0.5rem">
-            Tìm kiếm nâng cao
-          </Box>
-
-          <Flex
-            padding="3px 10px"
-            alignItems="center"
-            gap="16px"
-            borderRadius="4px"
-            border="0.5px solid #ADADAD"
-            background="#FFF"
-          >
-            <Input
-              placeholder="Nhập từ khóa tìm kiếm"
-              onChange={handleSearch}
-              border="none"
-              height="30px"
-              outline="none"
-            />
-            <Button>
-              <FaSearch />
-            </Button>
-          </Flex>
+          <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
         </Box>
       </Flex>
-
-      <TableContainer
-        bg={'white'}
-        borderRadius={'8px'}
-        padding={0}
-        border={'1px solid #000'}
-        mb="1.5rem"
-      >
-        <Table variant="simple" cellPadding={'1rem'} padding={0}>
-          <Thead backgroundColor={'#03301F'}>
-            <Tr>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                STT
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Ảnh sản phẩm
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Tên sản phẩm
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Danh mục
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Số lượng trong kho
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Giá
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Mô tả
-              </Th>
-              <Th color={'white'}>Tùy chọn</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {loading ? (
-              <SkeletonTableAtoms numOfColumn={7} pageSize={productPageParams.pageSize} />
-            ) : (
-              productArray.map((product, index) => (
-                <Tr key={product.id}>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {(productPageParams.pageIndex - 1) * productPageParams.pageSize + index + 1}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    <Image
-                      src={product.imageUrl}
-                      alt={product.name}
-                      width="120px"
-                      objectFit="cover"
-                      borderRadius="8px"
-                    />
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {product.name}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {product.category}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {product.stockQuantity}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {product.description}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'}>
-                    <IconButton
-                      icon={<FaEdit />}
-                      aria-label="Edit"
-                      colorScheme="teal"
-                      size="sm"
-                      mr={2}
-                    />
-                    <IconButton
-                      icon={<FaTrash />}
-                      aria-label="Delete"
-                      colorScheme="red"
-                      size="sm"
-                    />
-                  </Td>
-                </Tr>
-              ))
-            )}
-          </Tbody>
-        </Table>
-      </TableContainer>
-
-      {productArray.length === 0 && !loading && (
-        <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
-          Danh sách rỗng
-        </Box>
+      <ProductTableComponent />
+      {productPageParams.totalElement > productRegistry.size && (
+        <Flex justifyContent="end" alignItems="center" mb="1rem">
+          <Button
+            colorScheme="gray"
+            isLoading={loading}
+            onClick={() => {
+              productPageParams.skip = productRegistry.size;
+              loadProducts();
+            }}
+          >
+            Xem thêm
+          </Button>
+        </Flex>
       )}
-      <Flex justifyContent="space-between" alignItems="center" mb="1rem">
-        <Box display="flex" alignItems="center">
-          Hiển thị
-          <Select
-            width="70px"
-            height="35px"
-            value={productPageParams.pageSize}
-            onChange={handlePageSizeChange}
-            marginLeft="10px"
-            marginRight="10px"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-          </Select>
-          tài liệu
-        </Box>
-
-        {/* Phần phân trang */}
-        <Flex justifyContent={'flex-end'}>{renderPaginationButtons()}</Flex>
-      </Flex>
     </Flex>
   );
 });

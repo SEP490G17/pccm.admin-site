@@ -11,6 +11,8 @@ export default class CourtStore {
   loading: boolean = false;
   courtPageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
+  isOrigin: boolean = true;
+  loadingInitial: boolean = false;
 
   constructor() {
     this.courtPageParams.pageIndex = 1;
