@@ -23,31 +23,30 @@ const ServiceTableComponent = () => {
   return (
     <>
       <TableContainer
-        bg={'white'}
-        borderRadius={'8px'}
-        padding={0}
-        border={'1px solid #000'}
-        mb="1.5rem"
+       bg={'white'}
+       borderRadius={'md'}
+       padding={0}
+       mb="1.5rem"
       >
-        <Table variant="simple" cellPadding={'1rem'} padding={0}>
-          <Thead backgroundColor={'#03301F'}>
+        <Table className='app-table' variant="simple" padding={0}>
+          <Thead>
             <Tr>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+              <Th w={'5rem'} py={'1rem'}>
                 STT
               </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+              <Th w={'15rem'}>
                 Tên dịch vụ
               </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+              <Th w={'15rem'}>
                 Mô tả
               </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+              <Th w={'10rem'}>
                 Giá
               </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Lĩnh vực
+              <Th w={'10rem'}>
+                Khu vực
               </Th>
-              <Th color={'white'}>Tùy chọn</Th>
+              <Th w={'10'}>Tùy chọn</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -57,22 +56,22 @@ const ServiceTableComponent = () => {
             {!loadingInitial &&
               serviceArray.map((service, index) => (
                 <Tr key={service.id}>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                  <Td>
                     {index + 1}
                   </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                  <Td >
                     {service.serviceName}
                   </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                  <Td >
                     {service.description}
                   </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                  <Td >
                     {service.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                   </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                  <Td >
                     {service.courtClusterName}
                   </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'}>
+                  <Td>
                     <IconButton
                       icon={<FaEdit />}
                       aria-label="Edit"

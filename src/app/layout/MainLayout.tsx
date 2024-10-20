@@ -1,55 +1,91 @@
 import { ToastContainer } from 'react-toastify';
 import { Outlet } from 'react-router-dom';
-import { Grid, GridItem } from '@chakra-ui/react';
+import { Box, Button, Center, Flex, Spacer, Text } from '@chakra-ui/react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import { useStore } from '../stores/store';
 import { observer } from 'mobx-react-lite';
+import { AiOutlineLogout } from 'react-icons/ai';
 
 const App = () => {
-  const { commonStore } = useStore();
+  const { authStore, commonStore } = useStore();
 
   return (
     <>
       <ToastContainer position="top-right" hideProgressBar theme="colored" />
-
-      <Grid
-        templateAreas={`"nav header"
-                         "nav main"`}
-        gridTemplateRows={'6.25rem 1fr'}
-        gridTemplateColumns={commonStore.isCollapsed ? '8rem 1fr' : '18rem 1fr'}
-        h="200px"
+      <Box
+        minH={'100vh'}
         color="blackAlpha.700"
+        p={0}
+        m={0}
         fontWeight="bold"
-        minHeight="100vh"
-        transition="width 0.3s ease"
+        className="main-layout"
       >
-        <GridItem
-          bg="white"
-          area={'header'}
-          marginLeft={commonStore.isCollapsed ? '8rem' : '18rem'}
-          width={commonStore.isCollapsed ? 'calc(100vw - 8rem)' : 'calc(100vw - 18rem)'}
-          height={'6.25rem'}
+        <Flex
+          as={'header'}
+          justifyContent={'space-between'}
+          className={`${commonStore.isCollapsed && 'collapsed'}`}
+          alignItems={'center'}
+          pr={'5.375rem'}
+          pl={'1rem'}
           position={'fixed'}
-          zIndex={999}
+          top={0}
+          zIndex={20}
+          minWidth={'960px'}
         >
           <Header />
-        </GridItem>
-        <GridItem
-          bg="linear-gradient(180deg, #FFF 74.26%, #43E5A0 172.04%)"
+        </Flex>
+
+        <Flex
+          className={`sidebar ${commonStore.isCollapsed && 'collapsed'}`}
+          as="nav"
+          position="fixed"
+          top={0}
+          left={0}
+          bottom={0}
+          m={0}
+          p={0}
+          direction="column"
+          bg="#FFF"
           boxShadow={'0px 4px 4px 0px rgba(0, 0, 0, 0.25)'}
-          area={'nav'}
           h="100vh"
-          width={commonStore.isCollapsed ? '8rem' : '18rem'}
-          position={'fixed'}
           zIndex={999}
-          >
+        >
           <Sidebar />
-        </GridItem>
-        <GridItem area={'main'} bg={'#F5F6F7'} paddingBottom={'5rem'}>
+          <Spacer />
+          <Center mb={'3.25rem'}>
+            <Button
+              colorScheme="gray"
+              gap={2}
+              fontSize={'1.25rem'}
+              boxSizing="border-box"
+              fontWeight={500}
+              size={'lg'}
+              width={'80%'}
+              fontStyle={'normal'}
+              onClick={() => {
+                authStore.logout();
+              }}
+              alignItems={'center'}
+              p={0}
+            >
+              <AiOutlineLogout />
+              <Text
+                whiteSpace="nowrap"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                opacity={commonStore.isCollapsed ? 0 : 1}
+                fontSize={commonStore.isCollapsed ?'0':'1.25rem'}
+              >
+                Log Out
+              </Text>
+            </Button>
+          </Center>
+        </Flex>
+        <Box as="main" className={`${commonStore.isCollapsed && 'collapsed'}`} minWidth={'960px'} overflowX={'scroll'}>
           <Outlet />
-        </GridItem>
-      </Grid>
+        </Box>
+      </Box>
     </>
   );
 };

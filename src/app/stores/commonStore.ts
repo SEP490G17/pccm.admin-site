@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction } from 'mobx';
+import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { ServeError } from '../models/serverError.model';
 
 export default class CommonStore {
@@ -6,6 +6,8 @@ export default class CommonStore {
   token: string | null = localStorage.getItem('jwt');
   appLoaded = false;
   isCollapsed = false;
+  selectedMenuItem: number = 1;
+
   constructor() {
     makeAutoObservable(this);
     reaction(
@@ -36,6 +38,9 @@ export default class CommonStore {
   };
 
   toggleSidebar = () => {
-    this.isCollapsed =!this.isCollapsed;
+    this.isCollapsed = !this.isCollapsed;
   };
+
+  setSelectedMenuItem = (key: number) => runInAction(() => (this.selectedMenuItem = key));
+  setCollapsed = () => {runInAction(() => this.isCollapsed = !this.isCollapsed)}
 }

@@ -11,26 +11,8 @@ interface IProp {
 function PageHeadingAtoms({ breadCrumb }: IProp) {
   const location = useLocation();
   return (
-    <>
-      {/* <Heading
-        as="h2"
-        size="md"
-        mb="16px"
-        sx={{
-          display: 'inline-flex',
-          padding: '0.625rem 0px',
-          alignItems: 'center',
-          gap: '0.625rem',
-          color: ' #0A3351',
-          fontFamily: 'Roboto',
-          fontSize: '2rem',
-          fontWeight: '700',
-          lineHeight: 'normal',
-        }}
-      >
-        {title}
-      </Heading> */}
-      <Breadcrumb separator={<Image src={arrowRight} />} fontSize={'2rem'} pb={2}>
+    <Box>
+      <Breadcrumb separator={<Image src={arrowRight} />} fontSize={'2rem'} pb={1} pt={1}>
         {breadCrumb.map(({ title, to }, index) => (
           <BreadcrumbItem key={index}>
             <BreadcrumbLink
@@ -46,19 +28,16 @@ function PageHeadingAtoms({ breadCrumb }: IProp) {
           </BreadcrumbItem>
         ))}
       </Breadcrumb>
-      <Box position="relative">
-        <Divider orientation="horizontal" marginBottom={'2rem'} />
-        <Box position={'absolute'} left={0} bottom={0}>
-          <Divider
-            orientation="horizontal"
-            marginBottom={'2rem'}
-            background={'linear-gradient(90deg, #00423D 0%, #0A3351 100%)'}
-            width={'9.3rem'}
-            height={1}
-          />
-        </Box>
+      <Box>
+        <Divider
+          orientation="horizontal"
+          marginBottom={'2rem'}
+          background={'linear-gradient(90deg, #00423D 0%, #0A3351 100%)'}
+          width={'9.3rem'}
+          height={1}
+        />
       </Box>
-    </>
+    </Box>
   );
 }
 

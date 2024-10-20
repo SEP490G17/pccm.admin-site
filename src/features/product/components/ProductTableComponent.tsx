@@ -25,39 +25,24 @@ const ProductTableComponent = () => {
     <>
       <TableContainer
         bg={'white'}
-        borderRadius={'8px'}
+        borderRadius={'md'}
         padding={0}
-        border={'1px solid #000'}
         mb="1.5rem"
       >
-        <Table variant="simple" cellPadding={'1rem'} padding={0}>
-          <Thead backgroundColor={'#03301F'}>
+        <Table className='app-table' variant="simple" padding={0}>
+          <Thead>
             <Tr>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                STT
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Ảnh sản phẩm
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Tên sản phẩm
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Thể loại
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Cụm sân
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Số lượng
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Giá cả
-              </Th>
-              {/* <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+              <Th w={'5rem'} py={'1rem'}>STT</Th>
+              <Th w={'15rem'}>Ảnh sản phẩm</Th>
+              <Th w={'20rem'}>Tên sản phẩm</Th>
+              <Th w={'15rem'}>Thể loại</Th>
+              <Th w={'15rem'}>Cụm sân</Th>
+              <Th w={'12rem'}>Số lượng</Th>
+              <Th w={'10rem'}>Giá cả</Th>
+              {/* <Th >
                 Mô tả
               </Th> */}
-              <Th color={'white'}>Tùy chọn</Th>
+              <Th w={'8rem'}>Tùy chọn</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -68,35 +53,25 @@ const ProductTableComponent = () => {
             {!loadingInitial &&
               productArray.map((product, index) => (
                 <Tr key={product.id}>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {index + 1}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                  <Td>{index + 1}</Td>
+                  <Td>
                     <Image
                       src={product.thumbnailUrl}
                       alt={product.productName}
-                      width="120px"
+                      width="10rem"
                       objectFit="cover"
                       borderRadius="8px"
                     />
                   </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {product.productName}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {product.categoryName}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {product.courtClusterName}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {product.quantity}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                  <Td>{product.productName}</Td>
+                  <Td>{product.categoryName}</Td>
+                  <Td>{product.courtClusterName}</Td>
+                  <Td>{product.quantity}</Td>
+                  <Td>
                     {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                   </Td>
 
-                  <Td borderBottom={'0.923px solid #BDBDBD'}>
+                  <Td>
                     <Center>
                       <IconButton
                         icon={<FaEdit />}

@@ -1,15 +1,15 @@
-@import url("https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Glitch&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "./variables.scss";
+@import './variables.scss';
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Baloo 2";
+  font-family: 'Baloo 2';
 }
 
 @media (min-width: 1200px) {
@@ -18,17 +18,159 @@
   }
 }
 
+#root {
+  background-color: $mainBackgroundColor !important;
+}
 .font-rubik {
-  font-family: "Rubik Glitch" !important;
+  font-family: 'Rubik Glitch' !important;
   color: $primaryFontColor800;
 }
 .link-active {
-  border-left: 0.1875rem solid #00423d;
-  // padding-left: 4.8125rem !important;
   opacity: 0.8 !important;
-  background: #dafeef !important;
-  color: black !important; 
-  .link-text{
-    color: #00423D !important;
+  background: $primaryColor200 !important;
+  color: black !important;
+  .link-text {
+    color: #126945 !important;
+  }
+}
+.main-layout * {
+  transition:
+    width 0.3s ease,
+    left 0.3s ease,
+    margin-left 0.3s ease,
+    opacity 0.3s ease;
+}
+.main-layout {
+  background-color: $mainBackgroundColor !important;
+  header {
+    height: $headerHeight !important;
+    width: calc(100% - $sidebarWidth) !important;
+    left: $sidebarWidth !important;
+    background-color: #fff !important;
+  }
+  header.collapsed {
+    width: calc(100% - $sidebarCollapse) !important;
+    left: $sidebarCollapse !important;
+  }
+  .sidebar {
+    width: $sidebarWidth !important;
+    .sidebar-logo {
+      height: $headerHeight !important;
+    }
+  }
+  .sidebar.collapsed {
+    width: $sidebarCollapse !important;
+  }
+  main {
+    margin-left: $sidebarWidth;
+    margin-top: $headerHeight;
+  }
+  main.collapsed {
+    margin-left: $sidebarCollapse;
+  }
+}
+.app-table {
+  thead{
+    background-color: $primaryColor900 !important;
+    th {
+      color: white !important;
+    }
+  }
+
+  td {
+    white-space: normal !important;
+    word-break: break-all !important;
+  }
+}
+
+b {
+  font-weight: bold !important;
+}
+
+.bg-primary-100 {
+  background-color: $primaryColor100 !important;
+}
+
+.bg-primary-200 {
+  background-color: $primaryColor200 !important;
+}
+
+.bg-primary-300 {
+  background-color: $primaryColor300 !important;
+}
+
+.bg-primary-400 {
+  background-color: $primaryColor400 !important;
+}
+
+.bg-primary-500 {
+  background-color: $primaryColor500 !important;
+}
+
+.bg-primary-600 {
+  background-color: $primaryColor600 !important;
+}
+
+.bg-primary-700 {
+  background-color: $primaryColor700 !important;
+}
+
+.bg-primary-800 {
+  background-color: $primaryColor800 !important;
+}
+
+.bg-primary-900 {
+  background-color: $primaryColor900 !important;
+}
+
+.color-primary-100 {
+  color: $primaryColor100 !important;
+}
+
+.color-primary-200 {
+  color: $primaryColor200 !important;
+}
+
+.color-primary-300 {
+  color: $primaryColor300 !important;
+}
+
+.color-primary-400 {
+  color: $primaryColor400 !important;
+}
+
+.color-primary-500 {
+  color: $primaryColor500 !important;
+}
+
+.color-primary-600 {
+  color: $primaryColor600 !important;
+}
+
+.color-primary-700 {
+  color: $primaryColor700 !important;
+}
+
+.color-primary-800 {
+  color: $primaryColor800 !important;
+}
+
+.color-primary-900 {
+  color: $primaryColor900 !important;
+}
+
+
+// button
+
+button.primary.outlined{
+  border: 0.5px solid $default-border-color !important;
+  background-color: $default-background-color !important;
+  color: black !important;
+  // box-shadow: $button-primary-shadow;
+  &:hover{
+    background-color: $default-background-color !important;
+    color: $primaryColor700 !important;
+    border-color: $primaryColor600 !important;
+
   }
 }

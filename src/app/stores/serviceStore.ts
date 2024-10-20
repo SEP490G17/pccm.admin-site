@@ -18,7 +18,6 @@ export default class ServiceStore {
 
   constructor() {
     console.log('Service store initialized');
-    this.servicePageParams.pageSize = 4;
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanServiceCache, 30000);
   }

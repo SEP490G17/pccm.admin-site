@@ -16,7 +16,6 @@ export default class BannerStore {
   isOrigin: boolean = true;
   constructor() {
     console.log('banner store initialized');
-    this.bannerPageParams.pageSize = 4;
     makeAutoObservable(this);
   }
 
