@@ -70,7 +70,7 @@ export default class NewsStore {
   detailNews = async (newsId: number) => {
     this.loading = true;
     try {
-      const data = await agent.News.details(newsId);
+      const data = await agent.NewsAgent.details(newsId);
       runInAction(() => {
         this.selectedNews = data;
         this.loading = false;
