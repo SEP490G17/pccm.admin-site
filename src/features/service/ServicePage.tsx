@@ -9,6 +9,7 @@ import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import ServiceTableComponent from './components/ServiceTableComponent';
 import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
 import { debounce } from 'lodash';
+import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
 
 const ServicePage = () => {
   const { serviceStore } = useStore();
@@ -61,10 +62,10 @@ const ServicePage = () => {
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
           <Select
-            width="149px"
-            height="35px"
+            width="9rem"
+            height="2.1rem"
             borderRadius="4px"
-            border="1px solid #ADADAD"
+            borderColor={'teal'}
             bg="#FFF"
             color="#03301F"
           >
@@ -74,12 +75,11 @@ const ServicePage = () => {
           <Button
             colorScheme="teal"
             size="md"
+            variant={'outline'}
             leftIcon={<FaEdit />}
-            width="149px"
-            height="35px"
+            width="9rem"
+            height="2.1rem"
             background="#FFF"
-            color="black"
-            border="1px solid #ADADAD"
             onClick={() => router.navigate('/dich-vu/tao')}
           >
             Thêm mới
@@ -91,20 +91,14 @@ const ServicePage = () => {
         </Box>
       </Flex>
       <ServiceTableComponent />
-      {servicePageParams.totalElement > serviceRegistry.size && (
-        <Flex justifyContent="end" alignItems="center" mb="1rem">
-          <Button
-            colorScheme="gray"
-            isLoading={loading}
-            onClick={() => {
-              servicePageParams.skip = serviceRegistry.size;
-              loadServices();
-            }}
-          >
-            Xem thêm
-          </Button>
-        </Flex>
-      )}
+      <LoadMoreButtonAtoms
+        handleOnClick={() => {
+          servicePageParams.skip = serviceRegistry.size;
+          loadServices();
+        }}
+        hidden={serviceRegistry.size > servicePageParams.totalElement}
+        loading={loading}
+      />
     </Flex>
   );
 };

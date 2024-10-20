@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Flex, Box, Select, Button } from '@chakra-ui/react';
+import { Flex, Box, Select } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -8,6 +8,7 @@ import CreateNewsPage from './CreateNewsPage';
 import NewsTableComponent from './components/NewsTableComponent';
 import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
 import { debounce } from 'lodash';
+import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
 
 const NewsPage = () => {
   const { newsStore } = useStore();
@@ -76,20 +77,14 @@ const NewsPage = () => {
         </Box>
       </Flex>
       <NewsTableComponent />
-      {newsPageParams.totalElement > newsRegistry.size && (
-        <Flex justifyContent="end" alignItems="center" mb="1rem">
-          <Button
-            colorScheme="gray"
-            isLoading={loading}
-            onClick={() => {
-              newsPageParams.skip = newsRegistry.size;
-              loadNews();
-            }}
-          >
-            Xem thêm
-          </Button>
-        </Flex>
-      )}
+      <LoadMoreButtonAtoms
+        handleOnClick={() => {
+          newsPageParams.skip = newsRegistry.size;
+          loadNews();
+        }}
+        hidden={newsRegistry.size >= newsPageParams.totalElement}
+        loading={loading}
+      />
       {/* <Flex justifyContent="space-between" alignItems="center" mb="1rem">
         <Box display="flex" alignItems="center">
           Hiển thị

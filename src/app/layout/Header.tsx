@@ -9,14 +9,7 @@ const Header = () => {
   const { commonStore } = useStore();
 
   return (
-    <Flex
-      width={'100%'}
-      height={'100%'}
-      justifyContent={'space-between'}
-      alignItems={'center'}
-      pr={'5.375rem'}
-      pl={'1rem'}
-    >
+    <>
       <Button
         p={0}
         _hover={{ backgroundColor: 'transparent' }}
@@ -24,9 +17,9 @@ const Header = () => {
         bgColor={'transparent'}
       >
         {commonStore.isCollapsed ? (
-          <AiOutlineMenuUnfold fontSize={'2rem'} color="#63748A" />
+          <AiOutlineMenuUnfold fontSize={'1.5rem'} />
         ) : (
-          <AiOutlineMenuFold fontSize={'2rem'} color="#63748A" />
+          <AiOutlineMenuFold fontSize={'1.5rem'} />
         )}
       </Button>
       <Flex flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} gap={6}>
@@ -42,15 +35,15 @@ const Header = () => {
           <Image src={notificationIcon} width={'1.5rem'} height={'1.5rem'} />
         </Flex>
         <Center>
-          <Divider orientation="vertical" height={'3rem'} borderWidth={'0.15rem'} />
+          <Divider orientation="vertical" height={'2rem'} borderWidth={'0.15rem'} />
         </Center>
         <Flex flexDirection={'row'} justifyContent={'center'} alignItems={'center'} gap={3}>
-          <Avatar src={defaultUserIcon} width={'3.25rem'} height={'3.25rem'} />
+          <Avatar src={defaultUserIcon} size={'md'} />
           <Flex flexDirection={'column'}>
-            <Text color={'#333'} fontSize={'1.05rem'} fontWeight={500}>
+            <Text color={'#333'} fontSize={'1rem'} fontWeight={500}>
               Nguyen Trung Kien
             </Text>
-            <Text color={'#777'} fontSize={'1.05rem'} fontWeight={400}>
+            <Text color={'#777'} fontSize={'1rem'} fontWeight={400}>
               0865859202
             </Text>
           </Flex>
@@ -59,7 +52,7 @@ const Header = () => {
           </button>
         </Flex>
       </Flex>
-    </Flex>
+    </>
   );
 };
 

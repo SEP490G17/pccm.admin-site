@@ -25,32 +25,20 @@ const BannerTableComponent = () => {
   const { loading, loadingInitial, bannerArray, bannerPageParams } = bannerStore;
   return (
     <>
-      <TableContainer bg={'white'} borderRadius={'8px'} border={'1px solid #000'} mb="1.5rem">
-        <Table variant="simple" cellPadding={'1rem'}>
-          <Thead backgroundColor={'#03301F'}>
+      <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
+        <Table className='app-table' variant="simple" cellPadding={'1rem'} padding={0}>
+          <Thead>
             <Tr>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+              <Th w={'5rem'} py={'1rem'}>
                 STT
               </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Ảnh
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Tên banner
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Mô tả
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Khoảng ngày
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Link
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Trạng thái
-              </Th>
-              <Th color={'white'}>Tùy chọn</Th>
+              <Th w={'10rem'}>Ảnh</Th>
+              <Th w={'10rem'}>Tên banner</Th>
+              <Th w={'10rem'}>Mô tả</Th>
+              <Th w={'15rem'}>Khoảng ngày</Th>
+              <Th w={'10rem'}>Link</Th>
+              <Th w={'8rem'}>Trạng thái</Th>
+              <Th w={'10rem'}>Tùy chọn</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -60,32 +48,29 @@ const BannerTableComponent = () => {
             {!loadingInitial &&
               bannerArray.map((banner, index) => (
                 <Tr key={banner.id}>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {index + 1}
+                  <Td>{index + 1}</Td>
+                  <Td>
+                    <Image
+                      src={banner.imageUrl}
+                      alt={banner.title}
+                      width="10rem"
+                      borderRadius={'8px'}
+                    />
                   </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    <Image src={banner.imageUrl} alt={banner.title} width="120px" />
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {banner.title}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {banner.description}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                  <Td>{banner.title}</Td>
+                  <Td>{banner.description}</Td>
+                  <Td>
                     Từ ngày: {banner.startDate}
                     <br />
                     Đến ngày: {banner.endDate}
                   </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {banner.linkUrl}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                  <Td>{banner.linkUrl}</Td>
+                  <Td>
                     <Center>
                       <Switch isChecked={getBannerStatus(banner.status)} />
                     </Center>
                   </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'}>
+                  <Td>
                     <Center>
                       <IconButton
                         key={`edit-banner${banner.id}`}

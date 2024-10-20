@@ -28,33 +28,20 @@ const NewsTableComponent = () => {
     <>
       <TableContainer
         bg={'white'}
-        borderRadius={'8px'}
+        borderRadius={'md'}
         padding={0}
-        border={'1px solid #000'}
         mb="1.5rem"
       >
-        <Table variant="simple" cellPadding={'1rem'} padding={0}>
-          <Thead backgroundColor={'#03301F'}>
+        <Table className='app-table' variant="simple" cellPadding={'1rem'} padding={0}>
+          <Thead>
             <Tr>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                STT
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Ảnh đại diện
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Tiêu đề bài viết
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Danh mục
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Trạng thái
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Ngày đăng bài
-              </Th>
-              <Th color={'white'}>Tùy chọn</Th>
+              <Th w={'5rem'} py={'1rem'} >STT</Th>
+              <Th w={'10rem'} >Ảnh đại diện</Th>
+              <Th w='20rem'>Tiêu đề bài viết</Th>
+              <Th w='15rem'>Danh mục</Th>
+              <Th w={'10rem'}>Trạng thái</Th>
+              <Th w={'10rem'}>Ngày đăng bài</Th>
+              <Th w={'10rem'}>Tùy chọn</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -64,22 +51,18 @@ const NewsTableComponent = () => {
             {!loadingInitial &&
               newsArray.map((news, index) => (
                 <Tr key={news.id}>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {index + 1}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                  <Td>{index + 1}</Td>
+                  <Td>
                     <Image
                       src={news.thumbnail}
                       alt={news.title}
-                      width="120px"
+                      width="10rem"
                       objectFit="cover"
                       borderRadius="8px"
                     />
                   </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {news.title}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
+                  <Td>{news.title}</Td>
+                  <Td>
                     <Flex gap={2}>
                       {news.tags.map((tag, index) => (
                         <Badge key={`tag-${index}`} p={1} colorScheme="green">
@@ -89,15 +72,11 @@ const NewsTableComponent = () => {
                     </Flex>
                   </Td>
 
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    <Center>
+                  <Td>
                       <Switch isChecked={news.status == 1} />
-                    </Center>
                   </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {news.createdAt}
-                  </Td>
-                  <Td borderBottom={'0.923px solid #BDBDBD'}>
+                  <Td>{news.createdAt}</Td>
+                  <Td>
                     <Center>
                       <IconButton
                         icon={<FaEdit />}

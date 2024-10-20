@@ -17,7 +17,6 @@ export default class NewsStore {
   isOrigin: boolean = true;
 
   constructor() {
-    this.newsPageParams.pageSize = 5;
     makeAutoObservable(this);
   }
   //#region CRUD

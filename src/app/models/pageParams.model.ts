@@ -12,7 +12,7 @@ export interface IPageParams {
 export class PageParams implements IPageParams {
   pageIndex?: number;
   skip?: number;
-  pageSize: number = 4;
+  pageSize: number = 10;
   totalPages?: number;
   totalElement: number = 0;
   searchTerm?: string;

@@ -50,20 +50,34 @@ export const routes: RouteObject[] = [
       },
       {
         path: 'hang-hoa',
-        element: <ProductPage />
+        element: <ProductPage />,
       },
       {
         path: 'dich-vu',
-        element: <ServicePage />
+        element: <ServicePage />,
       },
       {
         path: 'nhan-vien',
-        element: <StaffPage />
+        element: <StaffPage />,
       },
       {
         path: 'users',
-        element: <UserManagerPage />
-      }
+        element: <UserManagerPage />,
+      },
+      {
+        path: 'cai-dat',
+        element: <UserManagerPage />,
+        children: [
+          {
+            path: 'the-loai',
+            element: <UserManagerPage />,
+          },
+          {
+            path:'chuc-vu',
+            element: <UserManagerPage />,
+          }
+        ],
+      },
     ],
   },
   {

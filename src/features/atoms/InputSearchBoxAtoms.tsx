@@ -11,13 +11,10 @@ const InputSearchBoxAtoms = ({ handleChange, isPending = false }: IProp) => {
     
   return (
     <Box textAlign="right">
-      <Box color="#00423D" fontFamily="Roboto" fontSize="12px" mb="0.5rem">
-        Tìm kiếm nâng cao
-      </Box>
       <InputGroup
         size="md"
         alignItems="center"
-        borderRadius="4px"
+        borderRadius="md"
         border="0.5px solid #ADADAD"
         background="#FFF"
       >
