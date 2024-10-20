@@ -46,17 +46,15 @@ const DeleteButtonAtom: React.FC<DeleteProps> = (props) => {
                             <Button colorScheme='red'
                                 onClick={async () => {
                                     try {
-                                        const check = await deleteNews(props.propId);
-                                        if(check == undefined){
-                                            onClose()
-                                            toast.done("Xóa thành công")
-                                        }
-                                        else{
-                                            onClose()
-                                            toast.done("Xóa thất bại")
-                                        }
+                                        await deleteNews(props.propId).then(
+                                            () => {
+                                                onClose()
+                                                toast.success("Xóa thành công")
+                                            }
+                                        );
                                     } catch (error) {
                                         console.error("Error deleting news:", error);
+                                        toast.error("Xóa thất bại")
                                     }
                                 }}
                                 isLoading={loading}

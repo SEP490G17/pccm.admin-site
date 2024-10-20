@@ -108,6 +108,7 @@ export default class NewsStore {
       runInAction(() => {
         this.newsRegistry.delete(id);
         this.loading = false;
+        this.loadNewsArray()
       });
     } catch (error) {
       runInAction(() => {
