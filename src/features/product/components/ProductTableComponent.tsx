@@ -1,94 +1,104 @@
 import { useStore } from '@/app/stores/store';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import {
-  Box,
-  Center,
-  IconButton,
-  Image,
-  Spinner,
-  Switch,
-  Table,
   TableContainer,
-  Tbody,
-  Td,
-  Th,
+  Table,
   Thead,
   Tr,
+  Th,
+  Tbody,
+  Td,
+  IconButton,
+  Box,
+  Image,
+  Center,
 } from '@chakra-ui/react';
 import React from 'react';
-import { observer } from 'mobx-react-lite';
 import { FaEdit, FaTrash } from 'react-icons/fa';
-import { getBannerStatus } from '@/app/models/banner.model';
+import { observer } from 'mobx-react-lite';
 
-const BannerTableComponent = () => {
-  const { bannerStore } = useStore();
-  const { loading, loadingInitial, bannerArray, bannerPageParams } = bannerStore;
+const ProductTableComponent = () => {
+  const { productStore } = useStore();
+  const { productPageParams, loading, productArray, loadingInitial } = productStore;
+
   return (
     <>
-      <TableContainer bg={'white'} borderRadius={'8px'} border={'1px solid #000'} mb="1.5rem">
-        <Table variant="simple" cellPadding={'1rem'}>
+      <TableContainer
+        bg={'white'}
+        borderRadius={'8px'}
+        padding={0}
+        border={'1px solid #000'}
+        mb="1.5rem"
+      >
+        <Table variant="simple" cellPadding={'1rem'} padding={0}>
           <Thead backgroundColor={'#03301F'}>
             <Tr>
               <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
                 STT
               </Th>
               <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Ảnh
+                Ảnh sản phẩm
               </Th>
               <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Tên banner
+                Tên sản phẩm
               </Th>
               <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Thể loại
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Cụm sân
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Số lượng
+              </Th>
+              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
+                Giá cả
+              </Th>
+              {/* <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
                 Mô tả
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Khoảng ngày
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Link
-              </Th>
-              <Th borderRight={'0.923px solid #BDBDBD'} color={'white'}>
-                Trạng thái
-              </Th>
+              </Th> */}
               <Th color={'white'}>Tùy chọn</Th>
             </Tr>
           </Thead>
           <Tbody>
             {loadingInitial && (
-              <SkeletonTableAtoms numOfColumn={7} pageSize={bannerPageParams.pageSize} />
+              <SkeletonTableAtoms numOfColumn={7} pageSize={productPageParams.pageSize} />
             )}
+
             {!loadingInitial &&
-              bannerArray.map((banner, index) => (
-                <Tr key={banner.id}>
+              productArray.map((product, index) => (
+                <Tr key={product.id}>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
                     {index + 1}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    <Image src={banner.imageUrl} alt={banner.title} width="120px" />
+                    <Image
+                      src={product.thumbnailUrl}
+                      alt={product.productName}
+                      width="120px"
+                      objectFit="cover"
+                      borderRadius="8px"
+                    />
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {banner.title}
+                    {product.productName}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {banner.description}
+                    {product.categoryName}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    Từ ngày: {banner.startDate}
-                    <br />
-                    Đến ngày: {banner.endDate}
+                    {product.courtClusterName}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {banner.linkUrl}
+                    {product.quantity}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    <Center>
-                      <Switch isChecked={getBannerStatus(banner.status)} />
-                    </Center>
+                    {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                   </Td>
+
                   <Td borderBottom={'0.923px solid #BDBDBD'}>
                     <Center>
                       <IconButton
-                        key={`edit-banner${banner.id}`}
                         icon={<FaEdit />}
                         aria-label="Edit"
                         colorScheme="teal"
@@ -96,7 +106,6 @@ const BannerTableComponent = () => {
                         mr={2}
                       />
                       <IconButton
-                        key={`delete-banner${banner.id}`}
                         icon={<FaTrash />}
                         aria-label="Delete"
                         colorScheme="red"
@@ -110,22 +119,13 @@ const BannerTableComponent = () => {
         </Table>
       </TableContainer>
 
-      {bannerArray.length === 0 && !loading && !loadingInitial && (
+      {productArray.length === 0 && !loading && (
         <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
-          Danh sách banner rỗng
+          Danh sách rỗng
         </Box>
-      )}
-      {loading && !loadingInitial && (
-        <Spinner
-          thickness="0.2rem"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="green.800"
-          size="lg"
-        />
       )}
     </>
   );
 };
 
-export default observer(BannerTableComponent);
+export default observer(ProductTableComponent);

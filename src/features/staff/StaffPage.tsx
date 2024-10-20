@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     Button,
     Flex,
@@ -21,6 +21,8 @@ import './style.scss';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
 import CreateStaffPage from './CreateStaffPage';
+import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
+import { debounce } from 'lodash';
 
 const StaffPage = observer(() => {
     const { staffStore } = useStore();
@@ -31,16 +33,26 @@ const StaffPage = observer(() => {
         staffPageParams,
         loading,
         setPageSize,
+        setSearchTerm
     } = staffStore;
+    const [isPending, setIsPending] = useState(false);
 
     useEffect(() => {
         mockLoadStaffs();
     }, [mockLoadStaffs]);
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        staffStore.setSearchTerm(e.target.value);
-    };
 
+    const handleSearch = useCallback(
+        debounce(async (e) => {
+          setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
+          await setSearchTerm(e.target.value);
+        }, 500), // Debounce với thời gian 1 giây
+        [],
+      );
+      const onSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
+        await handleSearch(e); // Gọi hàm debounce
+      };
     const handlePageChange = (page: number) => {
         setPage(page);
     };
@@ -162,7 +174,7 @@ const StaffPage = observer(() => {
 
     return (
         <Flex direction="column" p={8} bg="#F4F4F4">
-            <PageHeadingAtoms title={'Danh sách nhân viên'} />
+            <PageHeadingAtoms breadCrumb={[{title:'Danh sách nhân viên',to:'/nhan-vien'}]} />
             <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
                 <Flex gap="30px" alignItems="center">
                     <Select width="149px" height="35px" borderRadius="4px" border="1px solid #ADADAD" bg="#FFF" color="#03301F">
@@ -173,16 +185,7 @@ const StaffPage = observer(() => {
                 </Flex>
 
                 <Box textAlign="right">
-                    <Box color="#00423D" fontFamily="Roboto" fontSize="12px" mb="0.5rem">
-                        Tìm kiếm nâng cao
-                    </Box>
-
-                    <Flex padding="3px 10px" alignItems="center" gap="16px" borderRadius="4px" border="0.5px solid #ADADAD" background="#FFF">
-                        <Input placeholder="Nhập từ khóa tìm kiếm" onChange={handleSearch} border="none" height="30px" outline="none" />
-                        <Button>
-                            <FaSearch />
-                        </Button>
-                    </Flex>
+                    <InputSearchBoxAtoms  handleChange={onSearchChange} isPending={isPending}/>
                 </Box>
             </Flex>
 
@@ -216,7 +219,7 @@ const StaffPage = observer(() => {
                     </Thead>
                     <Tbody>
                         {loading ? (
-                            <SkeletonTableAtoms numOfColumn={8} pageSize={staffPageParams.pageSize} />
+                            <SkeletonTableAtoms numOfColumn={7} pageSize={staffPageParams.pageSize} />
                         ) : (
                             staffArray.map((staff, index) => (
                                 <Tr key={staff.id}>

@@ -4,6 +4,7 @@ import agent from '../api/agent';
 import { PageParams } from '../models/pageParams.model';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
+import { customFormatDate } from '../helper/utils';
 export default class BannerStore {
   bannerRegistry = new Map<number, Banner>();
   bannerArray: Banner[] = [];
@@ -32,7 +33,7 @@ export default class BannerStore {
       } else {
         this.isOrigin = true;
       }
-      const { count, data } = await agent.Banner.list(`?${queryParams.toString()}`);
+      const { count, data } = await agent.Banners.list(`?${queryParams.toString()}`);
       runInAction(() => {
         data.forEach(this.setBanner);
 
@@ -52,7 +53,7 @@ export default class BannerStore {
   createBanner = async (banner: Banner) => {
     this.loading = true;
     try {
-      await agent.Banner.create(banner);
+      await agent.Banners.create(banner);
       runInAction(() => {
         this.setBanner(banner);
       });
@@ -68,7 +69,7 @@ export default class BannerStore {
   updateBanner = async (banner: Banner) => {
     this.loading = true;
     try {
-      await agent.Banner.update(banner);
+      await agent.Banners.update(banner);
       runInAction(() => {
         this.setBanner(banner);
         this.selectedBanner = banner;
@@ -85,7 +86,7 @@ export default class BannerStore {
   deleteBanner = async (id: number) => {
     this.loading = true;
     try {
-      await agent.Banner.delete(id);
+      await agent.Banners.delete(id);
       runInAction(() => {
         this.bannerRegistry.delete(id);
         this.loading = false;
@@ -155,8 +156,8 @@ export default class BannerStore {
   // };
 
   setSearchTerm = async (term: string) => {
+    this.loadingInitial = true;
     await runInAction(async () => {
-      this.loadingInitial = true;
       if (this.bannerPageParams.totalElement === this.bannerRegistry.size && this.isOrigin) {
         console.log('checking');
         this.bannerPageParams.searchTerm = term;
@@ -167,8 +168,8 @@ export default class BannerStore {
       this.bannerPageParams.clearLazyPage();
       this.bannerPageParams.searchTerm = term;
       await this.loadBanners();
-      this.loadingInitial = false;
     });
+    this.loadingInitial = false;
   };
 
   loadBannerArray() {
@@ -186,6 +187,8 @@ export default class BannerStore {
 
   //#region private methods
   private setBanner = (banner: Banner) => {
+    banner.startDate = customFormatDate(new Date(banner.startDate));
+    banner.endDate = customFormatDate(new Date(banner.endDate));
     this.bannerRegistry.set(banner.id, banner);
   };
 

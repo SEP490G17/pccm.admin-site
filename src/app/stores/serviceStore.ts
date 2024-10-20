@@ -3,20 +3,56 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleServiceData } from '../mock/service.mock';
 import { PageParams } from '../models/pageParams.model';
 import { sleep } from '../helper/utils';
-
+import agent from '../api/agent';
+import { toast } from 'react-toastify';
+import _ from 'lodash';
 export default class ServiceStore {
   serviceRegistry = new Map<number, Service>();
   serviceArray: Service[] = [];
   selectedService: Service | undefined = undefined;
   loading: boolean = false;
+  loadingInitial: boolean = false;
+  isOrigin: boolean = true;
   servicePageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
 
   constructor() {
     console.log('Service store initialized');
+    this.servicePageParams.pageSize = 4;
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanServiceCache, 30000);
   }
+
+  //#region CRUD
+  loadServices = async () => {
+    this.loading = true;
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.append('skip', `${this.servicePageParams.skip ?? 0}`);
+      queryParams.append('pageSize', `${this.servicePageParams.pageSize}`);
+      if (this.servicePageParams.searchTerm) {
+        queryParams.append('search', this.servicePageParams.searchTerm);
+        this.isOrigin = false;
+      } else {
+        this.isOrigin = true;
+      }
+      const { count, data } = await agent.Services.list(`?${queryParams.toString()}`);
+      runInAction(() => {
+        data.forEach(this.setService);
+
+        this.servicePageParams.totalElement = count;
+        this.loadServiceArray();
+        this.loading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+        console.log(error);
+        toast.error('Error loading services');
+      });
+    }
+  };
+  //#endregion
 
   //#region mock-up
   mockLoadServices = async () => {
@@ -42,47 +78,39 @@ export default class ServiceStore {
   //#endregion
 
   //#region common
-  setSearchTerm = (term: string) => {
-    runInAction(() => {
-      console.log('begin service store');
+  setLoadingInitial = (load:boolean) =>{
+    this.loadingInitial = load;
+  };
+
+  setSearchTerm = async (term: string) => {
+    this.loadingInitial = true;
+    await runInAction(async () => {
+      if (this.servicePageParams.totalElement === this.serviceRegistry.size && this.isOrigin) {
+        console.log('checking');
+        this.servicePageParams.searchTerm = term;
+        this.loadServiceArray();
+        return;
+      }
+      this.serviceRegistry.clear();
+      this.servicePageParams.clearLazyPage();
       this.servicePageParams.searchTerm = term;
-      this.cleanServiceCache();
-      this.loadServiceArray();
-      console.log('term:', term);
+      await this.loadServices();
     });
+    this.loadingInitial = false;
   };
 
-  setCurrentPage = (pageIndex: number) => {
+  loadServiceArray() {
     runInAction(() => {
-      this.servicePageParams.pageIndex = pageIndex;
-      this.loadServiceArray();
+      const { searchTerm } = this.servicePageParams;
+      if (this.serviceRegistry.size === this.servicePageParams.totalElement && searchTerm) {
+        this.serviceArray = Array.from(this.serviceRegistry.values()).filter(
+          (b) => _.includes(b.description, searchTerm) || _.includes(b.serviceName, searchTerm),
+        );
+        return;
+      }
+      this.serviceArray = Array.from(this.serviceRegistry.values());
     });
-  };
-
-  setPageSize = (size: number) => {
-    runInAction(() => {
-      this.servicePageParams.pageSize = size;
-      this.servicePageParams.pageIndex = 1; 
-      this.loadServiceArray();
-    });
-  };
-
-  loadServiceArray = async () => {
-    const { pageSize, pageIndex, totalElement } = this.servicePageParams;
-    const startIndex = (pageIndex - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    console.log('total element:', totalElement);
-    if (
-      pageSize * pageIndex > this.serviceRegistry.size &&
-      this.serviceRegistry.size < totalElement!
-    ) {
-      await this.mockLoadServices();
-    }
-    this.serviceArray = Array.from(this.serviceRegistry.values())
-      .sort((a, b) => a.id - b.id)
-      .slice(startIndex, endIndex);
-  };
-
+  }
   //#region private methods
   private setService = (service: Service) => {
     this.serviceRegistry.set(service.id, service);

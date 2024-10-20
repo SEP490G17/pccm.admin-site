@@ -3,6 +3,8 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleProductData } from '../mock/product.mock';
 import { PageParams } from '../models/pageParams.model';
 import { sleep } from '../helper/utils';
+import { toast } from 'react-toastify';
+import agent from '../api/agent';
 
 export default class ProductStore {
   productRegistry = new Map<number, Product>();
@@ -11,12 +13,46 @@ export default class ProductStore {
   loading: boolean = false;
   productPageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
+  loadingInitial: boolean = false;
 
   constructor() {
     console.log('product store initialized');
+    this.productPageParams.pageIndex = 1;
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanProductCache, 30000);
   }
+
+  //#region CRUD
+  loadProducts = async () => {
+    this.loading = true;
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.append('skip', `${this.productPageParams.skip ?? 0}`);
+      queryParams.append('pageSize', `${this.productPageParams.pageSize}`);
+      if (this.productPageParams.searchTerm) {
+        queryParams.append('search', this.productPageParams.searchTerm);
+      }
+      if (this.productPageParams.filter) {
+        queryParams.append('filter', this.productPageParams.filter);
+      }
+      const { count, data } = await agent.Products.list(`?${queryParams.toString()}`);
+      runInAction(() => {
+        data.forEach(this.setProduct);
+
+        this.productPageParams.totalElement = count;
+        this.loadProductArray();
+        this.loading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+        console.log(error);
+        toast.error('Error loading news');
+      });
+    }
+  };
+
+  //#endregion
 
   //#region mock-up
   mockLoadProducts = async () => {
@@ -42,46 +78,28 @@ export default class ProductStore {
   //#endregion
 
   //#region common
-  setSearchTerm = (term: string) => {
-    runInAction(() => {
-      console.log('begin product store');
+
+  setLoadingInitial = (loading:boolean) =>{
+      this.loadingInitial = loading;
+  }
+
+
+  setSearchTerm = async (term: string) => {
+    this.loadingInitial = true;
+    await runInAction(async () => {
+      this.productRegistry.clear();
+      this.productPageParams.clearLazyPage();
       this.productPageParams.searchTerm = term;
-      this.cleanProductCache();
-      this.loadProductArray();
-      console.log('term:', term);
+      await this.loadProducts();
     });
+    this.loadingInitial = false;
   };
 
-  setCurrentPage = (pageIndex: number) => {
+  loadProductArray() {
     runInAction(() => {
-      this.productPageParams.pageIndex = pageIndex;
-      this.loadProductArray();
+      this.productArray = Array.from(this.productRegistry.values());
     });
-  };
-
-  setPageSize = (size: number) => {
-    runInAction(() => {
-      this.productPageParams.pageSize = size;
-      this.productPageParams.pageIndex = 1; 
-      this.loadProductArray();
-    });
-  };  
-
-  loadProductArray = async () => {
-    const { pageSize, pageIndex, totalElement } = this.productPageParams;
-    const startIndex = (pageIndex - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    console.log('total element:', totalElement);
-    if (
-      pageSize * pageIndex > this.productRegistry.size &&
-      this.productRegistry.size < totalElement!
-    ) {
-      await this.mockLoadProducts();
-    }
-    this.productArray = Array.from(this.productRegistry.values())
-      .sort((a, b) => a.id - b.id)
-      .slice(startIndex, endIndex);
-  };
+  }
 
   //#region private methods
   private setProduct = (product: Product) => {

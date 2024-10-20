@@ -6,17 +6,19 @@ export interface IPageParams {
   totalElement: number;
   searchTerm?: string;
   sort?: string;
+  filter?: string;
 }
 
 export class PageParams implements IPageParams {
   pageIndex?: number;
   skip?: number;
-  pageSize: number = 3;
+  pageSize: number = 4;
   totalPages?: number;
   totalElement: number = 0;
   searchTerm?: string;
   sort?: string;
-
+  filter?: string;
+  
   clearLazyPage = () => {
     this.totalElement = 0;
     this.skip = 0;

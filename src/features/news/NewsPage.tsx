@@ -31,7 +31,7 @@ const NewsPage = () => {
         loadNews();
       }
     }
-  }, [loadNews]);
+  }, []);
   const handleSearch = useCallback(
     debounce(async (e) => {
       setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
@@ -54,7 +54,7 @@ const NewsPage = () => {
 
   return (
     <Flex direction="column" p={8} bg="#F4F4F4">
-      <PageHeadingAtoms title={'Danh sách tin tức'} />
+      <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách tin tức', to: '/tin-tuc' }]} />
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
           <Select
@@ -79,7 +79,7 @@ const NewsPage = () => {
       {newsPageParams.totalElement > newsRegistry.size && (
         <Flex justifyContent="end" alignItems="center" mb="1rem">
           <Button
-            colorScheme="primary"
+            colorScheme="gray"
             isLoading={loading}
             onClick={() => {
               newsPageParams.skip = newsRegistry.size;

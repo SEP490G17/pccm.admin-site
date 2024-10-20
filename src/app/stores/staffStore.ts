@@ -3,7 +3,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleStaffData } from '../mock/staff.mock';
 import { PageParams } from '../models/pageParams.model';
 import { sleep } from '../helper/utils';
-
+import _ from 'lodash';
 export default class StaffStore {
   staffRegistry = new Map<number, Staff>();
   staffArray: Staff[] = [];
@@ -14,6 +14,7 @@ export default class StaffStore {
 
   constructor() {
     console.log('Staff store initialized');
+    this.staffPageParams.pageIndex = 1;
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanStaffCache, 30000);
   }
@@ -68,7 +69,7 @@ export default class StaffStore {
   };
 
   loadStaffArray = async () => {
-    const { pageSize, pageIndex, totalElement } = this.staffPageParams;
+    const { pageSize, pageIndex, totalElement, searchTerm = '' } = this.staffPageParams;
     const startIndex = (pageIndex - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     console.log('total element:', totalElement);
@@ -79,6 +80,9 @@ export default class StaffStore {
       await this.mockLoadStaffs();
     }
     this.staffArray = Array.from(this.staffRegistry.values())
+    .filter(s => _.includes(s.name, searchTerm) 
+        || _.includes(s.phoneNumber, searchTerm)
+        || _.includes(s.identityCard,searchTerm))
       .sort((a, b) => a.id - b.id)
       .slice(startIndex, endIndex);
   };

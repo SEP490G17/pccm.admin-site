@@ -8,6 +8,8 @@ import { News } from '../models/news.models';
 import { Banner } from '../models/banner.model';
 import { Court, ICourt } from '../models/court.model';
 import { sleep } from '../helper/utils';
+import { Service } from '../models/service.model';
+import { Product } from '../models/product.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -79,12 +81,26 @@ const NewsAgent = {
   update: (news: News): Promise<void> => requests.put(`/news/${news.id}`, news),
   delete: (id: number): Promise<void> => requests.del(`/news/${id}`),
 };
-const BannerAgent = {
-  list: (queryParams:string = ''): Promise<PaginationModel<Banner>> =>  requests.get(`/banner${queryParams}`)  ,
+const Banners = {
+  list: (queryParams: string = ''): Promise<PaginationModel<Banner>> =>
+    requests.get(`/banner${queryParams}`),
   create: (banner: Banner): Promise<void> => requests.post(`/banner`, banner),
   update: (banner: Banner): Promise<void> => requests.put(`/banner/${banner.id}`, banner),
   delete: (id: number): Promise<void> => requests.del(`/banner/${id}`),
 };
+const Services = {
+  list: (queryParams: string = ''): Promise<PaginationModel<Service>> =>
+    requests.get(`/service${queryParams}`),
+  // create: (service: Banner): Promise<void> => requests.post(`/service`, banner),
+  // update: (banner: Banner): Promise<void> => requests.put(`/service/${banner.id}`, banner),
+  // delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
+};
+
+const Products = {
+  list: (queryParams: string = ''): Promise<PaginationModel<Product>> =>
+    requests.get(`/product${queryParams}`),
+};
+
 const CourtAgent = {
   list: (): Promise<ICourt[]> => requests.get(`/courts`),
   details: (id: number): Promise<Court> => requests.get(`/courts/${id}`),
@@ -98,6 +114,6 @@ const Account = {
   login: (user: UserFormValues) => requests.post<User>('/account/login', user),
   register: (user: UserFormValues) => requests.post<User>('/account/register', user),
 };
-const agent = { requests, Account, News: NewsAgent, Banner: BannerAgent, Court: CourtAgent };
+const agent = { requests, Account, NewsAgent, Banners, Court: CourtAgent, Services, Products };
 
 export default agent;

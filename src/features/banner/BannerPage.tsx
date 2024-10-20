@@ -12,11 +12,14 @@ import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
 const BannerPage = observer(() => {
   const { bannerStore } = useStore();
   const { loadBanners, bannerPageParams, bannerRegistry, loading, setLoadingInitial } = bannerStore;
+
+  const [isPending, setIsPending] = useState(false);
+
   useEffect(() => {
     setLoadingInitial(true);
     loadBanners().finally(() => setLoadingInitial(false));
   }, []);
-  const [isPending, setIsPending] = useState(false);
+
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
@@ -28,7 +31,7 @@ const BannerPage = observer(() => {
         loadBanners();
       }
     }
-  }, [loadBanners]);
+  }, []);
 
   // Gắn sự kiện cuộn
   useEffect(() => {
@@ -53,7 +56,7 @@ const BannerPage = observer(() => {
   };
   return (
     <Flex direction="column" p={8} bg="#F4F4F4">
-      <PageHeadingAtoms title={'Danh sách banner'} />
+      <PageHeadingAtoms breadCrumb={[{title:'Danh sách banner',to:'/banner'}]} />
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
           <Select
@@ -79,7 +82,7 @@ const BannerPage = observer(() => {
       {bannerPageParams.totalElement > bannerRegistry.size && (
         <Flex justifyContent="end" alignItems="center" mb="1rem">
           <Button
-            colorScheme="primary"
+            colorScheme="gray"
             isLoading={loading}
             onClick={() => {
               bannerPageParams.skip = bannerRegistry.size;
