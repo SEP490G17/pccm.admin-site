@@ -14,6 +14,7 @@ export default class UserStore {
 
   constructor() {
     console.log('user store initialized');
+    this.userPageParams.pageIndex =1;
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanUserCache, 30000);
   }

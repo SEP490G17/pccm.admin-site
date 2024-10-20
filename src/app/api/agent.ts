@@ -8,7 +8,6 @@ import { News } from '../models/news.models';
 import { Banner } from '../models/banner.model';
 import { Court, ICourt } from '../models/court.model';
 import { sleep } from '../helper/utils';
-import { PageParams } from '../models/pageParams.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -75,6 +74,7 @@ const requests = {
 
 const NewsAgent = {
   list: (queryParams:string = ''): Promise<PaginationModel<News>> => requests.get(`/news${queryParams}`),
+  details: (id: number): Promise<News> => requests.get(`/news/${id}`),
   create: (news: News): Promise<void> => requests.post(`/news`, news),
   update: (news: News): Promise<void> => requests.put(`/news/${news.id}`, news),
   delete: (id: number): Promise<void> => requests.del(`/news/${id}`),

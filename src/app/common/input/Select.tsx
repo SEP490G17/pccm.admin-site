@@ -4,7 +4,7 @@ import React from 'react';
 interface SelectInputProps extends InputProps {
     items: { id: number | string; name: string; }[];
     onSelectChange: (value: any) => void;
-    categoryValue: string;
+    categoryValue?: string;
 }
 
 const SelectComponent: React.FC<SelectInputProps> = ({ items, onSelectChange, categoryValue }) => {

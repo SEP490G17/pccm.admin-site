@@ -67,6 +67,23 @@ export default class NewsStore {
     }
   };
 
+  detailNews = async (newsId: number) => {
+    this.loading = true;
+    try {
+      const data = await agent.News.details(newsId);
+      runInAction(() => {
+        this.selectedNews = data;
+        this.loading = false;
+      });
+      return data;
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+        console.error('Error creating news:', error);
+      });
+    }
+  };
+
   updateNews = async (news: News) => {
     this.loading = true;
     try {
