@@ -4,13 +4,14 @@ import React from 'react';
 interface SelectInputProps extends InputProps {
     items: { id: number | string; name: string; }[];
     onSelectChange: (value: any) => void;
+    categoryValue?: string;
 }
 
-const SelectComponent: React.FC<SelectInputProps> = ({ items, onSelectChange }) => {
+const SelectComponent: React.FC<SelectInputProps> = ({ items, onSelectChange, categoryValue }) => {
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         onSelectChange(e.target.value);
     };
-
+    console.log(categoryValue)
     return (
         <Select
             size="lg"
@@ -23,9 +24,15 @@ const SelectComponent: React.FC<SelectInputProps> = ({ items, onSelectChange }) 
             onChange={handleChange}
         >
             {items.map((item) => (
-                <option key={item.id} value={item.id}>
-                    {item.name}
-                </option>
+                item.name == categoryValue
+                    ?
+                    <option key={item.id} value={item.id} selected>
+                        {item.name}
+                    </option>
+                    :
+                    <option key={item.id} value={item.id}>
+                        {item.name}
+                    </option>
             ))}
         </Select>
     );

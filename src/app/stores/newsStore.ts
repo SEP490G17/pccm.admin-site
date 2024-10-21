@@ -66,6 +66,23 @@ export default class NewsStore {
     }
   };
 
+  detailNews = async (newsId: number) => {
+    this.loading = true;
+    try {
+      const data = await agent.NewsAgent.details(newsId);
+      runInAction(() => {
+        this.selectedNews = data;
+        this.loading = false;
+      });
+      return data;
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+        console.error('Error creating news:', error);
+      });
+    }
+  };
+
   updateNews = async (news: News) => {
     this.loading = true;
     try {
@@ -90,6 +107,7 @@ export default class NewsStore {
       runInAction(() => {
         this.newsRegistry.delete(id);
         this.loading = false;
+        this.loadNewsArray()
       });
     } catch (error) {
       runInAction(() => {

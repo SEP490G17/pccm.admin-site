@@ -17,6 +17,8 @@ export default class CourtStore {
   constructor() {
     this.courtPageParams.pageIndex = 1;
     console.log('court store initialized');
+    this.courtPageParams.pageIndex =1;
+
     makeAutoObservable(this);
   }
 

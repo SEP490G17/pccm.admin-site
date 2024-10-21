@@ -10,12 +10,15 @@ import {
     Text,
 } from "@chakra-ui/react";
 import { CloseIcon } from "@chakra-ui/icons";
+
 interface FileUploadProps extends InputProps {
     name?: string;
-  }
+    ImageUrl?: string[];
+}
+
 const FileUpload: React.FC<FileUploadProps> = (props) => {
     const inputRef = useRef<HTMLInputElement>(null);
-    const [fileNames, setFileNames] = useState<string[]>([]);
+    const [fileNames, setFileNames] = useState<string[]>(props.ImageUrl || []);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
@@ -45,28 +48,28 @@ const FileUpload: React.FC<FileUploadProps> = (props) => {
 
     return (
         <FormControl>
-            <Box className="box_banner"
+            <Box
+                className="box_banner"
                 onClick={() => inputRef.current?.click()}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
             >
                 <Flex alignItems="center" justifyContent='space-between' alignSelf='stretch'>
-                    {fileNames.length == 0 && <Text className="text_upload">Kéo hình ảnh hoặc up load hình ảnh tại đây</Text>}
+                    {fileNames.length === 0 && <Text className="text_upload">Kéo hình ảnh hoặc up load hình ảnh tại đây</Text>}
                     {fileNames.length > 0 && (
                         <Box mt={2}>
                             {fileNames.map((name, index) => (
-                                <Flex mb={2}>
-                                    <Text key={index} className="text_upload">{name}</Text>
+                                <Flex mb={2} key={index}>
+                                    <Text className="text_upload">{name}</Text>
                                     <IconButton
                                         aria-label="Remove file"
-                                        icon={<CloseIcon boxSize={2} />} 
+                                        icon={<CloseIcon boxSize={2} />}
                                         size="xs"
                                         colorScheme="red"
                                         onClick={(event) => handleRemoveFile(index, event)}
                                         ml={2}
                                     />
                                 </Flex>
-
                             ))}
                         </Box>
                     )}
@@ -76,7 +79,7 @@ const FileUpload: React.FC<FileUploadProps> = (props) => {
                 </Flex>
             </Box>
             <Input
-                name= {props.name}
+                name={props.name}
                 type="file"
                 id="file-upload"
                 ref={inputRef}
