@@ -19,7 +19,7 @@ function ButtonPrimaryAtoms({ colorLevel = 900, handleOnClick, children, loading
          <Spinner size={'sm'}/>
         </div>
       )}
-      <span className={` transition-none ${loading ? 'opacity-0' : 'opacity-100'}`}>
+      <span className={`transition-none ${loading ? 'opacity-0' : 'opacity-100'}`}>
         {children}
       </span>
     </button>
