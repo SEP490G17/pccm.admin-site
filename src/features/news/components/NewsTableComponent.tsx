@@ -5,7 +5,6 @@ import {
   Box,
   Center,
   Flex,
-  IconButton,
   Image,
   Switch,
   Table,
@@ -16,9 +15,9 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import React from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
 import { observer } from 'mobx-react-lite';
+import UpdateNewsPage from '../UpdateNewsPage';
+import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 
 const NewsTableComponent = () => {
   const { newsStore } = useStore();
@@ -78,19 +77,8 @@ const NewsTableComponent = () => {
                   <Td>{news.createdAt}</Td>
                   <Td>
                     <Center>
-                      <IconButton
-                        icon={<FaEdit />}
-                        aria-label="Edit"
-                        colorScheme="teal"
-                        size="sm"
-                        mr={2}
-                      />
-                      <IconButton
-                        icon={<FaTrash />}
-                        aria-label="Delete"
-                        colorScheme="red"
-                        size="sm"
-                      />
+                      <UpdateNewsPage newsId={news.id}/>
+                      <DeleteButtonAtom propId={news.id} header='Xóa tin tức'/>
                     </Center>
                   </Td>
                 </Tr>

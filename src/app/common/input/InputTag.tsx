@@ -1,20 +1,22 @@
-import { useEffect, useRef, useState } from "react";
-import { Tag, TagCloseButton, Stack } from "@chakra-ui/react";
+import React, { useEffect, useRef, useState } from "react";
+import { Tag, TagCloseButton, Stack, InputProps } from "@chakra-ui/react";
 import "./style.scss";
 
-const dataTemp = ["pickleball", "Hà Nội"];
+interface TagProps extends InputProps{
+    tags? : string[]
+}
 
-export default function InputTag() {
-    const [dataInput, setDataInput] = useState([...dataTemp]);
+const InputTag : React.FC<TagProps> = (props) => {
+    const [dataInput, setDataInput] = useState<string[]>(props.tags ?? []);
     const [sizeInput, setSizeInput] = useState(2);
-    const refInput = useRef<HTMLInputElement>(null); // Specify the type here
+    const refInput = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        refInput.current?.focus(); // Auto focus input
+        refInput.current?.focus();
 
         const handleKeyUp = (event: KeyboardEvent) => {
             const newText = refInput.current?.value.trim().replace(",", "");
-            if (event.key === "," || event.key === "Enter") {
+            if (event.key === ",") {
                 if (newText && newText.length >= 0) {
                     setDataInput((prevData) => [...prevData, newText]);
                     if (refInput.current) refInput.current.value = "";
@@ -28,11 +30,11 @@ export default function InputTag() {
 
     const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
-        setSizeInput(value.trim().length > 0 ? value.length : 1); // Adjust size based on input
+        setSizeInput(value.trim().length > 0 ? value.length : 1);
     };
 
     const handleDelItem = (index: number) => {
-        setDataInput((prevData) => prevData.filter((_, i) => i !== index)); // Remove item by index
+        setDataInput((prevData) => prevData.filter((_, i) => i !== index));
     };
 
     const handleDelAllItem = () => {
@@ -70,3 +72,5 @@ export default function InputTag() {
         </div>
     );
 }
+
+export default InputTag
