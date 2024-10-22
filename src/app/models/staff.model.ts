@@ -1,9 +1,9 @@
 export interface Staff {
   id: number;    
-  name: string;         
-  identityCard: string;   
+  fullName: string;         
+  cccd: string;   
   phoneNumber: string;    
   position: string;       
-  permission: string;    
+  roles: string[];    
   shift: string;              
 }

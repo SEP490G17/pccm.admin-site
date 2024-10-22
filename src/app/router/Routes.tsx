@@ -13,6 +13,7 @@ import ProductPage from '@/features/product/ProductPage';
 import ServicePage from '@/features/service/ServicePage';
 import StaffPage from '@/features/staff/StaffPage';
 import UserManagerPage from '@/features/user/UserManagerPage';
+import StaffPositionPage from '@/features/staff/StaffPositionPage';
 
 export const routes: RouteObject[] = [
   {
@@ -64,20 +65,7 @@ export const routes: RouteObject[] = [
         path: 'users',
         element: <UserManagerPage />,
       },
-      {
-        path: 'cai-dat',
-        element: <UserManagerPage />,
-        children: [
-          {
-            path: 'the-loai',
-            element: <UserManagerPage />,
-          },
-          {
-            path:'chuc-vu',
-            element: <UserManagerPage />,
-          }
-        ],
-      },
+
     ],
   },
   {

@@ -57,7 +57,7 @@ const ServicePage = () => {
     await handleSearch(e); // Gọi hàm debounce
   };
   return (
-    <Flex direction="column" p={8} bg="#F4F4F4">
+    <>
       <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách dịch vụ', to: '/dich-vu' }]} />
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
@@ -99,7 +99,7 @@ const ServicePage = () => {
         hidden={serviceRegistry.size > servicePageParams.totalElement}
         loading={loading}
       />
-    </Flex>
+    </>
   );
 };
 

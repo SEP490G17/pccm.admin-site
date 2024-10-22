@@ -42,7 +42,7 @@ const courtList = [
 
 const CreateCourtPage = () => {
   return (
-    <Flex direction="column" p={8} bg="#F4F4F4">
+    <>
       <PageHeadingAtoms
         breadCrumb={[
           { title: 'Danh sách cụm sân', to: '/cum-san' },
@@ -352,7 +352,7 @@ const CreateCourtPage = () => {
             </Form>
           )}
         </Formik>
-    </Flex>
+    </>
   );
 };
 

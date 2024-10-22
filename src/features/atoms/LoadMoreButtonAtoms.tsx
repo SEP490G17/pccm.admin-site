@@ -1,5 +1,5 @@
 import { Button, Flex } from '@chakra-ui/react';
-import React from 'react';
+import ButtonPrimaryAtoms from './ButtonPrimaryAtoms';
 
 interface IProps {
   hidden: boolean;
@@ -11,9 +11,9 @@ function LoadMoreButtonAtoms({ hidden, loading, handleOnClick }: IProps) {
     <>
       {!hidden && (
         <Flex justifyContent="end" alignItems="center" mb="1rem">
-          <Button colorScheme="teal" isLoading={loading} onClick={handleOnClick}>
+          <ButtonPrimaryAtoms handleOnClick={handleOnClick} loading={loading}>
             Xem thêm
-          </Button>
+          </ButtonPrimaryAtoms>
         </Flex>
       )}
     </>

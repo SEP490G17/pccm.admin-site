@@ -55,7 +55,7 @@ const BannerPage = observer(() => {
     await handleSearch(e); // Gọi hàm debounce
   };
   return (
-    <Flex direction="column" p={8} bg="#F4F4F4">
+    <>
       <PageHeadingAtoms breadCrumb={[{title:'Danh sách banner',to:'/banner'}]} />
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
@@ -93,7 +93,7 @@ const BannerPage = observer(() => {
           </Button>
         </Flex>
       )}
-    </Flex>
+    </>
   );
 });
 

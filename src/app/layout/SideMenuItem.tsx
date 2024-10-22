@@ -41,7 +41,7 @@ function SideMenuItem({ item }: IProp) {
             pl={'1.7rem'}
           >
             <Flex direction={'row'} gap={4} alignItems={'center'}>
-              {item.icon}
+              {item.icon(commonStore.selectedMenuItem === item.key)}
 
               <Text
                 color={'#63748A'}
@@ -67,7 +67,14 @@ function SideMenuItem({ item }: IProp) {
             </Flex>
           </Button>
           {subMenuOpen && (
-            <Flex w={'100%'} py={2} direction={'column'} gap={3} pl={'4rem'} opacity={commonStore.isCollapsed ? 0 : 1} >
+            <Flex
+              w={'100%'}
+              py={2}
+              direction={'column'}
+              gap={3}
+              pl={'4rem'}
+              opacity={commonStore.isCollapsed ? 0 : 1}
+            >
               {item.subPath?.map((subItem, idx) => {
                 return (
                   <Button
@@ -110,7 +117,7 @@ function SideMenuItem({ item }: IProp) {
               commonStore.setSelectedMenuItem(item.key);
               router.navigate(item.path);
             }}
-            className={commonStore.selectedMenuItem === item.key ? 'link-active' : ''}
+            className={`${commonStore.selectedMenuItem === item.key ? 'link-active' : ''} group`}
             color={'black'}
             justifyContent={'start'}
             gap={4}
@@ -121,8 +128,9 @@ function SideMenuItem({ item }: IProp) {
             colorScheme="gray"
             variant={'ghost'}
             pl={'1.7rem'}
+            position={'relative'}
           >
-            {item.icon}
+            {item.icon(commonStore.selectedMenuItem === item.key)}
 
             <Text
               className="link-text"
@@ -136,6 +144,13 @@ function SideMenuItem({ item }: IProp) {
             >
               {item.label}
             </Text>
+            {commonStore.isCollapsed && (
+              <h2
+                className={`absolute invisible top-0  items-center flex left-48 bg-white font-semibold whitespace-pre text-gray-900 rounded-md drop-shadow-lg px-4 py-2 group-hover:visible group-hover:left-24 group-hover:duration-300`}
+              >
+                {item.label}
+              </h2>
+            )}
           </Button>
         </>
       )}

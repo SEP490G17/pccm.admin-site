@@ -10,6 +10,8 @@ import { Court, ICourt } from '../models/court.model';
 import { sleep } from '../helper/utils';
 import { Service } from '../models/service.model';
 import { Product } from '../models/product.model';
+import { StaffPosition, StaffPosition as StaffPositions } from '../models/role.model';
+import { list } from '@chakra-ui/react';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -95,6 +97,13 @@ const Services = {
   // update: (banner: Banner): Promise<void> => requests.put(`/service/${banner.id}`, banner),
   // delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
 };
+const StaffPositions = {
+  list: (): Promise<StaffPosition[]> => requests.get(`/staffPosition`),
+};
+
+const Roles = {
+  list: (): Promise<string[]> => requests.get(`/role`),
+};
 
 const Products = {
   list: (queryParams: string = ''): Promise<PaginationModel<Product>> =>
@@ -114,6 +123,22 @@ const Account = {
   login: (user: UserFormValues) => requests.post<User>('/account/login', user),
   register: (user: UserFormValues) => requests.post<User>('/account/register', user),
 };
-const agent = { requests, Account, NewsAgent, Banners, Court: CourtAgent, Services, Products };
+
+const Staffs = {
+  list: (): Promise<any> => requests.get('/staff')
+}
+
+const agent = {
+  requests,
+  Account,
+  NewsAgent,
+  Banners,
+  Court: CourtAgent,
+  Services,
+  Products,
+  StaffPositions,
+  Roles,
+  Staffs
+};
 
 export default agent;

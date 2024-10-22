@@ -55,7 +55,7 @@ const App = () => {
           <Spacer />
           <Center mb={'3.25rem'}>
             <Button
-              colorScheme="gray"
+              colorScheme="red"
               gap={2}
               fontSize={'1.25rem'}
               boxSizing="border-box"
@@ -71,20 +71,28 @@ const App = () => {
             >
               <AiOutlineLogout />
               <Text
-                whiteSpace="nowrap"
+                whiteSpace="pre-wrap"
                 overflow="hidden"
                 textOverflow="ellipsis"
                 opacity={commonStore.isCollapsed ? 0 : 1}
-                fontSize={commonStore.isCollapsed ?'0':'1.25rem'}
+                fontSize={commonStore.isCollapsed ? '0' : '1.25rem'}
               >
                 Log Out
               </Text>
             </Button>
           </Center>
         </Flex>
-        <Box as="main" className={`${commonStore.isCollapsed && 'collapsed'}`} minWidth={'960px'} overflowX={'scroll'}>
+        <Flex
+          direction="column"
+          p={8}
+          as="main"
+          className={`${commonStore.isCollapsed && 'collapsed'}`}
+          minWidth={'960px'}
+          overflowX={'scroll'}
+          minH={'100vh'}
+        >
           <Outlet />
-        </Box>
+        </Flex>
       </Box>
     </>
   );

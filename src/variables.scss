@@ -18,7 +18,6 @@ $secondaryColor500: #119fe6;
 $secondaryColor600: #057fc4;
 $secondaryColor700: #05659f;
 $secondaryColor800: #095583;
-$secondaryColor800: #095583;
 
 $button-primary-shadow: 0 2px 0 rgba(5, 145, 255, 0.1);
 $default-border-color: #d9d9d9;
@@ -28,3 +27,40 @@ $mainBackgroundColor: #f5f6f7;
 $headerHeight: 5.4rem;
 $sidebarWidth: 14.5rem;
 $sidebarCollapse: 5.5rem;
+
+
+:root {
+    --primary-color-100: #{$primaryColor100};
+    --primary-color-200: #{$primaryColor200};
+    --primary-color-300: #{$primaryColor300};
+    --primary-color-400: #{$primaryColor400};
+    --primary-color-500: #{$primaryColor500};
+    --primary-color-600: #{$primaryColor600};
+    --primary-color-700: #{$primaryColor700};
+    --primary-color-800: #{$primaryColor800};
+    --primary-color-900: #{$primaryColor900};
+  
+    --primary-font-color-800: #{$primaryFontColor800};
+  
+    --secondary-color-100: #{$secondaryColor100};
+    --secondary-color-200: #{$secondaryColor200};
+    --secondary-color-300: #{$secondaryColor300};
+    --secondary-color-400: #{$secondaryColor400};
+    --secondary-color-500: #{$secondaryColor500};
+    --secondary-color-600: #{$secondaryColor600};
+    --secondary-color-700: #{$secondaryColor700};
+    --secondary-color-800: #{$secondaryColor800};
+  
+    --button-primary-shadow: #{$button-primary-shadow};
+    --default-border-color: #{$default-border-color};
+    --default-background-color: #{$default-background-color};
+  
+    --main-background-color: #{$mainBackgroundColor};
+    --header-height: #{$headerHeight};
+    --sidebar-width: #{$sidebarWidth};
+    --sidebar-collapse: #{$sidebarCollapse};
+
+    --chakra-colors-teal-500:#{$primaryColor900};
+  }
+
+  

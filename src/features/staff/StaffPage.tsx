@@ -1,9 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Flex,
-  Box,
-  Select,
-} from '@chakra-ui/react';
+import { Flex, Box, Select, Heading, Divider } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -13,21 +9,31 @@ import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
 import { debounce } from 'lodash';
 import StaffTableComponent from './components/StaffTableComponent';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
+import StaffPositionTableComponent from './components/StaffPositionTableComponent';
 
 const StaffPage = observer(() => {
-  const { staffStore } = useStore();
+  const { staffStore, staffPositionStore } = useStore();
   const {
-    mockLoadStaffs,
-    loadStaffArray,
+    loadStaffs,
     setSearchTerm,
     staffPageParams,
-    staffRegistry,loading
+    staffRegistry,
+    loading,
+    setLoadingInitial,
   } = staffStore;
+
+  const {
+    loadRoles,
+    loadStaffPosition,
+  } =staffPositionStore;
   const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
-    mockLoadStaffs();
-  }, [mockLoadStaffs]);
+    setLoadingInitial(true);
+    Promise.all([loadStaffs(), loadRoles(), loadStaffPosition()]).then(() => {
+      setLoadingInitial(false);
+    });
+  }, []);
 
   const handleSearch = useCallback(
     debounce(async (e) => {
@@ -42,9 +48,33 @@ const StaffPage = observer(() => {
   };
 
   return (
-    <Flex direction="column" p={8} bg="#F4F4F4">
+    <>
       <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách nhân viên', to: '/nhan-vien' }]} />
-      <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
+      <Heading size={'md'}>Chức vụ</Heading>
+      <Divider
+        orientation="horizontal"
+        marginBottom={'1rem'}
+        background={'linear-gradient(90deg, #00423D 0%, #0A3351 100%)'}
+        width={'3rem'}
+        height={1}
+      />
+      <StaffPositionTableComponent />
+      <Heading size={'md'} mt={5}>
+        Nhân viên
+      </Heading>
+      <Divider
+        orientation="horizontal"
+        background={'linear-gradient(90deg, #00423D 0%, #0A3351 100%)'}
+        width={'3rem'}
+        height={1}
+      />
+      <Flex
+        width="100%"
+        justifyContent="space-between"
+        alignItems="flex-end"
+        mb="1.5rem"
+        mt={'1rem'}
+      >
         <Flex gap="30px" alignItems="center">
           <Select
             width="149px"
@@ -68,12 +98,11 @@ const StaffPage = observer(() => {
       <LoadMoreButtonAtoms
         handleOnClick={() => {
           staffPageParams.skip = staffRegistry.size;
-          loadStaffArray();
         }}
         hidden={staffRegistry.size > staffPageParams.totalElement}
         loading={loading}
       />
-    </Flex>
+    </>
   );
 });
 

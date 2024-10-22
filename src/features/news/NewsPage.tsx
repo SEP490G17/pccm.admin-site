@@ -54,7 +54,7 @@ const NewsPage = () => {
   }, [handleScroll]);
 
   return (
-    <Flex direction="column" p={8} bg="#F4F4F4">
+    <>
       <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách tin tức', to: '/tin-tuc' }]} />
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
@@ -102,7 +102,7 @@ const NewsPage = () => {
           tài liệu
         </Box>
       </Flex> */}
-    </Flex>
+    </>
   );
 };
 

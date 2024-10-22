@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Flex, Box, Select, Button, useDisclosure } from '@chakra-ui/react';
+import { Flex, Select, Button, useDisclosure } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -65,7 +65,6 @@ const ProductPage = observer(() => {
 
   return (
     <>
-      <Flex direction="column" p={8} bg="#F4F4F4">
         <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách sản phẩm', to: '/hang-hoa' }]} />
 
         <Flex
@@ -123,7 +122,6 @@ const ProductPage = observer(() => {
           hidden={productRegistry.size >= productPageParams.totalElement}
           loading={loading}
         />
-      </Flex>
       <CreateProductPage isOpen={isOpen} onClose={onClose} />
     </>
   );

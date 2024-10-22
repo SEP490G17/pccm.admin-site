@@ -162,7 +162,7 @@ const CourtPage = observer(() => {
   };
 
   return (
-    <Flex direction="column" p={8} bg="#F4F4F4">
+    <>
       <PageHeadingAtoms breadCrumb={[{title:'Danh sách cụm sân',to:'/cum-san'}]} />
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
@@ -301,7 +301,7 @@ const CourtPage = observer(() => {
           {renderPaginationButtons()}
         </Flex>
       </Flex>
-    </Flex>
+    </>
   );
 });
 

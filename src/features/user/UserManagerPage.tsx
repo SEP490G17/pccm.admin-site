@@ -183,7 +183,7 @@ const UserManagerPage = observer(() => {
     };
 
     return (
-        <Flex direction="column" p={8} bg="#F4F4F4">
+        <>
             <PageHeadingAtoms breadCrumb={[{title:'Danh sách người dùng',to:'#'}]} />
             <Flex width="100%" flexDirection="column" gap="1.5rem" mb="1.5rem">
                 <Flex justifyContent="space-between" alignItems="center" gap="30px">
@@ -327,7 +327,7 @@ const UserManagerPage = observer(() => {
                     {renderPaginationButtons()}
                 </Flex>
             </Flex>
-        </Flex>
+        </>
     );
 });
 

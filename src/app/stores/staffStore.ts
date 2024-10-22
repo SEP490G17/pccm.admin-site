@@ -3,15 +3,16 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleStaffData } from '../mock/staff.mock';
 import { PageParams } from '../models/pageParams.model';
 import { sleep } from '../helper/utils';
-import _ from 'lodash';
+// import _ from 'lodash';
+import agent from '../api/agent';
 export default class StaffStore {
   staffRegistry = new Map<number, Staff>();
   staffArray: Staff[] = [];
   selectedStaff: Staff | undefined = undefined;
   loading: boolean = false;
+  loadingInitial: boolean = false;
   staffPageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
-
   constructor() {
     console.log('Staff store initialized');
     this.staffPageParams.pageIndex = 1;
@@ -19,6 +20,13 @@ export default class StaffStore {
     // this.cleanupInterval = window.setInterval(this.cleanStaffCache, 30000);
   }
 
+  loadStaffs = async () => {
+    this.loadingInitial = true;
+    await runInAction(async () => {
+      await agent.Staffs.list().then((staffs) => staffs.forEach(this.setStaff));
+      this.loadingInitial = false;
+    });
+  };
   //#region mock-up
   mockLoadStaffs = async () => {
     this.loading = true;
@@ -30,7 +38,6 @@ export default class StaffStore {
           this.staffRegistry.size / this.staffPageParams.pageSize,
         );
         this.staffPageParams.totalElement = this.staffRegistry.size;
-        this.loadStaffArray();
       });
     } catch (error) {
       runInAction(() => {
@@ -48,44 +55,14 @@ export default class StaffStore {
       console.log('begin staff store');
       this.staffPageParams.searchTerm = term;
       this.cleanStaffCache();
-      this.loadStaffArray();
+
       console.log('term:', term);
     });
   };
 
-  setCurrentPage = (pageIndex: number) => {
-    runInAction(() => {
-      this.staffPageParams.pageIndex = pageIndex;
-      this.loadStaffArray();
-    });
-  };
-
-  setPageSize = (size: number) => {
-    runInAction(() => {
-      this.staffPageParams.pageSize = size;
-      this.staffPageParams.pageIndex = 1; 
-      this.loadStaffArray();
-    });
-  };
-
-  loadStaffArray = async () => {
-    const { pageSize, pageIndex, totalElement, searchTerm = '' } = this.staffPageParams;
-    const startIndex = (pageIndex - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    console.log('total element:', totalElement);
-    if (
-      pageSize * pageIndex > this.staffRegistry.size &&
-      this.staffRegistry.size < totalElement!
-    ) {
-      await this.mockLoadStaffs();
-    }
-    this.staffArray = Array.from(this.staffRegistry.values())
-    .filter(s => _.includes(s.name, searchTerm) 
-        || _.includes(s.phoneNumber, searchTerm)
-        || _.includes(s.identityCard,searchTerm))
-      .sort((a, b) => a.id - b.id)
-      .slice(startIndex, endIndex);
-  };
+  get StaffArray() {
+    return Array.from(this.staffRegistry.values());
+  }
 
   //#region private methods
   private setStaff = (staff: Staff) => {
@@ -96,6 +73,12 @@ export default class StaffStore {
     runInAction(() => {
       console.log('cleanStaffCache');
       this.staffRegistry.clear();
+    });
+  };
+
+  setLoadingInitial = (load: boolean) => {
+    runInAction(() => {
+      this.loadingInitial = load;
     });
   };
 
