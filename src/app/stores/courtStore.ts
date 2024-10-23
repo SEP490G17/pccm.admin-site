@@ -1,13 +1,15 @@
-import { Court } from './../models/court.model';
+import { CourtCluster as CourtCluster, CourtClusterListAll } from './../models/court.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleCourtData } from '../mock/court.mock';
 import { PageParams } from '../models/pageParams.model';
 import { sleep } from '../helper/utils';
+import agent from '../api/agent';
 
-export default class CourtStore {
-  courtRegistry = new Map<number, Court>();
-  courtArray: Court[] = [];
-  selectedCourt: Court | undefined = undefined;
+export default class CourtClusterStore {
+  courtRegistry = new Map<number, CourtCluster>();
+  courtListAllRegistry = new Map<number, CourtClusterListAll>();
+  courtArray: CourtCluster[] = [];
+  selectedCourt: CourtCluster | undefined = undefined;
   loading: boolean = false;
   courtPageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
@@ -17,10 +19,22 @@ export default class CourtStore {
   constructor() {
     this.courtPageParams.pageIndex = 1;
     console.log('court store initialized');
-    this.courtPageParams.pageIndex =1;
+    this.courtPageParams.pageIndex = 1;
 
     makeAutoObservable(this);
   }
+
+  loadCourtClusterListAll = async () => {
+    this.loadingInitial = true;
+    await runInAction( async ()=>{
+      try {
+        await agent.CourtClusterAgent.listAll()
+        .then(this.setCourtClusterListAll);
+      } finally {
+        this.loadingInitial = false;
+      }
+    })
+  };
 
   mockLoadCourts = async () => {
     this.loading = true;
@@ -73,10 +87,7 @@ export default class CourtStore {
     const startIndex = (pageIndex - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     console.log('total element:', totalElement);
-    if (
-      pageSize * pageIndex > this.courtRegistry.size &&
-      this.courtRegistry.size < totalElement!
-    ) {
+    if (pageSize * pageIndex > this.courtRegistry.size && this.courtRegistry.size < totalElement!) {
       await this.mockLoadCourts();
     }
     this.courtArray = Array.from(this.courtRegistry.values())
@@ -84,8 +95,25 @@ export default class CourtStore {
       .slice(startIndex, endIndex);
   };
 
-  private setCourt = (court: Court) => {
+  get courtListAllArray(){
+    return Array.from(this.courtListAllRegistry.values());
+  }
+
+  get courtListAllOptions(){
+    return this.courtListAllArray.map((courtCluster) => ({
+      value: courtCluster.id,
+      label: courtCluster.courtClusterName,
+    }));
+  }
+
+  private setCourt = (court: CourtCluster) => {
     this.courtRegistry.set(court.id, court);
+  };
+
+  private setCourtClusterListAll = (courtClusterListAll: CourtClusterListAll[]) => {
+    courtClusterListAll.forEach((c) => {
+      this.courtListAllRegistry.set(c.id, c);
+    });
   };
 
   private cleanCourtCache = () => {

@@ -1,4 +1,4 @@
-export interface Court {
+export interface CourtCluster {
   id: number;
   name: string;
   image: string;
@@ -8,7 +8,7 @@ export interface Court {
   services: string[];
 }
 
-export interface ICourt {
+export interface ICourtCluster {
   id: number;
   name: string;
   image: string;
@@ -16,4 +16,9 @@ export interface ICourt {
   location: string;
   status: string;
   createdAt: string;
+}
+
+export interface CourtClusterListAll{
+  id: number;
+  courtClusterName: string;
 }

@@ -6,12 +6,14 @@ import { toast } from 'react-toastify';
 import { User, UserFormValues, UserManager } from '../models/user.model';
 import { News } from '../models/news.models';
 import { Banner } from '../models/banner.model';
-import { Court, ICourt } from '../models/court.model';
+import { CourtCluster, CourtClusterListAll, ICourtCluster } from '../models/court.model';
 import { sleep } from '../helper/utils';
 import { Service } from '../models/service.model';
-import { Product } from '../models/product.model';
+import { Product, ProductCreate } from '../models/product.model';
 import { StaffPosition, StaffPosition as StaffPositions } from '../models/role.model';
 import { list } from '@chakra-ui/react';
+import { ImageUpload } from '../models/upload.model';
+import { ICategory } from '../models/category.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -106,19 +108,27 @@ const Roles = {
   list: (): Promise<string[]> => requests.get(`/role`),
 };
 
+const Categories = {
+  list: (): Promise<ICategory[]> => requests.get(`/category`),
+};
+
 const Products = {
   list: (queryParams: string = ''): Promise<PaginationModel<Product>> =>
     requests.get(`/product${queryParams}`),
+  create: (product: ProductCreate): Promise<Product> =>
+    requests.post(`/product`, product),
 };
 
-const CourtAgent = {
-  list: (): Promise<ICourt[]> => requests.get(`/courts`),
-  details: (id: number): Promise<Court> => requests.get(`/courts/${id}`),
-  create: (court: Court): Promise<void> => requests.post(`/courts`, court),
-  update: (court: Court): Promise<void> => requests.put(`/courts/${court.id}`, court),
+const CourtClusterAgent = {
+  listAll: (): Promise<CourtClusterListAll[]> => requests.get(`/courtCluster/list-all`),
+  details: (id: number): Promise<CourtCluster> => requests.get(`/courts/${id}`),
+  create: (court: CourtCluster): Promise<void> => requests.post(`/courts`, court),
+  update: (court: CourtCluster): Promise<void> => requests.put(`/courts/${court.id}`, court),
   delete: (id: number): Promise<void> => requests.del(`/courts/${id}`),
 };
-
+const UploadAgent = {
+  post: (file: FormData): Promise<ImageUpload> => requests.post(`/upload`, file),
+};
 const Account = {
   current: () => requests.get<User>('/account'),
   login: (user: UserFormValues) => requests.post<User>('/account/login', user),
@@ -139,13 +149,15 @@ const agent = {
   Account,
   NewsAgent,
   Banners,
-  Court: CourtAgent,
+  CourtClusterAgent,
   Services,
   Products,
   StaffPositions,
   Roles,
   Staffs,
-  Users
+  Users,
+  UploadAgent,
+  Categories,
 };
 
 export default agent;

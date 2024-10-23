@@ -36,7 +36,9 @@ const CreateBannerPage = () => {
     destination: '',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setBannerData({
       ...bannerData,
@@ -55,9 +57,19 @@ const CreateBannerPage = () => {
 
   return (
     <>
-      <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={onOpen}>
-            Thêm mới
-          </Button>
+      <Button
+        colorScheme="teal"
+        size="md"
+        leftIcon={<FaEdit />}
+        width="149px"
+        height="35px"
+        background="#FFF"
+        color="black"
+        border="1px solid #ADADAD"
+        onClick={onOpen}
+      >
+        Thêm mới
+      </Button>
 
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">
         <ModalOverlay />
@@ -65,7 +77,7 @@ const CreateBannerPage = () => {
           <ModalHeader bg="#00423D" color="white" borderRadius="20px 20px 0 0">
             Thêm Banner
           </ModalHeader>
-          <ModalCloseButton color='#FFF'/>
+          <ModalCloseButton color="#FFF" />
           <ModalBody>
             <VStack spacing="20px" align="stretch">
               {/* Phần nhập tiêu đề */}

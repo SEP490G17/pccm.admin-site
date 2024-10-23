@@ -1,4 +1,4 @@
-import { Field } from 'formik';
+import { FastField } from 'formik';
 import { FormControl, FormErrorMessage, FormLabel, Input, InputProps } from '@chakra-ui/react';
 
 interface FloatingInputProps extends InputProps {
@@ -7,7 +7,7 @@ interface FloatingInputProps extends InputProps {
 }
 function FloatingInputAtom({ label, ...props }: FloatingInputProps) {
   return (
-    <Field name={props.name}>
+    <FastField name={props.name}>
       {({ field, form }: any) => (
         <FormControl
           isInvalid={form.errors[field.name] && form.touched[field.name]}
@@ -49,7 +49,7 @@ function FloatingInputAtom({ label, ...props }: FloatingInputProps) {
           <FormErrorMessage paddingLeft={5}>{form.errors[field.name]}</FormErrorMessage>
         </FormControl>
       )}
-    </Field>
+    </FastField>
   );
 }
 
