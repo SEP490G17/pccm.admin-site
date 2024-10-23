@@ -13,7 +13,7 @@ import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
 import PlusIcon from '../atoms/PlusIcon';
 
 const ProductPage = observer(() => {
-  const { productStore } = useStore();
+  const { productStore, categoryStore, courtStore } = useStore();
   const {
     loadProducts,
     setLoadingInitial,
@@ -21,15 +21,17 @@ const ProductPage = observer(() => {
     productRegistry,
     setSearchTerm,
     loading,
+    loadingInitial,
   } = productStore;
-
+  const { loadCategories, categoryArray } = categoryStore;
   const [isPending, setIsPending] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     setLoadingInitial(true);
-
-    loadProducts().finally(() => setLoadingInitial(false));
+    Promise.all([loadProducts(), loadCategories(), courtStore.loadCourtClusterListAll()]).then(() =>
+      setLoadingInitial(false),
+    );
   }, []);
 
   const handleScroll = useCallback(() => {
@@ -95,6 +97,11 @@ const ProductPage = observer(() => {
             color="#03301F"
           >
             <option value="">Thể loại</option>
+            {categoryArray.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.categoryName}
+              </option>
+            ))}
           </Select>
         </Flex>
 
@@ -112,6 +119,7 @@ const ProductPage = observer(() => {
             Thêm mới
           </Button> */}
           <ButtonPrimaryAtoms
+            colorLevel={'900'}
             handleOnClick={onOpen}
             children={
               <Center gap={1}>

@@ -1,6 +1,6 @@
-import { Court } from "../models/court.model";
+import { CourtCluster } from "../models/court.model";
 
-export const sampleCourtData: Court[] = [
+export const sampleCourtData: CourtCluster[] = [
   {
     id: 1,
     name: 'BuiQuocTruong Court 1',

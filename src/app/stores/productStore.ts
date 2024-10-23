@@ -1,14 +1,13 @@
-import { Product } from './../models/product.model';
+import { Product, ProductCreate } from './../models/product.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleProductData } from '../mock/product.mock';
 import { PageParams } from '../models/pageParams.model';
 import { sleep } from '../helper/utils';
 import { toast } from 'react-toastify';
 import agent from '../api/agent';
-
+import _ from 'lodash';
 export default class ProductStore {
   productRegistry = new Map<number, Product>();
-  productArray: Product[] = [];
   selectedProduct: Product | undefined = undefined;
   loading: boolean = false;
   productPageParams = new PageParams();
@@ -25,31 +24,40 @@ export default class ProductStore {
   //#region CRUD
   loadProducts = async () => {
     this.loading = true;
-    try {
-      const queryParams = new URLSearchParams();
-      queryParams.append('skip', `${this.productPageParams.skip ?? 0}`);
-      queryParams.append('pageSize', `${this.productPageParams.pageSize}`);
-      if (this.productPageParams.searchTerm) {
-        queryParams.append('search', this.productPageParams.searchTerm);
-      }
-      if (this.productPageParams.filter) {
-        queryParams.append('filter', this.productPageParams.filter);
-      }
-      const { count, data } = await agent.Products.list(`?${queryParams.toString()}`);
-      runInAction(() => {
-        data.forEach(this.setProduct);
-
-        this.productPageParams.totalElement = count;
-        this.loadProductArray();
-        this.loading = false;
-      });
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.log(error);
-        toast.error('Error loading news');
-      });
+    const queryParams = new URLSearchParams();
+    queryParams.append('skip', `${this.productPageParams.skip ?? 0}`);
+    queryParams.append('pageSize', `${this.productPageParams.pageSize}`);
+    if (this.productPageParams.searchTerm) {
+      queryParams.append('search', this.productPageParams.searchTerm);
     }
+    if (this.productPageParams.filter) {
+      queryParams.append('filter', this.productPageParams.filter);
+    }
+    await runInAction(async () => {
+      await agent.Products.list(`?${queryParams.toString()}`)
+        .then(({ data, count }) => {
+          data.forEach(this.setProduct);
+          this.productPageParams.totalElement = count;
+        })
+        .catch((error) => {
+          console.error('Error loading products:', error);
+          toast.error('Load products fail!');
+        })
+        .finally(() => (this.loading = false));
+    });
+  };
+
+  createProduct = async (product: ProductCreate) => {
+    this.loading = true;
+    await runInAction(async () => {
+      await agent.Products.create(product)
+        .then(this.setProduct)
+        .catch((error) => {
+          console.error('Error creating product:', error);
+          toast.error('Create Product fail!');
+        })
+        .finally(() => (this.loading = false));
+    });
   };
 
   //#endregion
@@ -96,10 +104,9 @@ export default class ProductStore {
 
   //#region common
 
-  setLoadingInitial = (loading:boolean) =>{
-      this.loadingInitial = loading;
-  }
-
+  setLoadingInitial = (loading: boolean) => {
+    this.loadingInitial = loading;
+  };
 
   setSearchTerm = async (term: string) => {
     this.loadingInitial = true;
@@ -112,10 +119,8 @@ export default class ProductStore {
     this.loadingInitial = false;
   };
 
-  loadProductArray() {
-    runInAction(() => {
-      this.productArray = Array.from(this.productRegistry.values());
-    });
+  get productArray() {
+    return _.orderBy(Array.from(this.productRegistry.values()), ['id'], ['desc']);
   }
 
   //#region private methods

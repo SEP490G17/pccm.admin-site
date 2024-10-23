@@ -16,10 +16,6 @@ const Sidebar = () => {
     commonStore.setSelectedMenuItem(
       menuList.find((menu) => _.includes(location.pathname, menu.path))?.key ?? 1,
     );
-    console.log(
-      'get path: ',
-      menuList.find((menu) => _.includes(location.pathname, menu.path))?.key,
-    );
   }, []);
   return (
     <>

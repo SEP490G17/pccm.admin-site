@@ -5,6 +5,12 @@ import { Box, Button, Checkbox, Flex, Link } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 
+class Login {
+  username: string = '';
+  password: string = '';
+
+}
+
 function LoginFormComponent() {
   const validationSchema = Yup.object().shape({
     username: Yup.string().required('Username/SDT bắt buộc'),
@@ -17,7 +23,7 @@ function LoginFormComponent() {
   return (
     <>
       <Formik
-        initialValues={{ username: 'administrator', password: '123456aA@' }}
+        initialValues={new Login()}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
