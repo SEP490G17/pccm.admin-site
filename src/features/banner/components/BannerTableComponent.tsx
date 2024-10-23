@@ -3,7 +3,6 @@ import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import {
   Box,
   Center,
-  IconButton,
   Image,
   Spinner,
   Switch,
@@ -15,14 +14,15 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { FaEdit, FaTrash } from 'react-icons/fa';
 import { getBannerStatus } from '@/app/models/banner.model';
+import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
+import { toast } from 'react-toastify';
+import UpdateBannerPage from '../UpdateBannerPage';
 
 const BannerTableComponent = () => {
   const { bannerStore } = useStore();
-  const { loading, loadingInitial, bannerArray, bannerPageParams } = bannerStore;
+  const { loading, loadingInitial, bannerArray, bannerPageParams, deleteBanner } = bannerStore;
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -72,21 +72,19 @@ const BannerTableComponent = () => {
                   </Td>
                   <Td>
                     <Center>
-                      <IconButton
-                        key={`edit-banner${banner.id}`}
-                        icon={<FaEdit />}
-                        aria-label="Edit"
-                        colorScheme="teal"
-                        size="sm"
-                        mr={2}
-                      />
-                      <IconButton
-                        key={`delete-banner${banner.id}`}
-                        icon={<FaTrash />}
-                        aria-label="Delete"
-                        colorScheme="red"
-                        size="sm"
-                      />
+                      <UpdateBannerPage/>
+                      <DeleteButtonAtom name={banner.title} loading={loading} header='Xóa banner' onDelete={async () => {
+                        try {
+                          await deleteBanner(banner.id).then(
+                            () => {
+                              toast.success("Xóa thành công")
+                            }
+                          );
+                        } catch (error) {
+                          console.error("Error deleting news:", error);
+                          toast.error("Xóa thất bại")
+                        }
+                      }} />
                     </Center>
                   </Td>
                 </Tr>

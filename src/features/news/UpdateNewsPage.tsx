@@ -14,20 +14,19 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  Textarea,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import "./style.scss";
-import { Form, Formik } from "formik";
+import { FastField, Form, Formik } from "formik";
 import InputTag from "@/app/common/input/InputTag";
 import FileUpload from "@/app/common/input/FileUpload";
 import SelectComponent from "@/app/common/input/Select";
-import ReactQuillComponent from "@/app/common/input/ReactQuill";
 import { FaEdit } from "react-icons/fa";
 import { useStore } from "@/app/stores/store";
 import React, { useEffect, useState } from "react";
 import { News } from "@/app/models/news.models";
+import ReactQuillComponent from "@/app/common/input/ReactQuill";
 
 interface UpdateNewsPageProps {
   newsId: number;
@@ -38,13 +37,16 @@ const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
   const { newsStore } = useStore();
   const { detailNews } = newsStore;
   const [newsSelected, setNewsSelected] = useState<News | undefined>(undefined);
+
   const AxiosNewsDetail = async () => {
     const data = await detailNews(newsId);
     setNewsSelected(data);
   };
+
   useEffect(() => {
     AxiosNewsDetail();
-  }, []);
+  }, [newsId]);
+
   return (
     <>
       <IconButton
@@ -74,60 +76,66 @@ const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
                   location: newsSelected?.location || "",
                   status: newsSelected?.status || "",
                   tags: newsSelected?.tags || [],
-                  createAt: newsSelected?.createdAt || "",
+                  createdAt: newsSelected?.createdAt || "",
+                  content: newsSelected?.content || "",
                 }}
                 onSubmit={(values) => {
                   console.log(values);
                   // Handle the submit logic here
                 }}
               >
-                {(props) => (
+                {({ values, isSubmitting }) => (
                   <Form>
                     <FormControl isRequired>
-                      <FormLabel className="title_label">
-                        Tiêu đề bài viết
-                      </FormLabel>
-                      <Input
-                        className="input_text"
-                        type="text"
-                        name="title"
-                        placeholder="Nhập"
-                        value={props.values.title}
-                        onChange={props.handleChange}
-                      />
+                      <FormLabel className="title_label">Tiêu đề bài viết</FormLabel>
+                      <FastField name="title">
+                        {({ field }: any) => (
+                          <Input className="input_text" type="text" {...field} placeholder="Nhập" />
+                        )}
+                      </FastField>
                     </FormControl>
 
                     <FormControl>
                       <FormLabel className="title_label">Mô tả</FormLabel>
-                      <Textarea
-                        name="description"
-                        placeholder="Mô tả"
-                        className="input_text"
-                        value={props.values.description}
-                        onChange={props.handleChange}
-                      />
+                      <FastField name="content">
+                        {({ field }: any) => (
+                          <Input
+                            placeholder="Mô tả"
+                            className="input_text"
+                            {...field}
+                          />
+                        )}
+                      </FastField>
                     </FormControl>
 
                     <HStack>
                       <FormControl>
-                        <FormLabel className="title_label">
-                          Danh mục bài viết
-                        </FormLabel>
-                        <SelectComponent items={[{ id: 1, name: 'Pickerball' }, { id: 2, name: 'FPT' }]} onSelectChange={props.handleChange} categoryValue={"FPT"} />
+                        <FormLabel className="title_label">Danh mục bài viết</FormLabel>
+                        <FastField name="category">
+                          {({ field }: any) => (
+                            <SelectComponent
+                              items={[{ id: 1, name: 'Pickerball' }, { id: 2, name: 'FPT' }]}
+                              {...field}
+                              onSelectChange={(value) => {
+                                field.onChange({ target: { name: field.name, value } });
+                              }}
+                            />
+                          )}
+                        </FastField>
                       </FormControl>
                       <FormControl>
-                        <FormLabel className="title_label">
-                          Tag bài viết
-                        </FormLabel>
-                        <InputTag tags={props.values.tags} />
+                        <FormLabel className="title_label">Tag bài viết</FormLabel>
+                        <InputTag tags={values.tags} />
                       </FormControl>
                     </HStack>
 
                     <FormControl>
-                      <FormLabel className="title_label">
-                        Ảnh banner
-                      </FormLabel>
-                      <FileUpload name="images" ImageUrl={props.values.thumbnail ? [props.values.thumbnail] : []} />
+                      <FormLabel className="title_label">Ảnh banner</FormLabel>
+                      <FastField name="thumbnail">
+                        {({ field }: any) => (
+                          <FileUpload ImageUrl={field.value ? [field.value] : []} />
+                        )}
+                      </FastField>
                     </FormControl>
 
                     <FormControl>
@@ -136,47 +144,49 @@ const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
                         <Badge colorScheme="green" fontSize="1em" padding="8px 16px">
                           Giờ bắt đầu
                         </Badge>
-                        <Input
-                          type="datetime-local"
-                          name="startDate"
-                          bg="#FFF"
-                          width="200px"
-                          value={props.values.startTime}
-                          onChange={props.handleChange}
-                        />
+                        <FastField name="startTime">
+                          {({ field }: any) => (
+                            <Input
+                              type="datetime-local"
+                              bg="#FFF"
+                              width="200px"
+                              {...field}
+                            />
+                          )}
+                        </FastField>
 
                         <Badge colorScheme="red" fontSize="1em" padding="8px 16px">
                           Giờ kết thúc
                         </Badge>
-                        <Input
-                          type="datetime-local"
-                          name="endDate"
-                          bg="#FFF"
-                          width="200px"
-                          value={props.values.endTime}
-                          onChange={props.handleChange}
-                        />
+                        <FastField name="endTime">
+                          {({ field }: any) => (
+                            <Input
+                              type="datetime-local"
+                              bg="#FFF"
+                              width="200px"
+                              {...field}
+                            />
+                          )}
+                        </FastField>
                       </HStack>
                     </FormControl>
 
-                    <FormLabel className="title_label">
-                      Chi tiết bài viết
-                    </FormLabel>
+                    <FormLabel className="title_label">Chi tiết bài viết</FormLabel>
                     <Box>
                       <Box mb='7rem'>
-                        <ReactQuillComponent />
+                        <ReactQuillComponent content={values.description} />
                       </Box>
                       <Stack direction='row' justifyContent='flex-end'>
                         <Button
                           className="delete"
-                          isLoading={props.isSubmitting}
+                          isLoading={isSubmitting}
                           type="button"
                         >
                           Xóa
                         </Button>
                         <Button
                           className="save"
-                          isLoading={props.isSubmitting}
+                          isLoading={isSubmitting}
                           type="submit"
                         >
                           Lưu
@@ -188,7 +198,6 @@ const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
               </Formik>
             </VStack>
           </ModalBody>
-
         </ModalContent>
       </Modal>
     </>

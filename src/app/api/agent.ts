@@ -95,7 +95,7 @@ const Services = {
     requests.get(`/service${queryParams}`),
   // create: (service: Banner): Promise<void> => requests.post(`/service`, banner),
   // update: (banner: Banner): Promise<void> => requests.put(`/service/${banner.id}`, banner),
-  // delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
+  delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
 };
 const StaffPositions = {
   list: (): Promise<StaffPosition[]> => requests.get(`/staffPosition`),
@@ -108,6 +108,7 @@ const Roles = {
 const Products = {
   list: (queryParams: string = ''): Promise<PaginationModel<Product>> =>
     requests.get(`/product${queryParams}`),
+  delete: (id: number): Promise<void> => requests.del(`/product/${id}`),
 };
 
 const CourtAgent = {

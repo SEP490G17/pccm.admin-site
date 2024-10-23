@@ -89,6 +89,7 @@ export default class BannerStore {
       runInAction(() => {
         this.bannerRegistry.delete(id);
         this.loading = false;
+        this.loadBannerArray()
       });
     } catch (error) {
       runInAction(() => {

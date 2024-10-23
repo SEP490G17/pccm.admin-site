@@ -1,7 +1,14 @@
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css';
 import "./style.scss";
-const ReactQuillComponent = () => {
+import React from 'react';
+import { InputProps } from '@chakra-ui/react';
+
+interface ContentsProps extends InputProps{
+    content? : string;
+}
+
+const ReactQuillComponent : React.FC<ContentsProps> = (props?) => {
     const toolbarOptions = [
         [{ 'font': [] }],
         // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
@@ -23,7 +30,7 @@ const ReactQuillComponent = () => {
     }
 
     return (
-        <ReactQuill theme="snow" modules={modules} className='quill'/>
+        <ReactQuill theme="snow" modules={modules} className='quill' value={props?.content}/>
     )
 }
 

@@ -54,6 +54,23 @@ export default class ProductStore {
 
   //#endregion
 
+  deleteProduct = async (id: number) => {
+    this.loading = true;
+    try {
+      await agent.Products.delete(id);
+      runInAction(() => {
+        this.productRegistry.delete(id);
+        this.loading = false;
+        this.loadProductArray()
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+        console.error('Error deleting news:', error);
+      });
+    }
+  };
+
   //#region mock-up
   mockLoadProducts = async () => {
     this.loading = true;

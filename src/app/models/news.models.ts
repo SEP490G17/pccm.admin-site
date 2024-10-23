@@ -9,4 +9,5 @@ export interface News {
   status: number;
   tags: string[];
   createdAt: string;
+  content: string;
 }

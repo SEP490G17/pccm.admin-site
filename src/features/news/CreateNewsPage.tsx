@@ -59,6 +59,7 @@ const CreateNewsPage = () => {
                         className="input_text"
                         type="text"
                         name="title"
+                        onChange={props.handleChange}
                         placeholder="Nhập"
                       />
                     </FormControl>
