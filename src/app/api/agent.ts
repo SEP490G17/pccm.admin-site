@@ -4,7 +4,7 @@ import { router } from '../router/Routes';
 import { store } from '../stores/store';
 import { toast } from 'react-toastify';
 import { User, UserFormValues, UserManager } from '../models/user.model';
-import { News } from '../models/news.models';
+import { News, NewsDTO } from '../models/news.models';
 import { Banner } from '../models/banner.model';
 import { CourtCluster, CourtClusterListAll, ICourtCluster } from '../models/court.model';
 import { sleep } from '../helper/utils';
@@ -82,8 +82,8 @@ const NewsAgent = {
   list: (queryParams: string = ''): Promise<PaginationModel<News>> =>
     requests.get(`/news${queryParams}`),
   details: (id: number): Promise<News> => requests.get(`/news/${id}`),
-  create: (news: News): Promise<void> => requests.post(`/news`, news),
-  update: (news: News): Promise<void> => requests.put(`/news/${news.id}`, news),
+  create: (news: NewsDTO): Promise<News> => requests.post(`/news`, news),
+  update: (news: NewsDTO, newsId : number): Promise<News> => requests.put(`/news/${newsId}`, news),
   delete: (id: number): Promise<void> => requests.del(`/news/${id}`),
 };
 const Banners = {
@@ -98,7 +98,7 @@ const Services = {
     requests.get(`/service${queryParams}`),
   // create: (service: Banner): Promise<void> => requests.post(`/service`, banner),
   // update: (banner: Banner): Promise<void> => requests.put(`/service/${banner.id}`, banner),
-  // delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
+  delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
 };
 const StaffPositions = {
   list: (): Promise<StaffPosition[]> => requests.get(`/staffPosition`),
@@ -117,6 +117,7 @@ const Products = {
     requests.get(`/product${queryParams}`),
   create: (product: ProductCreate): Promise<Product> =>
     requests.post(`/product`, product),
+  delete: (id: number): Promise<void> => requests.del(`/product/${id}`),
 };
 
 const CourtClusterAgent = {

@@ -1,30 +1,43 @@
-import ReactQuill from 'react-quill'
+import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import "./style.scss";
-const ReactQuillComponent = () => {
-    const toolbarOptions = [
-        [{ 'font': [] }],
-        // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-        [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-        [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-        ['blockquote', 'code-block'],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
-        [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-        [{ 'direction': 'rtl' }],                         // text direction
-        [{ 'align': [] }],
-        ['link', 'image', 'video', 'formula'],
-        ['clean']                                         // remove formatting button
-      ];
-    const modules = {
-        toolbar: toolbarOptions
-    }
+import React from 'react';
 
-    return (
-        <ReactQuill theme="snow" modules={modules} className='quill'/>
-    )
+interface ContentsProps{
+    content?: string;
+    onChange: (value: string) => void;
 }
 
-export default ReactQuillComponent
+const ReactQuillComponent: React.FC<ContentsProps> = ({ content, onChange }) => {
+    const toolbarOptions = [
+        [{ 'font': [] }],
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'script': 'sub'}, { 'script': 'super' }],
+        [{ 'header': 1 }, { 'header': 2 }],
+        ['blockquote', 'code-block'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'list': 'check' }],
+        [{ 'indent': '-1'}, { 'indent': '+1' }],
+        [{ 'direction': 'rtl' }],
+        [{ 'align': [] }],
+        ['link', 'image', 'video', 'formula'],
+        ['clean']
+    ];
+
+    const modules = {
+        toolbar: toolbarOptions
+    };
+
+    return (
+        <ReactQuill
+            theme="snow"
+            modules={modules}
+            className='quill'
+            value={content}
+            onChange={onChange}
+        />
+    );
+}
+
+export default ReactQuillComponent;

@@ -53,6 +53,23 @@ export default class ServiceStore {
   };
   //#endregion
 
+  deleteService = async (id: number) => {
+    this.loading = true;
+    try {
+      await agent.Services.delete(id);
+      runInAction(() => {
+        this.serviceRegistry.delete(id);
+        this.loading = false;
+        this.loadServiceArray()
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+        console.error('Error deleting news:', error);
+      });
+    }
+  };
+
   //#region mock-up
   mockLoadServices = async () => {
     this.loading = true;

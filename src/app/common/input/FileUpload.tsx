@@ -17,7 +17,7 @@ import { useStore } from '@/app/stores/store';
 
 interface FileUploadProps extends InputProps {
   name?: string;
-  ImageUrl?: string[];
+  ImageUrl?: string | null;
   limit?: number;
   label?: string;
 }
@@ -29,11 +29,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
   label,
 }: FileUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [fileNames, setFileNames] = useState<string[]>(ImageUrl || []);
+  const [fileNames, setFileNames] = useState<string[]>(ImageUrl ? [ImageUrl] : []);
   // Sử dụng useField để lấy field của Formik
   const [, , helpers] = useField(name);
   const { uploadStore } = useStore();
-  const {loading, upImage, imageRegistry} = uploadStore;
+  const { loading, upImage, imageRegistry } = uploadStore;
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {

@@ -18,11 +18,11 @@ import {
 import { observer } from 'mobx-react-lite';
 import UpdateNewsPage from '../UpdateNewsPage';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
+import { toast } from "react-toastify";
 
 const NewsTableComponent = () => {
   const { newsStore } = useStore();
-  const { newsPageParams, newsArray, loading, loadingInitial } = newsStore;
-
+  const { newsPageParams, newsArray, loading, loadingInitial, deleteNews } = newsStore;
   return (
     <>
       <TableContainer
@@ -72,13 +72,24 @@ const NewsTableComponent = () => {
                   </Td>
 
                   <Td>
-                      <Switch isChecked={news.status == 1} />
+                    <Switch isChecked={news.status == 1} />
                   </Td>
                   <Td>{news.createdAt}</Td>
                   <Td>
                     <Center>
-                      <UpdateNewsPage newsId={news.id}/>
-                      <DeleteButtonAtom propId={news.id} header='Xóa tin tức'/>
+                      <UpdateNewsPage newsId={news.id} />
+                      <DeleteButtonAtom name={news.title} loading={loading} header='Xóa tin tức' onDelete={async () => {
+                        try {
+                          await deleteNews(news.id).then(
+                            () => {
+                              toast.success("Xóa thành công")
+                            }
+                          );
+                        } catch (error) {
+                          console.error("Error deleting news:", error);
+                          toast.error("Xóa thất bại")
+                        }
+                      }} />
                     </Center>
                   </Td>
                 </Tr>

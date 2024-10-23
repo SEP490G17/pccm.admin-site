@@ -13,12 +13,14 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 import { useStore } from '@/app/stores/store';
+import { toast } from 'react-toastify';
+import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 
 const ServiceTableComponent = () => {
   const { serviceStore } = useStore();
-  const { serviceArray, servicePageParams, loading, loadingInitial } = serviceStore;
+  const { serviceArray, servicePageParams, loading, loadingInitial,deleteService } = serviceStore;
 
   return (
     <>
@@ -79,12 +81,18 @@ const ServiceTableComponent = () => {
                       size="sm"
                       mr={2}
                     />
-                    <IconButton
-                      icon={<FaTrash />}
-                      aria-label="Delete"
-                      colorScheme="red"
-                      size="sm"
-                    />
+                    <DeleteButtonAtom name={service.serviceName} loading={loading} header='Xóa dịch vụ' onDelete={async () => {
+                        try {
+                          await deleteService(service.id).then(
+                            () => {
+                              toast.success("Xóa thành công")
+                            }
+                          );
+                        } catch (error) {
+                          console.error("Error deleting news:", error);
+                          toast.error("Xóa thất bại")
+                        }
+                      }} />
                   </Td>
                 </Tr>
               ))}

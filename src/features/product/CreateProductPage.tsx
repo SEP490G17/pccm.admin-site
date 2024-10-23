@@ -31,7 +31,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
     productName: Yup.string().required('Tên sản phẩm không được bỏ trống'),
     quantity: Yup.number().required('Số lượng không được bỏ trống'),
     price: Yup.number().required('Giả cả không được bỏ trống'),
-    thumbnail: Yup.array().required('Ảnh không được bỏ trống'),
+    thumbnail: Yup.string().required('Ảnh không được bỏ trống'),
     description: Yup.string().required('Mô tả không được bỏ trống'),
     category: Yup.number().required('Thể loại không được bỏ trống'),
     courtCluster: Yup.number().required('Khu không được bỏ trống'),
@@ -39,7 +39,6 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
   const { categoryStore, courtStore, productStore,uploadStore } = useStore();
   const { categoryOption } = categoryStore;
   const { courtListAllOptions } = courtStore;
-  console.log(categoryOption);
   return (
     <Modal isOpen={isOpen} onClose={()=>{uploadStore.loading = false; onClose()}} size="6xl">
       <ModalOverlay />
@@ -55,10 +54,10 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                 productName: '',
                 quantity: 2,
                 price: 1,
-                thumbnail: ['https://res.cloudinary.com/dasy5hwz4/image/upload/v1729663071/k59etp5bumbc3pfd29bf.jpg'],
+                thumbnail: '',
                 description: '',
                 category: categoryOption[0]?.value ?? 1,
-                courtCluster:courtListAllOptions[0]?.value ?? 1,
+                courtCluster: courtListAllOptions[0]?.value ?? 1,
               }}
               onSubmit={async (values) => {
                 const product = new ProductCreate({
