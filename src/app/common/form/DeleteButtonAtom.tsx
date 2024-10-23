@@ -6,14 +6,14 @@ import { toast } from "react-toastify";
 
 interface DeleteProps extends InputProps {
     header?: string,
-    propId: number
+    propId: number,
+    onHandleDelete: () => Promise<void>;
+    loading?: boolean;
 }
 
 const DeleteButtonAtom: React.FC<DeleteProps> = (props) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const cancelRef = React.useRef<HTMLButtonElement | null>(null);
-    const { newsStore } = useStore();
-    const { deleteNews, loading } = newsStore;
     return (
         <>
             <IconButton
@@ -45,19 +45,15 @@ const DeleteButtonAtom: React.FC<DeleteProps> = (props) => {
                             </Button>
                             <Button colorScheme='red'
                                 onClick={async () => {
-                                    try {
-                                        await deleteNews(props.propId).then(
-                                            () => {
-                                                onClose()
-                                                toast.success("Xóa thành công")
-                                            }
-                                        );
-                                    } catch (error) {
-                                        console.error("Error deleting news:", error);
+                                        await props.onHandleDelete().then(()=>{
+                                            onClose()
+                                            toast.success("Xóa thành công")
+                                        }).catch((error)=>{
+                                            console.error(`${props.header}`, error);
                                         toast.error("Xóa thất bại")
-                                    }
+                                        })
                                 }}
-                                isLoading={loading}
+                                isLoading={props.loading}
                                 ml={3}>
                                 Xóa
                             </Button>

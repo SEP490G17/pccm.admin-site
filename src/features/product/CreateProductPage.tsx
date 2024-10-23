@@ -36,12 +36,12 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
     category: Yup.number().required('Thể loại không được bỏ trống'),
     courtCluster: Yup.number().required('Khu không được bỏ trống'),
   });
-  const { categoryStore, courtStore, productStore } = useStore();
+  const { categoryStore, courtStore, productStore,uploadStore } = useStore();
   const { categoryOption } = categoryStore;
   const { courtListAllOptions } = courtStore;
   console.log(categoryOption);
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="6xl">
+    <Modal isOpen={isOpen} onClose={()=>{uploadStore.loading = false; onClose()}} size="6xl">
       <ModalOverlay />
       <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
         <ModalHeader bg="#00423D" color="white" borderRadius="20px 20px 0 0">
@@ -74,7 +74,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
               }}
               validationSchema={validationSchema}
             >
-              {({ handleSubmit, isValid, isSubmitting, dirty }) => (
+              {({ handleSubmit, isValid, isSubmitting }) => (
                 <Form onSubmit={handleSubmit}>
                   <TextFieldAtoms
                     isRequired={true}
@@ -145,7 +145,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                       Xóa
                     </Button>
                     <Button
-                      disabled={isSubmitting || !isValid }
+                      disabled={isSubmitting || !isValid || uploadStore.loading }
                       className="save"
                       isLoading={isSubmitting}
                       type="submit"

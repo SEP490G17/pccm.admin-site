@@ -13,7 +13,6 @@ import {
 import { CloseIcon } from '@chakra-ui/icons';
 import { useField } from 'formik';
 import { toast } from 'react-toastify';
-import agent from '@/app/api/agent';
 import { useStore } from '@/app/stores/store';
 
 interface FileUploadProps extends InputProps {
@@ -39,8 +38,11 @@ const FileUpload: React.FC<FileUploadProps> = ({
     const files = event.target.files;
     if (files) {
       if (limit == 1) {        
-        setFileNames([files[0].name]);
-        await upImage(files[0], files[0].name);
+        const check = imageRegistry.get(files[0].name);
+        if(!check){
+          setFileNames([files[0].name]);
+          await upImage(files[0], files[0].name);
+        }
         helpers.setValue([imageRegistry.get(files[0].name)?.url]);
       } else {
         if (fileNames.length >= limit) {
