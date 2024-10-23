@@ -3,7 +3,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { router } from '../router/Routes';
 import { store } from '../stores/store';
 import { toast } from 'react-toastify';
-import { User, UserFormValues } from '../models/user.model';
+import { User, UserFormValues, UserManager } from '../models/user.model';
 import { News } from '../models/news.models';
 import { Banner } from '../models/banner.model';
 import { Court, ICourt } from '../models/court.model';
@@ -77,7 +77,8 @@ const requests = {
 };
 
 const NewsAgent = {
-  list: (queryParams:string = ''): Promise<PaginationModel<News>> => requests.get(`/news${queryParams}`),
+  list: (queryParams: string = ''): Promise<PaginationModel<News>> =>
+    requests.get(`/news${queryParams}`),
   details: (id: number): Promise<News> => requests.get(`/news/${id}`),
   create: (news: News): Promise<void> => requests.post(`/news`, news),
   update: (news: News): Promise<void> => requests.put(`/news/${news.id}`, news),
@@ -125,9 +126,14 @@ const Account = {
   register: (user: UserFormValues) => requests.post<User>('/account/register', user),
 };
 
+const Users = {
+  list: (queryParams: string = ''): Promise<PaginationModel<UserManager>> =>
+    requests.get(`/user${queryParams}`),
+};
+
 const Staffs = {
-  list: (): Promise<any> => requests.get('/staff')
-}
+  list: (): Promise<any> => requests.get('/staff'),
+};
 
 const agent = {
   requests,
@@ -139,7 +145,8 @@ const agent = {
   Products,
   StaffPositions,
   Roles,
-  Staffs
+  Staffs,
+  Users
 };
 
 export default agent;

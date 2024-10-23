@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Flex, Select, Button, useDisclosure } from '@chakra-ui/react';
+import { Flex, Select, useDisclosure, Center } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -9,7 +9,8 @@ import { debounce } from 'lodash';
 import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
 import ProductTableComponent from './components/ProductTableComponent';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
-import { FaEdit } from 'react-icons/fa';
+import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
+import PlusIcon from '../atoms/PlusIcon';
 
 const ProductPage = observer(() => {
   const { productStore } = useStore();
@@ -65,63 +66,72 @@ const ProductPage = observer(() => {
 
   return (
     <>
-        <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách sản phẩm', to: '/hang-hoa' }]} />
+      <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách sản phẩm', to: '/hang-hoa' }]} />
 
-        <Flex
-          width="100%"
-          justifyContent="space-between"
-          alignItems={'center'}
-          mb="1.5rem"
-          flexWrap={'wrap'}
-        >
-          <Flex flexWrap={'wrap'}  gap={'1rem'}>
-            <Select
-              size={'md'}
-              borderRadius="4px"
-              w={'10rem'}
-              border="1px solid #ADADAD"
-              bg="#FFF"
-              color="#03301F"
-            >
-              <option value="">Cụm sân</option>
-            </Select>
-            <Select
-              size={'md'}
-              borderRadius="4px"
-              w={'10rem'}
-              border="1px solid #ADADAD"
-              bg="#FFF"
-              color="#03301F"
-            >
-              <option value="">Thể loại</option>
-            </Select>
-          </Flex>
-
-          <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
-            <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
-            <Button
-              colorScheme="teal"
-              variant={'outline'}
-              size="md"
-              leftIcon={<FaEdit />}
-              bg={'white'}
-              border="1px solid #ADADAD"
-              onClick={onOpen}
-            >
-              Thêm mới
-            </Button>
-          </Flex>
+      <Flex
+        width="100%"
+        justifyContent="space-between"
+        alignItems={'center'}
+        mb="1.5rem"
+        flexWrap={'wrap'}
+      >
+        <Flex flexWrap={'wrap'} gap={'1rem'}>
+          <Select
+            size={'md'}
+            borderRadius="4px"
+            w={'10rem'}
+            border="1px solid #ADADAD"
+            bg="#FFF"
+            color="#03301F"
+          >
+            <option value="">Cụm sân</option>
+          </Select>
+          <Select
+            size={'md'}
+            borderRadius="4px"
+            w={'10rem'}
+            border="1px solid #ADADAD"
+            bg="#FFF"
+            color="#03301F"
+          >
+            <option value="">Thể loại</option>
+          </Select>
         </Flex>
-        <ProductTableComponent />
 
-        <LoadMoreButtonAtoms
-          handleOnClick={() => {
-            productPageParams.skip = productRegistry.size;
-            loadProducts();
-          }}
-          hidden={productRegistry.size >= productPageParams.totalElement}
-          loading={loading}
-        />
+        <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
+          <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
+          {/* <Button
+            colorScheme="teal"
+            variant={'outline'}
+            size="md"
+            leftIcon={<FaEdit />}
+            bg={'white'}
+            border="1px solid #ADADAD"
+            onClick={onOpen}
+          >
+            Thêm mới
+          </Button> */}
+          <ButtonPrimaryAtoms
+            handleOnClick={onOpen}
+            children={
+              <Center gap={1}>
+                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+                Thêm mới
+              </Center>
+            }
+          />
+        </Flex>
+      </Flex>
+      <ProductTableComponent />
+
+      <LoadMoreButtonAtoms
+        handleOnClick={() => {
+          productPageParams.skip = productRegistry.size;
+          loadProducts();
+        }}
+        hidden={productRegistry.size >= productPageParams.totalElement}
+        loading={loading}
+      />
       <CreateProductPage isOpen={isOpen} onClose={onClose} />
     </>
   );

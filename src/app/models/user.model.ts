@@ -9,13 +9,12 @@ export interface UserFormValues {
   displayName?: string;
 }
 export interface UserManager {
-  id: number;
+  fullName: string;
   username: string;
   email: string;
-  role: string;
-  createdDate: string;
-  lastLoginDate: string;
-  status: string;
-  isActivated: boolean;
-  actions?: string[];
+  phoneNumber: string;
+  lockoutEnable: boolean;
+  lockoutEnd: boolean;
+  isDisabled: boolean;
 }
+

@@ -5,5 +5,6 @@ export interface Staff {
   phoneNumber: string;    
   position: string;       
   roles: string[];    
-  shift: string;              
+  shift: string;
+  courtCluster: string[];              
 }
