@@ -4,7 +4,7 @@ import { router } from '../router/Routes';
 import { store } from '../stores/store';
 import { toast } from 'react-toastify';
 import { User, UserFormValues, UserManager } from '../models/user.model';
-import { News } from '../models/news.models';
+import { News, NewsDTO } from '../models/news.models';
 import { Banner } from '../models/banner.model';
 import { CourtCluster, CourtClusterListAll, ICourtCluster } from '../models/court.model';
 import { sleep } from '../helper/utils';
@@ -82,8 +82,8 @@ const NewsAgent = {
   list: (queryParams: string = ''): Promise<PaginationModel<News>> =>
     requests.get(`/news${queryParams}`),
   details: (id: number): Promise<News> => requests.get(`/news/${id}`),
-  create: (news: News): Promise<void> => requests.post(`/news`, news),
-  update: (news: News): Promise<void> => requests.put(`/news/${news.id}`, news),
+  create: (news: NewsDTO): Promise<News> => requests.post(`/news`, news),
+  update: (news: NewsDTO, newsId : number): Promise<News> => requests.put(`/news/${newsId}`, news),
   delete: (id: number): Promise<void> => requests.del(`/news/${id}`),
 };
 const Banners = {

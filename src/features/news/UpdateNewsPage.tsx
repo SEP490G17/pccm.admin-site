@@ -1,12 +1,9 @@
 import {
-  Badge,
-  Box,
   Button,
   FormControl,
   FormLabel,
   HStack,
   IconButton,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -18,15 +15,18 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import "./style.scss";
-import { FastField, Form, Formik } from "formik";
-import InputTag from "@/app/common/input/InputTag";
-import FileUpload from "@/app/common/input/FileUpload";
-import SelectComponent from "@/app/common/input/Select";
+import { Form, Formik } from "formik";
 import { FaEdit } from "react-icons/fa";
 import { useStore } from "@/app/stores/store";
 import React, { useEffect, useState } from "react";
-import { News } from "@/app/models/news.models";
-import ReactQuillComponent from "@/app/common/input/ReactQuill";
+import { News, NewsDTO } from "@/app/models/news.models";
+import * as Yup from 'yup';
+import TextFieldAtoms from "@/app/common/form/TextFieldAtoms";
+import TagFieldAtom from "@/app/common/form/TagFieldAtom";
+import FileUploadFieldAtoms from "@/app/common/form/FileUploadFieldAtoms";
+import TimeInputAtom from "@/app/common/form/TimeInputAtom";
+import ReactQuillAtom from "@/app/common/form/ReactQuillAtom";
+import { dateFormatOptions } from "@/app/helper/settings";
 
 interface UpdateNewsPageProps {
   newsId: number;
@@ -36,8 +36,16 @@ const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { newsStore } = useStore();
   const { detailNews } = newsStore;
-  const [newsSelected, setNewsSelected] = useState<News | undefined>(undefined);
-
+  const [newsSelected, setNewsSelected] = useState<News>();
+  const validationSchema = Yup.object().shape({
+    title: Yup.string().required('Tiêu đề bài viết không được bỏ trống'),
+    tags: Yup.array().required('Tag không được bỏ trống'),
+    description: Yup.string().required('Mô tả không được bỏ trống'),
+    thumbnail: Yup.string().required('Ảnh banner không được bỏ trống'),
+    startTime: Yup.string().required('Giờ bắt đầu không được bỏ trống'),
+    endTime: Yup.string().required('Giờ kết thúc không được bỏ trống'),
+    content: Yup.string().required('Chi tiết bài viết không được bỏ trống'),
+  });
   const AxiosNewsDetail = async () => {
     const data = await detailNews(newsId);
     setNewsSelected(data);
@@ -79,112 +87,82 @@ const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
                   createdAt: newsSelected?.createdAt || "",
                   content: newsSelected?.content || "",
                 }}
-                onSubmit={(values) => {
-                  console.log(values);
-                  // Handle the submit logic here
+                onSubmit={async (values) => {
+                  console.error(values)
+                  const News = new NewsDTO({
+                    title: values.title,
+                    description: values.description,
+                    tags: values.tags,
+                    thumbnail: values.thumbnail,
+                    startTime: values.startTime,
+                    endTime: values.endTime,
+                    location: values.location,
+                    content: values.content,
+                    createAt: new Date().toLocaleString('vi-VN', dateFormatOptions).trim(),
+                    status: 1
+                  });
+                  await newsStore.updateNews(News, newsId);
+                  onClose()
                 }}
+                validationSchema={validationSchema}
               >
-                {({ values, isSubmitting }) => (
-                  <Form>
-                    <FormControl isRequired>
-                      <FormLabel className="title_label">Tiêu đề bài viết</FormLabel>
-                      <FastField name="title">
-                        {({ field }: any) => (
-                          <Input className="input_text" type="text" {...field} placeholder="Nhập" />
-                        )}
-                      </FastField>
-                    </FormControl>
+                {({ handleSubmit, isSubmitting, isValid, errors }) => {
+                  // Logging để kiểm tra isValid và errors
+                  console.log('Is Valid:', isValid);
+                  console.log('Errors:', errors);
 
-                    <FormControl>
-                      <FormLabel className="title_label">Mô tả</FormLabel>
-                      <FastField name="content">
-                        {({ field }: any) => (
-                          <Input
-                            placeholder="Mô tả"
-                            className="input_text"
-                            {...field}
-                          />
-                        )}
-                      </FastField>
-                    </FormControl>
+                  return (
+                    <Form onSubmit={handleSubmit}>
+                      <TextFieldAtoms
+                        isRequired={true}
+                        label="Tiêu đề bài viết"
+                        className="input_text"
+                        type="text"
+                        name="title"
+                        placeholder="Nhập" />
 
-                    <HStack>
-                      <FormControl>
-                        <FormLabel className="title_label">Danh mục bài viết</FormLabel>
-                        <FastField name="category">
-                          {({ field }: any) => (
-                            <SelectComponent
-                              items={[{ id: 1, name: 'Pickerball' }, { id: 2, name: 'FPT' }]}
-                              {...field}
-                              onSelectChange={(value) => {
-                                field.onChange({ target: { name: field.name, value } });
-                              }}
-                            />
-                          )}
-                        </FastField>
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel className="title_label">Tag bài viết</FormLabel>
-                        <InputTag tags={values.tags} />
-                      </FormControl>
-                    </HStack>
+                      <TextFieldAtoms
+                        isRequired={true}
+                        label="Mô tả"
+                        className="input_text"
+                        type="text"
+                        name="description"
+                        placeholder="Nhập" />
 
-                    <FormControl>
-                      <FormLabel className="title_label">Ảnh banner</FormLabel>
-                      <FastField name="thumbnail">
-                        {({ field }: any) => (
-                          <FileUpload ImageUrl={field.value ? [field.value] : []} />
-                        )}
-                      </FastField>
-                    </FormControl>
+                      <HStack>
+                        <TextFieldAtoms
+                          isRequired={true}
+                          label="Địa điểm"
+                          className="input_text"
+                          type="text"
+                          name="location"
+                          placeholder="Nhập" />
 
-                    <FormControl>
-                      <FormLabel className="title_label">Thời gian</FormLabel>
-                      <HStack spacing="20px">
-                        <Badge colorScheme="green" fontSize="1em" padding="8px 16px">
-                          Giờ bắt đầu
-                        </Badge>
-                        <FastField name="startTime">
-                          {({ field }: any) => (
-                            <Input
-                              type="datetime-local"
-                              bg="#FFF"
-                              width="200px"
-                              {...field}
-                            />
-                          )}
-                        </FastField>
+                        <TagFieldAtom name="tags" label="Tags bài viết" isRequired={false}></TagFieldAtom>
 
-                        <Badge colorScheme="red" fontSize="1em" padding="8px 16px">
-                          Giờ kết thúc
-                        </Badge>
-                        <FastField name="endTime">
-                          {({ field }: any) => (
-                            <Input
-                              type="datetime-local"
-                              bg="#FFF"
-                              width="200px"
-                              {...field}
-                            />
-                          )}
-                        </FastField>
                       </HStack>
-                    </FormControl>
 
-                    <FormLabel className="title_label">Chi tiết bài viết</FormLabel>
-                    <Box>
-                      <Box mb='7rem'>
-                        <ReactQuillComponent content={values.description} />
-                      </Box>
+                      <FileUploadFieldAtoms
+                        label="Ảnh banner"
+                        limit={1}
+                        name="thumbnail"
+                        isRequired={true}
+                        imageUrl={newsSelected?.thumbnail}
+                      />
+
+                      <FormControl>
+                        <FormLabel className="title_label">Thời gian</FormLabel>
+                        <HStack spacing="20px">
+                          <TimeInputAtom color='green' label='Giờ bắt đầu' type='datetime-local' name='startTime'></TimeInputAtom>
+                          <TimeInputAtom color='red' label='Giờ kết thúc' type='datetime-local' name='endTime'></TimeInputAtom>
+                        </HStack>
+                      </FormControl>
+
+                      <ReactQuillAtom name="content" label="Chi tiết bài viết" isRequired={true}></ReactQuillAtom>
+
                       <Stack direction='row' justifyContent='flex-end'>
                         <Button
-                          className="delete"
-                          isLoading={isSubmitting}
-                          type="button"
-                        >
-                          Xóa
-                        </Button>
-                        <Button
+                          disabled={isSubmitting || !isValid}
                           className="save"
                           isLoading={isSubmitting}
                           type="submit"
@@ -192,9 +170,10 @@ const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
                           Lưu
                         </Button>
                       </Stack>
-                    </Box>
-                  </Form>
-                )}
+                    </Form>
+                  )
+                }
+                }
               </Formik>
             </VStack>
           </ModalBody>

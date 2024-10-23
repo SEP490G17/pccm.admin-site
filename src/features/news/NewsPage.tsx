@@ -65,7 +65,6 @@ const NewsPage = () => {
             border="1px solid #ADADAD"
             bg="#FFF"
             color="#03301F"
-            onChange={console.log}
           >
             <option value="all">Tất cả</option>
           </Select>

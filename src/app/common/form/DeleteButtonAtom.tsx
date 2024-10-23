@@ -5,7 +5,7 @@ import { FaTrash } from "react-icons/fa";
 interface DeleteProps extends InputProps {
     header?: string,
     name: string,
-    onDelete?: () => void;
+    onDelete: () => Promise<void>;
     loading: boolean
 }
 
