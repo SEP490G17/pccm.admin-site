@@ -1,19 +1,17 @@
-import { useStore } from "@/app/stores/store";
 import { AlertDialog, AlertDialogBody, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, Button, IconButton, InputProps, useDisclosure } from "@chakra-ui/react"
 import React from "react"
 import { FaTrash } from "react-icons/fa";
-import { toast } from "react-toastify";
 
 interface DeleteProps extends InputProps {
     header?: string,
-    propId: number
+    name: string,
+    onDelete: () => Promise<void>;
+    loading: boolean
 }
 
 const DeleteButtonAtom: React.FC<DeleteProps> = (props) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const cancelRef = React.useRef<HTMLButtonElement | null>(null);
-    const { newsStore } = useStore();
-    const { deleteNews, loading } = newsStore;
     return (
         <>
             <IconButton
@@ -36,7 +34,7 @@ const DeleteButtonAtom: React.FC<DeleteProps> = (props) => {
                         </AlertDialogHeader>
 
                         <AlertDialogBody>
-                            Bạn có chắc không? Bạn không thể hoàn tác hành động này sau đó.
+                            Bạn có chắc muốn xóa {props.name} không? Bạn không thể hoàn tác hành động này sau đó.
                         </AlertDialogBody>
 
                         <AlertDialogFooter>
@@ -45,19 +43,12 @@ const DeleteButtonAtom: React.FC<DeleteProps> = (props) => {
                             </Button>
                             <Button colorScheme='red'
                                 onClick={async () => {
-                                    try {
-                                        await deleteNews(props.propId).then(
-                                            () => {
-                                                onClose()
-                                                toast.success("Xóa thành công")
-                                            }
-                                        );
-                                    } catch (error) {
-                                        console.error("Error deleting news:", error);
-                                        toast.error("Xóa thất bại")
+                                    if (props.onDelete) {
+                                        await props.onDelete();
+                                        onClose(); 
                                     }
                                 }}
-                                isLoading={loading}
+                                isLoading={props.loading}
                                 ml={3}>
                                 Xóa
                             </Button>

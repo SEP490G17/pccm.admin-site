@@ -13,12 +13,11 @@ import {
 import { CloseIcon } from '@chakra-ui/icons';
 import { useField } from 'formik';
 import { toast } from 'react-toastify';
-import agent from '@/app/api/agent';
 import { useStore } from '@/app/stores/store';
 
 interface FileUploadProps extends InputProps {
   name?: string;
-  ImageUrl?: string[];
+  ImageUrl?: string | null;
   limit?: number;
   label?: string;
 }
@@ -30,18 +29,18 @@ const FileUpload: React.FC<FileUploadProps> = ({
   label,
 }: FileUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [fileNames, setFileNames] = useState<string[]>(ImageUrl || []);
+  const [fileNames, setFileNames] = useState<string[]>(ImageUrl ? [ImageUrl] : []);
   // Sử dụng useField để lấy field của Formik
   const [, , helpers] = useField(name);
   const { uploadStore } = useStore();
-  const {loading, upImage, imageRegistry} = uploadStore;
+  const { loading, upImage, imageRegistry } = uploadStore;
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      if (limit == 1) {        
+      if (limit == 1) {
         setFileNames([files[0].name]);
         await upImage(files[0], files[0].name);
-        helpers.setValue([imageRegistry.get(files[0].name)?.url]);
+        helpers.setValue(imageRegistry.get(files[0].name)?.url);
       } else {
         if (fileNames.length >= limit) {
           toast.error(`Vượt quá số lượng ảnh: ${limit}`);

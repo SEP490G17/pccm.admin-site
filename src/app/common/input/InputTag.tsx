@@ -1,32 +1,40 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Tag, TagCloseButton, Stack, InputProps } from "@chakra-ui/react";
+import { Tag, TagCloseButton, Stack } from "@chakra-ui/react";
 import "./style.scss";
 
-interface TagProps extends InputProps{
-    tags? : string[]
+interface TagProps {
+    tags?: string[];
+    onChange: (tags: string[]) => void;
 }
 
-const InputTag : React.FC<TagProps> = (props) => {
-    const [dataInput, setDataInput] = useState<string[]>(props.tags ?? []);
+const InputTag: React.FC<TagProps> = ({ tags = [], onChange }: TagProps) => {
+    const [dataInput, setDataInput] = useState<string[]>(tags);
     const [sizeInput, setSizeInput] = useState(2);
+    const [isFocused, setIsFocused] = useState(false); // State để kiểm soát tiêu điểm
     const refInput = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        refInput.current?.focus();
+        if (isFocused && refInput.current) {
+            refInput.current.focus();
+        }
+    }, [isFocused]);
 
-        const handleKeyUp = (event: KeyboardEvent) => {
-            const newText = refInput.current?.value.trim().replace(",", "");
-            if (event.key === ",") {
-                if (newText && newText.length >= 0) {
-                    setDataInput((prevData) => [...prevData, newText]);
-                    if (refInput.current) refInput.current.value = "";
-                }
+    const handleKeyUp = (event: KeyboardEvent) => {
+        const newText = refInput.current?.value.trim().replace(",", "");
+        if (event.key === ",") {
+            if (newText && newText.length >= 0) {
+                const updatedTags = [...dataInput, newText];
+                setDataInput(updatedTags);
+                onChange(updatedTags);
+                if (refInput.current) refInput.current.value = "";
             }
-        };
+        }
+    };
 
+    useEffect(() => {
         window.addEventListener("keyup", handleKeyUp);
         return () => window.removeEventListener("keyup", handleKeyUp);
-    }, [dataInput]);
+    }, [dataInput, onChange]);
 
     const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -34,29 +42,25 @@ const InputTag : React.FC<TagProps> = (props) => {
     };
 
     const handleDelItem = (index: number) => {
-        setDataInput((prevData) => prevData.filter((_, i) => i !== index));
+        const updatedTags = dataInput.filter((_, i) => i !== index);
+        setDataInput(updatedTags);
+        onChange(updatedTags);
     };
 
     const handleDelAllItem = () => {
         setDataInput([]);
+        onChange([]);
     };
 
     return (
         <div className='input-tag'>
-            <Stack
-                direction='row'
-                margin='0.5rem 0 0 0.5rem'
-            >
+            <Stack direction='row' margin='0.5rem 0 0 0.5rem'>
                 <Tag colorScheme="blackAlpha" className='item_text'>
                     <TagCloseButton margin='0' onClick={() => handleDelAllItem()} />
                 </Tag>
 
                 {dataInput.map((text, i) => (
-                    <Tag
-                        key={`${i}_${text}`}
-                        colorScheme="blackAlpha"
-                        className='item_text'
-                    >
+                    <Tag key={`${i}_${text}`} colorScheme="blackAlpha" className='item_text'>
                         <TagCloseButton margin='0' onClick={() => handleDelItem(i)} />
                         {text}
                     </Tag>
@@ -67,10 +71,13 @@ const InputTag : React.FC<TagProps> = (props) => {
                     onChange={handleChangeInput}
                     className='input'
                     size={sizeInput}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
                 />
             </Stack>
         </div>
     );
 }
 
-export default InputTag
+
+export default InputTag;

@@ -11,7 +11,6 @@ const SelectComponent: React.FC<SelectInputProps> = ({ items, onSelectChange, ca
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         onSelectChange(e.target.value);
     };
-    console.log(categoryValue)
     return (
         <Select
             size="lg"

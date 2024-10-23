@@ -1,11 +1,8 @@
 import {
-  Badge,
-  Box,
   Button,
   FormControl,
   FormLabel,
   HStack,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -19,13 +16,32 @@ import {
 } from "@chakra-ui/react";
 import "./style.scss";
 import { Form, Formik } from "formik";
-import InputTag from "@/app/common/input/InputTag";
-import FileUpload from "@/app/common/input/FileUpload";
-import SelectComponent from "@/app/common/input/Select";
-import ReactQuillComponent from "@/app/common/input/ReactQuill";
 import { FaEdit } from "react-icons/fa";
+import * as Yup from 'yup';
+import TextFieldAtoms from "@/app/common/form/TextFieldAtoms";
+import FileUploadFieldAtoms from "@/app/common/form/FileUploadFieldAtoms";
+import TimeInputAtom from "@/app/common/form/TimeInputAtom";
+import { useStore } from "@/app/stores/store";
+import { dateFormatOptions } from '@/app/helper/settings';
+import TagFieldAtom from "@/app/common/form/TagFieldAtom";
+import ReactQuillAtom from "@/app/common/form/ReactQuillAtom";
+import { NewsDTO } from "@/app/models/news.models";
+
 const CreateNewsPage = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { newsStore } = useStore();
+  
+  const validationSchema = Yup.object().shape({
+    title: Yup.string().required('Tiêu đề bài viết không được bỏ trống'),
+    tags: Yup.array().required('Tag không được bỏ trống'),
+    description: Yup.string().required('Mô tả không được bỏ trống'),
+    thumbnail: Yup.string().required('Ảnh tin tức không được bỏ trống'),
+    startTime: Yup.string().required('Giờ bắt đầu không được bỏ trống'),
+    endTime: Yup.string().required('Giờ kết thúc không được bỏ trống'),
+    content: Yup.string().required('Chi tiết bài viết không được bỏ trống'),
+  });
+  
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  
   return (
     <>
       <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={onOpen}>
@@ -42,123 +58,109 @@ const CreateNewsPage = () => {
           <ModalBody>
             <VStack spacing="20px" align="stretch">
               <Formik
-                initialValues={{ title: "", description: "" }}
-                onSubmit={(values) => {
-                  // handleSubmit(values);
-                  console.log(values);
+                initialValues={{
+                  title: 'aaa',
+                  description: 'aaa',
+                  tags: [],
+                  thumbnail: '',
+                  startTime: '',
+                  location: 'aaaa',
+                  endTime: '',
+                  content: 'aaaa'
                 }}
+                onSubmit={async (values) => {
+                  const News = new NewsDTO({
+                    title: values.title,
+                    description: values.description,
+                    tags: values.tags,
+                    thumbnail: values.thumbnail,
+                    startTime: values.startTime,
+                    endTime: values.endTime,
+                    location: values.location,
+                    content: values.content,
+                    createAt: new Date().toLocaleString('vi-VN', dateFormatOptions).trim(),
+                    status: 1
+                  });
+                  await newsStore.createNews(News);
+                  onClose()
+                }}
+                validationSchema={validationSchema}
               >
-                {(props) => (
-                  <Form>
+                {({ handleSubmit, isSubmitting, isValid, errors }) => {
+                  // Logging để kiểm tra isValid và errors
+                  console.log('Is Valid:', isValid);
+                  console.log('Errors:', errors);
 
-                    <FormControl isRequired>
-                      <FormLabel className="title_label">
-                        Tiêu đề bài viết
-                      </FormLabel>
-                      <Input
+                  return (
+                    <Form onSubmit={handleSubmit}>
+                      <TextFieldAtoms
+                        isRequired={true}
+                        label="Tiêu đề bài viết"
                         className="input_text"
                         type="text"
                         name="title"
-                        placeholder="Nhập"
-                      />
-                    </FormControl>
+                        placeholder="Nhập" />
 
-                    <FormControl>
-                      <FormLabel className="title_label">Mô tả</FormLabel>
-                      <Input
-                        name="description"
-                        placeholder="Mô tả"
+                      <TextFieldAtoms
+                        isRequired={true}
+                        label="Mô tả"
                         className="input_text"
                         type="text"
-                      />
-                    </FormControl>
+                        name="description"
+                        placeholder="Nhập" />
 
-                    <HStack>
-                      <FormControl>
-                        <FormLabel className="title_label">
-                          Danh mục bài viết
-                        </FormLabel>
-                        <SelectComponent items={[{ id: 1, name: 'Pickleball' }, { id: 2, name: 'FPT' }]} onSelectChange={(value) => console.log('Selected value:', value)}>
-                        </SelectComponent>
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel className="title_label">
-                          Tag bài viết
-                        </FormLabel>
-                        <InputTag />
-                      </FormControl>
-                    </HStack>
+                      <HStack>
+                        <TextFieldAtoms
+                          isRequired={true}
+                          label="Địa điểm"
+                          className="input_text"
+                          type="text"
+                          name="location"
+                          placeholder="Nhập" />
 
-                    <FormControl>
-                      <FormLabel className="title_label">
-                        Ảnh banner
-                      </FormLabel>
-                      <FileUpload name="images"></FileUpload>
-                    </FormControl>
-
-                    <FormControl>
-                      <FormLabel className="title_label">Thời gian</FormLabel>
-                      <HStack spacing="20px">
-                        <Badge colorScheme="green" fontSize="1em" padding="8px 16px">
-                          Giờ bắt đầu
-                        </Badge>
-                        <Input
-                          type="datetime-local"
-                          name="startDate"
-                          //onChange={handleChange}
-                          bg="#FFF"
-                          width="200px"
-                        />
-
-                        <Badge colorScheme="red" fontSize="1em" padding="8px 16px">
-                          Giờ kết thúc
-                        </Badge>
-                        <Input
-                          type="datetime-local"
-                          name="endDate"
-                          //onChange={handleChange}
-                          bg="#FFF"
-                          width="200px"
-                        />
+                        <TagFieldAtom name="tags" label="Tags bài viết" isRequired={false}></TagFieldAtom>
                       </HStack>
-                    </FormControl>
 
-                    <FormLabel className="title_label">
-                      Chi tiết bài viết
-                    </FormLabel>
-                    <Box>
-                      <Box mb='7rem'>
-                        <ReactQuillComponent />
-                      </Box>
+                      <FileUploadFieldAtoms
+                        label="Ảnh tin tức"
+                        limit={1}
+                        name="thumbnail"
+                        isRequired={true}
+                      />
+
+                      <FormControl>
+                        <FormLabel className="title_label">Thời gian</FormLabel>
+                        <HStack spacing="20px">
+                          <TimeInputAtom color='green' label='Giờ bắt đầu' type='datetime-local' name='startTime'></TimeInputAtom>
+                          <TimeInputAtom color='red' label='Giờ kết thúc' type='datetime-local' name='endTime'></TimeInputAtom>
+                        </HStack>
+                      </FormControl>
+
+                      <ReactQuillAtom name="content" label="Chi tiết bài viết" isRequired={true}></ReactQuillAtom>
+
                       <Stack direction='row' justifyContent='flex-end'>
                         <Button
-                          className="delete"
-                          isLoading={props.isSubmitting}
-                          type="submit"
-                        >
-                          Xóa
-                        </Button>
-                        <Button
+                          disabled={isSubmitting || !isValid}
                           className="save"
-                          isLoading={props.isSubmitting}
+                          isLoading={isSubmitting}
                           type="submit"
                         >
                           Lưu
                         </Button>
                       </Stack>
-                    </Box>
-                  </Form>
-                )}
+                    </Form>
+                  );
+                }}
               </Formik>
             </VStack>
           </ModalBody>
 
           <ModalFooter>
-
+            {/* Nội dung footer nếu cần */}
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </ >
+    </>
   );
 };
 

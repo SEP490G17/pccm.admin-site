@@ -1,10 +1,10 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
-import { News } from '../models/news.models';
+import { News, NewsDTO } from '../models/news.models';
 import { sampleNewsData } from '../mock/news.mock';
 import { PageParams } from '../models/pageParams.model';
 import _ from 'lodash';
-import { customFormatDate, sleep } from '../helper/utils';
+import { sleep } from '../helper/utils';
 import { toast } from 'react-toastify';
 
 export default class NewsStore {
@@ -50,20 +50,20 @@ export default class NewsStore {
     }
   };
 
-  createNews = async (news: News) => {
+  createNews = async (news: NewsDTO) => {
     this.loading = true;
-    try {
-      await agent.NewsAgent.create(news);
-      runInAction(() => {
-        this.setNews(news);
-        this.loading = false;
-      });
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.error('Error creating news:', error);
-      });
-    }
+    await runInAction(async () => {
+      await agent.NewsAgent.create(news)
+        .then(() => {
+          this.setNews();
+          toast.success('Tạo tin tức thành công');
+        })
+        .catch((error) => {
+          console.error('Error creating product:', error);
+          toast.error('Tạo tin tức thất bại');
+        })
+        .finally(() => ((this.loading = false), this.loadNews()));
+    });
   };
 
   detailNews = async (newsId: number) => {
@@ -83,21 +83,18 @@ export default class NewsStore {
     }
   };
 
-  updateNews = async (news: News) => {
+  updateNews = async (news: NewsDTO, newsId: number) => {
     this.loading = true;
-    try {
-      await agent.NewsAgent.update(news);
-      runInAction(() => {
-        this.setNews(news);
-        this.selectedNews = news;
-        this.loading = false;
-      });
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.error('Error updating news:', error);
-      });
-    }
+    await runInAction(async () => {
+      await agent.NewsAgent.update(news, newsId)
+        .then(this.setNews)
+        .then(() => toast.success('Cập nhật tin tức thành công'))
+        .catch((error) => {
+          console.error('Error creating product:', error);
+          toast.error('Cập nhật tin tức thất bại');
+        })
+        .finally(() => ((this.loading = false), this.loadNews()));
+    });
   };
 
   deleteNews = async (id: number) => {
@@ -107,7 +104,7 @@ export default class NewsStore {
       runInAction(() => {
         this.newsRegistry.delete(id);
         this.loading = false;
-        this.loadNewsArray()
+        this.loadNewsArray();
       });
     } catch (error) {
       runInAction(() => {
@@ -181,7 +178,6 @@ export default class NewsStore {
 
   //#region private function
   private setNews = (news: News) => {
-    news.createdAt = customFormatDate(new Date(news.createdAt));
     this.newsRegistry.set(news.id, news);
   };
   //#endregion

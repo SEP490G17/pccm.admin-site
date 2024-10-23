@@ -13,13 +13,14 @@ import {
   Image,
   Center,
 } from '@chakra-ui/react';
-import React from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 import { observer } from 'mobx-react-lite';
+import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
+import { toast } from 'react-toastify';
 
 const ProductTableComponent = () => {
   const { productStore } = useStore();
-  const { productPageParams, loading, productArray, loadingInitial } = productStore;
+  const { productPageParams, loading, productArray, loadingInitial, deleteProduct } = productStore;
 
   return (
     <>
@@ -80,12 +81,18 @@ const ProductTableComponent = () => {
                         size="sm"
                         mr={2}
                       />
-                      <IconButton
-                        icon={<FaTrash />}
-                        aria-label="Delete"
-                        colorScheme="red"
-                        size="sm"
-                      />
+                      <DeleteButtonAtom name={product.productName} loading={loading} header='Xóa sản phẩm' onDelete={async () => {
+                        try {
+                          await deleteProduct(product.id).then(
+                            () => {
+                              toast.success(`Xóa ${product.productName} thành công`)
+                            }
+                          );
+                        } catch (error) {
+                          console.error("Error deleting news:", error);
+                          toast.error("Xóa thất bại")
+                        }
+                      }} />
                     </Center>
                   </Td>
                 </Tr>
