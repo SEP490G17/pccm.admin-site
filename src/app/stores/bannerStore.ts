@@ -28,10 +28,7 @@ export default class BannerStore {
       queryParams.append('pageSize', `${this.bannerPageParams.pageSize}`);
       if (this.bannerPageParams.searchTerm) {
         queryParams.append('search', this.bannerPageParams.searchTerm);
-        this.isOrigin = false;
-      } else {
-        this.isOrigin = true;
-      }
+      } 
       const { count, data } = await agent.Banners.list(`?${queryParams.toString()}`);
       runInAction(() => {
         data.forEach(this.setBanner);

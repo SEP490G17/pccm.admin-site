@@ -9,11 +9,12 @@ import { Banner } from '../models/banner.model';
 import { CourtCluster, CourtClusterListAll, ICourtCluster } from '../models/court.model';
 import { sleep } from '../helper/utils';
 import { Service } from '../models/service.model';
-import { Product, ProductCreate } from '../models/product.model';
+import { Product, ProductInput } from '../models/product.model';
 import { StaffPosition, StaffPosition as StaffPositions } from '../models/role.model';
 import { list } from '@chakra-ui/react';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
+import { Staff } from '../models/staff.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -115,9 +116,11 @@ const Categories = {
 const Products = {
   list: (queryParams: string = ''): Promise<PaginationModel<Product>> =>
     requests.get(`/product${queryParams}`),
-  create: (product: ProductCreate): Promise<Product> =>
+  details: (id:number):Promise<ProductInput> => requests.get(`/product/${id}`),
+  create: (product: ProductInput): Promise<Product> =>
     requests.post(`/product`, product),
   delete: (id: number): Promise<void> => requests.del(`/product/${id}`),
+  update: (product: ProductInput, productId: number): Promise<Product> => requests.put(`/product/${productId}`, product)
 };
 
 const CourtClusterAgent = {
@@ -142,7 +145,7 @@ const Users = {
 };
 
 const Staffs = {
-  list: (): Promise<any> => requests.get('/staff'),
+  list: (): Promise<PaginationModel<Staff>> => requests.get('/staff'),
 };
 
 const agent = {

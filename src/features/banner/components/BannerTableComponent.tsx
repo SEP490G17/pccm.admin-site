@@ -17,7 +17,6 @@ import {
 import { observer } from 'mobx-react-lite';
 import { getBannerStatus } from '@/app/models/banner.model';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
-import { toast } from 'react-toastify';
 import UpdateBannerPage from '../UpdateBannerPage';
 
 const BannerTableComponent = () => {
@@ -26,7 +25,7 @@ const BannerTableComponent = () => {
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
-        <Table className='app-table' variant="simple" cellPadding={'1rem'} padding={0}>
+        <Table className="app-table" variant="simple" cellPadding={'1rem'} padding={0}>
           <Thead>
             <Tr>
               <Th w={'5rem'} py={'1rem'}>
@@ -72,19 +71,15 @@ const BannerTableComponent = () => {
                   </Td>
                   <Td>
                     <Center>
-                      <UpdateBannerPage/>
-                      <DeleteButtonAtom name={banner.title} loading={loading} header='Xóa banner' onDelete={async () => {
-                        try {
-                          await deleteBanner(banner.id).then(
-                            () => {
-                              toast.success("Xóa thành công")
-                            }
-                          );
-                        } catch (error) {
-                          console.error("Error deleting news:", error);
-                          toast.error("Xóa thất bại")
-                        }
-                      }} />
+                      <UpdateBannerPage />
+                      <DeleteButtonAtom
+                        name={banner.title}
+                        loading={loading}
+                        header="Xóa banner"
+                        onDelete={async () => {
+                          await deleteBanner(banner.id);
+                        }}
+                      />
                     </Center>
                   </Td>
                 </Tr>

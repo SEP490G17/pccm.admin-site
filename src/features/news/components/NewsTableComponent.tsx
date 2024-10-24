@@ -18,26 +18,22 @@ import {
 import { observer } from 'mobx-react-lite';
 import UpdateNewsPage from '../UpdateNewsPage';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
-import { toast } from "react-toastify";
 
 const NewsTableComponent = () => {
   const { newsStore } = useStore();
   const { newsPageParams, newsArray, loading, loadingInitial, deleteNews } = newsStore;
   return (
     <>
-      <TableContainer
-        bg={'white'}
-        borderRadius={'md'}
-        padding={0}
-        mb="1.5rem"
-      >
-        <Table className='app-table' variant="simple" cellPadding={'1rem'} padding={0}>
+      <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
+        <Table className="app-table" variant="simple" cellPadding={'1rem'} padding={0}>
           <Thead>
             <Tr>
-              <Th w={'5rem'} py={'1rem'} >STT</Th>
-              <Th w={'10rem'} >Ảnh đại diện</Th>
-              <Th w='20rem'>Tiêu đề bài viết</Th>
-              <Th w='15rem'>Danh mục</Th>
+              <Th w={'5rem'} py={'1rem'}>
+                STT
+              </Th>
+              <Th w={'10rem'}>Ảnh đại diện</Th>
+              <Th w="20rem">Tiêu đề bài viết</Th>
+              <Th w="15rem">Danh mục</Th>
               <Th w={'10rem'}>Trạng thái</Th>
               <Th w={'10rem'}>Ngày đăng bài</Th>
               <Th w={'10rem'}>Tùy chọn</Th>
@@ -78,18 +74,14 @@ const NewsTableComponent = () => {
                   <Td>
                     <Center>
                       <UpdateNewsPage newsId={news.id} />
-                      <DeleteButtonAtom name={news.title} loading={loading} header='Xóa tin tức' onDelete={async () => {
-                        try {
-                          await deleteNews(news.id).then(
-                            () => {
-                              toast.success("Xóa thành công")
-                            }
-                          );
-                        } catch (error) {
-                          console.error("Error deleting news:", error);
-                          toast.error("Xóa thất bại")
-                        }
-                      }} />
+                      <DeleteButtonAtom
+                        name={news.title}
+                        loading={loading}
+                        header="Xóa tin tức"
+                        onDelete={async () => {
+                          await deleteNews(news.id);
+                        }}
+                      />
                     </Center>
                   </Td>
                 </Tr>

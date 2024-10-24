@@ -5,10 +5,8 @@ import { PageParams } from '../models/pageParams.model';
 import { sleep } from '../helper/utils';
 import agent from '../api/agent';
 import { toast } from 'react-toastify';
-import _ from 'lodash';
 export default class ServiceStore {
   serviceRegistry = new Map<number, Service>();
-  serviceArray: Service[] = [];
   selectedService: Service | undefined = undefined;
   loading: boolean = false;
   loadingInitial: boolean = false;
@@ -31,16 +29,12 @@ export default class ServiceStore {
       queryParams.append('pageSize', `${this.servicePageParams.pageSize}`);
       if (this.servicePageParams.searchTerm) {
         queryParams.append('search', this.servicePageParams.searchTerm);
-        this.isOrigin = false;
-      } else {
-        this.isOrigin = true;
       }
       const { count, data } = await agent.Services.list(`?${queryParams.toString()}`);
       runInAction(() => {
         data.forEach(this.setService);
 
         this.servicePageParams.totalElement = count;
-        this.loadServiceArray();
         this.loading = false;
       });
     } catch (error) {
@@ -60,7 +54,6 @@ export default class ServiceStore {
       runInAction(() => {
         this.serviceRegistry.delete(id);
         this.loading = false;
-        this.loadServiceArray()
       });
     } catch (error) {
       runInAction(() => {
@@ -81,7 +74,6 @@ export default class ServiceStore {
           this.serviceRegistry.size / this.servicePageParams.pageSize,
         );
         this.servicePageParams.totalElement = this.serviceRegistry.size;
-        this.loadServiceArray();
       });
     } catch (error) {
       runInAction(() => {
@@ -94,19 +86,13 @@ export default class ServiceStore {
   //#endregion
 
   //#region common
-  setLoadingInitial = (load:boolean) =>{
+  setLoadingInitial = (load: boolean) => {
     this.loadingInitial = load;
   };
 
   setSearchTerm = async (term: string) => {
     this.loadingInitial = true;
     await runInAction(async () => {
-      if (this.servicePageParams.totalElement === this.serviceRegistry.size && this.isOrigin) {
-        console.log('checking');
-        this.servicePageParams.searchTerm = term;
-        this.loadServiceArray();
-        return;
-      }
       this.serviceRegistry.clear();
       this.servicePageParams.clearLazyPage();
       this.servicePageParams.searchTerm = term;
@@ -115,17 +101,8 @@ export default class ServiceStore {
     this.loadingInitial = false;
   };
 
-  loadServiceArray() {
-    runInAction(() => {
-      const { searchTerm } = this.servicePageParams;
-      if (this.serviceRegistry.size === this.servicePageParams.totalElement && searchTerm) {
-        this.serviceArray = Array.from(this.serviceRegistry.values()).filter(
-          (b) => _.includes(b.description, searchTerm) || _.includes(b.serviceName, searchTerm),
-        );
-        return;
-      }
-      this.serviceArray = Array.from(this.serviceRegistry.values());
-    });
+  get serviceArray() {
+    return Array.from(this.serviceRegistry.values());
   }
   //#region private methods
   private setService = (service: Service) => {

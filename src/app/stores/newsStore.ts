@@ -3,13 +3,11 @@ import agent from '../api/agent';
 import { News, NewsDTO } from '../models/news.models';
 import { sampleNewsData } from '../mock/news.mock';
 import { PageParams } from '../models/pageParams.model';
-import _ from 'lodash';
 import { sleep } from '../helper/utils';
 import { toast } from 'react-toastify';
 
 export default class NewsStore {
   newsRegistry = new Map<number, News>();
-  newsArray: News[] = [];
   selectedNews: News | undefined = undefined;
   loading: boolean = false;
   loadingInitial: boolean = false;
@@ -29,16 +27,11 @@ export default class NewsStore {
       queryParams.append('pageSize', `${this.newsPageParams.pageSize}`);
       if (this.newsPageParams.searchTerm) {
         queryParams.append('search', this.newsPageParams.searchTerm);
-        this.isOrigin = false;
-      } else {
-        this.isOrigin = true;
-      }
+      } 
       const { count, data } = await agent.NewsAgent.list(`?${queryParams.toString()}`);
       runInAction(() => {
         data.forEach(this.setNews);
-
         this.newsPageParams.totalElement = count;
-        this.loadNewsArray();
         this.loading = false;
       });
     } catch (error) {
@@ -54,8 +47,8 @@ export default class NewsStore {
     this.loading = true;
     await runInAction(async () => {
       await agent.NewsAgent.create(news)
-        .then(() => {
-          this.setNews();
+        .then((s) => {
+          this.setNews(s);
           toast.success('Tạo tin tức thành công');
         })
         .catch((error) => {
@@ -104,7 +97,6 @@ export default class NewsStore {
       runInAction(() => {
         this.newsRegistry.delete(id);
         this.loading = false;
-        this.loadNewsArray();
       });
     } catch (error) {
       runInAction(() => {
@@ -126,7 +118,6 @@ export default class NewsStore {
           this.newsRegistry.size / this.newsPageParams.pageSize,
         );
         this.newsPageParams.totalElement = this.newsRegistry.size;
-        this.loadNewsArray();
       });
     } catch (error) {
       runInAction(() => {
@@ -148,12 +139,6 @@ export default class NewsStore {
   setSearchTerm = async (term: string) => {
     await runInAction(async () => {
       this.loadingInitial = true;
-      if (this.newsPageParams.totalElement === this.newsRegistry.size && this.isOrigin) {
-        console.log('checking');
-        this.newsPageParams.searchTerm = term;
-        this.loadNewsArray();
-        return;
-      }
       this.newsRegistry.clear();
       this.newsPageParams.clearLazyPage();
       this.newsPageParams.searchTerm = term;
@@ -163,18 +148,9 @@ export default class NewsStore {
     console.groupEnd();
   };
 
-  loadNewsArray = async () => {
-    runInAction(() => {
-      const { searchTerm } = this.newsPageParams;
-      if (this.newsRegistry.size === this.newsPageParams.totalElement && searchTerm) {
-        this.newsArray = Array.from(this.newsRegistry.values()).filter(
-          (b) => _.includes(b.title, searchTerm) || _.includes(b.tags, searchTerm),
-        );
-        return;
-      }
-      this.newsArray = Array.from(this.newsRegistry.values());
-    });
-  };
+  get newsArray() {
+    return Array.from(this.newsRegistry.values());
+  }
 
   //#region private function
   private setNews = (news: News) => {

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Button,
@@ -20,6 +20,7 @@ interface FileUploadProps extends InputProps {
   ImageUrl?: string | null;
   limit?: number;
   label?: string;
+  value?: string;
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -27,9 +28,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
   ImageUrl,
   limit = 1,
   label,
+  value
 }: FileUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [fileNames, setFileNames] = useState<string[]>(ImageUrl ? [ImageUrl] : []);
+  const [fileNames, setFileNames] = useState<string[]>(value ? [value] : []);
   // Sử dụng useField để lấy field của Formik
   const [, , helpers] = useField(name);
   const { uploadStore } = useStore();
@@ -37,20 +39,32 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      if (limit == 1) {        
+     
+      if (limit == 1) {
+        if (fileNames.length >= limit) {
+          toast.error(`Vượt quá số lượng ảnh: ${limit}`);
+        }
         const check = imageRegistry.get(files[0].name);
-        if(!check){
+        if (!check) {
           setFileNames([files[0].name]);
           await upImage(files[0], files[0].name);
         }
         helpers.setValue([imageRegistry.get(files[0].name)?.url]);
       } else {
-        if (fileNames.length >= limit) {
+        const upFiles = Array.from(files);
+        const totalFiles = fileNames.length + upFiles.length;
+  
+        if (totalFiles > limit) {
           toast.error(`Vượt quá số lượng ảnh: ${limit}`);
-        }
-        const newNames = Array.from(files).map((file) => file.name);
-        setFileNames((prevNames) => [...prevNames, ...newNames]);
-        helpers.setValue([...fileNames, ...newNames]); // Cập nhật giá trị cho Formik
+          upFiles.length = limit - fileNames.length;
+        } 
+        await Promise.all(upFiles.map((file) => upImage(file, file.name)));
+        
+        const updatedFileNames = [...fileNames, ...upFiles.map((file) => file.name)];
+        const urls = [updatedFileNames.map((name) => imageRegistry.get(name)?.url)];
+        setFileNames(updatedFileNames);
+        helpers.setValue([urls]); 
+
       }
     }
   };
@@ -108,17 +122,18 @@ const FileUpload: React.FC<FileUploadProps> = ({
               ))}
             </Box>
           )}
-          <Button disabled={loading} isLoading={loading} className="upload_file">Upload File</Button>
+          <Button disabled={loading} isLoading={loading} className="upload_file">
+            Upload File
+          </Button>
         </Flex>
       </Box>
       <Input
-        name={name}
         type="file"
         id="file-upload"
         ref={inputRef}
         onChange={handleFileChange}
         accept="image/*"
-        multiple
+        multiple = {limit !== 1}
         display="none"
       />
     </FormControl>

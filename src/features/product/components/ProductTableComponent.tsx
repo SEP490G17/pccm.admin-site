@@ -12,16 +12,21 @@ import {
   Box,
   Image,
   Center,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { FaEdit } from 'react-icons/fa';
 import { observer } from 'mobx-react-lite';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
-import { toast } from 'react-toastify';
+import EditProductPage from '../EditProductPage';
 
 const ProductTableComponent = () => {
   const { productStore } = useStore();
-  const { productPageParams, loading, productArray, loadingInitial, deleteProduct } = productStore;
-
+  const { productPageParams, loading, productArray, loadingInitial, deleteProduct, detailProduct } = productStore;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const handleOpenEdit = async (id:number) =>{
+     onOpen();
+     await detailProduct(id);
+  }
   return (
     <>
       <TableContainer
@@ -80,18 +85,12 @@ const ProductTableComponent = () => {
                         colorScheme="teal"
                         size="sm"
                         mr={2}
+                        onClick={async () => {
+                          await handleOpenEdit(product.id);
+                        }}
                       />
                       <DeleteButtonAtom name={product.productName} loading={loading} header='Xóa sản phẩm' onDelete={async () => {
-                        try {
-                          await deleteProduct(product.id).then(
-                            () => {
-                              toast.success(`Xóa ${product.productName} thành công`)
-                            }
-                          );
-                        } catch (error) {
-                          console.error("Error deleting news:", error);
-                          toast.error("Xóa thất bại")
-                        }
+                          await deleteProduct(product.id)
                       }} />
                     </Center>
                   </Td>
@@ -106,6 +105,7 @@ const ProductTableComponent = () => {
           Danh sách rỗng
         </Box>
       )}
+      <EditProductPage isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

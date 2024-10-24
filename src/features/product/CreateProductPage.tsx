@@ -18,7 +18,7 @@ import * as Yup from 'yup';
 import NumberFieldAtom from '@/app/common/form/NumberFieldAtoms';
 import FileUploadFieldAtoms from '@/app/common/form/FileUploadFieldAtoms';
 import { useStore } from '@/app/stores/store';
-import { ProductCreate } from '@/app/models/product.model';
+import { ProductInput } from '@/app/models/product.model';
 import SelectFieldAtoms from '@/app/common/form/SelectFieldAtoms';
 
 interface IProp {
@@ -60,12 +60,12 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                 courtCluster: courtListAllOptions[0]?.value ?? 1,
               }}
               onSubmit={async (values) => {
-                const product = new ProductCreate({
+                const product = new ProductInput({
                   categoryId: Number(values.category),
                   description: values.description,
                   price: values.price,
                   quantity: values.quantity,
-                  thumbnail: values.thumbnail[0],
+                  thumbnailUrl: values.thumbnail[0],
                   productName: values.productName,
                   courtClusterId: Number(values.courtCluster)
                 });
