@@ -18,7 +18,6 @@ function SideMenuItem({ item }: IProp) {
 
   const toggleSubMenu = () => {
     setSubMenuOpen(!subMenuOpen);
-    console.log(location.pathname);
   };
   return (
     <>

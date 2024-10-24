@@ -18,7 +18,7 @@ import * as Yup from 'yup';
 import NumberFieldAtom from '@/app/common/form/NumberFieldAtoms';
 import FileUploadFieldAtoms from '@/app/common/form/FileUploadFieldAtoms';
 import { useStore } from '@/app/stores/store';
-import { ProductCreate } from '@/app/models/product.model';
+import { ProductInput } from '@/app/models/product.model';
 import SelectFieldAtoms from '@/app/common/form/SelectFieldAtoms';
 
 interface IProp {
@@ -36,11 +36,11 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
     category: Yup.number().required('Thể loại không được bỏ trống'),
     courtCluster: Yup.number().required('Khu không được bỏ trống'),
   });
-  const { categoryStore, courtStore, productStore } = useStore();
+  const { categoryStore, courtStore, productStore,uploadStore } = useStore();
   const { categoryOption } = categoryStore;
   const { courtListAllOptions } = courtStore;
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="6xl">
+    <Modal isOpen={isOpen} onClose={()=>{uploadStore.loading = false; onClose()}} size="6xl">
       <ModalOverlay />
       <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
         <ModalHeader bg="#00423D" color="white" borderRadius="20px 20px 0 0">
@@ -60,12 +60,13 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                 courtCluster: courtListAllOptions[0]?.value ?? 1,
               }}
               onSubmit={async (values) => {
-                const product = new ProductCreate({
+                const product = new ProductInput({
                   categoryId: Number(values.category),
                   description: values.description,
                   price: values.price,
                   quantity: values.quantity,
-                  thumbnail: values.thumbnail,
+                  // thumbnail: values.thumbnail,
+                  thumbnailUrl: values.thumbnail[0],
                   productName: values.productName,
                   courtClusterId: Number(values.courtCluster)
                 });
@@ -145,7 +146,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                       Xóa
                     </Button>
                     <Button
-                      disabled={isSubmitting || !isValid}
+                      disabled={isSubmitting || !isValid || uploadStore.loading }
                       className="save"
                       isLoading={isSubmitting}
                       type="submit"

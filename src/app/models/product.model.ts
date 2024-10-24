@@ -9,16 +9,16 @@ export interface Product {
   price: number;
 }
 
-export class ProductCreate {
+export class ProductInput {
   categoryId: number|2  = 2;
   courtClusterId: number | 2 = 2;
   productName: string = '';
   description: string = '';
   quantity: number | '' = '';
   price: number | '' = '';
-  thumbnail: string = '';
+  thumbnailUrl: string = '';
 
-  constructor(data?: Partial<ProductCreate>) {
+  constructor(data?: Partial<ProductInput>) {
     if (data) {
       Object.assign(this, data);
     }

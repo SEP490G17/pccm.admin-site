@@ -1,4 +1,3 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
 import {
   Box,
@@ -16,7 +15,6 @@ import {
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import { FaEdit } from 'react-icons/fa';
 import { useStore } from '@/app/stores/store';
-import { toast } from 'react-toastify';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import UpdateServicePage from '../UpdateServicePage';
 
@@ -27,30 +25,17 @@ const ServiceTableComponent = () => {
 
   return (
     <>
-      <TableContainer
-        bg={'white'}
-        borderRadius={'md'}
-        padding={0}
-        mb="1.5rem"
-      >
-        <Table className='app-table' variant="simple" padding={0}>
+      <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
+        <Table className="app-table" variant="simple" padding={0}>
           <Thead>
             <Tr>
               <Th w={'5rem'} py={'1rem'}>
                 STT
               </Th>
-              <Th w={'15rem'}>
-                Tên dịch vụ
-              </Th>
-              <Th w={'15rem'}>
-                Mô tả
-              </Th>
-              <Th w={'10rem'}>
-                Giá
-              </Th>
-              <Th w={'10rem'}>
-                Khu vực
-              </Th>
+              <Th w={'15rem'}>Tên dịch vụ</Th>
+              <Th w={'15rem'}>Mô tả</Th>
+              <Th w={'10rem'}>Giá</Th>
+              <Th w={'10rem'}>Khu vực</Th>
               <Th w={'10'}>Tùy chọn</Th>
             </Tr>
           </Thead>
@@ -61,21 +46,13 @@ const ServiceTableComponent = () => {
             {!loadingInitial &&
               serviceArray.map((service, index) => (
                 <Tr key={service.id}>
+                  <Td>{index + 1}</Td>
+                  <Td>{service.serviceName}</Td>
+                  <Td>{service.description}</Td>
                   <Td>
-                    {index + 1}
-                  </Td>
-                  <Td >
-                    {service.serviceName}
-                  </Td>
-                  <Td >
-                    {service.description}
-                  </Td>
-                  <Td >
                     {service.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                   </Td>
-                  <Td >
-                    {service.courtClusterName}
-                  </Td>
+                  <Td>{service.courtClusterName}</Td>
                   <Td>
                     <IconButton
                       icon={<FaEdit />}
@@ -88,18 +65,14 @@ const ServiceTableComponent = () => {
                           .then(onOpen)
                       }}
                     />
-                    <DeleteButtonAtom name={service.serviceName} loading={loading} header='Xóa dịch vụ' onDelete={async () => {
-                      try {
-                        await deleteService(service.id).then(
-                          () => {
-                            toast.success("Xóa thành công")
-                          }
-                        );
-                      } catch (error) {
-                        console.error("Error deleting news:", error);
-                        toast.error("Xóa thất bại")
-                      }
-                    }} />
+                    <DeleteButtonAtom
+                      name={service.serviceName}
+                      loading={loading}
+                      header="Xóa dịch vụ"
+                      onDelete={async () => {
+                        await deleteService(service.id);
+                      }}
+                    />
                   </Td>
                 </Tr>
               ))}

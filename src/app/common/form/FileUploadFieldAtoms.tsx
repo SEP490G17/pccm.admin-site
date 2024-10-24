@@ -17,7 +17,7 @@ function FileUploadFieldAtoms({ limit = 1, label, name = 'image', isRequired = f
           isInvalid={form.errors[field.name] && form.touched[field.name]}
           isRequired={isRequired}
         >
-          <FileUpload limit={limit} label={label} name={name} ImageUrl={imageUrl ? imageUrl : null}/>
+          <FileUpload limit={limit} label={label} name={name} ImageUrl={imageUrl ? imageUrl : null} value={field.value}/>
         </FormControl>
       )}
     </FastField>

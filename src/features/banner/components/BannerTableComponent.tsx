@@ -19,9 +19,9 @@ import {
 import { observer } from 'mobx-react-lite';
 import { getBannerStatus } from '@/app/models/banner.model';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
-import { toast } from 'react-toastify';
 import UpdateBannerPage from '../UpdateBannerPage';
 import { FaEdit } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const BannerTableComponent = () => {
 
@@ -31,7 +31,7 @@ const BannerTableComponent = () => {
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
-        <Table className='app-table' variant="simple" cellPadding={'1rem'} padding={0}>
+        <Table className="app-table" variant="simple" cellPadding={'1rem'} padding={0}>
           <Thead>
             <Tr>
               <Th w={'5rem'} py={'1rem'}>

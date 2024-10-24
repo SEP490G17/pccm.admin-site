@@ -1,4 +1,4 @@
-import { Product, ProductCreate } from './../models/product.model';
+import { Product, ProductInput } from './../models/product.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleProductData } from '../mock/product.mock';
 import { PageParams } from '../models/pageParams.model';
@@ -8,12 +8,13 @@ import agent from '../api/agent';
 import _ from 'lodash';
 export default class ProductStore {
   productRegistry = new Map<number, Product>();
-  selectedProduct: Product | undefined = undefined;
+  selectedProduct: ProductInput = new ProductInput();
+  selectedIdProduct: number | undefined = undefined;
   loading: boolean = false;
   productPageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
   loadingInitial: boolean = false;
-
+  loadingEdit: boolean = false;
   constructor() {
     console.log('product store initialized');
     this.productPageParams.pageIndex = 1;
@@ -47,16 +48,42 @@ export default class ProductStore {
     });
   };
 
-  createProduct = async (product: ProductCreate) => {
+  detailProduct = async (id: number) => {
+    this.setLoadingEdit(true);
+    await runInAction(async () => {
+      this.selectedIdProduct = id;
+      await agent.Products.details(id)
+        .then((product) => (this.selectedProduct = product))
+        .catch(() => toast.error('Lấy chi tiết sản phẩm thất bại'))
+        .finally(() => this.setLoadingEdit(false));
+    });
+  };
+
+  createProduct = async (product: ProductInput) => {
     this.loading = true;
     await runInAction(async () => {
       await agent.Products.create(product)
         .then(this.setProduct)
         .catch((error) => {
           console.error('Error creating product:', error);
-          toast.error('Create Product fail!');
+          toast.error('Tạo product thất bại');
         })
         .finally(() => (this.loading = false));
+    });
+  };
+
+  editProduct = async (product: ProductInput) => {
+    this.loading = true;
+    await runInAction(async () => {
+      if(this.selectedIdProduct){
+        await agent.Products.update(product,this.selectedIdProduct)
+          .then(this.setProduct)
+          .catch((error) => {
+            console.error('Error updating product:', error);
+            toast.error('Cập nhật product thất bại');
+          })
+          .finally(() => (this.loading = false));
+      }
     });
   };
 
@@ -69,7 +96,6 @@ export default class ProductStore {
       runInAction(() => {
         this.productRegistry.delete(id);
         this.loading = false;
-        this.loadProductArray()
       });
     } catch (error) {
       runInAction(() => {
@@ -90,7 +116,6 @@ export default class ProductStore {
           this.productRegistry.size / this.productPageParams.pageSize,
         );
         this.productPageParams.totalElement = this.productRegistry.size;
-        this.loadProductArray();
       });
     } catch (error) {
       runInAction(() => {
@@ -103,7 +128,11 @@ export default class ProductStore {
   //#endregion
 
   //#region common
-
+  setLoadingEdit = (load: boolean) => {
+    runInAction(() => {
+      this.loadingEdit = load;
+    });
+  };
   setLoadingInitial = (loading: boolean) => {
     this.loadingInitial = loading;
   };

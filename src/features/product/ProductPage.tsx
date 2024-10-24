@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Flex, Select, useDisclosure, Center } from '@chakra-ui/react';
+import { Flex, useDisclosure, Center } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -11,6 +11,7 @@ import ProductTableComponent from './components/ProductTableComponent';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
 import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
 import PlusIcon from '../atoms/PlusIcon';
+import Select from 'react-select';
 
 const ProductPage = observer(() => {
   const { productStore, categoryStore, courtStore } = useStore();
@@ -23,7 +24,7 @@ const ProductPage = observer(() => {
     loading,
     loadingInitial,
   } = productStore;
-  const { loadCategories, categoryArray } = categoryStore;
+  const { loadCategories } = categoryStore;
   const [isPending, setIsPending] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -46,6 +47,8 @@ const ProductPage = observer(() => {
       }
     }
   }, []);
+
+  const handleChange = (selectedOption:any) => console.log(selectedOption);
   const handleSearch = useCallback(
     debounce(async (e) => {
       setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
@@ -79,16 +82,23 @@ const ProductPage = observer(() => {
       >
         <Flex flexWrap={'wrap'} gap={'1rem'}>
           <Select
-            size={'md'}
-            borderRadius="4px"
-            w={'10rem'}
-            border="1px solid #ADADAD"
-            bg="#FFF"
-            color="#03301F"
+            options={[{value:'', label:'Reset'} ,...courtStore.courtListAllOptions]}
+            placeholder="Cụm sân"
+            className='w-56 p-2 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]'
+            onChange={handleChange}
+            isSearchable={true}
           >
-            <option value="">Cụm sân</option>
           </Select>
           <Select
+            options={[{value:'', label:'Reset'} ,...categoryStore.categoryOption]}
+            placeholder="Thể loại"
+            className='w-56 p-2 rounded border-[0.5px solid #ADADAD] shadow-none hover:border-[0.5px solid #ADADAD]'
+            onChange={handleChange}
+            isSearchable={true}
+          >
+          </Select>
+          
+          {/* <Select
             size={'md'}
             borderRadius="4px"
             w={'10rem'}
@@ -102,7 +112,7 @@ const ProductPage = observer(() => {
                 {category.categoryName}
               </option>
             ))}
-          </Select>
+          </Select> */}
         </Flex>
 
         <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
@@ -119,8 +129,9 @@ const ProductPage = observer(() => {
             Thêm mới
           </Button> */}
           <ButtonPrimaryAtoms
-            colorLevel={'900'}
+            className="bg-primary-900"
             handleOnClick={onOpen}
+            loading={loadingInitial}
             children={
               <Center gap={1}>
                 <PlusIcon color="white" height="1.5rem" width="1.5rem" />

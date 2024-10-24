@@ -9,11 +9,12 @@ import { Banner, BannerDTO } from '../models/banner.model';
 import { CourtCluster, CourtClusterListAll, ICourtCluster } from '../models/court.model';
 import { sleep } from '../helper/utils';
 import { Service, ServiceDTO } from '../models/service.model';
-import { Product, ProductCreate } from '../models/product.model';
+import { Product, ProductInput } from '../models/product.model';
 import { StaffPosition, StaffPosition as StaffPositions } from '../models/role.model';
 import { list } from '@chakra-ui/react';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
+import { Staff } from '../models/staff.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -83,7 +84,7 @@ const NewsAgent = {
     requests.get(`/news${queryParams}`),
   details: (id: number): Promise<News> => requests.get(`/news/${id}`),
   create: (news: NewsDTO): Promise<News> => requests.post(`/news`, news),
-  update: (news: NewsDTO): Promise<void> => requests.put(`/news/${news.id}`, news),
+  update: (news: NewsDTO): Promise<News> => requests.put(`/news/${news.id}`, news),
   delete: (id: number): Promise<void> => requests.del(`/news/${id}`),
 };
 const Banners = {
@@ -117,8 +118,11 @@ const Categories = {
 const Products = {
   list: (queryParams: string = ''): Promise<PaginationModel<Product>> =>
     requests.get(`/product${queryParams}`),
-  create: (product: ProductCreate): Promise<Product> => requests.post(`/product`, product),
+  details: (id:number):Promise<ProductInput> => requests.get(`/product/${id}`),
+  create: (product: ProductInput): Promise<Product> =>
+    requests.post(`/product`, product),
   delete: (id: number): Promise<void> => requests.del(`/product/${id}`),
+  update: (product: ProductInput, productId: number): Promise<Product> => requests.put(`/product/${productId}`, product)
 };
 
 const CourtClusterAgent = {
@@ -143,7 +147,7 @@ const Users = {
 };
 
 const Staffs = {
-  list: (): Promise<any> => requests.get('/staff'),
+  list: (): Promise<PaginationModel<Staff>> => requests.get('/staff'),
 };
 
 const agent = {

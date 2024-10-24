@@ -23,7 +23,7 @@ export default class StaffStore {
   loadStaffs = async () => {
     this.loadingInitial = true;
     await runInAction(async () => {
-      await agent.Staffs.list().then((staffs) => staffs.forEach(this.setStaff));
+      await agent.Staffs.list().then((staffs) => staffs.data.forEach(this.setStaff));
       this.loadingInitial = false;
     });
   };
