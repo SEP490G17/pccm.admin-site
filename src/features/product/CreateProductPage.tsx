@@ -65,15 +65,16 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                   description: values.description,
                   price: values.price,
                   quantity: values.quantity,
-                  thumbnail: values.thumbnail[0],
+                  thumbnail: values.thumbnail,
                   productName: values.productName,
                   courtClusterId: Number(values.courtCluster)
                 });
                 await productStore.createProduct(product);
+                onClose()
               }}
               validationSchema={validationSchema}
             >
-              {({ handleSubmit, isValid, isSubmitting, dirty }) => (
+              {({ handleSubmit, isValid, isSubmitting }) => (
                 <Form onSubmit={handleSubmit}>
                   <TextFieldAtoms
                     isRequired={true}

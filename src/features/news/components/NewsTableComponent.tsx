@@ -5,6 +5,7 @@ import {
   Box,
   Center,
   Flex,
+  IconButton,
   Image,
   Switch,
   Table,
@@ -14,14 +15,17 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import UpdateNewsPage from '../UpdateNewsPage';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import { toast } from "react-toastify";
+import { FaEdit } from 'react-icons/fa';
 
 const NewsTableComponent = () => {
   const { newsStore } = useStore();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { newsPageParams, newsArray, loading, loadingInitial, deleteNews } = newsStore;
   return (
     <>
@@ -77,7 +81,17 @@ const NewsTableComponent = () => {
                   <Td>{news.createdAt}</Td>
                   <Td>
                     <Center>
-                      <UpdateNewsPage newsId={news.id} />
+                      <IconButton
+                        onClick={async () => {
+                          await newsStore.detailNews(news.id)
+                            .then(onOpen)
+                        }}
+                        icon={<FaEdit />}
+                        aria-label="Edit"
+                        colorScheme="teal"
+                        size="sm"
+                        mr={2}
+                      />
                       <DeleteButtonAtom name={news.title} loading={loading} header='Xóa tin tức' onDelete={async () => {
                         try {
                           await deleteNews(news.id).then(
@@ -103,6 +117,8 @@ const NewsTableComponent = () => {
           Danh sách rỗng
         </Box>
       )}
+
+      <UpdateNewsPage isOpen={isOpen} onClose={onClose} ></UpdateNewsPage>
     </>
   );
 };

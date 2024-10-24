@@ -11,24 +11,27 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import { FaEdit } from 'react-icons/fa';
 import { useStore } from '@/app/stores/store';
 import { toast } from 'react-toastify';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
+import UpdateServicePage from '../UpdateServicePage';
 
 const ServiceTableComponent = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { serviceStore } = useStore();
-  const { serviceArray, servicePageParams, loading, loadingInitial,deleteService } = serviceStore;
+  const { serviceArray, servicePageParams, loading, loadingInitial, deleteService } = serviceStore;
 
   return (
     <>
       <TableContainer
-       bg={'white'}
-       borderRadius={'md'}
-       padding={0}
-       mb="1.5rem"
+        bg={'white'}
+        borderRadius={'md'}
+        padding={0}
+        mb="1.5rem"
       >
         <Table className='app-table' variant="simple" padding={0}>
           <Thead>
@@ -80,19 +83,23 @@ const ServiceTableComponent = () => {
                       colorScheme="teal"
                       size="sm"
                       mr={2}
+                      onClick={async () => {
+                        await serviceStore.detailService(service.id)
+                          .then(onOpen)
+                      }}
                     />
                     <DeleteButtonAtom name={service.serviceName} loading={loading} header='Xóa dịch vụ' onDelete={async () => {
-                        try {
-                          await deleteService(service.id).then(
-                            () => {
-                              toast.success("Xóa thành công")
-                            }
-                          );
-                        } catch (error) {
-                          console.error("Error deleting news:", error);
-                          toast.error("Xóa thất bại")
-                        }
-                      }} />
+                      try {
+                        await deleteService(service.id).then(
+                          () => {
+                            toast.success("Xóa thành công")
+                          }
+                        );
+                      } catch (error) {
+                        console.error("Error deleting news:", error);
+                        toast.error("Xóa thất bại")
+                      }
+                    }} />
                   </Td>
                 </Tr>
               ))}
@@ -114,6 +121,7 @@ const ServiceTableComponent = () => {
           size="lg"
         />
       )}
+      <UpdateServicePage isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

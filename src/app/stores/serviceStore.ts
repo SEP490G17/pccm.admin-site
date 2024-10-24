@@ -1,4 +1,4 @@
-import { Service } from './../models/service.model';
+import { Service, ServiceDTO } from './../models/service.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleServiceData } from '../mock/service.mock';
 import { PageParams } from '../models/pageParams.model';
@@ -53,6 +53,53 @@ export default class ServiceStore {
   };
   //#endregion
 
+  createService = async (service: ServiceDTO) => {
+    this.loading = true;
+    await runInAction(async () => {
+      await agent.Services.create(service)
+        .then(this.setService)
+        .catch((error) => {
+          console.error('Error creating service:', error);
+        })
+        .finally(() => ((this.loading = false), this.loadServiceArray()));
+    });
+  };
+
+  detailService = async (serviceId: number) => {
+    this.loading = true;
+    try {
+      const data = await agent.Services.details(serviceId);
+      runInAction(() => {
+        this.selectedService = data;
+        this.loading = false;
+      });
+      return data;
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+        console.error('Error creating news:', error);
+      });
+    }
+  };
+
+  updateService = async (service: ServiceDTO) => {
+    this.loading = true;
+    try {
+      await agent.Services.update(service);
+      runInAction(() => {
+        this.setService(service);
+        this.selectedService = service;
+        this.loading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+        console.error('Error updating banner:', error);
+      });
+    }
+    this.loadServiceArray();
+  };
+
   deleteService = async (id: number) => {
     this.loading = true;
     try {
@@ -60,7 +107,7 @@ export default class ServiceStore {
       runInAction(() => {
         this.serviceRegistry.delete(id);
         this.loading = false;
-        this.loadServiceArray()
+        this.loadServiceArray();
       });
     } catch (error) {
       runInAction(() => {
@@ -68,6 +115,7 @@ export default class ServiceStore {
         console.error('Error deleting news:', error);
       });
     }
+    this.loadServiceArray();
   };
 
   //#region mock-up
@@ -94,7 +142,7 @@ export default class ServiceStore {
   //#endregion
 
   //#region common
-  setLoadingInitial = (load:boolean) =>{
+  setLoadingInitial = (load: boolean) => {
     this.loadingInitial = load;
   };
 

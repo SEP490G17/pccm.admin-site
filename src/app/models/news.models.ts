@@ -13,6 +13,7 @@ export interface News {
 }
 
 export class NewsDTO {
+  id: number = 0;
   title: string = '';
   description: string = '';
   thumbnail: string ='';

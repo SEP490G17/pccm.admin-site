@@ -54,10 +54,7 @@ export default class NewsStore {
     this.loading = true;
     await runInAction(async () => {
       await agent.NewsAgent.create(news)
-        .then(() => {
-          this.setNews();
-          toast.success('Tạo tin tức thành công');
-        })
+        .then(this.setNews)
         .catch((error) => {
           console.error('Error creating product:', error);
           toast.error('Tạo tin tức thất bại');
@@ -83,17 +80,17 @@ export default class NewsStore {
     }
   };
 
-  updateNews = async (news: NewsDTO, newsId: number) => {
+  updateNews = async (news: NewsDTO) => {
     this.loading = true;
     await runInAction(async () => {
-      await agent.NewsAgent.update(news, newsId)
+      await agent.NewsAgent.update(news)
         .then(this.setNews)
         .then(() => toast.success('Cập nhật tin tức thành công'))
         .catch((error) => {
           console.error('Error creating product:', error);
           toast.error('Cập nhật tin tức thất bại');
         })
-        .finally(() => ((this.loading = false), this.loadNews()));
+        .finally(() => (this.loading = false));
     });
   };
 

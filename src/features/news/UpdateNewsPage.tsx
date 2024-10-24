@@ -3,7 +3,6 @@ import {
   FormControl,
   FormLabel,
   HStack,
-  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -11,15 +10,12 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import "./style.scss";
 import { Form, Formik } from "formik";
-import { FaEdit } from "react-icons/fa";
 import { useStore } from "@/app/stores/store";
-import React, { useEffect, useState } from "react";
-import { News, NewsDTO } from "@/app/models/news.models";
+import { NewsDTO } from "@/app/models/news.models";
 import * as Yup from 'yup';
 import TextFieldAtoms from "@/app/common/form/TextFieldAtoms";
 import TagFieldAtom from "@/app/common/form/TagFieldAtom";
@@ -28,15 +24,14 @@ import TimeInputAtom from "@/app/common/form/TimeInputAtom";
 import ReactQuillAtom from "@/app/common/form/ReactQuillAtom";
 import { dateFormatOptions } from "@/app/helper/settings";
 
-interface UpdateNewsPageProps {
-  newsId: number;
+interface IProp {
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
   const { newsStore } = useStore();
-  const { detailNews } = newsStore;
-  const [newsSelected, setNewsSelected] = useState<News>();
+  const { selectedNews } = newsStore;
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Tiêu đề bài viết không được bỏ trống'),
     tags: Yup.array().required('Tag không được bỏ trống'),
@@ -46,25 +41,9 @@ const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
     endTime: Yup.string().required('Giờ kết thúc không được bỏ trống'),
     content: Yup.string().required('Chi tiết bài viết không được bỏ trống'),
   });
-  const AxiosNewsDetail = async () => {
-    const data = await detailNews(newsId);
-    setNewsSelected(data);
-  };
-
-  useEffect(() => {
-    AxiosNewsDetail();
-  }, [newsId]);
 
   return (
     <>
-      <IconButton
-        icon={<FaEdit />}
-        aria-label="Edit"
-        colorScheme="teal"
-        size="sm"
-        mr={2}
-        onClick={onOpen}
-      />
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">
         <ModalOverlay />
         <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
@@ -76,20 +55,21 @@ const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
             <VStack spacing="20px" align="stretch">
               <Formik
                 initialValues={{
-                  thumbnail: newsSelected?.thumbnail || "",
-                  title: newsSelected?.title || "",
-                  description: newsSelected?.description || "",
-                  startTime: newsSelected?.startTime || "",
-                  endTime: newsSelected?.endTime || "",
-                  location: newsSelected?.location || "",
-                  status: newsSelected?.status || "",
-                  tags: newsSelected?.tags || [],
-                  createdAt: newsSelected?.createdAt || "",
-                  content: newsSelected?.content || "",
+                  thumbnail: selectedNews?.thumbnail || "",
+                  title: selectedNews?.title || "",
+                  description: selectedNews?.description || "",
+                  startTime: selectedNews?.startTime || "",
+                  endTime: selectedNews?.endTime || "",
+                  location: selectedNews?.location || "",
+                  status: selectedNews?.status || "",
+                  tags: selectedNews?.tags || [],
+                  createdAt: selectedNews?.createdAt || "",
+                  content: selectedNews?.content || "",
                 }}
                 onSubmit={async (values) => {
                   console.error(values)
                   const News = new NewsDTO({
+                    id: selectedNews?.id,
                     title: values.title,
                     description: values.description,
                     tags: values.tags,
@@ -101,7 +81,7 @@ const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
                     createAt: new Date().toLocaleString('vi-VN', dateFormatOptions).trim(),
                     status: 1
                   });
-                  await newsStore.updateNews(News, newsId);
+                  await newsStore.updateNews(News);
                   onClose()
                 }}
                 validationSchema={validationSchema}
@@ -147,7 +127,7 @@ const UpdateNewsPage: React.FC<UpdateNewsPageProps> = ({ newsId }) => {
                         limit={1}
                         name="thumbnail"
                         isRequired={true}
-                        imageUrl={newsSelected?.thumbnail}
+                        imageUrl={selectedNews?.thumbnail}
                       />
 
                       <FormControl>

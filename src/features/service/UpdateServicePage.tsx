@@ -26,10 +26,10 @@ interface IProp {
     onClose: () => void;
 }
 
-const CreateServicePage = ({ isOpen, onClose }: IProp) => {
+const UpdateServicePage = ({ isOpen, onClose }: IProp) => {
     const { courtStore, serviceStore } = useStore()
     const { courtListAllOptions } = courtStore
-
+    const { selectedService } = serviceStore
     useEffect(() => {
         Promise.all([courtStore.loadCourtClusterListAll()])
     }, []);
@@ -47,26 +47,28 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
                 <ModalOverlay />
                 <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
                     <ModalHeader bg="#00423D" color="white" borderRadius="20px 20px 0 0">
-                        Thêm Dịch Vụ
+                        Cập nhật Dịch Vụ
                     </ModalHeader>
                     <ModalCloseButton color='#FFF' />
                     <ModalBody>
                         <VStack spacing="20px" align="stretch">
                             <Formik
                                 initialValues={{
-                                    service_name: '',
-                                    description: '',
-                                    price: 0,
-                                    courtclusters: [],
+                                    service_name: selectedService?.serviceName,
+                                    description: selectedService?.description,
+                                    price: selectedService?.price,
+                                    courtclusters: [selectedService?.courtClusterId],
                                 }}
                                 onSubmit={async (values) => {
+                                    console.log(values)
                                     const service = new ServiceDTO({
+                                        id: selectedService?.id,
                                         courtClusterId: values.courtclusters[0],
                                         serviceName: values.service_name,
                                         description: values.description,
                                         price: values.price
                                     })
-                                    await serviceStore.createService(service)
+                                    await serviceStore.updateService(service)
                                         .then(() => { toast.success("Tạo dịch vụ thành công") })
                                         .catch(() => { toast.error("Tạo dịch vụ thất bại") })
                                     onClose()
@@ -109,7 +111,7 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
                                                     isLoading={isSubmitting}
                                                     type="submit"
                                                 >
-                                                    Tạo
+                                                    Cập nhật
                                                 </Button>
                                             </Stack>
                                         </Form>
@@ -128,4 +130,4 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
     );
 };
 
-export default CreateServicePage;
+export default UpdateServicePage;

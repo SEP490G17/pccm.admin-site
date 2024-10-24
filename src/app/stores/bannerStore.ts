@@ -1,4 +1,4 @@
-import { Banner } from './../models/banner.model';
+import { Banner, BannerDTO } from './../models/banner.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
 import { PageParams } from '../models/pageParams.model';
@@ -49,23 +49,40 @@ export default class BannerStore {
     }
   };
 
-  createBanner = async (banner: Banner) => {
+  createBanner = async (banner: BannerDTO) => {
+    this.loading = true;
+    await runInAction(async () => {
+      await agent.Banners.create(banner)
+        .then(() => {
+          this.loading = false;
+          this.setBanner(banner);
+        })
+        .catch((error) => {
+          console.error('Error creating banner:', error);
+          toast.error('Tạo banner lỗi!');
+        })
+        .finally(() => ((this.loading = false), this.loadBannerArray()));
+    });
+  };
+
+  detailBanner = async (bannerId: number) => {
     this.loading = true;
     try {
-      await agent.Banners.create(banner);
+      const data = await agent.Banners.details(bannerId);
       runInAction(() => {
-        this.setBanner(banner);
+        this.selectedBanner = data;
+        this.loading = false;
       });
+      return data;
     } catch (error) {
       runInAction(() => {
-        console.error('Error creating banner:', error);
+        this.loading = false;
+        console.error('Error creating news:', error);
       });
-    } finally {
-      this.loading = false;
     }
   };
 
-  updateBanner = async (banner: Banner) => {
+  updateBanner = async (banner: BannerDTO) => {
     this.loading = true;
     try {
       await agent.Banners.update(banner);
@@ -80,6 +97,7 @@ export default class BannerStore {
         console.error('Error updating banner:', error);
       });
     }
+    this.loadBannerArray();
   };
 
   deleteBanner = async (id: number) => {
@@ -89,7 +107,6 @@ export default class BannerStore {
       runInAction(() => {
         this.bannerRegistry.delete(id);
         this.loading = false;
-        this.loadBannerArray()
       });
     } catch (error) {
       runInAction(() => {
@@ -97,6 +114,7 @@ export default class BannerStore {
         console.error('Error deleting banner:', error);
       });
     }
+    this.loadBannerArray();
   };
 
   //#endregion
@@ -190,6 +208,7 @@ export default class BannerStore {
     banner.startDate = customFormatDate(new Date(banner.startDate));
     banner.endDate = customFormatDate(new Date(banner.endDate));
     this.bannerRegistry.set(banner.id, banner);
+    console.log(this.bannerRegistry);
   };
 
   // Phương thức dọn dẹp cache (xóa sạch bannerRegistry)

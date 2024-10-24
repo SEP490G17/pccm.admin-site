@@ -3,6 +3,7 @@ import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import {
   Box,
   Center,
+  IconButton,
   Image,
   Spinner,
   Switch,
@@ -13,14 +14,18 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { getBannerStatus } from '@/app/models/banner.model';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import { toast } from 'react-toastify';
 import UpdateBannerPage from '../UpdateBannerPage';
+import { FaEdit } from 'react-icons/fa';
 
 const BannerTableComponent = () => {
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { bannerStore } = useStore();
   const { loading, loadingInitial, bannerArray, bannerPageParams, deleteBanner } = bannerStore;
   return (
@@ -72,7 +77,17 @@ const BannerTableComponent = () => {
                   </Td>
                   <Td>
                     <Center>
-                      <UpdateBannerPage/>
+                      <IconButton
+                        icon={<FaEdit />}
+                        aria-label="Edit"
+                        colorScheme="teal"
+                        size="sm"
+                        mr={2}
+                        onClick={async () => {
+                          await bannerStore.detailBanner(banner.id)
+                            .then(onOpen)
+                        }}
+                      />
                       <DeleteButtonAtom name={banner.title} loading={loading} header='Xóa banner' onDelete={async () => {
                         try {
                           await deleteBanner(banner.id).then(
@@ -107,6 +122,7 @@ const BannerTableComponent = () => {
           size="lg"
         />
       )}
+      <UpdateBannerPage isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

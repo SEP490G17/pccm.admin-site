@@ -22,7 +22,9 @@ function NumberFieldAtom({ label, isRequired, ...props }: IProps) {
         >
           <FormLabel className="title_label"> {label}</FormLabel>
 
-          <NumberInput>
+          <NumberInput
+            {...field}
+            {...props}>
             <NumberInputField
               {...field}
               {...props}
@@ -31,7 +33,7 @@ function NumberFieldAtom({ label, isRequired, ...props }: IProps) {
               borderColor="gray.300"
               size="lg"
             />
-          
+
           </NumberInput>
 
           <FormErrorMessage paddingLeft={5}>{form.errors[field.name]}</FormErrorMessage>

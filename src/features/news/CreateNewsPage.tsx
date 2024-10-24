@@ -11,12 +11,10 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import "./style.scss";
 import { Form, Formik } from "formik";
-import { FaEdit } from "react-icons/fa";
 import * as Yup from 'yup';
 import TextFieldAtoms from "@/app/common/form/TextFieldAtoms";
 import FileUploadFieldAtoms from "@/app/common/form/FileUploadFieldAtoms";
@@ -26,10 +24,15 @@ import { dateFormatOptions } from '@/app/helper/settings';
 import TagFieldAtom from "@/app/common/form/TagFieldAtom";
 import ReactQuillAtom from "@/app/common/form/ReactQuillAtom";
 import { NewsDTO } from "@/app/models/news.models";
+import { toast } from "react-toastify";
 
-const CreateNewsPage = () => {
+interface IProp {
+  isOpen: boolean;
+  onClose: () => void;
+}
+const CreateNewsPage = ({ isOpen, onClose }: IProp) => {
   const { newsStore } = useStore();
-  
+
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Tiêu đề bài viết không được bỏ trống'),
     tags: Yup.array().required('Tag không được bỏ trống'),
@@ -39,15 +42,9 @@ const CreateNewsPage = () => {
     endTime: Yup.string().required('Giờ kết thúc không được bỏ trống'),
     content: Yup.string().required('Chi tiết bài viết không được bỏ trống'),
   });
-  
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  
+
   return (
     <>
-      <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={onOpen}>
-        Thêm mới
-      </Button>
-
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">
         <ModalOverlay />
         <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
@@ -81,7 +78,8 @@ const CreateNewsPage = () => {
                     createAt: new Date().toLocaleString('vi-VN', dateFormatOptions).trim(),
                     status: 1
                   });
-                  await newsStore.createNews(News);
+                  await newsStore.createNews(News)
+                    .then(() => toast.success('Tạo tin tức thành công'));
                   onClose()
                 }}
                 validationSchema={validationSchema}
@@ -145,7 +143,7 @@ const CreateNewsPage = () => {
                           isLoading={isSubmitting}
                           type="submit"
                         >
-                          Lưu
+                          Tạo
                         </Button>
                       </Stack>
                     </Form>
