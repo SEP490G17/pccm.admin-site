@@ -21,4 +21,4 @@ jobs:
       run: npm run build
 
     - name: Copy dist folder
-      run: cp -r dist ./projects/pccm.admin-site/  # Thay đổi đường dẫn đến thư mục đích
+      run: cp -r dist /projects/pccm.admin-site/  # Thay đổi đường dẫn đến thư mục đích
