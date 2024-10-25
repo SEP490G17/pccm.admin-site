@@ -19,7 +19,6 @@ import { useStore } from "@/app/stores/store";
 import { useEffect } from "react";
 import NumberFieldAtom from "@/app/common/form/NumberFieldAtoms";
 import { ServiceDTO } from "@/app/models/service.model";
-import { toast } from "react-toastify";
 
 interface IProp {
     isOpen: boolean;
@@ -56,19 +55,17 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
                                 initialValues={{
                                     service_name: '',
                                     description: '',
-                                    price: 0,
+                                    price: 1,
                                     courtclusters: [],
                                 }}
                                 onSubmit={async (values) => {
                                     const service = new ServiceDTO({
-                                        courtClusterId: values.courtclusters[0],
+                                        courtClusterId: values.courtclusters,
                                         serviceName: values.service_name,
                                         description: values.description,
                                         price: values.price
                                     })
                                     await serviceStore.createService(service)
-                                        .then(() => { toast.success("Tạo dịch vụ thành công") })
-                                        .catch(() => { toast.error("Tạo dịch vụ thất bại") })
                                     onClose()
                                 }}
                                 validationSchema={validationSchema}

@@ -18,8 +18,7 @@ import MultiSelectDataAtom from "@/app/common/form/MultiSelectDataAtom";
 import { useStore } from "@/app/stores/store";
 import { useEffect } from "react";
 import NumberFieldAtom from "@/app/common/form/NumberFieldAtoms";
-import { ServiceDTO } from "@/app/models/service.model";
-import { toast } from "react-toastify";
+import { ServiceEditDTO } from "@/app/models/service.model";
 
 interface IProp {
     isOpen: boolean;
@@ -61,7 +60,7 @@ const UpdateServicePage = ({ isOpen, onClose }: IProp) => {
                                 }}
                                 onSubmit={async (values) => {
                                     console.log(values)
-                                    const service = new ServiceDTO({
+                                    const service = new ServiceEditDTO({
                                         id: selectedService?.id,
                                         courtClusterId: values.courtclusters[0],
                                         serviceName: values.service_name,
@@ -69,8 +68,6 @@ const UpdateServicePage = ({ isOpen, onClose }: IProp) => {
                                         price: values.price
                                     })
                                     await serviceStore.updateService(service)
-                                        .then(() => { toast.success("Tạo dịch vụ thành công") })
-                                        .catch(() => { toast.error("Tạo dịch vụ thất bại") })
                                     onClose()
                                 }}
                                 validationSchema={validationSchema}
@@ -99,6 +96,7 @@ const UpdateServicePage = ({ isOpen, onClose }: IProp) => {
                                                 name='price' />
 
                                             <MultiSelectDataAtom
+                                                isDisabled={true}
                                                 label='Thuộc cụm sân'
                                                 isRequired={true}
                                                 options={courtListAllOptions}

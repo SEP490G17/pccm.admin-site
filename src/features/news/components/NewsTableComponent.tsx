@@ -112,7 +112,7 @@ const NewsTableComponent = () => {
                         size="sm"
                         mr={2}
                       />
-                      <DeleteButtonAtom name={news.title} loading={loading} header='XÓA TIN TỨC' onDelete={async () => {
+                      <DeleteButtonAtom name={news.title} loading={loading} header='Xóa tin tức' onDelete={async () => {
                         try {
                           await deleteNews(news.id)
                         } catch (error) {

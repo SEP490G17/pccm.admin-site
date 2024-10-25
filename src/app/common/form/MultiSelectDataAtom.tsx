@@ -7,9 +7,10 @@ interface IProps extends InputProps {
     name?: string;
     isRequired?: boolean;
     options?: { value: string | number; label: string | number }[];
+    isDisabled?: boolean;
 }
 
-function MultiSelectDataAtom({ label, isRequired, options, ...props }: IProps) {
+function MultiSelectDataAtom({ label, isRequired, options,isDisabled, ...props }: IProps) {
     return (
         <FastField name={props.name}>
             {({ field, form }: any) => {
@@ -26,6 +27,7 @@ function MultiSelectDataAtom({ label, isRequired, options, ...props }: IProps) {
                         <FormLabel className="title_label"> {label} </FormLabel>
 
                         <Select
+                            isDisabled={isDisabled}
                             menuShouldScrollIntoView={false}
                             menuPlacement="top"
                             closeMenuOnSelect={false}
