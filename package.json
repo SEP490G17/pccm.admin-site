@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --mode development",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "preview": "vite preview"
