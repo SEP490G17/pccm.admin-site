@@ -1,0 +1,24 @@
+name: Build and Deploy React App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-react:
+    runs-on: self-hosted
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Copy .env
+      run: cp /project-config/pccm.admin-site/.env .    
+    
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Build React app
+      run: npm run build
+
+    - name: Copy dist folder
+      run: cp -r dist ./projects/pccm.admin-site/  # Thay đổi đường dẫn đến thư mục đích
