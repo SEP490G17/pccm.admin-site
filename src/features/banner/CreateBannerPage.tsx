@@ -79,8 +79,8 @@ const CreateBannerPage = ({ isOpen, onClose }: IProp) => {
                     status: Number(values.status)
                   })
                   await bannerStore.createBanner(banner)
-                  .then(() => toast.success('Tạo banner thành công'))
-                  .catch(() => toast.error('Tạo banner thất bại'));
+                    .then(() => toast.success('Tạo banner thành công'))
+                    .catch(() => toast.error('Tạo banner thất bại'));
                   onClose()
                 }
 

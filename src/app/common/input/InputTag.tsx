@@ -10,14 +10,7 @@ interface TagProps {
 const InputTag: React.FC<TagProps> = ({ tags = [], onChange }: TagProps) => {
     const [dataInput, setDataInput] = useState<string[]>(tags);
     const [sizeInput, setSizeInput] = useState(2);
-    const [isFocused, setIsFocused] = useState(false); // State để kiểm soát tiêu điểm
     const refInput = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        if (isFocused && refInput.current) {
-            refInput.current.focus();
-        }
-    }, [isFocused]);
 
     const handleKeyUp = (event: KeyboardEvent) => {
         const newText = refInput.current?.value.trim().replace(",", "");
@@ -71,8 +64,6 @@ const InputTag: React.FC<TagProps> = ({ tags = [], onChange }: TagProps) => {
                     onChange={handleChangeInput}
                     className='input'
                     size={sizeInput}
-                    onFocus={() => setIsFocused(true)}
-                    onBlur={() => setIsFocused(false)}
                 />
             </Stack>
         </div>

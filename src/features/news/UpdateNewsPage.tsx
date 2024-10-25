@@ -38,7 +38,20 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
     description: Yup.string().required('Mô tả không được bỏ trống'),
     thumbnail: Yup.string().required('Ảnh banner không được bỏ trống'),
     startTime: Yup.string().required('Giờ bắt đầu không được bỏ trống'),
-    endTime: Yup.string().required('Giờ kết thúc không được bỏ trống'),
+    endTime: Yup.string()
+      .required('Giờ kết thúc không được bỏ trống')
+      .when("startTime", (startTime, schema) => {
+        return schema.test({
+          name: "is-after-start-time",
+          message: "Giờ kết thúc phải sau giờ bắt đầu",
+          test: function (value) {
+            if (typeof startTime[0] === 'string' && typeof value === 'string') {
+              return new Date(value) > new Date(startTime[0]);
+            }
+            return false;
+          },
+        });
+      }),
     content: Yup.string().required('Chi tiết bài viết không được bỏ trống'),
   });
 
@@ -86,11 +99,7 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
                 }}
                 validationSchema={validationSchema}
               >
-                {({ handleSubmit, isSubmitting, isValid, errors }) => {
-                  // Logging để kiểm tra isValid và errors
-                  console.log('Is Valid:', isValid);
-                  console.log('Errors:', errors);
-
+                {({ handleSubmit, isSubmitting, isValid }) => {
                   return (
                     <Form onSubmit={handleSubmit}>
                       <TextFieldAtoms
@@ -127,7 +136,6 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
                         limit={1}
                         name="thumbnail"
                         isRequired={true}
-                        imageUrl={selectedNews?.thumbnail}
                       />
 
                       <FormControl>

@@ -55,7 +55,7 @@ export default class NewsStore {
           console.error('Error creating product:', error);
           toast.error('Tạo tin tức thất bại');
         })
-        .finally(() => ((this.loading = false), this.loadNews()));
+        .finally(() => ((this.loading = false)));
     });
   };
 

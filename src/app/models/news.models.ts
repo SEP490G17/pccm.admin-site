@@ -20,7 +20,7 @@ export class NewsDTO {
   startTime: string = '';
   endTime: string = '';
   location: string = '';
-  status: number = 1;
+  status: number = 0;
   tags: string[] = [];
   createAt: string ='';
   content:string ='';

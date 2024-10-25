@@ -34,7 +34,7 @@ const DeleteButtonAtom: React.FC<DeleteProps> = (props) => {
         onClick={onOpen}
       />
 
-      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
+      <AlertDialog size={'2xl'} isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} >
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -42,7 +42,7 @@ const DeleteButtonAtom: React.FC<DeleteProps> = (props) => {
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Bạn có chắc muốn xóa {props.name} không? Bạn không thể hoàn tác hành động này sau đó.
+              Bạn có chắc muốn xóa <span style={{ fontWeight: 'bold', fontSize:'15px' }}>{props.name}</span> không? <br/><br/>Bạn không thể hoàn tác hành động này sau đó.
             </AlertDialogBody>
 
             <AlertDialogFooter>

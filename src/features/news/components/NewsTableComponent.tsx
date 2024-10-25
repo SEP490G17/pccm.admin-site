@@ -22,11 +22,13 @@ import UpdateNewsPage from '../UpdateNewsPage';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import { toast } from "react-toastify";
 import { FaEdit } from 'react-icons/fa';
+import { NewsDTO } from '@/app/models/news.models';
+import { dateFormatOptions } from '@/app/helper/settings';
 
 const NewsTableComponent = () => {
   const { newsStore } = useStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { newsPageParams, newsArray, loading, loadingInitial, deleteNews } = newsStore;
+  const { newsPageParams, newsArray, loading, loadingInitial, deleteNews, detailNews, selectedNews } = newsStore;
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -36,7 +38,7 @@ const NewsTableComponent = () => {
               <Th w={'5rem'} py={'1rem'}>
                 STT
               </Th>
-              <Th w={'10rem'}>Ảnh đại diện</Th>
+              <Th w={'10rem'}>Ảnh bài viết</Th>
               <Th w="20rem">Tiêu đề bài viết</Th>
               <Th w="15rem">Danh mục</Th>
               <Th w={'10rem'}>Trạng thái</Th>
@@ -73,9 +75,30 @@ const NewsTableComponent = () => {
                   </Td>
 
                   <Td>
-                    <Switch isChecked={news.status == 1} />
+                    <Switch onChange={() => {
+                      detailNews(news.id);
+                      if (selectedNews) {
+                        const News = new NewsDTO({
+                          id: selectedNews.id,
+                          title: selectedNews.title,
+                          description: selectedNews.description,
+                          tags: selectedNews.tags,
+                          thumbnail: selectedNews.thumbnail,
+                          startTime: selectedNews.startTime,
+                          endTime: selectedNews.endTime,
+                          location: selectedNews.location,
+                          content: selectedNews.content,
+                          createAt: new Date().toLocaleString('vi-VN', dateFormatOptions).trim(),
+                          status: selectedNews.status === 1 ? 0 : 1,
+                        });
+                        newsStore.updateNews(News);
+                      } else {
+                        console.error("selectedNews is undefined after detailNews call");
+                      }
+                    }}
+                      isChecked={news.status === 1} />
                   </Td>
-                  <Td>{news.createdAt}</Td>
+                  <Td>{new Date(news.createdAt).toLocaleDateString("vi-VN")}</Td>
                   <Td>
                     <Center>
                       <IconButton
@@ -89,13 +112,9 @@ const NewsTableComponent = () => {
                         size="sm"
                         mr={2}
                       />
-                      <DeleteButtonAtom name={news.title} loading={loading} header='Xóa tin tức' onDelete={async () => {
+                      <DeleteButtonAtom name={news.title} loading={loading} header='XÓA TIN TỨC' onDelete={async () => {
                         try {
-                          await deleteNews(news.id).then(
-                            () => {
-                              toast.success("Xóa thành công")
-                            }
-                          );
+                          await deleteNews(news.id)
                         } catch (error) {
                           console.error("Error deleting news:", error);
                           toast.error("Xóa thất bại")
