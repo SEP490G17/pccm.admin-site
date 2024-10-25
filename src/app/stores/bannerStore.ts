@@ -53,12 +53,13 @@ export default class BannerStore {
         .then(() => {
           this.loading = false;
           this.setBanner(banner);
+          toast.success('Tạo banner thành công');
         })
         .catch((error) => {
           console.error('Error creating banner:', error);
-          toast.error('Tạo banner lỗi!');
+          toast.error('Tạo banner lỗi');
         })
-        .finally(() => ((this.loading = false), this.loadBannerArray()));
+        .finally(() => ((this.loading = false)));
     });
   };
 

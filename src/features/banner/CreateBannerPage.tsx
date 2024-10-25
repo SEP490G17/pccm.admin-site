@@ -21,7 +21,6 @@ import FileUploadFieldAtoms from '@/app/common/form/FileUploadFieldAtoms';
 import TimeInputAtom from '@/app/common/form/TimeInputAtom';
 import SelectFieldAtoms from '@/app/common/form/SelectFieldAtoms';
 import { BannerDTO } from '@/app/models/banner.model';
-import { toast } from 'react-toastify';
 
 interface IProp {
   isOpen: boolean;
@@ -36,7 +35,21 @@ const CreateBannerPage = ({ isOpen, onClose }: IProp) => {
     description: Yup.string().required('Mô tả không được bỏ trống'),
     linkUrl: Yup.string().required('Đường link dẫn không được bỏ trống'),
     startDate: Yup.string().required('Giờ bắt đầu không được bỏ trống'),
-    endDate: Yup.string().required('Giờ kết thúc không được bỏ trống'),
+    endDate: Yup.string()
+      .required('Giờ kết thúc không được bỏ trống')
+      .when("startDate", (startDate, schema) => {
+        return schema.test({
+          name: "is-after-start-time",
+          message: "Giờ kết thúc phải sau giờ bắt đầu",
+          test: function (value) {
+            console.log(startDate)
+            if (typeof startDate[0] === 'string' && typeof value === 'string') {
+              return new Date(value) > new Date(startDate[0]);
+            }
+            return false;
+          },
+        });
+      }),
     status: Yup.number().required('Trạng thái banner không được bỏ trống'),
     type: Yup.number().required('Thể loại banner không được bỏ trống'),
     destination: Yup.number().required('Trang đích banner không được bỏ trống'),
@@ -79,8 +92,6 @@ const CreateBannerPage = ({ isOpen, onClose }: IProp) => {
                     status: Number(values.status)
                   })
                   await bannerStore.createBanner(banner)
-                    .then(() => toast.success('Tạo banner thành công'))
-                    .catch(() => toast.error('Tạo banner thất bại'));
                   onClose()
                 }
 
