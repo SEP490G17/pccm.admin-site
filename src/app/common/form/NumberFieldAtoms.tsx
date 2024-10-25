@@ -32,7 +32,7 @@ function NumberFieldAtom({ label, isRequired, ...props }: IProps) {
               borderColor="gray.300"
               size="lg"
             />
-          
+
           </NumberInput>
        
           <FormErrorMessage paddingLeft={5}>{form.errors[field.name]}</FormErrorMessage>

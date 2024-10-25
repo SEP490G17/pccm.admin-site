@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Flex, Box, Select } from '@chakra-ui/react';
+import { Flex, Box, Select, Button, useDisclosure } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -9,9 +9,11 @@ import NewsTableComponent from './components/NewsTableComponent';
 import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
 import { debounce } from 'lodash';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
+import { FaEdit } from 'react-icons/fa';
 
 const NewsPage = () => {
   const { newsStore } = useStore();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { loadNews, newsPageParams, setLoadingInitial, newsRegistry, loading, setSearchTerm } =
     newsStore;
   const [isPending, setIsPending] = useState(false);
@@ -68,7 +70,9 @@ const NewsPage = () => {
           >
             <option value="all">Tất cả</option>
           </Select>
-          <CreateNewsPage></CreateNewsPage>
+          <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={onOpen}>
+            Thêm mới
+          </Button>
         </Flex>
 
         <Box textAlign="right">
@@ -101,6 +105,7 @@ const NewsPage = () => {
           tài liệu
         </Box>
       </Flex> */}
+      <CreateNewsPage isOpen={isOpen} onClose={onClose}/>
     </>
   );
 };

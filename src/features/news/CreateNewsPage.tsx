@@ -11,12 +11,10 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
-  useDisclosure,
   VStack,
 } from "@chakra-ui/react";
 import "./style.scss";
 import { Form, Formik } from "formik";
-import { FaEdit } from "react-icons/fa";
 import * as Yup from 'yup';
 import TextFieldAtoms from "@/app/common/form/TextFieldAtoms";
 import FileUploadFieldAtoms from "@/app/common/form/FileUploadFieldAtoms";
@@ -27,27 +25,38 @@ import TagFieldAtom from "@/app/common/form/TagFieldAtom";
 import ReactQuillAtom from "@/app/common/form/ReactQuillAtom";
 import { NewsDTO } from "@/app/models/news.models";
 
-const CreateNewsPage = () => {
+interface IProp {
+  isOpen: boolean;
+  onClose: () => void;
+}
+const CreateNewsPage = ({ isOpen, onClose }: IProp) => {
   const { newsStore } = useStore();
-  
+
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Tiêu đề bài viết không được bỏ trống'),
     tags: Yup.array().required('Tag không được bỏ trống'),
     description: Yup.string().required('Mô tả không được bỏ trống'),
     thumbnail: Yup.string().required('Ảnh tin tức không được bỏ trống'),
     startTime: Yup.string().required('Giờ bắt đầu không được bỏ trống'),
-    endTime: Yup.string().required('Giờ kết thúc không được bỏ trống'),
+    endTime: Yup.string()
+      .required('Giờ kết thúc không được bỏ trống')
+      .when("startTime", (startTime, schema) => {
+        return schema.test({
+          name: "is-after-start-time",
+          message: "Giờ kết thúc phải sau giờ bắt đầu",
+          test: function (value) {
+            if (typeof startTime[0] === 'string' && typeof value === 'string') {
+              return new Date(value) > new Date(startTime[0]);
+            }
+            return false;
+          },
+        });
+      }),
     content: Yup.string().required('Chi tiết bài viết không được bỏ trống'),
   });
-  
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  
+
   return (
     <>
-      <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={onOpen}>
-        Thêm mới
-      </Button>
-
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">
         <ModalOverlay />
         <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
@@ -59,14 +68,14 @@ const CreateNewsPage = () => {
             <VStack spacing="20px" align="stretch">
               <Formik
                 initialValues={{
-                  title: 'aaa',
-                  description: 'aaa',
+                  title: '',
+                  description: '',
                   tags: [],
                   thumbnail: '',
                   startTime: '',
-                  location: 'aaaa',
+                  location: '',
                   endTime: '',
-                  content: 'aaaa'
+                  content: ''
                 }}
                 onSubmit={async (values) => {
                   const News = new NewsDTO({
@@ -86,11 +95,7 @@ const CreateNewsPage = () => {
                 }}
                 validationSchema={validationSchema}
               >
-                {({ handleSubmit, isSubmitting, isValid, errors }) => {
-                  // Logging để kiểm tra isValid và errors
-                  console.log('Is Valid:', isValid);
-                  console.log('Errors:', errors);
-
+                {({ handleSubmit, isSubmitting, isValid }) => {
                   return (
                     <Form onSubmit={handleSubmit}>
                       <TextFieldAtoms
@@ -145,7 +150,7 @@ const CreateNewsPage = () => {
                           isLoading={isSubmitting}
                           type="submit"
                         >
-                          Lưu
+                          Tạo
                         </Button>
                       </Stack>
                     </Form>

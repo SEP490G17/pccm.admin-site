@@ -10,13 +10,16 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import { FaEdit } from 'react-icons/fa';
 import { useStore } from '@/app/stores/store';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
+import UpdateServicePage from '../UpdateServicePage';
 
 const ServiceTableComponent = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { serviceStore } = useStore();
   const { serviceArray, servicePageParams, loading, loadingInitial, deleteService } = serviceStore;
 
@@ -57,6 +60,10 @@ const ServiceTableComponent = () => {
                       colorScheme="teal"
                       size="sm"
                       mr={2}
+                      onClick={async () => {
+                        await serviceStore.detailService(service.id)
+                          .then(onOpen)
+                      }}
                     />
                     <DeleteButtonAtom
                       name={service.serviceName}
@@ -87,6 +94,7 @@ const ServiceTableComponent = () => {
           size="lg"
         />
       )}
+      <UpdateServicePage isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

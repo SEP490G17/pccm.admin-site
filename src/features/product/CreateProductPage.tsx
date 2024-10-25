@@ -65,11 +65,13 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                   description: values.description,
                   price: values.price,
                   quantity: values.quantity,
+                  // thumbnail: values.thumbnail,
                   thumbnailUrl: values.thumbnail[0],
                   productName: values.productName,
                   courtClusterId: Number(values.courtCluster)
                 });
                 await productStore.createProduct(product);
+                onClose()
               }}
               validationSchema={validationSchema}
             >

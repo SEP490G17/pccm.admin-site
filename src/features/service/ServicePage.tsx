@@ -1,21 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Flex, Box, Select } from '@chakra-ui/react';
+import { Button, Flex, Box, Select, useDisclosure } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import { FaEdit } from 'react-icons/fa';
 import './style.scss';
-import { router } from '@/app/router/Routes';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import ServiceTableComponent from './components/ServiceTableComponent';
 import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
 import { debounce } from 'lodash';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
+import CreateServicePage from './CreateServicePage';
 
 const ServicePage = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { serviceStore } = useStore();
   const { loadServices, servicePageParams, serviceRegistry, setSearchTerm, setLoadingInitial, loading } =
     serviceStore;
   const [isPending, setIsPending] = useState(false);
+
 
   useEffect(() => {
     setLoadingInitial(true);
@@ -80,7 +82,7 @@ const ServicePage = () => {
             width="9rem"
             height="2.1rem"
             background="#FFF"
-            onClick={() => router.navigate('/dich-vu/tao')}
+            onClick={onOpen}
           >
             Thêm mới
           </Button>
@@ -99,6 +101,7 @@ const ServicePage = () => {
         hidden={serviceRegistry.size > servicePageParams.totalElement}
         loading={loading}
       />
+      <CreateServicePage isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

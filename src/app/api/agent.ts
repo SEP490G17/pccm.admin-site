@@ -5,10 +5,10 @@ import { store } from '../stores/store';
 import { toast } from 'react-toastify';
 import { User, UserFormValues, UserManager } from '../models/user.model';
 import { News, NewsDTO } from '../models/news.models';
-import { Banner } from '../models/banner.model';
+import { Banner, BannerDTO } from '../models/banner.model';
 import { CourtCluster, CourtClusterListAll, ICourtCluster } from '../models/court.model';
 import { sleep } from '../helper/utils';
-import { Service } from '../models/service.model';
+import { Service, ServiceDTO } from '../models/service.model';
 import { Product, ProductInput } from '../models/product.model';
 import { StaffPosition, StaffPosition as StaffPositions } from '../models/role.model';
 import { list } from '@chakra-ui/react';
@@ -84,21 +84,23 @@ const NewsAgent = {
     requests.get(`/news${queryParams}`),
   details: (id: number): Promise<News> => requests.get(`/news/${id}`),
   create: (news: NewsDTO): Promise<News> => requests.post(`/news`, news),
-  update: (news: NewsDTO, newsId : number): Promise<News> => requests.put(`/news/${newsId}`, news),
+  update: (news: NewsDTO): Promise<News> => requests.put(`/news/${news.id}`, news),
   delete: (id: number): Promise<void> => requests.del(`/news/${id}`),
 };
 const Banners = {
   list: (queryParams: string = ''): Promise<PaginationModel<Banner>> =>
     requests.get(`/banner${queryParams}`),
-  create: (banner: Banner): Promise<void> => requests.post(`/banner`, banner),
-  update: (banner: Banner): Promise<void> => requests.put(`/banner/${banner.id}`, banner),
+  details: (id: number): Promise<Banner> => requests.get(`/banner/${id}`),
+  create: (banner: BannerDTO): Promise<Banner> => requests.post(`/banner`, banner),
+  update: (banner: BannerDTO): Promise<void> => requests.put(`/banner/${banner.id}`, banner),
   delete: (id: number): Promise<void> => requests.del(`/banner/${id}`),
 };
 const Services = {
   list: (queryParams: string = ''): Promise<PaginationModel<Service>> =>
     requests.get(`/service${queryParams}`),
-  // create: (service: Banner): Promise<void> => requests.post(`/service`, banner),
-  // update: (banner: Banner): Promise<void> => requests.put(`/service/${banner.id}`, banner),
+  details: (id: number): Promise<Service> => requests.get(`/service/${id}`),
+  create: (service: ServiceDTO): Promise<Service> => requests.post(`/service`, service),
+  update: (service: ServiceDTO): Promise<void> => requests.put(`/service/${service.id}`, service),
   delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
 };
 const StaffPositions = {

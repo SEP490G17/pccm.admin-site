@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Flex, Box, Select } from '@chakra-ui/react';
+import { Button, Flex, Box, Select, useDisclosure } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -8,8 +8,10 @@ import CreateBannerPage from './CreateBannerPage';
 import { debounce } from 'lodash';
 import BannerTableComponent from './components/BannerTableComponent';
 import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
+import { FaEdit } from 'react-icons/fa';
 
 const BannerPage = observer(() => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const { bannerStore } = useStore();
   const { loadBanners, bannerPageParams, bannerRegistry, loading, setLoadingInitial } = bannerStore;
 
@@ -56,7 +58,7 @@ const BannerPage = observer(() => {
   };
   return (
     <>
-      <PageHeadingAtoms breadCrumb={[{title:'Danh sách banner',to:'/banner'}]} />
+      <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách banner', to: '/banner' }]} />
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
           <Select
@@ -70,7 +72,20 @@ const BannerPage = observer(() => {
             <option value="all">Tất cả</option>
           </Select>
 
-          <CreateBannerPage />
+          <Button
+            colorScheme="teal"
+            size="md"
+            leftIcon={<FaEdit />}
+            width="149px"
+            height="35px"
+            background="#FFF"
+            color="black"
+            border="1px solid #ADADAD"
+            onClick={onOpen}
+          >
+            Thêm mới
+          </Button>
+          
         </Flex>
 
         <Box textAlign="right">
@@ -93,6 +108,7 @@ const BannerPage = observer(() => {
           </Button>
         </Flex>
       )}
+      <CreateBannerPage isOpen={isOpen} onClose={onClose}/>
     </>
   );
 });

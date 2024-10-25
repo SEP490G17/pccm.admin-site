@@ -27,7 +27,7 @@ export default class NewsStore {
       queryParams.append('pageSize', `${this.newsPageParams.pageSize}`);
       if (this.newsPageParams.searchTerm) {
         queryParams.append('search', this.newsPageParams.searchTerm);
-      } 
+      }
       const { count, data } = await agent.NewsAgent.list(`?${queryParams.toString()}`);
       runInAction(() => {
         data.forEach(this.setNews);
@@ -55,7 +55,7 @@ export default class NewsStore {
           console.error('Error creating product:', error);
           toast.error('Tạo tin tức thất bại');
         })
-        .finally(() => ((this.loading = false), this.loadNews()));
+        .finally(() => ((this.loading = false)));
     });
   };
 
@@ -76,17 +76,19 @@ export default class NewsStore {
     }
   };
 
-  updateNews = async (news: NewsDTO, newsId: number) => {
+  updateNews = async (news: NewsDTO) => {
     this.loading = true;
     await runInAction(async () => {
-      await agent.NewsAgent.update(news, newsId)
-        .then(this.setNews)
-        .then(() => toast.success('Cập nhật tin tức thành công'))
+      await agent.NewsAgent.update(news)
+        .then((s) => {
+          this.setNews(s);
+          toast.success('Cập nhật tức thành công');
+        })
         .catch((error) => {
           console.error('Error creating product:', error);
           toast.error('Cập nhật tin tức thất bại');
         })
-        .finally(() => ((this.loading = false), this.loadNews()));
+        .finally(() => (this.loading = false));
     });
   };
 

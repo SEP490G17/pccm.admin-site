@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Box,
   Button,
@@ -25,7 +25,6 @@ interface FileUploadProps extends InputProps {
 
 const FileUpload: React.FC<FileUploadProps> = ({
   name = 'images',
-  ImageUrl,
   limit = 1,
   label,
   value
@@ -39,43 +38,74 @@ const FileUpload: React.FC<FileUploadProps> = ({
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-     
+
       if (limit == 1) {
         if (fileNames.length >= limit) {
           toast.error(`Vượt quá số lượng ảnh: ${limit}`);
+          return;
         }
         const check = imageRegistry.get(files[0].name);
         if (!check) {
           setFileNames([files[0].name]);
           await upImage(files[0], files[0].name);
         }
-        helpers.setValue([imageRegistry.get(files[0].name)?.url]);
+        helpers.setValue(imageRegistry.get(files[0].name)?.url);
       } else {
         const upFiles = Array.from(files);
         const totalFiles = fileNames.length + upFiles.length;
-  
+
         if (totalFiles > limit) {
           toast.error(`Vượt quá số lượng ảnh: ${limit}`);
           upFiles.length = limit - fileNames.length;
-        } 
+        }
         await Promise.all(upFiles.map((file) => upImage(file, file.name)));
-        
+
         const updatedFileNames = [...fileNames, ...upFiles.map((file) => file.name)];
         const urls = [updatedFileNames.map((name) => imageRegistry.get(name)?.url)];
         setFileNames(updatedFileNames);
-        helpers.setValue([urls]); 
+        helpers.setValue([urls]);
 
+      }
+      if (inputRef.current) {
+        inputRef.current.value = ''; // Thêm kiểm tra này
       }
     }
   };
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const files = event.dataTransfer.files;
     if (files) {
-      const newNames = Array.from(files).map((file) => file.name);
-      setFileNames((prevNames) => [...prevNames, ...newNames]);
-      helpers.setValue([...fileNames, ...newNames]); // Cập nhật giá trị cho Formik
+
+      if (limit == 1) {
+        if (fileNames.length >= limit) {
+          toast.error(`Vượt quá số lượng ảnh: ${limit}`);
+          return;
+        }
+        const check = imageRegistry.get(files[0].name);
+        if (!check) {
+          setFileNames([files[0].name]);
+          await upImage(files[0], files[0].name);
+        }
+        helpers.setValue(imageRegistry.get(files[0].name)?.url);
+      } else {
+        const upFiles = Array.from(files);
+        const totalFiles = fileNames.length + upFiles.length;
+
+        if (totalFiles > limit) {
+          toast.error(`Vượt quá số lượng ảnh: ${limit}`);
+          upFiles.length = limit - fileNames.length;
+        }
+        await Promise.all(upFiles.map((file) => upImage(file, file.name)));
+
+        const updatedFileNames = [...fileNames, ...upFiles.map((file) => file.name)];
+        const urls = [updatedFileNames.map((name) => imageRegistry.get(name)?.url)];
+        setFileNames(updatedFileNames);
+        helpers.setValue([urls]);
+      }
+      if (inputRef.current) {
+        inputRef.current.value = ''; // Thêm kiểm tra này
+      }
     }
   };
 
@@ -87,7 +117,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
     event.stopPropagation();
     const updatedNames = fileNames.filter((_, i) => i !== index);
     setFileNames(updatedNames);
-    helpers.setValue(updatedNames); // Cập nhật giá trị cho Formik
+    helpers.setValue(updatedNames);
+    const removedFileName = fileNames[index];
+    imageRegistry.delete(removedFileName); // Cập nhật giá trị cho Formik
     event.preventDefault();
   };
 
@@ -133,7 +165,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         ref={inputRef}
         onChange={handleFileChange}
         accept="image/*"
-        multiple = {limit !== 1}
+        multiple={limit !== 1}
         display="none"
       />
     </FormControl>

@@ -1,214 +1,171 @@
+import FileUploadFieldAtoms from '@/app/common/form/FileUploadFieldAtoms';
+import SelectFieldAtoms from '@/app/common/form/SelectFieldAtoms';
+import TextFieldAtoms from '@/app/common/form/TextFieldAtoms';
+import TimeInputAtom from '@/app/common/form/TimeInputAtom';
+import { BannerDTO } from '@/app/models/banner.model';
+import { useStore } from '@/app/stores/store';
 import {
     Modal,
     ModalOverlay,
     ModalContent,
     ModalHeader,
-    ModalFooter,
     ModalBody,
     ModalCloseButton,
     Button,
     FormControl,
     FormLabel,
-    Input,
-    Textarea,
-    Box,
-    useDisclosure,
-    Select,
     Flex,
     VStack,
     HStack,
-    Badge,
-    IconButton,
+    Stack,
+
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
-import { FaEdit } from 'react-icons/fa';
+import { Formik } from 'formik';
+import { Form } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import * as Yup from 'yup';
 
-const UpdateBannerPage = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const [bannerData, setBannerData] = useState({
-        title: '',
-        description: '',
-        image: null,
-        link: '',
-        startDate: '',
-        endDate: '',
-        status: '',
-        position: '',
-        destination: '',
+interface IProp {
+    isOpen: boolean;
+    onClose: () => void;
+}
+
+
+const UpdateBannerPage = ({ isOpen, onClose }: IProp) => {
+    const { bannerStore } = useStore();
+    const { selectedBanner } = bannerStore;
+    const validationSchema = Yup.object().shape({
+        title: Yup.string().required('Tiêu đề banner không được bỏ trống'),
+        imageUrl: Yup.string().required('Ảnh banner không được bỏ trống'),
+        description: Yup.string().required('Mô tả không được bỏ trống'),
+        linkUrl: Yup.string().required('Đường link dẫn không được bỏ trống'),
+        startDate: Yup.string().required('Giờ bắt đầu không được bỏ trống'),
+        endDate: Yup.string().required('Giờ kết thúc không được bỏ trống'),
+        status: Yup.number().required('Trạng thái banner không được bỏ trống'),
+        type: Yup.number().required('Thể loại banner không được bỏ trống'),
+        destination: Yup.number().required('Trang đích banner không được bỏ trống'),
     });
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setBannerData({
-            ...bannerData,
-            [name]: value,
-        });
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files.length > 0) {
-            setBannerData({
-                ...bannerData,
-                image: e.target.files[0],
-            });
-        }
-    };
 
     return (
         <>
-            <IconButton
-                icon={<FaEdit />}
-                aria-label="Edit"
-                colorScheme="teal"
-                size="sm"
-                mr={2}
-                onClick={onOpen}
-            />
-
             <Modal isOpen={isOpen} onClose={onClose} size="6xl">
                 <ModalOverlay />
                 <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
                     <ModalHeader bg="#00423D" color="white" borderRadius="20px 20px 0 0">
-                        Thêm Banner
+                        Cập nhật banner
                     </ModalHeader>
-                    <ModalCloseButton color='#FFF' />
+                    <ModalCloseButton color="#FFF" />
                     <ModalBody>
                         <VStack spacing="20px" align="stretch">
-                            {/* Phần nhập tiêu đề */}
-                            <FormControl isRequired>
-                                <FormLabel>Tiêu đề bài viết</FormLabel>
-                                <Input
-                                    name="title"
-                                    placeholder="Nhập tiêu đề"
-                                    onChange={handleChange}
-                                    height="40px"
-                                    bg="#FFF"
-                                />
-                            </FormControl>
+                            <Formik
+                                initialValues={{
+                                    title: selectedBanner?.title,
+                                    description: selectedBanner?.description,
+                                    imageUrl: selectedBanner?.imageUrl,
+                                    linkUrl: selectedBanner?.linkUrl,
+                                    startDate: selectedBanner?.startDate,
+                                    endDate: selectedBanner?.endDate,
+                                    status: selectedBanner?.status,
+                                    type: selectedBanner?.bannerType,
+                                    destination: selectedBanner?.bannerInPage,
+                                }}
+                                onSubmit={async (values) => {
+                                    console.log(values)
+                                    const banner = new BannerDTO({
+                                        id: selectedBanner?.id,
+                                        title: values.title,
+                                        imageUrl: values.imageUrl,
+                                        bannerInPage: Number(values.destination),
+                                        bannerType: Number(values.type),
+                                        description: values.description,
+                                        endDate: values.endDate,
+                                        startDate: values.startDate,
+                                        linkUrl: values.linkUrl,
+                                        status: Number(values.status)
+                                    })
+                                    await bannerStore.updateBanner(banner)
+                                        .then(() => toast.success('Cập nhật banner thành công'))
+                                        .catch(() => toast.error('Cập nhật banner thất bại'))
+                                    onClose()
+                                }
 
-                            {/* Phần nhập mô tả */}
-                            <FormControl>
-                                <FormLabel>Mô tả</FormLabel>
-                                <Textarea
-                                    name="description"
-                                    placeholder="Nhập mô tả"
-                                    onChange={handleChange}
-                                    bg="#FFF"
-                                />
-                            </FormControl>
+                                }
+                                validationSchema={validationSchema}
+                            >
+                                {({ handleSubmit, isSubmitting, isValid, errors }) => {
+                                    console.log('Is Valid:', isValid);
+                                    console.log('Errors:', errors);
 
-                            {/* Phần kéo hình ảnh vào */}
-                            <FormControl>
-                                <FormLabel>Ảnh banner</FormLabel>
-                                <Box
-                                    display="flex"
-                                    padding="5px 8px"
-                                    flexDirection="column"
-                                    alignItems="flex-start"
-                                    gap="10px"
-                                    alignSelf="stretch"
-                                    borderRadius="16px"
-                                    border="1px dashed rgba(51, 51, 51, 0.30)"
-                                    bg="#FFF"
-                                    color="#939393"
-                                    fontFamily="Roboto"
-                                    fontSize="16px"
-                                    fontStyle="normal"
-                                    fontWeight="400"
-                                    lineHeight="normal"
-                                >
-                                    <Flex justifyContent="space-between" alignItems="center" alignSelf="stretch">
-                                        <Box>Kéo hình ảnh hoặc upload hình ảnh tại đây</Box>
-                                        <Input
-                                            type="file"
-                                            onChange={handleFileChange}
-                                            display="none"
-                                            id="upload-banner-image"
-                                        />
-                                        <Button as="label" htmlFor="upload-banner-image" bg="#E2E8F0" color="black">
-                                            Upload file
-                                        </Button>
-                                    </Flex>
-                                </Box>
-                            </FormControl>
+                                    return (
+                                        <Form onSubmit={handleSubmit}>
+                                            <TextFieldAtoms label='Tiêu đề banner' isRequired={true} placeholder='Nhập tiêu đề' name='title' />
+                                            <TextFieldAtoms
+                                                label='Mô tả'
+                                                isRequired={true}
+                                                placeholder='Nhập mô tả'
+                                                name='description' />
 
-                            {/* Phần nhập đường link dẫn */}
-                            <FormControl>
-                                <FormLabel>Đường link dẫn</FormLabel>
-                                <Input
-                                    name="link"
-                                    placeholder="Nhập đường link"
-                                    onChange={handleChange}
-                                    height="40px"
-                                    bg="#FFF"
-                                />
-                            </FormControl>
+                                            <FileUploadFieldAtoms
+                                                label="Ảnh banner"
+                                                limit={1}
+                                                name="imageUrl"
+                                                isRequired={true}
+                                                imageUrl={selectedBanner?.imageUrl} />
 
-                            {/* Phần nhập thời gian */}
-                            <FormControl>
-                                <FormLabel>Thời gian</FormLabel>
-                                <HStack spacing="20px">
-                                    <Badge colorScheme="green" fontSize="1em" padding="8px 16px">
-                                        Giờ bắt đầu
-                                    </Badge>
-                                    <Input
-                                        type="datetime-local"
-                                        name="startDate"
-                                        onChange={handleChange}
-                                        bg="#FFF"
-                                        width="200px"
-                                    />
+                                            <TextFieldAtoms
+                                                label='Đường link dẫn'
+                                                isRequired={true}
+                                                placeholder='Nhập đường link'
+                                                name='linkUrl' />
 
-                                    <Badge colorScheme="red" fontSize="1em" padding="8px 16px">
-                                        Giờ kết thúc
-                                    </Badge>
-                                    <Input
-                                        type="datetime-local"
-                                        name="endDate"
-                                        onChange={handleChange}
-                                        bg="#FFF"
-                                        width="200px"
-                                    />
-                                </HStack>
-                            </FormControl>
 
-                            {/* Trang đích, Vị trí, Trạng thái */}
-                            <Flex justifyContent="space-between" gap="100px">
-                                <FormControl>
-                                    <FormLabel>Trang đích</FormLabel>
-                                    <Select name="destination" onChange={handleChange} bg="#FFF">
-                                        <option value="Trang chủ">Trang chủ</option>
-                                        <option value="Trang sản phẩm">Trang sản phẩm</option>
-                                    </Select>
-                                </FormControl>
+                                            <FormControl>
+                                                <FormLabel className="title_label">Thời gian</FormLabel>
+                                                <HStack spacing="20px">
+                                                    <TimeInputAtom color='green' label='Giờ bắt đầu' type='datetime-local' name='startDate'></TimeInputAtom>
+                                                    <TimeInputAtom color='red' label='Giờ kết thúc' type='datetime-local' name='endDate'></TimeInputAtom>
+                                                </HStack>
+                                            </FormControl>
 
-                                <FormControl>
-                                    <FormLabel>Vị trí</FormLabel>
-                                    <Select name="position" onChange={handleChange} bg="#FFF">
-                                        <option value="Đầu trang">Đầu trang</option>
-                                        <option value="Cuối trang">Cuối trang</option>
-                                    </Select>
-                                </FormControl>
+                                            <Flex justifyContent="space-between" gap="100px">
+                                                <SelectFieldAtoms
+                                                    label='Trang đích'
+                                                    name='destination'
+                                                    isRequired={false}
+                                                    options={[{ value: 0, label: "Trang chủ" }, { value: 1, label: "Trang sản phẩm" }]}
+                                                ></SelectFieldAtoms>
 
-                                <FormControl>
-                                    <FormLabel>Trạng thái</FormLabel>
-                                    <Select name="status" onChange={handleChange} bg="#FFF">
-                                        <option value="Hiển thị">Hiển thị</option>
-                                        <option value="Ẩn">Ẩn</option>
-                                    </Select>
-                                </FormControl>
-                            </Flex>
+                                                <SelectFieldAtoms
+                                                    label='Thể loại'
+                                                    name='type'
+                                                    isRequired={false}
+                                                    options={[{ value: 0, label: "Banner" }, { value: 1, label: "Event" }]}
+                                                ></SelectFieldAtoms>
+
+                                                <SelectFieldAtoms
+                                                    label='Trạng thái'
+                                                    name='status'
+                                                    isRequired={false}
+                                                    options={[{ value: 0, label: "Hiển thị" }, { value: 1, label: "Ẩn" }]}
+                                                ></SelectFieldAtoms>
+                                            </Flex>
+                                            <Stack direction='row' justifyContent='flex-end' mt={5}>
+                                                <Button
+                                                    disabled={isSubmitting || !isValid}
+                                                    className="save"
+                                                    isLoading={isSubmitting}
+                                                    type="submit"
+                                                >
+                                                    Cập nhật
+                                                </Button>
+                                            </Stack>
+                                        </Form>
+                                    );
+                                }}
+                            </Formik>
+
                         </VStack>
                     </ModalBody>
-
-                    <ModalFooter>
-                        <Button colorScheme="red" mr={3} onClick={onClose}>
-                            Xóa
-                        </Button>
-                        <Button bg="#00423D" color="white" onClick={onClose}>
-                            Lưu
-                        </Button>
-                    </ModalFooter>
                 </ModalContent>
             </Modal>
         </>
