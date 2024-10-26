@@ -99,7 +99,7 @@ const Services = {
     requests.get(`/service${queryParams}`),
   details: (id: number): Promise<Service> => requests.get(`/service/${id}`),
   create: (service: ServiceDTO): Promise<Service> => requests.post(`/service`, service),
-  update: (service: Service): Promise<void> => requests.put(`/service/${service.id}`, service),
+  update: (service: Service): Promise<Service> => requests.put(`/service/${service.id}`, service),
   delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
 };
 const StaffPositions = {

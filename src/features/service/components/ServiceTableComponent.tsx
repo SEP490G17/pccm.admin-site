@@ -18,7 +18,7 @@ import { useStore } from '@/app/stores/store';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import UpdateServicePage from '../UpdateServicePage';
 
-const ServiceTableComponent = () => {
+const ServiceTableComponent = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { serviceStore } = useStore();
   const { serviceArray, servicePageParams, loading, loadingInitial, deleteService } = serviceStore;
@@ -96,6 +96,6 @@ const ServiceTableComponent = () => {
       <UpdateServicePage isOpen={isOpen} onClose={onClose} />
     </>
   );
-};
+});
 
-export default observer(ServiceTableComponent);
+export default ServiceTableComponent;
