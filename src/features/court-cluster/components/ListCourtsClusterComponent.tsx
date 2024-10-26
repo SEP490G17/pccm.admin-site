@@ -1,6 +1,6 @@
 import { Card, CardBody, Flex, Text } from "@chakra-ui/react"
 import "./style.scss";
-const ListCourtsComponent = () => {
+const ListCourtsClusterComponent = () => {
     return (
         <div style={{ paddingLeft: '3.75rem' }}>
             <div className="courts__header">
@@ -36,4 +36,4 @@ const ListCourtsComponent = () => {
     )
 }
 
-export default ListCourtsComponent
+export default ListCourtsClusterComponent

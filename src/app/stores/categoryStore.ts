@@ -1,6 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
-import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
 
 export default class CategoryStore {

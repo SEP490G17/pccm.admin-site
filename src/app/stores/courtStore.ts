@@ -18,7 +18,7 @@ export default class CourtClusterStore {
 
   constructor() {
     this.courtPageParams.pageIndex = 1;
-    console.log('court store initialized');
+    console.log('court-cluster store initialized');
     this.courtPageParams.pageIndex = 1;
 
     makeAutoObservable(this);
@@ -59,7 +59,7 @@ export default class CourtClusterStore {
 
   setSearchTerm = (term: string) => {
     runInAction(() => {
-      console.log('begin court store');
+      console.log('begin court-cluster store');
       this.courtPageParams.searchTerm = term;
       this.cleanCourtCache();
       this.loadCourtArray();

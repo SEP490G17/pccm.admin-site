@@ -6,12 +6,11 @@ import { toast } from 'react-toastify';
 import { User, UserFormValues, UserManager } from '../models/user.model';
 import { News, NewsDTO } from '../models/news.models';
 import { Banner, BannerDTO } from '../models/banner.model';
-import { CourtCluster, CourtClusterListAll, ICourtCluster } from '../models/court.model';
+import { CourtCluster, CourtClusterListAll } from '../models/court.model';
 import { sleep } from '../helper/utils';
 import { Service, ServiceDTO } from '../models/service.model';
 import { Product, ProductInput } from '../models/product.model';
-import { StaffPosition, StaffPosition as StaffPositions } from '../models/role.model';
-import { list } from '@chakra-ui/react';
+import { StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
 import { Staff } from '../models/staff.model';
@@ -145,7 +144,6 @@ const Users = {
   list: (queryParams: string = ''): Promise<PaginationModel<UserManager>> =>
     requests.get(`/user${queryParams}`),
 };
-
 const Staffs = {
   list: (): Promise<PaginationModel<Staff>> => requests.get('/staff'),
 };

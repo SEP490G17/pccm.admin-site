@@ -44,7 +44,7 @@ function StaffTableComponent() {
                 <Td>{staff.fullName}</Td>
                 <Td>{staff.phoneNumber}</Td>
                 <Td>{staff.position}</Td>
-                <Td>{staff.courtCluster.join(',')}</Td>
+                <Td>{staff.courtCluster.join(', ')}</Td>
                 <Td>
                   <Flex gap={2} className="text-wrap w-full flex-wrap">
                     {staff.roles.map((role) => (

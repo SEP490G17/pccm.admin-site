@@ -1,9 +1,6 @@
 import {
   Badge,
   Box,
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
   Button,
   Checkbox,
   Flex,
@@ -40,7 +37,7 @@ const courtList = [
   },
 ];
 
-const CreateCourtPage = () => {
+const CreateCourtClusterPage = () => {
   return (
     <>
       <PageHeadingAtoms
@@ -337,7 +334,7 @@ const CreateCourtPage = () => {
                 <FormLabel className="title_label_court">Mô tả sân</FormLabel>
                 <Box>
                   <Box>
-                    <ReactQuillComponent />
+                    <ReactQuillComponent onChange={console.log} />
                   </Box>
                   <Flex gap="0.78rem" justifyContent="flex-end">
                     <Button className="delete" isLoading={props.isSubmitting} type="submit">
@@ -356,4 +353,4 @@ const CreateCourtPage = () => {
   );
 };
 
-export default CreateCourtPage;
+export default CreateCourtClusterPage;

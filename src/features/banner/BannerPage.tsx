@@ -21,7 +21,6 @@ const BannerPage = observer(() => {
     setLoadingInitial(true);
     loadBanners().finally(() => setLoadingInitial(false));
   }, []);
-
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;

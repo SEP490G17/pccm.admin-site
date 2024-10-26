@@ -3,9 +3,9 @@ import TestErrors from '@/features/errors/TestError';
 import NotFound from '@/features/errors/NotFound';
 import ServerError from '@/features/errors/ServerError';
 import MainLayout from '@/app/layout/MainLayout';
-import LoginPage from '@/features/login/LoginPage';
-import CreateCourtPage from '@/features/court/CreateCourtPage';
-import CourtsPage from '@/features/court/CourtsPage';
+import LoginPage from '@/features/auth/login/LoginPage';
+import CreateCourtClusterPage from '@/features/court-cluster/CreateCourtClusterPage.tsx';
+import CourtsPage from '@/features/court-cluster/CourtsClusterPage.tsx';
 import BannerPage from '@/features/banner/BannerPage';
 import NewsPage from '@/features/news/NewsPage';
 import CreateBannerPage from '@/features/banner/CreateBannerPage';
@@ -30,7 +30,7 @@ export const routes: RouteObject[] = [
       },
       {
         path: 'cum-san/tao',
-        element: <CreateCourtPage />,
+        element: <CreateCourtClusterPage />,
       },
       {
         path: 'tin-tuc',

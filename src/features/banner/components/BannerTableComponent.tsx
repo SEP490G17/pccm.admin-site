@@ -4,7 +4,6 @@ import {
   Box,
   Center,
   IconButton,
-  Image,
   Spinner,
   Switch,
   Table,
@@ -22,8 +21,9 @@ import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import UpdateBannerPage from '../UpdateBannerPage';
 import { FaEdit } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
 
-const BannerTableComponent = () => {
+const BannerTableComponent = observer(() => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { bannerStore } = useStore();
@@ -55,7 +55,7 @@ const BannerTableComponent = () => {
                 <Tr key={banner.id}>
                   <Td>{index + 1}</Td>
                   <Td>
-                    <Image
+                    <LazyImageAtom
                       src={banner.imageUrl}
                       alt={banner.title}
                       width="10rem"
@@ -125,6 +125,6 @@ const BannerTableComponent = () => {
       <UpdateBannerPage isOpen={isOpen} onClose={onClose} />
     </>
   );
-};
+});
 
-export default observer(BannerTableComponent);
+export default BannerTableComponent;

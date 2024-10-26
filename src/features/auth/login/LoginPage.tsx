@@ -1,7 +1,7 @@
 import { Box, Card, CardBody, CardHeader, Flex, Heading, Image } from '@chakra-ui/react';
 import pickerballIcon from '@/assets/pickerball-icon.png';
 import './style.scss';
-import LoginFormComponent from './LoginFormComponent';
+import LoginFormComponent from './LoginFormComponent.tsx';
 import { observer } from 'mobx-react-lite';
 import { ToastContainer } from 'react-toastify';
 
