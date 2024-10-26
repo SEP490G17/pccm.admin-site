@@ -22,7 +22,6 @@ const ServiceTableComponent = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { serviceStore } = useStore();
   const { serviceArray, servicePageParams, loading, loadingInitial, deleteService } = serviceStore;
-
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">

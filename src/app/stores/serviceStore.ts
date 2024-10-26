@@ -51,11 +51,15 @@ export default class ServiceStore {
     this.loading = true;
     await runInAction(async () => {
       await agent.Services.create(service)
-        .then(this.setService)
+        .then(() => {
+          this.loadServices();
+          toast.success('Tạo dịch vụ thành công');
+        })
         .catch((error) => {
           console.error('Error creating service:', error);
+          toast.error('Tạo dịch vụ thất bại');
         })
-        .finally(() => ((this.loading = false)));
+        .finally(() => (this.loading = false));
     });
   };
 
@@ -76,19 +80,21 @@ export default class ServiceStore {
     }
   };
 
-  updateService = async (service: ServiceDTO) => {
+  updateService = async (service: Service) => {
     this.loading = true;
     try {
       await agent.Services.update(service);
       runInAction(() => {
-        this.setService(service);
+        this.loadServices();
         this.selectedService = service;
         this.loading = false;
+        toast.success('Cập nhật dịch vụ thành công');
       });
     } catch (error) {
       runInAction(() => {
         this.loading = false;
         console.error('Error updating banner:', error);
+        toast.success('Cập nhật dịch vụ thất bại');
       });
     }
   };

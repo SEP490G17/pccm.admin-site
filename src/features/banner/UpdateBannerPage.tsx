@@ -22,7 +22,6 @@ import {
 } from '@chakra-ui/react';
 import { Formik } from 'formik';
 import { Form } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 
 interface IProp {
@@ -40,7 +39,21 @@ const UpdateBannerPage = ({ isOpen, onClose }: IProp) => {
         description: Yup.string().required('Mô tả không được bỏ trống'),
         linkUrl: Yup.string().required('Đường link dẫn không được bỏ trống'),
         startDate: Yup.string().required('Giờ bắt đầu không được bỏ trống'),
-        endDate: Yup.string().required('Giờ kết thúc không được bỏ trống'),
+        endDate: Yup.string()
+            .required('Giờ kết thúc không được bỏ trống')
+            .when("startDate", (startDate, schema) => {
+                return schema.test({
+                    name: "is-after-start-time",
+                    message: "Giờ kết thúc phải sau giờ bắt đầu",
+                    test: function (value) {
+                        console.log(startDate)
+                        if (typeof startDate[0] === 'string' && typeof value === 'string') {
+                            return new Date(value) > new Date(startDate[0]);
+                        }
+                        return false;
+                    },
+                });
+            }),
         status: Yup.number().required('Trạng thái banner không được bỏ trống'),
         type: Yup.number().required('Thể loại banner không được bỏ trống'),
         destination: Yup.number().required('Trang đích banner không được bỏ trống'),
@@ -84,8 +97,6 @@ const UpdateBannerPage = ({ isOpen, onClose }: IProp) => {
                                         status: Number(values.status)
                                     })
                                     await bannerStore.updateBanner(banner)
-                                        .then(() => toast.success('Cập nhật banner thành công'))
-                                        .catch(() => toast.error('Cập nhật banner thất bại'))
                                     onClose()
                                 }
 
@@ -110,7 +121,7 @@ const UpdateBannerPage = ({ isOpen, onClose }: IProp) => {
                                                 limit={1}
                                                 name="imageUrl"
                                                 isRequired={true}
-                                                imageUrl={selectedBanner?.imageUrl} />
+                                            />
 
                                             <TextFieldAtoms
                                                 label='Đường link dẫn'
