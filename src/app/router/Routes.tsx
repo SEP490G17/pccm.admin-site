@@ -8,12 +8,11 @@ import CreateCourtClusterPage from '@/features/court-cluster/CreateCourtClusterP
 import CourtsPage from '@/features/court-cluster/CourtsClusterPage.tsx';
 import BannerPage from '@/features/banner/BannerPage';
 import NewsPage from '@/features/news/NewsPage';
-import CreateBannerPage from '@/features/banner/CreateBannerPage';
 import ProductPage from '@/features/product/ProductPage';
 import ServicePage from '@/features/service/ServicePage';
 import StaffPage from '@/features/staff/StaffPage';
 import UserManagerPage from '@/features/user/UserManagerPage';
-import StaffPositionPage from '@/features/staff/StaffPositionPage';
+import CourtClusterDetailsPage from "@/features/court-cluster/CourtClusterDetailsPage.tsx";
 
 export const routes: RouteObject[] = [
   {
@@ -27,6 +26,10 @@ export const routes: RouteObject[] = [
       {
         path: 'cum-san',
         element: <CourtsPage />,
+      },
+      {
+        path: 'cum-san/chi-tiet/:id',
+        element: <CourtClusterDetailsPage />,
       },
       {
         path: 'cum-san/tao',
@@ -44,10 +47,6 @@ export const routes: RouteObject[] = [
       {
         path: 'banner',
         element: <BannerPage />,
-      },
-      {
-        path: 'banner/tao',
-        element: <CreateBannerPage />,
       },
       {
         path: 'hang-hoa',

@@ -126,10 +126,11 @@ const Products = {
 
 const CourtClusterAgent = {
   listAll: (): Promise<CourtClusterListAll[]> => requests.get(`/courtCluster/list-all`),
-  details: (id: number): Promise<CourtCluster> => requests.get(`/courts/${id}`),
-  create: (court: CourtCluster): Promise<void> => requests.post(`/courts`, court),
-  update: (court: CourtCluster): Promise<void> => requests.put(`/courts/${court.id}`, court),
-  delete: (id: number): Promise<void> => requests.del(`/courts/${id}`),
+  details: (id: number): Promise<CourtCluster> => requests.get(`/courtCluster/${id}`),
+  create: (court: CourtCluster): Promise<void> => requests.post(`/courtCluster`, court),
+  update: (court: CourtCluster): Promise<void> => requests.put(`/courtCluster/${court.id}`, court),
+  delete: (id: number): Promise<void> => requests.del(`/courtCluster/${id}`),
+  list: (): Promise<PaginationModel<CourtCluster>> => requests.get(`/courtCluster`),
 };
 const UploadAgent = {
   post: (file: FormData): Promise<ImageUpload> => requests.post(`/upload`, file),
