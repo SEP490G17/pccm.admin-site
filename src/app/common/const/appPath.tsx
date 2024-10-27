@@ -17,6 +17,18 @@ export interface AppPath {
 }
 export const menuList: AppPath[] = [
   {
+    key: 1,
+    icon: (isSelected: boolean) => (
+      <StatisticMenuIcon
+        width="1.5rem"
+        height="1.5rem"
+        color={isSelected ? '#00423D' : '#63748A'}
+      />
+    ),
+    label: 'Thống kê',
+    path: '/thong-ke',
+  },
+  {
     key: 2,
     icon: (isSelected: boolean) => (
       <UsersManagerMenuIcon
@@ -124,16 +136,4 @@ export const menuList: AppPath[] = [
   //   label: 'Cài đặt',
   //   path: '/cai-dat',
   // },
-  {
-    key: 1,
-    icon: (isSelected: boolean) => (
-      <StatisticMenuIcon
-        width="1.5rem"
-        height="1.5rem"
-        color={isSelected ? '#00423D' : '#63748A'}
-      />
-    ),
-    label: 'Thống kê',
-    path: '/',
-  },
 ];
