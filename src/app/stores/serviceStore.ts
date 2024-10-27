@@ -83,9 +83,9 @@ export default class ServiceStore {
   updateService = async (service: Service) => {
     this.loading = true;
     try {
-      await agent.Services.update(service);
+      const newService:Service = await agent.Services.update(service);
       runInAction(() => {
-        this.loadServices();
+        this.setService(newService);
         this.selectedService = service;
         this.loading = false;
         toast.success('Cập nhật dịch vụ thành công');

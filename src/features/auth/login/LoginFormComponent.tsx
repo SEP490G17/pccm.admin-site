@@ -1,6 +1,6 @@
-import FloatingInputAtom from '@/app/common/form/FloatingInputAtom';
-import { UserFormValues } from '@/app/models/user.model';
-import { useStore } from '@/app/stores/store';
+import FloatingInputAtom from '@/app/common/form/FloatingInputAtom.tsx';
+import { UserFormValues } from '@/app/models/user.model.ts';
+import { useStore } from '@/app/stores/store.ts';
 import { Box, Button, Checkbox, Flex, Link } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
@@ -66,7 +66,7 @@ function LoginFormComponent() {
                 đăng nhập
               </Flex>
               <Flex align={'center'} justifyContent={'center'}>
-                <Link href="">Quên mật khẩu?</Link>
+                <Link href="/reset-password">Quên mật khẩu?</Link>
               </Flex>
             </Flex>
           </Box>

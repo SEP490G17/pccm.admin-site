@@ -6,7 +6,6 @@ import {
   Center,
   Flex,
   IconButton,
-  Image,
   Switch,
   Table,
   TableContainer,
@@ -24,8 +23,9 @@ import { toast } from "react-toastify";
 import { FaEdit } from 'react-icons/fa';
 import { NewsDTO } from '@/app/models/news.models';
 import { dateFormatOptions } from '@/app/helper/settings';
+import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
 
-const NewsTableComponent = () => {
+const NewsTableComponent = observer(() => {
   const { newsStore } = useStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { newsPageParams, newsArray, loading, loadingInitial, deleteNews, detailNews, selectedNews } = newsStore;
@@ -55,7 +55,7 @@ const NewsTableComponent = () => {
                 <Tr key={news.id}>
                   <Td>{index + 1}</Td>
                   <Td>
-                    <Image
+                    <LazyImageAtom
                       src={news.thumbnail}
                       alt={news.title}
                       width="10rem"
@@ -138,6 +138,6 @@ const NewsTableComponent = () => {
       <UpdateNewsPage isOpen={isOpen} onClose={onClose} ></UpdateNewsPage>
     </>
   );
-};
+});
 
-export default observer(NewsTableComponent);
+export default NewsTableComponent;

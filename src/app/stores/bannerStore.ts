@@ -210,12 +210,12 @@ export default class BannerStore {
   };
 
   // Phương thức dọn dẹp cache (xóa sạch bannerRegistry)
-  private cleanBannerCache = () => {
-    runInAction(() => {
-      console.log('cleanBannerCache');
-      this.bannerRegistry.clear();
-    });
-  };
+  // private cleanBannerCache = () => {
+  //   runInAction(() => {
+  //     console.log('cleanBannerCache');
+  //     this.bannerRegistry.clear();
+  //   });
+  // };
 
   // Hủy interval khi component bị destroy (nếu cần)
   dispose() {

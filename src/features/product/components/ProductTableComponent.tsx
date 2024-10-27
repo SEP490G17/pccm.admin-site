@@ -10,7 +10,6 @@ import {
   Td,
   IconButton,
   Box,
-  Image,
   Center,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -18,8 +17,9 @@ import { FaEdit } from 'react-icons/fa';
 import { observer } from 'mobx-react-lite';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import EditProductPage from '../EditProductPage';
+import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
 
-const ProductTableComponent = () => {
+const ProductTableComponent =observer(() => {
   const { productStore } = useStore();
   const { productPageParams, loading, productArray, loadingInitial, deleteProduct, detailProduct } = productStore;
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -61,12 +61,12 @@ const ProductTableComponent = () => {
                 <Tr key={product.id}>
                   <Td>{index + 1}</Td>
                   <Td>
-                    <Image
+                    <LazyImageAtom
                       src={product.thumbnailUrl}
                       alt={product.productName}
                       width="10rem"
                       objectFit="cover"
-                      borderRadius="8px"
+                      borderRadius="md"
                     />
                   </Td>
                   <Td>{product.productName}</Td>
@@ -108,6 +108,6 @@ const ProductTableComponent = () => {
       <EditProductPage isOpen={isOpen} onClose={onClose} />
     </>
   );
-};
+});
 
-export default observer(ProductTableComponent);
+export default ProductTableComponent;

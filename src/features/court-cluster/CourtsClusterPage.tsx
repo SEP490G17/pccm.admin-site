@@ -16,21 +16,19 @@ import {
   TableContainer,
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '../../app/stores/store';
-import { FaEdit, FaTrash, FaSearch, FaAngleDoubleLeft, FaAngleLeft, FaAngleRight, FaAngleDoubleRight } from 'react-icons/fa';
+import { useStore } from '@/app/stores/store.ts';
+import { FaEdit, FaTrash, FaSearch } from 'react-icons/fa';
 import './style.scss';
 import { router } from '@/app/router/Routes';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import SkeletonTableAtoms from '../atoms/SkeletonTableAtoms';
 
-const CourtPage = observer(() => {
+const CourtClusterPage = observer(() => {
   const { courtStore } = useStore();
   const {
     mockLoadCourts,
     courtArray,
-    setCurrentPage: setPage,
     courtPageParams,
-    setPageSize,
     loading,
   } = courtStore;
 
@@ -42,124 +40,7 @@ const CourtPage = observer(() => {
     courtStore.setSearchTerm(e.target.value);
   };
 
-  const handlePageChange = (page: number) => {
-    setPage(page);
-  };
 
-  const handlePageSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newSize = parseInt(e.target.value);
-    setPageSize(newSize);
-    mockLoadCourts();
-  };
-
-  const renderPaginationButtons = () => {
-    const { pageIndex, totalPages } = courtPageParams;
-    const buttons = [];
-
-    if (!totalPages || totalPages === 0) {
-      return null;
-    }
-
-    buttons.push(
-      <IconButton
-        key="first"
-        aria-label="First Page"
-        icon={<FaAngleDoubleLeft />}
-        onClick={() => handlePageChange(1)}
-        isDisabled={pageIndex === 1}
-        mr={2}
-      />
-    );
-
-    buttons.push(
-      <IconButton
-        key="previous"
-        aria-label="Previous Page"
-        icon={<FaAngleLeft />}
-        onClick={() => handlePageChange(pageIndex - 1)}
-        isDisabled={pageIndex === 1}
-        mr={2}
-      />
-    );
-
-    if (totalPages <= 3) {
-      for (let i = 1; i <= totalPages; i++) {
-        buttons.push(
-          <Button
-            key={i}
-            onClick={() => handlePageChange(i)}
-            className={`pagination-button ${pageIndex === i ? 'active' : ''}`}
-          >
-            {i}
-          </Button>
-        );
-      }
-    } else {
-      buttons.push(
-        <Button
-          key={1}
-          onClick={() => handlePageChange(1)}
-          className={`pagination-button ${pageIndex === 1 ? 'active' : ''}`}
-        >
-          1
-        </Button>
-      );
-
-      if (pageIndex > 2) {
-        buttons.push(<span key="ellipsis1">...</span>);
-      }
-
-      if (pageIndex > 1 && pageIndex < totalPages) {
-        buttons.push(
-          <Button
-            key={pageIndex}
-            onClick={() => handlePageChange(pageIndex)}
-            className="pagination-button active"
-          >
-            {pageIndex}
-          </Button>
-        );
-      }
-
-      if (pageIndex < totalPages - 1) {
-        buttons.push(<span key="ellipsis2">...</span>);
-      }
-
-      buttons.push(
-        <Button
-          key={totalPages}
-          onClick={() => handlePageChange(totalPages)}
-          className={`pagination-button ${pageIndex === totalPages ? 'active' : ''}`}
-        >
-          {totalPages}
-        </Button>
-      );
-    }
-
-    buttons.push(
-      <IconButton
-        key="next"
-        aria-label="Next Page"
-        icon={<FaAngleRight />}
-        onClick={() => handlePageChange(pageIndex + 1)}
-        isDisabled={pageIndex === totalPages}
-        ml={2}
-      />
-    );
-
-    buttons.push(
-      <IconButton
-        key="last"
-        aria-label="Last Page"
-        icon={<FaAngleDoubleRight />}
-        onClick={() => handlePageChange(totalPages)}
-        isDisabled={pageIndex === totalPages}
-        ml={2}
-      />
-    );
-
-    return buttons;
-  };
 
   return (
     <>
@@ -170,7 +51,7 @@ const CourtPage = observer(() => {
             <option value="all">Tất cả</option>
           </Select>
 
-          <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={() => router.navigate('/cum-san/tao')}>
+          <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" className='bg-white' color="black" border="1px solid #ADADAD" onClick={() => router.navigate('/cum-san/tao')}>
             Thêm mới
           </Button>
         </Flex>
@@ -224,7 +105,7 @@ const CourtPage = observer(() => {
               courtArray.map((court, index) => (
                 <Tr key={court.id}>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
-                    {(courtPageParams.pageIndex - 1) * courtPageParams.pageSize + index + 1}
+                    {index + 1}
                   </Td>
                   <Td borderBottom={'0.923px solid #BDBDBD'} borderRight={'0.923px solid #BDBDBD'}>
                     <Image
@@ -277,32 +158,8 @@ const CourtPage = observer(() => {
           Danh sách rỗng
         </Box>
       )}
-      <Flex justifyContent="space-between" alignItems="center" mb="1rem">
-
-        <Box display="flex" alignItems="center">
-          Hiển thị
-          <Select
-            width="70px"
-            height="35px"
-            value={courtPageParams.pageSize}
-            onChange={handlePageSizeChange}
-            marginLeft="10px"
-            marginRight="10px"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-          </Select>
-          sân chơi
-        </Box>
-
-        {/* Phần phân trang */}
-        <Flex justifyContent={'flex-end'}>
-          {renderPaginationButtons()}
-        </Flex>
-      </Flex>
     </>
   );
 });
 
-export default CourtPage;
+export default CourtClusterPage;

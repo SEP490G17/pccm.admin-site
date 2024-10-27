@@ -6,12 +6,11 @@ import { toast } from 'react-toastify';
 import { User, UserFormValues, UserManager } from '../models/user.model';
 import { News, NewsDTO } from '../models/news.models';
 import { Banner, BannerDTO } from '../models/banner.model';
-import { CourtCluster, CourtClusterListAll, ICourtCluster } from '../models/court.model';
+import { CourtCluster, CourtClusterListAll } from '../models/court.model';
 import { sleep } from '../helper/utils';
 import { Service, ServiceDTO } from '../models/service.model';
 import { Product, ProductInput } from '../models/product.model';
-import { StaffPosition, StaffPosition as StaffPositions } from '../models/role.model';
-import { list } from '@chakra-ui/react';
+import { StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
 import { Staff } from '../models/staff.model';
@@ -100,7 +99,7 @@ const Services = {
     requests.get(`/service${queryParams}`),
   details: (id: number): Promise<Service> => requests.get(`/service/${id}`),
   create: (service: ServiceDTO): Promise<Service> => requests.post(`/service`, service),
-  update: (service: Service): Promise<void> => requests.put(`/service/${service.id}`, service),
+  update: (service: Service): Promise<Service> => requests.put(`/service/${service.id}`, service),
   delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
 };
 const StaffPositions = {
@@ -145,7 +144,6 @@ const Users = {
   list: (queryParams: string = ''): Promise<PaginationModel<UserManager>> =>
     requests.get(`/user${queryParams}`),
 };
-
 const Staffs = {
   list: (): Promise<PaginationModel<Staff>> => requests.get('/staff'),
 };
