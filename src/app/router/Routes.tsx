@@ -8,12 +8,12 @@ import CreateCourtClusterPage from '@/features/court-cluster/CreateCourtClusterP
 import CourtsPage from '@/features/court-cluster/CourtsClusterPage.tsx';
 import BannerPage from '@/features/banner/BannerPage';
 import NewsPage from '@/features/news/NewsPage';
-import CreateBannerPage from '@/features/banner/CreateBannerPage';
 import ProductPage from '@/features/product/ProductPage';
 import ServicePage from '@/features/service/ServicePage';
 import StaffPage from '@/features/staff/StaffPage';
 import UserManagerPage from '@/features/user/UserManagerPage';
 import StaffPositionPage from '@/features/staff/StaffPositionPage';
+import StatisticPage from '@/features/statistic/StatisticPage';
 
 export const routes: RouteObject[] = [
   {
@@ -46,10 +46,6 @@ export const routes: RouteObject[] = [
         element: <BannerPage />,
       },
       {
-        path: 'banner/tao',
-        element: <CreateBannerPage />,
-      },
-      {
         path: 'hang-hoa',
         element: <ProductPage />,
       },
@@ -65,7 +61,10 @@ export const routes: RouteObject[] = [
         path: 'users',
         element: <UserManagerPage />,
       },
-
+      {
+        path: 'thong-ke',
+        element: <StatisticPage />,
+      },
     ],
   },
   {
