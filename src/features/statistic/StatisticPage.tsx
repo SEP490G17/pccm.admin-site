@@ -2,11 +2,12 @@ import SelectFieldAtoms from "@/app/common/form/SelectFieldAtoms"
 import { Form, Formik } from "formik"
 import { Avatar, Box, Button, Flex, FormControl, IconButton, Text } from "@chakra-ui/react"
 import PageHeadingAtoms from "../atoms/PageHeadingAtoms"
-import { ChartData } from "chart.js"
+import {CategoryScale, Chart as ChartJS, ChartData, LinearScale, LineElement, PointElement, Title} from "chart.js"
 import MixedChart from "./components/MixChart"
 import DoughNutChart from "./components/DoughNutChart"
 import HeaderStatistic from "./components/HeaderStatistic"
 import { SiGooglesheets } from "react-icons/si";
+ChartJS.register(LineElement, PointElement, LinearScale, Title, CategoryScale);
 
 const StatisticPage = () => {
     const data: ChartData<'bar' | 'line'> = {
