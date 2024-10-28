@@ -5,6 +5,7 @@ import { sampleNewsData } from '../mock/news.mock';
 import { PageParams } from '../models/pageParams.model';
 import { sleep } from '../helper/utils';
 import { toast } from 'react-toastify';
+import _ from 'lodash';
 
 export default class NewsStore {
   newsRegistry = new Map<number, News>();
@@ -13,6 +14,7 @@ export default class NewsStore {
   loadingInitial: boolean = false;
   newsPageParams = new PageParams();
   isOrigin: boolean = true;
+  isLoadingEdit: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -55,22 +57,22 @@ export default class NewsStore {
           console.error('Error creating product:', error);
           toast.error('Tạo tin tức thất bại');
         })
-        .finally(() => ((this.loading = false)));
+        .finally(() => (this.loading = false));
     });
   };
 
   detailNews = async (newsId: number) => {
-    this.loading = true;
+    this.isLoadingEdit = true;
     try {
       const data = await agent.NewsAgent.details(newsId);
       runInAction(() => {
         this.selectedNews = data;
-        this.loading = false;
+        this.isLoadingEdit = false;
       });
       return data;
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.isLoadingEdit = false;
         console.error('Error creating news:', error);
       });
     }
@@ -151,7 +153,7 @@ export default class NewsStore {
   };
 
   get newsArray() {
-    return Array.from(this.newsRegistry.values());
+    return _.orderBy(Array.from(this.newsRegistry.values()), ['id'], ['desc']);
   }
 
   //#region private function

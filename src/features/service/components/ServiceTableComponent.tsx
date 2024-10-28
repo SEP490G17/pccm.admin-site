@@ -21,7 +21,11 @@ import UpdateServicePage from '../UpdateServicePage';
 const ServiceTableComponent = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { serviceStore } = useStore();
-  const { serviceArray, servicePageParams, loading, loadingInitial, deleteService } = serviceStore;
+  const { serviceArray, servicePageParams, loading, loadingInitial, deleteService, detailService } = serviceStore;
+  const handleOpenEdit = async (id: number) => {
+    onOpen();
+    await detailService(id);
+  }
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -60,8 +64,7 @@ const ServiceTableComponent = observer(() => {
                       size="sm"
                       mr={2}
                       onClick={async () => {
-                        await serviceStore.detailService(service.id)
-                          .then(onOpen)
+                        handleOpenEdit(service.id)
                       }}
                     />
                     <DeleteButtonAtom

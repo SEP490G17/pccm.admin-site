@@ -8,7 +8,7 @@ import { News, NewsDTO } from '../models/news.models';
 import { Banner, BannerDTO } from '../models/banner.model';
 import { CourtCluster, CourtClusterListAll } from '../models/court.model';
 import { sleep } from '../helper/utils';
-import { Service, ServiceDTO } from '../models/service.model';
+import { Service, ServiceDTO, ServiceEditDTO } from '../models/service.model';
 import { Product, ProductInput } from '../models/product.model';
 import { StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
@@ -99,7 +99,8 @@ const Services = {
     requests.get(`/service${queryParams}`),
   details: (id: number): Promise<Service> => requests.get(`/service/${id}`),
   create: (service: ServiceDTO): Promise<Service> => requests.post(`/service`, service),
-  update: (service: Service): Promise<Service> => requests.put(`/service/${service.id}`, service),
+  update: (service: ServiceEditDTO): Promise<Service> =>
+    requests.put(`/service/${service.id}`, service),
   delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
 };
 const StaffPositions = {
@@ -117,11 +118,11 @@ const Categories = {
 const Products = {
   list: (queryParams: string = ''): Promise<PaginationModel<Product>> =>
     requests.get(`/product${queryParams}`),
-  details: (id:number):Promise<ProductInput> => requests.get(`/product/${id}`),
-  create: (product: ProductInput): Promise<Product> =>
-    requests.post(`/product`, product),
+  details: (id: number): Promise<ProductInput> => requests.get(`/product/${id}`),
+  create: (product: ProductInput): Promise<Product> => requests.post(`/product`, product),
   delete: (id: number): Promise<void> => requests.del(`/product/${id}`),
-  update: (product: ProductInput, productId: number): Promise<Product> => requests.put(`/product/${productId}`, product)
+  update: (product: ProductInput, productId: number): Promise<Product> =>
+    requests.put(`/product/${productId}`, product),
 };
 
 const CourtClusterAgent = {

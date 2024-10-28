@@ -75,14 +75,18 @@ export default class ProductStore {
   editProduct = async (product: ProductInput) => {
     this.loading = true;
     await runInAction(async () => {
-      if(this.selectedIdProduct){
-        await agent.Products.update(product,this.selectedIdProduct)
-          .then(this.setProduct)
-          .catch((error) => {
-            console.error('Error updating product:', error);
-            toast.error('Cập nhật product thất bại');
-          })
-          .finally(() => (this.loading = false));
+      if (this.selectedIdProduct) {
+        try {
+          const updatedProduct = await agent.Products.update(product, this.selectedIdProduct);
+          this.productRegistry.delete(this.selectedIdProduct);
+          this.setProduct(updatedProduct);
+          toast.success('Cập nhật hàng hóa thành công');
+        } catch (error) {
+          console.error('Error updating product:', error);
+          toast.error('Cập nhật hàng hóa thất bại');
+        } finally {
+          this.loading = false;
+        }
       }
     });
   };

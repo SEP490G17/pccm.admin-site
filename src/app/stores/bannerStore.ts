@@ -14,6 +14,8 @@ export default class BannerStore {
   bannerPageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
   isOrigin: boolean = true;
+  loadingEdit: boolean = false;
+
   constructor() {
     console.log('banner store initialized');
     makeAutoObservable(this);
@@ -28,7 +30,7 @@ export default class BannerStore {
       queryParams.append('pageSize', `${this.bannerPageParams.pageSize}`);
       if (this.bannerPageParams.searchTerm) {
         queryParams.append('search', this.bannerPageParams.searchTerm);
-      } 
+      }
       const { count, data } = await agent.Banners.list(`?${queryParams.toString()}`);
       runInAction(() => {
         data.forEach(this.setBanner);
@@ -59,22 +61,22 @@ export default class BannerStore {
           console.error('Error creating banner:', error);
           toast.error('Tạo banner lỗi');
         })
-        .finally(() => ((this.loading = false)));
+        .finally(() => (this.loading = false));
     });
   };
 
   detailBanner = async (bannerId: number) => {
-    this.loading = true;
+    this.loadingEdit = true;
     try {
       const data = await agent.Banners.details(bannerId);
       runInAction(() => {
         this.selectedBanner = data;
-        this.loading = false;
+        this.loadingEdit = false;
       });
       return data;
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.loadingEdit = false;
         console.error('Error creating news:', error);
       });
     }
@@ -88,11 +90,13 @@ export default class BannerStore {
         this.setBanner(banner);
         this.selectedBanner = banner;
         this.loading = false;
+        toast.success('Cập nhật thành công');
       });
     } catch (error) {
       runInAction(() => {
         this.loading = false;
         console.error('Error updating banner:', error);
+        toast.error('Cập nhật thất bại');
       });
     }
     this.loadBannerArray();
@@ -208,6 +212,10 @@ export default class BannerStore {
     this.bannerRegistry.set(banner.id, banner);
     console.log(this.bannerRegistry);
   };
+
+  get bannersArray() {
+    return _.orderBy(Array.from(this.bannerRegistry.values()), ['id'], ['desc']);
+  }
 
   // Phương thức dọn dẹp cache (xóa sạch bannerRegistry)
   // private cleanBannerCache = () => {
