@@ -50,6 +50,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
           await upImage(files[0], files[0].name);
         }
         helpers.setValue(imageRegistry.get(files[0].name)?.url);
+        setFileNames([imageRegistry.get(files[0].name)?.url ?? ""]);
       } else {
         const upFiles = Array.from(files);
         const totalFiles = fileNames.length + upFiles.length;
@@ -64,10 +65,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
         const urls = [updatedFileNames.map((name) => imageRegistry.get(name)?.url)];
         setFileNames(updatedFileNames);
         helpers.setValue([urls]);
-
       }
       if (inputRef.current) {
-        inputRef.current.value = ''; // Thêm kiểm tra này
+        inputRef.current.value = '';
       }
     }
   };
@@ -104,7 +104,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         helpers.setValue([urls]);
       }
       if (inputRef.current) {
-        inputRef.current.value = ''; // Thêm kiểm tra này
+        inputRef.current.value = '';
       }
     }
   };
@@ -138,10 +138,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
             <Text className="text_upload">Kéo hình ảnh hoặc upload hình ảnh tại đây</Text>
           )}
           {fileNames.length > 0 && (
-            <Box mt={2}>
+            <Box mt={2} width={'80%'}>
               {fileNames.map((name, index) => (
-                <Flex mb={2} key={index}>
-                  <Text className="text_upload">{name}</Text>
+                <Flex mb={2} key={index} alignItems={'center'}>
+                  <Text className="text_upload" whiteSpace={'wrap'} width={'100%'}>{name}</Text>
                   <IconButton
                     aria-label="Remove file"
                     icon={<CloseIcon boxSize={2} />}

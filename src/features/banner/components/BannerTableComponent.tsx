@@ -28,6 +28,10 @@ const BannerTableComponent = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { bannerStore } = useStore();
   const { loading, loadingInitial, bannerArray, bannerPageParams, deleteBanner } = bannerStore;
+  const handleOpenEdit = async (id: number) => {
+    onOpen();
+    await bannerStore.detailBanner(id);
+  }
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -83,10 +87,7 @@ const BannerTableComponent = observer(() => {
                         colorScheme="teal"
                         size="sm"
                         mr={2}
-                        onClick={async () => {
-                          await bannerStore.detailBanner(banner.id)
-                            .then(onOpen)
-                        }}
+                        onClick={() => handleOpenEdit(banner.id)}
                       />
                       <DeleteButtonAtom name={banner.title} loading={loading} header='Xóa banner' onDelete={async () => {
                         try {

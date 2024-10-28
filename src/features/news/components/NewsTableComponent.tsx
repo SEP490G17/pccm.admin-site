@@ -29,6 +29,12 @@ const NewsTableComponent = observer(() => {
   const { newsStore } = useStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { newsPageParams, newsArray, loading, loadingInitial, deleteNews, detailNews, selectedNews } = newsStore;
+
+  const handleOpenEdit = async (id: number) => {
+    onOpen();
+    await detailNews(id);
+  }
+
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -103,8 +109,7 @@ const NewsTableComponent = observer(() => {
                     <Center>
                       <IconButton
                         onClick={async () => {
-                          await newsStore.detailNews(news.id)
-                            .then(onOpen)
+                          handleOpenEdit(news.id)
                         }}
                         icon={<FaEdit />}
                         aria-label="Edit"

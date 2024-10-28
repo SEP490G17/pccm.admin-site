@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Tag, TagCloseButton, Stack } from "@chakra-ui/react";
+import { Tag, TagCloseButton, Flex, Box } from "@chakra-ui/react";
 import "./style.scss";
 
 interface TagProps {
@@ -46,27 +46,38 @@ const InputTag: React.FC<TagProps> = ({ tags = [], onChange }: TagProps) => {
     };
 
     return (
-        <div className='input-tag'>
-            <Stack direction='row' margin='0.5rem 0 0 0.5rem'>
-                <Tag colorScheme="blackAlpha" className='item_text'>
-                    <TagCloseButton margin='0' onClick={() => handleDelAllItem()} />
-                </Tag>
-
-                {dataInput.map((text, i) => (
-                    <Tag key={`${i}_${text}`} colorScheme="blackAlpha" className='item_text'>
-                        <TagCloseButton margin='0' onClick={() => handleDelItem(i)} />
-                        {text}
+        <Box
+            borderRadius={'0.25rem'}
+            border={'1px solid rgba(51, 51, 51, 0.30)'}
+            alignItems={"center"}
+            justifyItems={"center"}
+            background={'#FFF'}
+            flexShrink={0}
+            padding={'0.5rem'}
+        >
+            <Flex direction='row' width={'100%'} gap={2}>
+                <Flex wrap={"wrap"} gap={1}>
+                    <Tag colorScheme="blackAlpha" className='item_text'>
+                        <TagCloseButton margin='0' onClick={() => handleDelAllItem()} />
                     </Tag>
-                ))}
 
-                <input
-                    ref={refInput}
-                    onChange={handleChangeInput}
-                    className='input'
-                    size={sizeInput}
-                />
-            </Stack>
-        </div>
+                    {dataInput.map((text, i) => (
+                        <Tag key={`${i}_${text}`} colorScheme="blackAlpha" className='item_text'>
+                            <TagCloseButton margin='0' onClick={() => handleDelItem(i)} />
+                            {text}
+                        </Tag>
+                    ))}
+                </Flex>
+                <Flex alignItems={'center'}>
+                    <input
+                        ref={refInput}
+                        onChange={handleChangeInput}
+                        className='input'
+                        size={sizeInput}
+                    />
+                </Flex>
+            </Flex>
+        </Box>
     );
 }
 

@@ -9,6 +9,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Skeleton,
   Stack,
   VStack,
 } from "@chakra-ui/react";
@@ -23,6 +24,7 @@ import FileUploadFieldAtoms from "@/app/common/form/FileUploadFieldAtoms";
 import TimeInputAtom from "@/app/common/form/TimeInputAtom";
 import ReactQuillAtom from "@/app/common/form/ReactQuillAtom";
 import { dateFormatOptions } from "@/app/helper/settings";
+import { observer } from "mobx-react";
 
 interface IProp {
   isOpen: boolean;
@@ -66,103 +68,105 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
           <ModalCloseButton color='#FFF' />
           <ModalBody>
             <VStack spacing="20px" align="stretch">
-              <Formik
-                initialValues={{
-                  thumbnail: selectedNews?.thumbnail || "",
-                  title: selectedNews?.title || "",
-                  description: selectedNews?.description || "",
-                  startTime: selectedNews?.startTime || "",
-                  endTime: selectedNews?.endTime || "",
-                  location: selectedNews?.location || "",
-                  status: selectedNews?.status || "",
-                  tags: selectedNews?.tags || [],
-                  createdAt: selectedNews?.createdAt || "",
-                  content: selectedNews?.content || "",
-                }}
-                onSubmit={async (values) => {
-                  console.error(values)
-                  const News = new NewsDTO({
-                    id: selectedNews?.id,
-                    title: values.title,
-                    description: values.description,
-                    tags: values.tags,
-                    thumbnail: values.thumbnail,
-                    startTime: values.startTime,
-                    endTime: values.endTime,
-                    location: values.location,
-                    content: values.content,
-                    createAt: new Date().toLocaleString('vi-VN', dateFormatOptions).trim(),
-                    status: 1
-                  });
-                  await newsStore.updateNews(News);
-                  onClose()
-                }}
-                validationSchema={validationSchema}
-              >
-                {({ handleSubmit, isSubmitting, isValid }) => {
-                  return (
-                    <Form onSubmit={handleSubmit}>
-                      <TextFieldAtoms
-                        isRequired={true}
-                        label="Tiêu đề bài viết"
-                        className="input_text"
-                        type="text"
-                        name="title"
-                        placeholder="Nhập" />
-
-                      <TextFieldAtoms
-                        isRequired={true}
-                        label="Mô tả"
-                        className="input_text"
-                        type="text"
-                        name="description"
-                        placeholder="Nhập" />
-
-                      <HStack>
+              <Skeleton isLoaded={!newsStore.isLoadingEdit}>
+                <Formik
+                  initialValues={{
+                    thumbnail: selectedNews?.thumbnail || "",
+                    title: selectedNews?.title || "",
+                    description: selectedNews?.description || "",
+                    startTime: selectedNews?.startTime || "",
+                    endTime: selectedNews?.endTime || "",
+                    location: selectedNews?.location || "",
+                    status: selectedNews?.status || "",
+                    tags: selectedNews?.tags || [],
+                    createdAt: selectedNews?.createdAt || "",
+                    content: selectedNews?.content || "",
+                  }}
+                  onSubmit={async (values) => {
+                    console.error(values)
+                    const News = new NewsDTO({
+                      id: selectedNews?.id,
+                      title: values.title,
+                      description: values.description,
+                      tags: values.tags,
+                      thumbnail: values.thumbnail,
+                      startTime: values.startTime,
+                      endTime: values.endTime,
+                      location: values.location,
+                      content: values.content,
+                      createAt: new Date().toLocaleString('vi-VN', dateFormatOptions).trim(),
+                      status: 1
+                    });
+                    await newsStore.updateNews(News);
+                    onClose()
+                  }}
+                  validationSchema={validationSchema}
+                >
+                  {({ handleSubmit, isSubmitting, isValid }) => {
+                    return (
+                      <Form onSubmit={handleSubmit}>
                         <TextFieldAtoms
                           isRequired={true}
-                          label="Địa điểm"
+                          label="Tiêu đề bài viết"
                           className="input_text"
                           type="text"
-                          name="location"
+                          name="title"
                           placeholder="Nhập" />
 
-                        <TagFieldAtom name="tags" label="Tags bài viết" isRequired={false}></TagFieldAtom>
+                        <TextFieldAtoms
+                          isRequired={true}
+                          label="Mô tả"
+                          className="input_text"
+                          type="text"
+                          name="description"
+                          placeholder="Nhập" />
 
-                      </HStack>
+                        <HStack>
+                          <TextFieldAtoms
+                            isRequired={true}
+                            label="Địa điểm"
+                            className="input_text"
+                            type="text"
+                            name="location"
+                            placeholder="Nhập" />
 
-                      <FileUploadFieldAtoms
-                        label="Ảnh banner"
-                        limit={1}
-                        name="thumbnail"
-                        isRequired={true}
-                      />
+                          <TagFieldAtom name="tags" label="Tags bài viết" isRequired={false}></TagFieldAtom>
 
-                      <FormControl>
-                        <FormLabel className="title_label">Thời gian</FormLabel>
-                        <HStack spacing="20px">
-                          <TimeInputAtom color='green' label='Giờ bắt đầu' type='datetime-local' name='startTime'></TimeInputAtom>
-                          <TimeInputAtom color='red' label='Giờ kết thúc' type='datetime-local' name='endTime'></TimeInputAtom>
                         </HStack>
-                      </FormControl>
 
-                      <ReactQuillAtom name="content" label="Chi tiết bài viết" isRequired={true}></ReactQuillAtom>
+                        <FileUploadFieldAtoms
+                          label="Ảnh banner"
+                          limit={1}
+                          name="thumbnail"
+                          isRequired={true}
+                        />
 
-                      <Stack direction='row' justifyContent='flex-end'>
-                        <Button
-                          disabled={isSubmitting || !isValid}
-                          className="save"
-                          isLoading={isSubmitting}
-                          type="submit"
-                        >
-                          Lưu
-                        </Button>
-                      </Stack>
-                    </Form>
-                  )
-                }
-                }
-              </Formik>
+                        <FormControl>
+                          <FormLabel className="title_label">Thời gian</FormLabel>
+                          <HStack spacing="20px">
+                            <TimeInputAtom color='green' label='Giờ bắt đầu' type='datetime-local' name='startTime'></TimeInputAtom>
+                            <TimeInputAtom color='red' label='Giờ kết thúc' type='datetime-local' name='endTime'></TimeInputAtom>
+                          </HStack>
+                        </FormControl>
+
+                        <ReactQuillAtom name="content" label="Chi tiết bài viết" isRequired={true}></ReactQuillAtom>
+
+                        <Stack direction='row' justifyContent='flex-end'>
+                          <Button
+                            disabled={isSubmitting || !isValid}
+                            className="save"
+                            isLoading={isSubmitting}
+                            type="submit"
+                          >
+                            Lưu
+                          </Button>
+                        </Stack>
+                      </Form>
+                    )
+                  }
+                  }
+                </Formik>
+              </Skeleton>
             </VStack>
           </ModalBody>
         </ModalContent>
@@ -171,4 +175,4 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
   );
 };
 
-export default UpdateNewsPage;
+export default observer(UpdateNewsPage);
