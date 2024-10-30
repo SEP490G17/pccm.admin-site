@@ -15,6 +15,7 @@ export default class NewsStore {
   newsPageParams = new PageParams();
   isOrigin: boolean = true;
   isLoadingEdit: boolean = false;
+  isloadingStatus: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -108,6 +109,22 @@ export default class NewsStore {
         console.error('Error deleting news:', error);
       });
     }
+  };
+
+  changeStatus = async (newsId: number, status: number) => {
+    this.isloadingStatus = true;
+    await runInAction(async () => {
+      await agent.NewsAgent.changestatus(newsId, status)
+        .then((s) => {
+          this.setNews(s);
+          toast.success('Cập nhật tức thành công');
+        })
+        .catch((error) => {
+          console.error('Error creating product:', error);
+          toast.error('Cập nhật tin tức thất bại');
+        })
+        .finally(() => (this.isloadingStatus = false));
+    });
   };
   //#endregion
 

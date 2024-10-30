@@ -1,6 +1,11 @@
+import { DataTotal } from '@/app/models/filter.model'
 import { Box, Flex, FormControl, Text } from '@chakra-ui/react'
 
-const HeaderStatistic = () => {
+interface IProps {
+    data: DataTotal | undefined
+}
+
+const HeaderStatistic = ({ data }: IProps) => {
     return (
         <FormControl>
             <Flex alignItems="center" gap={5} padding={4} borderRadius="md">
@@ -18,7 +23,7 @@ const HeaderStatistic = () => {
                         backgroundColor="white"
                     >
                         <Text fontWeight="bold" fontSize="larger" color="gray.700">SỐ CỤM SÂN</Text>
-                        <Text fontSize="xl" fontWeight="bold" color="blue.500">5</Text>
+                        <Text fontSize="xl" fontWeight="bold" color="blue.500">{data?.totalCourtClusters}</Text>
                     </Box>
 
                     <Box
@@ -34,7 +39,7 @@ const HeaderStatistic = () => {
                         backgroundColor="white"
                     >
                         <Text fontWeight="bold" fontSize="larger" color="gray.700">SỐ SÂN</Text>
-                        <Text fontSize="xl" fontWeight="bold" color="red.500">50</Text>
+                        <Text fontSize="xl" fontWeight="bold" color="red.500">{data?.totalCourts}</Text>
                     </Box>
 
                     <Box
@@ -50,7 +55,7 @@ const HeaderStatistic = () => {
                         backgroundColor="white"
                     >
                         <Text fontWeight="bold" fontSize="larger" color="gray.700">SỐ NGƯỜI DÙNG</Text>
-                        <Text fontSize="xl" fontWeight="bold" color="green.500">20</Text>
+                        <Text fontSize="xl" fontWeight="bold" color="green.500">{data?.totalUsers}</Text>
                     </Box>
 
                     <Box
@@ -66,7 +71,7 @@ const HeaderStatistic = () => {
                         backgroundColor="white"
                     >
                         <Text fontWeight="bold" fontSize="larger" color="gray.700">SỐ STAFF</Text>
-                        <Text fontSize="xl" fontWeight="bold" color="purple.500">5</Text>
+                        <Text fontSize="xl" fontWeight="bold" color="purple.500">{data?.totalStaff}</Text>
                     </Box>
                 </Flex>
             </Flex>
