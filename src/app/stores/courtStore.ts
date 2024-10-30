@@ -26,14 +26,13 @@ export default class CourtClusterStore {
 
   loadCourtClusterListAll = async () => {
     this.loadingInitial = true;
-    await runInAction( async ()=>{
+    await runInAction(async () => {
       try {
-        await agent.CourtClusterAgent.listAll()
-        .then(this.setCourtClusterListAll);
+        await agent.CourtClusterAgent.listAll().then(this.setCourtClusterListAll);
       } finally {
         this.loadingInitial = false;
       }
-    })
+    });
   };
 
   mockLoadCourts = async () => {
@@ -95,11 +94,11 @@ export default class CourtClusterStore {
       .slice(startIndex, endIndex);
   };
 
-  get courtListAllArray(){
+  get courtListAllArray() {
     return Array.from(this.courtListAllRegistry.values());
   }
 
-  get courtListAllOptions(){
+  get courtListAllOptions() {
     return this.courtListAllArray.map((courtCluster) => ({
       value: courtCluster.id,
       label: courtCluster.courtClusterName,

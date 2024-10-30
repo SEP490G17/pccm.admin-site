@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Flex, Box, Select, Button, useDisclosure } from '@chakra-ui/react';
+import { Flex, Box, Button, useDisclosure } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -60,16 +60,6 @@ const NewsPage = () => {
       <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách tin tức', to: '/tin-tuc' }]} />
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
-          <Select
-            width="149px"
-            height="35px"
-            borderRadius="4px"
-            border="1px solid #ADADAD"
-            bg="#FFF"
-            color="#03301F"
-          >
-            <option value="all">Tất cả</option>
-          </Select>
           <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={onOpen}>
             Thêm mới
           </Button>
@@ -105,7 +95,7 @@ const NewsPage = () => {
           tài liệu
         </Box>
       </Flex> */}
-      <CreateNewsPage isOpen={isOpen} onClose={onClose}/>
+      <CreateNewsPage isOpen={isOpen} onClose={onClose} />
     </>
   );
 };

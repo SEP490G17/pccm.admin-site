@@ -14,6 +14,7 @@ import { StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
 import { Staff } from '../models/staff.model';
+import { DataTotal, FilterData, FilterDataDTO } from '../models/filter.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -76,6 +77,7 @@ const requests = {
   post: <T>(url: string, body: object) => axios.post<T>(url, body).then(responseBody),
   put: <T>(url: string, body: object) => axios.put<T>(url, body).then(responseBody),
   del: <T>(url: string) => axios.delete<T>(url).then(responseBody),
+  filter: <T>(url: string) => axios.get<T>(url).then(responseBody),
 };
 
 const NewsAgent = {
@@ -85,6 +87,8 @@ const NewsAgent = {
   create: (news: NewsDTO): Promise<News> => requests.post(`/news`, news),
   update: (news: NewsDTO): Promise<News> => requests.put(`/news/${news.id}`, news),
   delete: (id: number): Promise<void> => requests.del(`/news/${id}`),
+  changestatus: (newsId: number, status: number): Promise<News> =>
+    requests.put(`/news/changestatus/${newsId}/${status}`, {}),
 };
 const Banners = {
   list: (queryParams: string = ''): Promise<PaginationModel<Banner>> =>
@@ -103,6 +107,16 @@ const Services = {
     requests.put(`/service/${service.id}`, service),
   delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
 };
+
+const Statistic = {
+  getincome: (filterData: FilterDataDTO): Promise<FilterData[]> =>
+    requests.filter(
+      `/statistic/?Year=${filterData.year}&Month=${filterData.month}&CourtClusterId=${filterData.courtClusterId}`,
+    ),
+  years: (): Promise<number[]> => requests.get(`/statistic/years`),
+  count: (): Promise<DataTotal> => requests.get(`/statistic/count`),
+};
+
 const StaffPositions = {
   list: (): Promise<StaffPosition[]> => requests.get(`/staffPosition`),
 };
@@ -163,6 +177,7 @@ const agent = {
   Users,
   UploadAgent,
   Categories,
+  Statistic,
 };
 
 export default agent;

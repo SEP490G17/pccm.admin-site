@@ -95,7 +95,7 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
                       location: values.location,
                       content: values.content,
                       createAt: new Date().toLocaleString('vi-VN', dateFormatOptions).trim(),
-                      status: 1
+                      status: selectedNews?.status,
                     });
                     await newsStore.updateNews(News);
                     onClose()

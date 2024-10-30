@@ -7,7 +7,7 @@ interface IProps extends InputProps {
     type?: string;
     color?: string;
 }
-const TimeInputAtom = ({ label, isRequired, color,...props }: IProps) => {
+const TimeInputAtom = ({ label, isRequired, color, ...props }: IProps) => {
     return (
         <FastField name={props.name}>
             {({ field, form }: any) => (
