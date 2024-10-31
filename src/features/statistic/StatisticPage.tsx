@@ -1,6 +1,6 @@
 import SelectFieldAtoms from "@/app/common/form/SelectFieldAtoms"
 import { Form, Formik } from "formik"
-import { Avatar, Box, Button, Flex, FormControl, IconButton, Skeleton, Text } from "@chakra-ui/react"
+import { Avatar, Box, Button, Flex, FormControl, Skeleton, Text } from "@chakra-ui/react"
 import PageHeadingAtoms from "../atoms/PageHeadingAtoms"
 import {
     Chart as ChartJS,
@@ -36,22 +36,23 @@ ChartJS.register(
 const StatisticPage = observer(() => {
     const { courtStore, statisticStore } = useStore()
     const { courtListAllOptions } = courtStore
-    const { loadDataFilter, setLoadingData, loadingData, years, dataFilter, setLoadingDataFilter, loadingDataFilter, dataTotal, setLoadingDataTotal, loadingDataTotal } = statisticStore
+    const { loadDataFilter, setLoadingData, loadingData, years,
+        dataFilter, setLoadingDataFilter, loadingDataFilter, dataTotal,
+        setLoadingDataTotal, loadingDataTotal, dataExpense, dataTop } = statisticStore
     const month = Array.from({ length: 12 }, (_, i) => ({
         value: (i + 1).toString(),
         label: `Tháng ${i + 1}`,
     }));
-    const year = years.map((values) => (
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear().toString();
+    const currentMonth = (currentDate.getMonth() + 1).toString();
+    const m = 1000000;
+    const year = years == null ? [{ value: `${currentYear}`, label: `Năm ${currentYear}` }] : years.map((values) => (
         {
             value: values.toString(),
             label: `Năm ${values}`
         }
     ))
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear().toString();
-    const currentMonth = (currentDate.getMonth() + 1).toString();
-    const m = 1000000;
-
     useEffect(() => {
         setLoadingDataFilter(true);
         setLoadingData(true);
@@ -68,7 +69,9 @@ const StatisticPage = observer(() => {
                 return Promise.all([
                     statisticStore.loadYears(),
                     loadDataFilter(dataInit),
-                    statisticStore.loadDataTotal()
+                    statisticStore.loadDataTotal(),
+                    statisticStore.loadExpense(dataInit),
+                    statisticStore.loadTop(dataInit)
                 ]);
             })
             .then(() => {
@@ -121,14 +124,13 @@ const StatisticPage = observer(() => {
     };
 
     const pieChartData: ChartData<'doughnut'> = {
-        labels: ["Hàng hóa", "Trả lương", "Bảo trì"],
+        labels: ["Trả lương", "Hàng hóa"],
         datasets: [
             {
-                data: [120, 60, 30],
+                data: [dataExpense?.totalStaffExpenditure ?? 0, dataExpense?.totalProductExpenditure ?? 0],
                 backgroundColor: [
                     'rgb(255, 99, 132)',
-                    'rgb(54, 162, 235)',
-                    'rgb(255, 205, 86)'
+                    'rgb(54, 162, 235)'
                 ],
                 hoverOffset: 4,
             },
@@ -152,7 +154,9 @@ const StatisticPage = observer(() => {
                             year: values.year
                         }
                     )
-                    await loadDataFilter(dataFilter)
+                    await Promise.all([loadDataFilter(dataFilter),
+                    statisticStore.loadExpense(dataFilter),
+                    statisticStore.loadTop(dataFilter)])
                 }
                 }
             >
@@ -286,61 +290,60 @@ const StatisticPage = observer(() => {
                                             width="30%"
                                             height={'30rem'}
                                             display="flex"
-                                            alignItems="center"
-                                            justifyContent="center"
                                             flexDirection="column"
                                             border="1px solid #e2e8f0"
                                             boxShadow="sm"
                                             borderRadius="md"
                                             padding={4}
                                         >
-                                            <Box fontWeight="bold" fontSize="2xl" color="green" mb={3}>
+                                            {/* Tiêu đề cố định */}
+                                            <Box fontWeight="bold" fontSize="2xl" color="green" textAlign="center" mb={3} position="sticky" top={0} zIndex={1} padding={2}>
                                                 TOP 5 NHÂN VIÊN
                                             </Box>
 
-                                            {dataTotal?.topStaffs.map((staff, index) => (
-                                                <Flex key={index} align="center" justify="space-between" mb={3}>
-                                                    <Flex align="center">
-                                                        <Box>
-                                                            <Text fontWeight="bold">{staff}</Text>
-                                                        </Box>
+                                            <Box overflowY="auto" flex="1">
+                                                {dataTop?.topStaffs.map((staff, index) => (
+                                                    <Flex key={index} align="center" justify="space-between" mb={3}>
+                                                        <Flex align="center">
+                                                            <Box textAlign="center">
+                                                                <Text fontWeight="bold">{staff.fullName}</Text>
+                                                            </Box>
+                                                        </Flex>
                                                     </Flex>
-                                                </Flex>
-                                            ))}
+                                                ))}
+                                            </Box>
                                         </Box>
 
                                         <Box
                                             width="30%"
                                             height={'30rem'}
                                             display="flex"
-                                            alignItems="center"
-                                            justifyContent="center"
                                             flexDirection="column"
                                             border="1px solid #e2e8f0"
                                             boxShadow="sm"
                                             borderRadius="md"
                                             padding={4}
                                         >
-                                            <Box fontWeight="bold" fontSize="2xl" color="green" mb={3}>
-                                                TOP 5 NHÂN VIÊN
+                                            {/* Tiêu đề cố định */}
+                                            <Box fontWeight="bold" fontSize="2xl" color="green" textAlign="center" mb={3} position="sticky" top={0} zIndex={1} padding={2}>
+                                                TOP 5 SẢN PHẨM
                                             </Box>
 
-                                            {dataTotal?.TopProducts?.map((product, index) => (
-                                                <Flex key={index} align="center" justify="space-between" mb={3}>
-                                                    <Flex align="center">
-                                                        <Avatar size="md" mr={3} />
-                                                        <Box>
-                                                            <Text fontWeight="bold">{product}</Text>
-                                                        </Box>
+                                            <Box overflowY="auto" flex="1">
+                                                {dataTop?.topProducts.map((product, index) => (
+                                                    <Flex key={index} align="center" justify="space-between" mb={3}>
+                                                        <Flex align="center">
+                                                            <Avatar size="md" mr={3} src={product.thumbnailUrl} />
+                                                            <Box>
+                                                                <Text fontWeight="bold">{product.productName}</Text>
+                                                            </Box>
+                                                        </Flex>
                                                     </Flex>
-                                                    <IconButton
-                                                        aria-label="More options"
-                                                        variant="ghost"
-                                                        size="sm"
-                                                    />
-                                                </Flex>
-                                            ))}
+                                                ))}
+                                            </Box>
                                         </Box>
+
+
                                     </Flex>
                                 </FormControl>
                             </Skeleton>

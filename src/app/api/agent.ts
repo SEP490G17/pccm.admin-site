@@ -14,7 +14,11 @@ import { StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
 import { Staff } from '../models/staff.model';
-import { DataTotal, FilterData, FilterDataDTO } from '../models/filter.model';
+import { DataExpend, DataTop, DataTotal, FilterData, FilterDataDTO } from '../models/filter.model';
+import {
+  CourtClusterStatisticDetails,
+  FilterCourtClusterStatisticDetailsDTO,
+} from '../models/details.models';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -115,6 +119,21 @@ const Statistic = {
     ),
   years: (): Promise<number[]> => requests.get(`/statistic/years`),
   count: (): Promise<DataTotal> => requests.get(`/statistic/count`),
+  expense: (filterData: FilterDataDTO): Promise<DataExpend> =>
+    requests.get(`/statistic/ExpendStatistics?month=${filterData.month}&year=${filterData.year}`),
+  top: (filterData: FilterDataDTO): Promise<DataTop> =>
+    requests.get(`/statistic/TopStatistics?month=${filterData.month}&year=${filterData.year}`),
+};
+
+const Revenue = {
+  getrevenue: (
+    filterData: FilterCourtClusterStatisticDetailsDTO,
+  ): Promise<CourtClusterStatisticDetails> =>
+    requests.filter(
+      `/statistic/ClusterStatistics?date=${filterData.date}&clusterId=${filterData.courtClusterId}`,
+    ),
+  years: (): Promise<number[]> => requests.get(`/statistic/years`),
+  count: (): Promise<DataTotal> => requests.get(`/statistic/count`),
 };
 
 const StaffPositions = {
@@ -178,6 +197,7 @@ const agent = {
   UploadAgent,
   Categories,
   Statistic,
+  Revenue,
 };
 
 export default agent;
