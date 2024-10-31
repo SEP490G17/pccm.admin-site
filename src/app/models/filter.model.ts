@@ -1,3 +1,6 @@
+import { Product } from './product.model';
+import { Staff } from './staff.model';
+
 export interface FilterData {
   date: string;
   totalAmount: number;
@@ -10,8 +13,16 @@ export interface DataTotal {
   totalCourts: number;
   totalUsers: number;
   totalStaff: number;
-  topStaffs: string[];
-  TopProducts: string[];
+}
+
+export interface DataExpend {
+  totalProductExpenditure: number;
+  totalStaffExpenditure: number;
+}
+
+export interface DataTop {
+  topStaffs: Staff[];
+  topProducts: Product[];
 }
 
 export class FilterDataDTO {

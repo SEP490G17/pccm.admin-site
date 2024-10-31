@@ -12,6 +12,7 @@ import StaffPositionStore from './staffPositionStore';
 import UploadStore from './uploadStore';
 import CategoryStore from './categoryStore';
 import StatisticStore from './statisticStore';
+import revenueStore from './revenueStore';
 
 interface Store {
   commonStore: CommonStore;
@@ -27,6 +28,7 @@ interface Store {
   uploadStore: UploadStore;
   categoryStore: CategoryStore;
   statisticStore: StatisticStore;
+  revenueStore: revenueStore;
 }
 
 export const store: Store = {
@@ -43,6 +45,7 @@ export const store: Store = {
   uploadStore: new UploadStore(), // add more stores as needed
   categoryStore: new CategoryStore(), // add more stores as needed
   statisticStore: new StatisticStore(),
+  revenueStore: new revenueStore(),
 };
 
 export const StoreContext = createContext(store);

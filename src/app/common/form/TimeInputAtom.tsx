@@ -15,9 +15,11 @@ const TimeInputAtom = ({ label, isRequired, color, ...props }: IProps) => {
                     isInvalid={form.errors[field.name] && form.touched[field.name]}
                     isRequired={isRequired}
                 >
-                    <Badge colorScheme={color} fontSize="1em" padding="8px 16px">
-                        {label}
-                    </Badge>
+                    {(label != null) &&
+                        <Badge colorScheme={color} fontSize="1em" padding="8px 16px">
+                            {label}
+                        </Badge>
+                    }
                     <Input
                         {...field}
                         {...props}
