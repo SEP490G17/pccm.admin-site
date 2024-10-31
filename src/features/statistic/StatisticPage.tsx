@@ -47,7 +47,7 @@ const StatisticPage = observer(() => {
     const currentYear = currentDate.getFullYear().toString();
     const currentMonth = (currentDate.getMonth() + 1).toString();
     const m = 1000000;
-    const year = years == null ? [{ value: `${currentYear}`, label: `Năm ${currentYear}` }] : years.map((values) => (
+    const year = years.length === 0  ? [{ value: `${currentYear}`, label: `Năm ${currentYear}` }] : years.map((values) => (
         {
             value: values.toString(),
             label: `Năm ${values}`
