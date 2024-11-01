@@ -5,6 +5,17 @@
 @tailwind components;
 @tailwind utilities;
 @import './variables.scss';
+@import '../node_modules/@syncfusion/ej2-base/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-buttons/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-calendars/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-dropdowns/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-inputs/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-lists/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-navigations/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-popups/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css';
+@import '../node_modules/@syncfusion/ej2-react-schedule/styles/material.css';
+
 * {
   margin: 0;
   padding: 0;
@@ -42,6 +53,7 @@
 }
 .main-layout {
   background-color: $mainBackgroundColor !important;
+  box-sizing: border-box !important;
   header {
     height: $headerHeight !important;
     width: calc(100% - $sidebarWidth) !important;
@@ -64,13 +76,14 @@
   main {
     margin-left: $sidebarWidth;
     margin-top: $headerHeight;
+    min-height: calc(100vh - $headerHeight);
   }
   main.collapsed {
     margin-left: $sidebarCollapse;
   }
 }
 .app-table {
-  thead{
+  thead {
     background-color: $primaryColor900 !important;
     th {
       color: white !important;
@@ -159,18 +172,102 @@ b {
   color: $primaryColor900 !important;
 }
 
-
 // button
 
-button.primary.outlined{
+button.primary.outlined {
   border: 0.5px solid $default-border-color !important;
   background-color: $default-background-color !important;
   color: black !important;
   // box-shadow: $button-primary-shadow;
-  &:hover{
+  &:hover {
     background-color: $default-background-color !important;
     color: $primaryColor700 !important;
     border-color: $primaryColor600 !important;
-
   }
+}
+.templatewrap {
+  text-align: center;
+  width: 100%;
+}
+
+.templatewrap img {
+  width: 20px;
+  height: 20px;
+}
+
+/* csslint ignore:start */
+
+.schedule-cell-dimension.e-schedule {
+  .e-table-container{
+    max-height: 500px !important;
+    overflow: auto;
+  }
+	.e-vertical-view {
+		.e-date-header-wrap {
+			table {
+				col {
+					width: 200px;
+				}
+			}
+		}
+		.e-content-wrap {
+			table {
+				col {
+					width: 200px;
+				}
+			}
+		}
+		.e-time-cells-wrap {
+			table {
+				td {
+					height: 100px;
+				}
+			}
+		}
+		.e-work-cells {
+			height: 100px;
+		}
+	}
+	.e-month-view {
+		.e-work-cells {
+			width: 200px;
+			height: 200px;
+		}
+		.e-date-header-wrap {
+			table {
+				col {
+					width: 200px;
+				}
+			}
+		}
+	}
+}
+
+/* csslint ignore:end */
+
+.e-appointment-details {
+  height: 80px !important;
+}
+.e-schedule {
+  .e-timeline-view{
+    .e-appointment {
+      min-height: 80px !important;
+      width: 60px;
+    }
+  }
+
+}
+
+
+.e-appointment-wrapper {
+  height: auto; /* Để chiều cao tự động điều chỉnh theo nội dung */
+}
+
+.e-appointment {
+  min-height: 50px; /* Đảm bảo chiều cao tối thiểu đủ để hiển thị một số sự kiện */
+}
+
+.e-past-time-slot {
+  background-color: #d3d3d3 !important; /* Màu xám nhạt cho ô thời gian quá khứ */
+  opacity: 0.6;
 }

@@ -36,9 +36,9 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
     category: Yup.number().required('Thể loại không được bỏ trống'),
     courtCluster: Yup.number().required('Khu không được bỏ trống'),
   });
-  const { categoryStore, courtStore, productStore,uploadStore } = useStore();
+  const { categoryStore, courtClusterStore, productStore,uploadStore } = useStore();
   const { categoryOption } = categoryStore;
-  const { courtListAllOptions } = courtStore;
+  const { courtClusterListAllOptions } = courtClusterStore;
   return (
     <Modal isOpen={isOpen} onClose={()=>{uploadStore.loading = false; onClose()}} size="6xl">
       <ModalOverlay />
@@ -57,7 +57,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                 thumbnail: '',
                 description: '',
                 category: categoryOption[0]?.value ?? 1,
-                courtCluster: courtListAllOptions[0]?.value ?? 1,
+                courtCluster: courtClusterListAllOptions[0]?.value ?? 1,
               }}
               onSubmit={async (values) => {
                 const product = new ProductInput({
@@ -105,7 +105,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                       borderRadius="md"
                       borderColor="gray.300"
                       label="Cum san"
-                      options={courtListAllOptions}
+                      options={courtClusterListAllOptions}
                       isRequired={true}
                     />
                   </Flex>

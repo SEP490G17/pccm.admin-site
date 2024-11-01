@@ -34,8 +34,8 @@ ChartJS.register(
 );
 
 const StatisticPage = observer(() => {
-    const { courtStore, statisticStore } = useStore()
-    const { courtListAllOptions } = courtStore
+    const { courtClusterStore, statisticStore } = useStore()
+    const { courtClusterListAllOptions } = courtClusterStore
     const { loadDataFilter, setLoadingData, loadingData, years,
         dataFilter, setLoadingDataFilter, loadingDataFilter, dataTotal,
         setLoadingDataTotal, loadingDataTotal, dataExpense, dataTop } = statisticStore
@@ -58,7 +58,7 @@ const StatisticPage = observer(() => {
         setLoadingData(true);
         setLoadingDataTotal(true);
 
-        courtStore.loadCourtClusterListAll()
+        courtClusterStore.loadCourtClusterListAll()
             .then(() => {
                 const dataInit = new FilterDataDTO({
                     courtClusterId: 0,
@@ -142,7 +142,7 @@ const StatisticPage = observer(() => {
             <PageHeadingAtoms breadCrumb={[{ title: 'Thống kê', to: '/thong-ke' }]} />
             <Formik
                 initialValues={{
-                    court_cluster: courtListAllOptions[0]?.value ?? 0,
+                    court_cluster: courtClusterListAllOptions[0]?.value ?? 0,
                     month: currentMonth,
                     year: currentYear,
                 }}
@@ -173,7 +173,7 @@ const StatisticPage = observer(() => {
                                     <Flex alignItems={"end"}>
                                         <Flex alignItems={"end"} width={'50%'} gap={2}>
                                             <SelectFieldAtoms
-                                                options={[{ value: 0, label: "Tất cả" }, ...courtListAllOptions]}
+                                                options={[{ value: 0, label: "Tất cả" }, ...courtClusterListAllOptions]}
                                                 name="court_cluster"
                                                 label="Cụm sân"
                                                 isRequired={true}

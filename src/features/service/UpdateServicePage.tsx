@@ -28,11 +28,11 @@ interface IProp {
 }
 
 const UpdateServicePage = ({ isOpen, onClose }: IProp) => {
-    const { courtStore, serviceStore } = useStore()
-    const { courtListAllOptions } = courtStore
+    const { courtClusterStore, serviceStore } = useStore()
+    const { courtClusterListAllOptions } = courtClusterStore
     const { selectedService } = serviceStore
     useEffect(() => {
-        Promise.all([courtStore.loadCourtClusterListAll()])
+        Promise.all([courtClusterStore.loadCourtClusterListAll()])
     }, []);
 
     const validationSchema = Yup.object().shape({
@@ -98,12 +98,12 @@ const UpdateServicePage = ({ isOpen, onClose }: IProp) => {
                                                     placeholder='xxxxxxx'
                                                     name='price' />
 
-                                                <MultiSelectDataAtom
-                                                    isDisabled={true}
-                                                    label='Thuộc cụm sân'
-                                                    isRequired={true}
-                                                    options={courtListAllOptions}
-                                                    name="courtclusters" />
+                                            <MultiSelectDataAtom
+                                                isDisabled={true}
+                                                label='Thuộc cụm sân'
+                                                isRequired={true}
+                                                options={courtClusterListAllOptions}
+                                                name="courtclusters" />
 
                                                 <Stack direction='row' justifyContent='flex-end' mt={9}>
                                                     <Button

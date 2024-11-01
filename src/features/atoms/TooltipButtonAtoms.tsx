@@ -1,27 +1,27 @@
-import {IconButton, Tooltip, TooltipProps} from "@chakra-ui/react";
-
+import {Button, Tooltip, TooltipProps} from "@chakra-ui/react";
 
 interface IProps extends Omit<TooltipProps, 'children'> {
-    icon: any,
-    className?: string,
-    buttomSize?: string,
-    buttonColorScheme?: string,
     buttonAriaLabel: string,
-    handleOnclick?: () => void,
+    buttonColorScheme: string,
+    buttomSize: string,
+    handleOnclick: ()=>void,
+    className?: string,
+    icon?:any,
+    buttonContent?:string,
+    
 }
 
-const TooltipButtonAtoms = ({icon, className, buttomSize="sm", buttonColorScheme, buttonAriaLabel, handleOnclick, ...props}: IProps) => {
+const TooltipButtonAtoms = ({className , icon, buttonAriaLabel, buttonColorScheme, buttomSize ="sm",buttonContent ,handleOnclick, ...props}: IProps) => {
     return (
         <>
             <Tooltip {...props}>
-                <IconButton
-                    className={className}
-                    icon={icon}
-                    aria-label={buttonAriaLabel}
-                    colorScheme={buttonColorScheme}
-                    size={buttomSize}
-                    onClick={handleOnclick}
-                />
+                <Button className={className}    size={buttomSize}
+                        colorScheme={buttonColorScheme}
+                        aria-label={buttonAriaLabel} onClick={handleOnclick}>
+
+                    {icon}
+                    {buttonContent}
+                </Button>
             </Tooltip>
         </>
     );

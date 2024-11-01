@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --mode development",
+    "start": "vite --mode production",
     "build": "vite build",
     "lint": "eslint .",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
@@ -15,6 +16,10 @@
     "@chakra-ui/react": "^2.10.1",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@syncfusion/ej2-react-calendars": "^27.1.57",
+    "@syncfusion/ej2-react-inputs": "^27.1.55",
+    "@syncfusion/ej2-react-schedule": "^27.1.57",
+    "antd": "^5.21.5",
     "axios": "^1.7.7",
     "chart.js": "^4.4.5",
     "formik": "^2.4.6",

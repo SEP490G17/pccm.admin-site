@@ -1,16 +1,16 @@
-import { createContext, useContext } from 'react';
-import CommonStore from './commonStore';
-import AuthStore from './authStore';
-import NewsStore from './newsStore';
-import BannerStore from './bannerStore';
-import CourtClusterStore from './courtStore';
-import ProductStore from './productStore';
-import ServiceStore from './serviceStore';
-import StaffStore from './staffStore';
-import UserStore from './userStore';
-import StaffPositionStore from './staffPositionStore';
-import UploadStore from './uploadStore';
-import CategoryStore from './categoryStore';
+import { createContext, useContext } from "react";
+import CommonStore from "./commonStore";
+import AuthStore from "./authStore";
+import NewsStore from "./newsStore";
+import BannerStore from "./bannerStore"; 
+import CourtClusterStore from "./courtClusterStore.ts";
+import ProductStore from "./productStore"
+import ServiceStore from "./serviceStore";
+import StaffStore from "./staffStore";
+import UserStore from "./userStore";
+import StaffPositionStore from "./staffPositionStore";
+import UploadStore from "./uploadStore";
+import CategoryStore from "./categoryStore";
 import StatisticStore from './statisticStore';
 import revenueStore from './revenueStore';
 
@@ -18,8 +18,8 @@ interface Store {
   commonStore: CommonStore;
   authStore: AuthStore;
   newsStore: NewsStore;
-  bannerStore: BannerStore;
-  courtStore: CourtClusterStore;
+  bannerStore: BannerStore; 
+  courtClusterStore: CourtClusterStore;
   productStore: ProductStore;
   serviceStore: ServiceStore;
   staffStore: StaffStore;
@@ -36,7 +36,7 @@ export const store: Store = {
   authStore: new AuthStore(),
   newsStore: new NewsStore(),
   bannerStore: new BannerStore(),
-  courtStore: new CourtClusterStore(),
+  courtClusterStore: new CourtClusterStore(),
   productStore: new ProductStore(),
   serviceStore: new ServiceStore(),
   staffStore: new StaffStore(),
