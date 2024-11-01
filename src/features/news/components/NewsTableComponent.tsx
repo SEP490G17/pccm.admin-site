@@ -6,6 +6,7 @@ import {
   Center,
   Flex,
   IconButton,
+  Skeleton,
   Switch,
   Table,
   TableContainer,
@@ -21,14 +22,25 @@ import UpdateNewsPage from '../UpdateNewsPage';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import { toast } from "react-toastify";
 import { FaEdit } from 'react-icons/fa';
-import { NewsDTO } from '@/app/models/news.models';
-import { dateFormatOptions } from '@/app/helper/settings';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
+import { useState } from 'react';
 
 const NewsTableComponent = observer(() => {
   const { newsStore } = useStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { newsPageParams, newsArray, loading, loadingInitial, deleteNews, detailNews, selectedNews } = newsStore;
+  const { newsPageParams, newsArray, loading, loadingInitial, deleteNews, detailNews } = newsStore;
+  const [loadingStatusId, setLoadingStatusId] = useState<number | null>(null);
+
+  const handleChangeStatus = async (id: number, currentStatus: number) => {
+    setLoadingStatusId(id);
+    await newsStore.changeStatus(id, currentStatus === 0 ? 1 : 0);
+    setLoadingStatusId(null);
+  };
+  const handleOpenEdit = async (id: number) => {
+    onOpen();
+    await detailNews(id);
+  }
+
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -73,38 +85,20 @@ const NewsTableComponent = observer(() => {
                       ))}
                     </Flex>
                   </Td>
-
                   <Td>
-                    <Switch onChange={() => {
-                      detailNews(news.id);
-                      if (selectedNews) {
-                        const News = new NewsDTO({
-                          id: selectedNews.id,
-                          title: selectedNews.title,
-                          description: selectedNews.description,
-                          tags: selectedNews.tags,
-                          thumbnail: selectedNews.thumbnail,
-                          startTime: selectedNews.startTime,
-                          endTime: selectedNews.endTime,
-                          location: selectedNews.location,
-                          content: selectedNews.content,
-                          createAt: new Date().toLocaleString('vi-VN', dateFormatOptions).trim(),
-                          status: selectedNews.status === 1 ? 0 : 1,
-                        });
-                        newsStore.updateNews(News);
-                      } else {
-                        console.error("selectedNews is undefined after detailNews call");
-                      }
-                    }}
-                      isChecked={news.status === 1} />
+                    <Skeleton width={8} isLoaded={loadingStatusId !== news.id}>
+
+                      <Switch onChange={() => handleChangeStatus(news.id, news.status)}
+                        isChecked={news.status === 1} />
+
+                    </Skeleton>
                   </Td>
                   <Td>{new Date(news.createdAt).toLocaleDateString("vi-VN")}</Td>
                   <Td>
                     <Center>
                       <IconButton
                         onClick={async () => {
-                          await newsStore.detailNews(news.id)
-                            .then(onOpen)
+                          handleOpenEdit(news.id)
                         }}
                         icon={<FaEdit />}
                         aria-label="Edit"

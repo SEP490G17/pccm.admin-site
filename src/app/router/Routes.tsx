@@ -13,6 +13,9 @@ import ServicePage from '@/features/service/ServicePage';
 import StaffPage from '@/features/staff/StaffPage';
 import UserManagerPage from '@/features/user/UserManagerPage';
 import CourtClusterDetailsPage from "@/features/court-cluster/CourtClusterDetailsPage.tsx";
+import StaffPositionPage from '@/features/staff/StaffPositionPage';
+import StatisticPage from '@/features/statistic/StatisticPage';
+import RevenuePage from '@/features/revenue/RevenuePage';
 
 export const routes: RouteObject[] = [
   {
@@ -23,6 +26,10 @@ export const routes: RouteObject[] = [
     path: '/',
     element: <MainLayout />,
     children: [
+      {
+        path: '',
+        element: <StatisticPage />,
+      },
       {
         path: 'cum-san',
         element: <CourtsPage />,
@@ -64,7 +71,14 @@ export const routes: RouteObject[] = [
         path: 'users',
         element: <UserManagerPage />,
       },
-
+      {
+        path: 'thong-ke',
+        element: <StatisticPage />,
+      },
+      {
+        path: 'doanh-thu',
+        element: <RevenuePage />,
+      },
     ],
   },
   {

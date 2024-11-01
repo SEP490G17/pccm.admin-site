@@ -17,7 +17,31 @@ export interface AppPath {
 }
 export const menuList: AppPath[] = [
   {
+    key: 1,
+    icon: (isSelected: boolean) => (
+      <StatisticMenuIcon
+        width="1.5rem"
+        height="1.5rem"
+        color={isSelected ? '#00423D' : '#63748A'}
+      />
+    ),
+    label: 'Thống kê',
+    path: '/thong-ke',
+  },
+  {
     key: 2,
+    icon: (isSelected: boolean) => (
+      <StatisticMenuIcon
+        width="1.5rem"
+        height="1.5rem"
+        color={isSelected ? '#00423D' : '#63748A'}
+      />
+    ),
+    label: 'Doanh thu',
+    path: '/doanh-thu',
+  },
+  {
+    key: 3,
     icon: (isSelected: boolean) => (
       <UsersManagerMenuIcon
         width="1.5rem"
@@ -29,7 +53,7 @@ export const menuList: AppPath[] = [
     path: '/users',
   },
   {
-    key: 3,
+    key: 4,
     icon: (isSelected: boolean) => (
       <CourtClusterMenuIcon
         width="1.5rem"
@@ -41,7 +65,7 @@ export const menuList: AppPath[] = [
     path: '/cum-san',
   },
   {
-    key: 4,
+    key: 5,
     icon: (isSelected: boolean) => (
       <BookingMenuIcon
         width="1.5rem"
@@ -53,7 +77,7 @@ export const menuList: AppPath[] = [
     path: '/booking',
   },
   {
-    key: 5,
+    key: 6,
     icon: (isSelected: boolean) => (
       <StaffMenuIcon
         width="1.5rem"
@@ -65,7 +89,7 @@ export const menuList: AppPath[] = [
     path: '/nhan-vien',
   },
   {
-    key: 6,
+    key: 7,
     icon: (isSelected: boolean) => (
       <ProductMenuIcon
         width="1.5rem"
@@ -77,7 +101,7 @@ export const menuList: AppPath[] = [
     path: '/hang-hoa',
   },
   {
-    key: 7,
+    key: 8,
     icon: (isSelected: boolean) => (
       <ServiceMenuIcon
         width="1.5rem"
@@ -89,7 +113,7 @@ export const menuList: AppPath[] = [
     path: '/dich-vu',
   },
   {
-    key: 8,
+    key: 9,
     icon: (isSelected: boolean) => (
       <BannerMenuIcon
         width="1.5rem"
@@ -101,7 +125,7 @@ export const menuList: AppPath[] = [
     path: '/banner',
   },
   {
-    key: 9,
+    key: 10,
     icon: (isSelected: boolean) => (
       <NewsMenuIcon
         width="1.5rem"
@@ -124,16 +148,4 @@ export const menuList: AppPath[] = [
   //   label: 'Cài đặt',
   //   path: '/cai-dat',
   // },
-  {
-    key: 1,
-    icon: (isSelected: boolean) => (
-      <StatisticMenuIcon
-        width="1.5rem"
-        height="1.5rem"
-        color={isSelected ? '#00423D' : '#63748A'}
-      />
-    ),
-    label: 'Thống kê',
-    path: '/',
-  },
 ];

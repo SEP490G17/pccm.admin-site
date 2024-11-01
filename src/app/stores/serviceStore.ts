@@ -1,10 +1,11 @@
-import { Service, ServiceDTO } from './../models/service.model';
+import { Service, ServiceDTO, ServiceEditDTO } from './../models/service.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleServiceData } from '../mock/service.mock';
 import { PageParams } from '../models/pageParams.model';
 import { sleep } from '../helper/utils';
 import agent from '../api/agent';
 import { toast } from 'react-toastify';
+import _ from 'lodash';
 export default class ServiceStore {
   serviceRegistry = new Map<number, Service>();
   selectedService: Service | undefined = undefined;
@@ -13,6 +14,7 @@ export default class ServiceStore {
   isOrigin: boolean = true;
   servicePageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
+  loadingEdit: boolean = false;
 
   constructor() {
     console.log('Service store initialized');
@@ -64,37 +66,37 @@ export default class ServiceStore {
   };
 
   detailService = async (serviceId: number) => {
-    this.loading = true;
+    this.loadingEdit = true;
     try {
       const data = await agent.Services.details(serviceId);
       runInAction(() => {
         this.selectedService = data;
-        this.loading = false;
+        this.loadingEdit = false;
       });
       return data;
     } catch (error) {
       runInAction(() => {
-        this.loading = false;
+        this.loadingEdit = false;
         console.error('Error creating news:', error);
       });
     }
   };
 
-  updateService = async (service: Service) => {
+  updateService = async (service: ServiceEditDTO) => {
     this.loading = true;
     try {
-      await agent.Services.update(service);
-      runInAction(() => {
-        this.loadServices();
-        this.selectedService = service;
+      if (this.selectedService?.id) {
+        const newService = await agent.Services.update(service);
+        this.serviceRegistry.delete(this.selectedService?.id);
+        this.setService(newService);
         this.loading = false;
         toast.success('Cập nhật dịch vụ thành công');
-      });
+      }
     } catch (error) {
       runInAction(() => {
         this.loading = false;
         console.error('Error updating banner:', error);
-        toast.success('Cập nhật dịch vụ thất bại');
+        toast.error('Cập nhật dịch vụ thất bại');
       });
     }
   };
@@ -154,7 +156,7 @@ export default class ServiceStore {
   };
 
   get serviceArray() {
-    return Array.from(this.serviceRegistry.values());
+    return _.orderBy(Array.from(this.serviceRegistry.values()), ['id'], ['desc']);
   }
   //#region private methods
   private setService = (service: Service) => {

@@ -80,53 +80,42 @@ export default class ProductStore {
         });
     };
 
-    editProduct = async (product: ProductInput) => {
-        this.loading = true;
-        await runInAction(async () => {
-            if (this.selectedIdProduct) {
-                await agent.Products.update(product, this.selectedIdProduct)
-                    .then(this.setProduct)
-                    .catch((error) => {
-                        console.error('Error updating product:', error);
-                        toast.error('Cập nhật product thất bại');
-                    })
-                    .finally(() => (this.loading = false));
-            }
-        });
-    };
-    deleteProduct = async (id: number) => {
-        this.loading = true;
+  editProduct = async (product: ProductInput) => {
+    this.loading = true;
+    await runInAction(async () => {
+      if (this.selectedIdProduct) {
         try {
-            await agent.Products.delete(id);
-            runInAction(() => {
-                this.productRegistry.delete(id);
-                this.loading = false;
-            });
+          const updatedProduct = await agent.Products.update(product, this.selectedIdProduct);
+          this.productRegistry.delete(this.selectedIdProduct);
+          this.setProduct(updatedProduct);
+          toast.success('Cập nhật hàng hóa thành công');
         } catch (error) {
-            runInAction(() => {
-                this.loading = false;
-                console.error('Error deleting news:', error);
-            });
+          console.error('Error updating product:', error);
+          toast.error('Cập nhật hàng hóa thất bại');
+        } finally {
+          this.loading = false;
         }
-    };
-    filterByCategory = async (category: number) => {
-        this.loadingInitial = true;
-        this.productPageParams.clearLazyPage();
-        this.productPageParams.category = category;
-        this.cleanProductCache();
-        await this.loadProducts();
-        runInAction(()=> this.loadingInitial = false);
-    }
-    filterByCourtCluster= async (courtCluster: number) => {
-        this.loadingInitial = true;
-        this.productPageParams.clearLazyPage();
-        this.productPageParams.courtCluster = courtCluster;
-        this.cleanProductCache();
-        await this.loadProducts();
-        runInAction(()=> this.loadingInitial = false);
-    }
-    //#endregion
+      }
+    });
+  };
 
+  //#endregion
+
+  deleteProduct = async (id: number) => {
+    this.loading = true;
+    try {
+      await agent.Products.delete(id);
+      runInAction(() => {
+        this.productRegistry.delete(id);
+        this.loading = false;
+      });
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+        console.error('Error deleting news:', error);
+      });
+    }
+  };
 
     //#region mock-up
     mockLoadProducts = async () => {

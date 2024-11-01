@@ -8,12 +8,17 @@ import { News, NewsDTO } from '../models/news.models';
 import { Banner, BannerDTO } from '../models/banner.model';
 import { CourtCluster, CourtClusterListAll } from '../models/court.model';
 import { sleep } from '../helper/utils';
-import { Service, ServiceDTO } from '../models/service.model';
+import { Service, ServiceDTO, ServiceEditDTO } from '../models/service.model';
 import { Product, ProductInput } from '../models/product.model';
 import { StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
 import { Staff } from '../models/staff.model';
+import { DataExpend, DataTop, DataTotal, FilterData, FilterDataDTO } from '../models/filter.model';
+import {
+  CourtClusterStatisticDetails,
+  FilterCourtClusterStatisticDetailsDTO,
+} from '../models/details.models';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -76,6 +81,7 @@ const requests = {
   post: <T>(url: string, body: object) => axios.post<T>(url, body).then(responseBody),
   put: <T>(url: string, body: object) => axios.put<T>(url, body).then(responseBody),
   del: <T>(url: string) => axios.delete<T>(url).then(responseBody),
+  filter: <T>(url: string) => axios.get<T>(url).then(responseBody),
 };
 
 const NewsAgent = {
@@ -85,6 +91,8 @@ const NewsAgent = {
   create: (news: NewsDTO): Promise<News> => requests.post(`/news`, news),
   update: (news: NewsDTO): Promise<News> => requests.put(`/news/${news.id}`, news),
   delete: (id: number): Promise<void> => requests.del(`/news/${id}`),
+  changestatus: (newsId: number, status: number): Promise<News> =>
+    requests.put(`/news/changestatus/${newsId}/${status}`, {}),
 };
 const Banners = {
   list: (queryParams: string = ''): Promise<PaginationModel<Banner>> =>
@@ -99,9 +107,35 @@ const Services = {
     requests.get(`/service${queryParams}`),
   details: (id: number): Promise<Service> => requests.get(`/service/${id}`),
   create: (service: ServiceDTO): Promise<Service> => requests.post(`/service`, service),
-  update: (service: Service): Promise<void> => requests.put(`/service/${service.id}`, service),
+  update: (service: ServiceEditDTO): Promise<Service> =>
+    requests.put(`/service/${service.id}`, service),
   delete: (id: number): Promise<void> => requests.del(`/service/${id}`),
 };
+
+const Statistic = {
+  getincome: (filterData: FilterDataDTO): Promise<FilterData[]> =>
+    requests.filter(
+      `/statistic/?Year=${filterData.year}&Month=${filterData.month}&CourtClusterId=${filterData.courtClusterId}`,
+    ),
+  years: (): Promise<number[]> => requests.get(`/statistic/years`),
+  count: (): Promise<DataTotal> => requests.get(`/statistic/count`),
+  expense: (filterData: FilterDataDTO): Promise<DataExpend> =>
+    requests.get(`/statistic/ExpendStatistics?month=${filterData.month}&year=${filterData.year}`),
+  top: (filterData: FilterDataDTO): Promise<DataTop> =>
+    requests.get(`/statistic/TopStatistics?month=${filterData.month}&year=${filterData.year}`),
+};
+
+const Revenue = {
+  getrevenue: (
+    filterData: FilterCourtClusterStatisticDetailsDTO,
+  ): Promise<CourtClusterStatisticDetails> =>
+    requests.filter(
+      `/statistic/ClusterStatistics?date=${filterData.date}&clusterId=${filterData.courtClusterId}`,
+    ),
+  years: (): Promise<number[]> => requests.get(`/statistic/years`),
+  count: (): Promise<DataTotal> => requests.get(`/statistic/count`),
+};
+
 const StaffPositions = {
   list: (): Promise<StaffPosition[]> => requests.get(`/staffPosition`),
 };
@@ -117,11 +151,11 @@ const Categories = {
 const Products = {
   list: (queryParams: string = ''): Promise<PaginationModel<Product>> =>
     requests.get(`/product${queryParams}`),
-  details: (id:number):Promise<ProductInput> => requests.get(`/product/${id}`),
-  create: (product: ProductInput): Promise<Product> =>
-    requests.post(`/product`, product),
+  details: (id: number): Promise<ProductInput> => requests.get(`/product/${id}`),
+  create: (product: ProductInput): Promise<Product> => requests.post(`/product`, product),
   delete: (id: number): Promise<void> => requests.del(`/product/${id}`),
-  update: (product: ProductInput, productId: number): Promise<Product> => requests.put(`/product/${productId}`, product)
+  update: (product: ProductInput, productId: number): Promise<Product> =>
+    requests.put(`/product/${productId}`, product),
 };
 
 const CourtClusterAgent = {
@@ -163,6 +197,8 @@ const agent = {
   Users,
   UploadAgent,
   Categories,
+  Statistic,
+  Revenue,
 };
 
 export default agent;

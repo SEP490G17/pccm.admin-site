@@ -63,15 +63,15 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
             <Skeleton isLoaded={!productStore.loadingEdit}>
               <Formik
                 initialValues={{
-                  categoryId: selectedProduct.categoryId ,
-                  description: selectedProduct.description ,
-                  price: selectedProduct.price ,
-                  quantity: selectedProduct.quantity ,
-                  thumbnailUrl: selectedProduct.thumbnailUrl ,
+                  categoryId: selectedProduct.categoryId,
+                  description: selectedProduct.description,
+                  price: selectedProduct.price,
+                  quantity: selectedProduct.quantity,
+                  thumbnailUrl: selectedProduct.thumbnailUrl,
                   productName: selectedProduct.productName,
-                  courtClusterId: selectedProduct.courtClusterId ,
+                  courtClusterId: selectedProduct.courtClusterId,
                 }}
-                onSubmit={async (values, {setSubmitting}) => {
+                onSubmit={async (values, { setSubmitting }) => {
                   const product = new ProductInput({
                     categoryId: Number(values.categoryId),
                     description: values.description,
@@ -81,10 +81,9 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                     courtClusterId: Number(values.courtClusterId),
                     thumbnailUrl: values.thumbnailUrl,
                   });
-               
-                  console.log(product);
                   await productStore.editProduct(product)
-                  .finally(()=> setSubmitting(false) );
+                    .finally(() => (setSubmitting(false), onClose()));
+
                 }}
                 validationSchema={validationSchema}
                 enableReinitialize={true}
