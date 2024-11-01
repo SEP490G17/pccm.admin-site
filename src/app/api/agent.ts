@@ -126,7 +126,7 @@ const Products = {
 
 const CourtClusterAgent = {
   listAll: (): Promise<CourtClusterListAll[]> => requests.get(`/courtCluster/list-all`),
-  details: (id: number): Promise<CourtCluster> => requests.get(`/courtCluster/${id}`),
+  details: (id: string): Promise<CourtCluster> => requests.get(`/courtCluster/${id}`),
   create: (court: CourtCluster): Promise<void> => requests.post(`/courtCluster`, court),
   update: (court: CourtCluster): Promise<void> => requests.put(`/courtCluster/${court.id}`, court),
   delete: (id: number): Promise<void> => requests.del(`/courtCluster/${id}`),

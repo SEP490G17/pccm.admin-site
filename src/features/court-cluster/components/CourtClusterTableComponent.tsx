@@ -8,34 +8,34 @@ import {CgFileDocument} from "react-icons/cg";
 import {Link} from "react-router-dom";
 
 const CourtClusterTableComponent = observer(() => {
-  const { courtStore } = useStore();
-  const { courtArray, loading, loadingInitial } = courtStore;
+  const { courtClusterStore } = useStore();
+  const { courtClusterArray, loading, loadingInitial } = courtClusterStore;
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
         <Table className="app-table" variant="simple" padding={0}>
           <Thead backgroundColor={'#03301F'}>
             <Tr>
-              <Th>STT</Th>
-              <Th>Ảnh</Th>
-              <Th>Tên sân</Th>
-              <Th>Địa chỉ</Th>
-              <Th>Giờ mở cửa</Th>
-              <Th>Số sân</Th>
-              <Th>Tùy chọn</Th>
+              <Th w={'5rem'}>STT</Th>
+              <Th w={'12rem'}>Ảnh</Th>
+              <Th w={'15rem'}>Tên sân</Th>
+              <Th w={'20rem'}>Địa chỉ</Th>
+              <Th w={'10rem'}>Giờ mở cửa</Th>
+              <Th w={'5rem'}>Số sân</Th>
+              <Th w={'10rem'}>Tùy chọn</Th>
             </Tr>
           </Thead>
           <Tbody>
             {loadingInitial && <SkeletonTableAtoms numOfColumn={6} pageSize={7} />}
-            {courtArray.map((court, index) => (
+            {courtClusterArray.map((court, index) => (
               <Tr key={court.id}>
                 <Td>{index + 1}</Td>
                 <Td>
                   <LazyImageAtom
-                    src={court.image?.[0]}
+                    src={court.images?.[0]}
                     alt={court.title}
                     width="10rem"
-                    height="8rem"
+                    height="6rem"
                     objectFit="cover"
                     borderRadius="md"
                   />
@@ -66,7 +66,7 @@ const CourtClusterTableComponent = observer(() => {
           </Tbody>
         </Table>
       </TableContainer>
-      {courtArray.length === 0 && !loadingInitial && !loading && (
+      {courtClusterArray.length === 0 && !loadingInitial && !loading && (
         <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
           Danh sách rỗng
         </Box>

@@ -15,7 +15,6 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
-import { FaTrash } from 'react-icons/fa';
 import { CgFileDocument } from 'react-icons/cg';
 import { MdLockReset } from 'react-icons/md';
 

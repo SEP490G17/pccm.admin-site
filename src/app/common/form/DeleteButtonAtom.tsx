@@ -20,9 +20,13 @@ interface DeleteProps extends InputProps {
     name: string;
     onDelete: () => Promise<void>;
     loading: boolean;
+    buttonContent?:string;
+    isIcon?: boolean;
+    buttonSize:string;
+    buttonClassName?: string;
 }
 
-const DeleteButtonAtom: React.FC<DeleteProps> = (props) => {
+const DeleteButtonAtom: React.FC<DeleteProps> = ({buttonSize ='sm',buttonClassName , isIcon = true ,...props}:DeleteProps) => {
     const {isOpen, onOpen, onClose} = useDisclosure();
     const cancelRef = React.useRef<HTMLButtonElement | null>(null);
     return (
@@ -34,8 +38,8 @@ const DeleteButtonAtom: React.FC<DeleteProps> = (props) => {
             {/*    size="sm"*/}
             {/*    onClick={onOpen}*/}
             {/*/>*/}
-            <TooltipButtonAtoms icon={<FaTrash/>} buttonAriaLabel={"Delete"} buttonColorScheme={'red'} buttomSize={'sm'} handleOnclick={onOpen} 
-                placement={'top'}  bg={'red.500'} color={'white'} label={'Xóa'} hasArrow={true} 
+            <TooltipButtonAtoms icon={isIcon && <FaTrash/>} buttonAriaLabel={"Delete"} buttonColorScheme={'red'} buttomSize={buttonSize} handleOnclick={onOpen} className={buttonClassName}
+                                placement={'top'} bg={'red.500'} color={'white'} label={'Xóa'} hasArrow={true} buttonContent={props.buttonContent}
             />
                 <AlertDialog size={'2xl'} isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
 

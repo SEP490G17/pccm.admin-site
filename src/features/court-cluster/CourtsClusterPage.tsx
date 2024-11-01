@@ -15,18 +15,18 @@ import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import CourtClusterTableComponent from "@/features/court-cluster/components/CourtClusterTableComponent.tsx";
 
 const CourtClusterPage = observer(() => {
-    const {courtStore} = useStore();
+    const {courtClusterStore} = useStore();
     const {
         loadCourtsCluster,
 
-    } = courtStore;
+    } = courtClusterStore;
 
     useEffect(() => {
         loadCourtsCluster();
     }, []);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        courtStore.setSearchTerm(e.target.value);
+        courtClusterStore.setSearchTerm(e.target.value);
     };
 
 
