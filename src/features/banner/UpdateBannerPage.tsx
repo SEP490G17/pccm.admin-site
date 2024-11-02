@@ -160,7 +160,7 @@ const UpdateBannerPage = ({ isOpen, onClose }: IProp) => {
                                                         label='Trạng thái'
                                                         name='status'
                                                         isRequired={false}
-                                                        options={[{ value: 0, label: "Hiển thị" }, { value: 1, label: "Ẩn" }]}
+                                                        options={[{ value: 1, label: "Hiển thị" }, { value: 0, label: "Ẩn" }]}
                                                     ></SelectFieldAtoms>
                                                 </Flex>
                                                 <Stack direction='row' justifyContent='flex-end' mt={5}>

@@ -15,6 +15,7 @@ export default class BannerStore {
   cleanupInterval: number | undefined = undefined;
   isOrigin: boolean = true;
   loadingEdit: boolean = false;
+  loadingStatusMap = new Map<number, boolean>();
 
   constructor() {
     console.log('banner store initialized');
@@ -52,9 +53,9 @@ export default class BannerStore {
     this.loading = true;
     await runInAction(async () => {
       await agent.Banners.create(banner)
-        .then(() => {
+        .then((s) => {
           this.loading = false;
-          this.setBanner(banner);
+          this.setBanner(s);
           toast.success('Tạo banner thành công');
         })
         .catch((error) => {
@@ -63,6 +64,7 @@ export default class BannerStore {
         })
         .finally(() => (this.loading = false));
     });
+    this.loadBannerArray();
   };
 
   detailBanner = async (bannerId: number) => {
@@ -119,6 +121,23 @@ export default class BannerStore {
     this.loadBannerArray();
   };
 
+  changeStatus = async (bannerId: number, status: number) => {
+    this.setLoadingStatus(bannerId, true);
+    await runInAction(async () => {
+      await agent.Banners.changestatus(bannerId, status)
+        .then((s) => {
+          this.setBanner(s);
+          toast.success('Cập nhật banner thành công');
+        })
+        .catch((error) => {
+          console.error('Error creating banner:', error);
+          toast.error('Cập nhật banner thất bại');
+        })
+        .finally(() => this.setLoadingStatus(bannerId, false));
+    });
+    this.loadBannerArray();
+  };
+
   //#endregion
 
   //#region mock-up
@@ -160,6 +179,14 @@ export default class BannerStore {
     });
   };
 
+  setLoadingStatus(id: number, isLoading: boolean) {
+    this.loadingStatusMap.set(id, isLoading);
+  }
+
+  isLoading(id: number) {
+    return this.loadingStatusMap.get(id);
+  }
+
   // setCurrentPage = (pageIndex: number) => {
   //   runInAction(() => {
   //     this.bannerPageParams.pageIndex = pageIndex;
@@ -196,12 +223,12 @@ export default class BannerStore {
     runInAction(() => {
       const { searchTerm } = this.bannerPageParams;
       if (this.bannerRegistry.size === this.bannerPageParams.totalElement && searchTerm) {
-        this.bannerArray = Array.from(this.bannerRegistry.values()).filter(
-          (b) => _.includes(b.title, searchTerm) || _.includes(b.description, searchTerm),
+        this.bannerArray = Array.from(this.bannerRegistry.values()).filter((b) =>
+          _.includes(b.title.toLowerCase(), searchTerm.toLowerCase()),
         );
         return;
       }
-      this.bannerArray = Array.from(this.bannerRegistry.values());
+      this.bannerArray = _.orderBy(Array.from(this.bannerRegistry.values()), ['id'], ['desc']);
     });
   }
 
@@ -210,7 +237,6 @@ export default class BannerStore {
     banner.startDate = customFormatDate(new Date(banner.startDate));
     banner.endDate = customFormatDate(new Date(banner.endDate));
     this.bannerRegistry.set(banner.id, banner);
-    console.log(this.bannerRegistry);
   };
 
   get bannersArray() {

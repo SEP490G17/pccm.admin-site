@@ -13,10 +13,11 @@ import CreateServicePage from './CreateServicePage';
 
 const ServicePage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { serviceStore } = useStore();
+  const { serviceStore, courtClusterStore } = useStore();
   const { loadServices, servicePageParams, serviceRegistry, setSearchTerm, setLoadingInitial, loading } =
     serviceStore;
   const [isPending, setIsPending] = useState(false);
+  const { courtClusterListAllOptions } = courtClusterStore
 
 
   useEffect(() => {
@@ -70,8 +71,17 @@ const ServicePage = () => {
             borderColor={'teal'}
             bg="#FFF"
             color="#03301F"
+            onChange={async (e) => {
+              await serviceStore.setFilterTerm(e.target.value);
+            }}
           >
-            <option value="all">Tất cả</option>
+            {[{ value: 0, label: "Tất cả" }, ...courtClusterListAllOptions].map(option => {
+              return (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              )
+            })}
           </Select>
 
           <Button
