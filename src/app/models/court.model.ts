@@ -1,11 +1,12 @@
 export interface CourtCluster {
   id: number;
-  name: string;
-  image: string;
+  title: string;
+  images: string[];
   address: string;
-  openHours: string;
-  courts: number;
-  services: string[];
+  openTime: string;
+  closeTime: string;
+  numbOfCourts: number;
+  description: string;
 }
 
 export interface ICourtCluster {

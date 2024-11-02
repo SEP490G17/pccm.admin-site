@@ -4,7 +4,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 1,
     name: 'BuiQuocTruong Court 1',
-    image: 'https://pickleball.vn/uploads/images/86/thumbs/vot-pickleball-joola-1_500x330xcrop.webp',
+    images: 'https://pickleball.vn/uploads/images/86/thumbs/vot-pickleball-joola-1_500x330xcrop.webp',
     address: '123 Street, City, Country',
     openHours: '08:00 - 20:00',
     courts: 5,
@@ -13,7 +13,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 2,
     name: 'BuiQuocTruong Court 2',
-    image: 'https://pickleball.vn/uploads/images/1333/thumbs/agassi-x-joola_500x330xcrop.webp',
+    images: 'https://pickleball.vn/uploads/images/1333/thumbs/agassi-x-joola_500x330xcrop.webp',
     address: '456 Avenue, City, Country',
     openHours: '07:00 - 22:00',
     courts: 8,
@@ -22,7 +22,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 3,
     name: 'BuiQuocTruong Court 3',
-    image: 'https://static-images.vnncdn.net/vps_images_publish/000001/000003/2024/8/20/vi-sao-mon-the-thao-moi-la-pickleball-gay-sot-o-viet-nam-1446.jpg?width=0&s=dNftsakz0pqo_apdJxiUoA',
+    images: 'https://static-images.vnncdn.net/vps_images_publish/000001/000003/2024/8/20/vi-sao-mon-the-thao-moi-la-pickleball-gay-sot-o-viet-nam-1446.jpg?width=0&s=dNftsakz0pqo_apdJxiUoA',
     address: '789 Boulevard, City, Country',
     openHours: '09:00 - 19:00',
     courts: 6,
@@ -31,7 +31,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 4,
     name: 'BuiQuocTruong Court 4',
-    image: 'https://via.placeholder.com/100',
+    images: 'https://via.placeholder.com/100',
     address: '1010 Lane, City, Country',
     openHours: '06:00 - 18:00',
     courts: 4,
@@ -40,7 +40,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 5,
     name: 'BuiQuocTruong Court 5',
-    image: 'https://pickleball.vn/uploads/images/86/thumbs/vot-pickleball-joola-1_500x330xcrop.webp',
+    images: 'https://pickleball.vn/uploads/images/86/thumbs/vot-pickleball-joola-1_500x330xcrop.webp',
     address: '1111 Drive, City, Country',
     openHours: '07:00 - 21:00',
     courts: 7,
@@ -49,7 +49,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 6,
     name: 'BuiQuocTruong Court 6',
-    image: 'https://pickleball.vn/uploads/images/1333/thumbs/agassi-x-joola_500x330xcrop.webp',
+    images: 'https://pickleball.vn/uploads/images/1333/thumbs/agassi-x-joola_500x330xcrop.webp',
     address: '1212 Road, City, Country',
     openHours: '08:00 - 20:00',
     courts: 6,
@@ -58,7 +58,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 7,
     name: 'BuiQuocTruong Court 7',
-    image: 'https://static-images.vnncdn.net/vps_images_publish/000001/000003/2024/8/20/vi-sao-mon-the-thao-moi-la-pickleball-gay-sot-o-viet-nam-1446.jpg?width=0&s=dNftsakz0pqo_apdJxiUoA',
+    images: 'https://static-images.vnncdn.net/vps_images_publish/000001/000003/2024/8/20/vi-sao-mon-the-thao-moi-la-pickleball-gay-sot-o-viet-nam-1446.jpg?width=0&s=dNftsakz0pqo_apdJxiUoA',
     address: '1313 Street, City, Country',
     openHours: '10:00 - 22:00',
     courts: 5,
@@ -67,7 +67,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 8,
     name: 'BuiQuocTruong Court 8',
-    image: 'https://via.placeholder.com/100',
+    images: 'https://via.placeholder.com/100',
     address: '1414 Avenue, City, Country',
     openHours: '06:00 - 18:00',
     courts: 3,
@@ -76,7 +76,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 9,
     name: 'BuiQuocTruong Court 9',
-    image: 'https://pickleball.vn/uploads/images/86/thumbs/vot-pickleball-joola-1_500x330xcrop.webp',
+    images: 'https://pickleball.vn/uploads/images/86/thumbs/vot-pickleball-joola-1_500x330xcrop.webp',
     address: '1515 Boulevard, City, Country',
     openHours: '09:00 - 21:00',
     courts: 4,
@@ -85,7 +85,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 10,
     name: 'BuiQuocTruong Court 10',
-    image: 'https://pickleball.vn/uploads/images/1333/thumbs/agassi-x-joola_500x330xcrop.webp',
+    images: 'https://pickleball.vn/uploads/images/1333/thumbs/agassi-x-joola_500x330xcrop.webp',
     address: '1616 Lane, City, Country',
     openHours: '08:00 - 19:00',
     courts: 6,
@@ -94,7 +94,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 11,
     name: 'BuiQuocTruong Court 11',
-    image: 'https://static-images.vnncdn.net/vps_images_publish/000001/000003/2024/8/20/vi-sao-mon-the-thao-moi-la-pickleball-gay-sot-o-viet-nam-1446.jpg?width=0&s=dNftsakz0pqo_apdJxiUoA',
+    images: 'https://static-images.vnncdn.net/vps_images_publish/000001/000003/2024/8/20/vi-sao-mon-the-thao-moi-la-pickleball-gay-sot-o-viet-nam-1446.jpg?width=0&s=dNftsakz0pqo_apdJxiUoA',
     address: '1717 Drive, City, Country',
     openHours: '07:00 - 20:00',
     courts: 5,
@@ -103,7 +103,7 @@ export const sampleCourtData: CourtCluster[] = [
   {
     id: 12,
     name: 'BuiQuocTruong Court 12',
-    image: 'https://via.placeholder.com/100',
+    images: 'https://via.placeholder.com/100',
     address: '1818 Road, City, Country',
     openHours: '10:00 - 22:00',
     courts: 8,

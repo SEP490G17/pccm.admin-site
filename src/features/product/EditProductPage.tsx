@@ -38,9 +38,9 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
     categoryId: Yup.number().required('Thể loại không được bỏ trống'),
     courtClusterId: Yup.number().required('Khu không được bỏ trống'),
   });
-  const { categoryStore, courtStore, productStore, uploadStore } = useStore();
+  const { categoryStore, courtClusterStore, productStore, uploadStore } = useStore();
   const { categoryOption } = categoryStore;
-  const { courtListAllOptions } = courtStore;
+  const { courtClusterListAllOptions } = courtClusterStore;
   const { loadingEdit, selectedProduct } = productStore;
   console.log(loadingEdit);
   return (
@@ -118,7 +118,7 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                         borderRadius="md"
                         borderColor="gray.300"
                         label="Cum san"
-                        options={courtListAllOptions}
+                        options={courtClusterListAllOptions}
                         isRequired={true}
                       />
                     </Flex>

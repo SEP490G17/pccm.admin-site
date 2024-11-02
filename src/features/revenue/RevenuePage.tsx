@@ -21,31 +21,31 @@ import { observer } from 'mobx-react';
 import { FilterCourtClusterStatisticDetailsDTO } from '@/app/models/details.models';
 
 const RevenuePage = observer(() => {
-    const { courtStore, revenueStore } = useStore();
-    const { courtListAllOptions, loadingInitial } = courtStore;
+    const { courtClusterStore, revenueStore } = useStore();
+    const { courtClusterListAllOptions, loadingInitial } = courtClusterStore;
     const { dataDetail,loadingStatistic } = revenueStore;
     const [selectedCourt, setSelectedCourt] = useState('');
     useEffect(() => {
         const loadData = async () => {
-            await courtStore.loadCourtClusterListAll();
+            await courtClusterStore.loadCourtClusterListAll();
         };
 
         loadData();
-    }, [courtStore]);
+    }, [courtClusterStore]);
 
     const today = new Date();
     const isoDate = today.toISOString().split('T')[0];
 
     useEffect(() => {
-        if (courtListAllOptions.length > 0) {
-            setSelectedCourt(courtListAllOptions[0].value.toString());
+        if (courtClusterListAllOptions.length > 0) {
+            setSelectedCourt(courtClusterListAllOptions[0].value.toString());
             const data = new FilterCourtClusterStatisticDetailsDTO({
-                courtClusterId: courtListAllOptions[0].value,
+                courtClusterId: courtClusterListAllOptions[0].value,
                 date: isoDate
             });
             revenueStore.loadCourtClusterStatisticDetail(data);
         }
-    }, [courtListAllOptions, isoDate, revenueStore]);
+    }, [courtClusterListAllOptions, isoDate, revenueStore]);
 
     const totalPriceBooking = dataDetail?.bookingDetails.reduce((total, booking) => total + booking.totalPrice, 0);
     const totalPriceOrder = dataDetail?.orderDetails.reduce((total, order) => total + order.totalPrice, 0);
@@ -76,7 +76,7 @@ const RevenuePage = observer(() => {
                                             label='Cụm sân'
                                             width={'25%'}
                                             name="selectedCourt"
-                                            options={courtListAllOptions}
+                                            options={courtClusterListAllOptions}
                                         />
                                         <Flex alignItems={'flex-end'} justifyItems={'flex-end'} gap={5}>
                                             <TimeInputAtom type='date' name='timeSelected' />

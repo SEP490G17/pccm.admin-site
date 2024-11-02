@@ -12,6 +12,7 @@ import ProductPage from '@/features/product/ProductPage';
 import ServicePage from '@/features/service/ServicePage';
 import StaffPage from '@/features/staff/StaffPage';
 import UserManagerPage from '@/features/user/UserManagerPage';
+import CourtClusterDetailsPage from "@/features/court-cluster/CourtClusterDetailsPage.tsx";
 import StaffPositionPage from '@/features/staff/StaffPositionPage';
 import StatisticPage from '@/features/statistic/StatisticPage';
 import RevenuePage from '@/features/revenue/RevenuePage';
@@ -32,6 +33,10 @@ export const routes: RouteObject[] = [
       {
         path: 'cum-san',
         element: <CourtsPage />,
+      },
+      {
+        path: 'cum-san/chi-tiet/:id',
+        element: <CourtClusterDetailsPage />,
       },
       {
         path: 'cum-san/tao',

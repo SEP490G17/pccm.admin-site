@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Image } from '@chakra-ui/react';
+import {Image, ImageProps} from '@chakra-ui/react';
 
-const LazyImageAtom = ({ src, alt, ...props }:any) => {
+const LazyImageAtom = ({ src, alt,...props }:ImageProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (

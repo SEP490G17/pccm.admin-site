@@ -6,15 +6,16 @@ import Sidebar from './Sidebar';
 import { useStore } from '../stores/store';
 import { observer } from 'mobx-react-lite';
 import { AiOutlineLogout } from 'react-icons/ai';
-
-const App = () => {
+import { registerLicense } from "@syncfusion/ej2-base";
+registerLicense(
+ "ORg4AjUWIQA/Gnt2UlhhQlVMfV5DQmFAYVF2R2dJflx6dl1MY15BNQtUQF1hTX9TdUVjWn9XcHVRQ2lc"
+);const App = () => {
   const { authStore, commonStore } = useStore();
 
   return (
     <>
       <ToastContainer position="top-right" hideProgressBar theme="colored" />
       <Box
-        minH={'100vh'}
         color="blackAlpha.700"
         p={0}
         m={0}
@@ -48,7 +49,7 @@ const App = () => {
           direction="column"
           bg="#FFF"
           boxShadow={'0px 4px 4px 0px rgba(0, 0, 0, 0.25)'}
-          h="100vh"
+          h="100%"
           zIndex={999}
         >
           <Sidebar />
@@ -84,12 +85,9 @@ const App = () => {
         </Flex>
         <Flex
           direction="column"
-          p={8}
+          px={8}
           as="main"
           className={`${commonStore.isCollapsed && 'collapsed'}`}
-          minWidth={'960px'}
-          overflowX={'scroll'}
-          minH={'100vh'}
         >
           <Outlet />
         </Flex>
