@@ -124,7 +124,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   return (
-    <FormControl isRequired >
+    <FormControl >
       <FormLabel className="title_label">{label}</FormLabel>
 
       <Box

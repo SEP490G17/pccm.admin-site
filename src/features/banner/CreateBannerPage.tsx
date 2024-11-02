@@ -99,7 +99,6 @@ const CreateBannerPage = ({ isOpen, onClose }: IProp) => {
                 validationSchema={validationSchema}
               >
                 {({ handleSubmit, isSubmitting }) => {
-
                   return (
                     <Form onSubmit={handleSubmit}>
                       <TextFieldAtoms label='Tiêu đề banner' isRequired={true} placeholder='Nhập tiêu đề' name='title' />
