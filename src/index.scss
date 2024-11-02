@@ -206,41 +206,29 @@ button.primary.outlined {
 		.e-date-header-wrap {
 			table {
 				col {
-					width: 200px;
+					width: 150px;
 				}
 			}
 		}
 		.e-content-wrap {
 			table {
 				col {
-					width: 200px;
+					width: 150px;
 				}
 			}
 		}
 		.e-time-cells-wrap {
 			table {
 				td {
-					height: 100px;
+					height: 75px;
 				}
 			}
 		}
 		.e-work-cells {
-			height: 100px;
+			height: 75px;
 		}
 	}
-	.e-month-view {
-		.e-work-cells {
-			width: 200px;
-			height: 200px;
-		}
-		.e-date-header-wrap {
-			table {
-				col {
-					width: 200px;
-				}
-			}
-		}
-	}
+	
 }
 
 /* csslint ignore:end */

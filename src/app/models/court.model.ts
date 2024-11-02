@@ -7,6 +7,7 @@ export interface CourtCluster {
   closeTime: string;
   numbOfCourts: number;
   description: string;
+  location?:string;
 }
 
 export interface ICourtCluster {

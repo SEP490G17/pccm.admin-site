@@ -39,7 +39,6 @@ const CourtClusterBookingTab = () => {
   });
   const handleActionBegin = (args: any) => {
     const currentTime = new Date();
-    console.log(args);
     if (
       (args.requestType === 'eventCreate' || args.requestType === 'eventChange') &&
       args.data &&
