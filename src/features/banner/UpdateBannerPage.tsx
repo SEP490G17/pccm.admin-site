@@ -106,8 +106,9 @@ const UpdateBannerPage = ({ isOpen, onClose }: IProp) => {
                                     }
                                     validationSchema={validationSchema}
                                 >
-                                    {({ handleSubmit, isSubmitting }) => {
-
+                                    {({ handleSubmit, isSubmitting, isValid, errors }) => {
+                                        console.log('Is Valid:', isValid);
+                                        console.log('Errors:', errors);
 
                                         return (
                                             <Form onSubmit={handleSubmit}>
