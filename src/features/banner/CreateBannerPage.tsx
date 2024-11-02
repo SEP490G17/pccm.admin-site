@@ -98,9 +98,7 @@ const CreateBannerPage = ({ isOpen, onClose }: IProp) => {
                 }
                 validationSchema={validationSchema}
               >
-                {({ handleSubmit, isSubmitting, isValid, errors }) => {
-                  console.log('Is Valid:', isValid);
-                  console.log('Errors:', errors);
+                {({ handleSubmit, isSubmitting }) => {
 
                   return (
                     <Form onSubmit={handleSubmit}>
@@ -156,7 +154,7 @@ const CreateBannerPage = ({ isOpen, onClose }: IProp) => {
                       </Flex>
                       <Stack direction='row' justifyContent='flex-end' mt={5}>
                         <Button
-                          disabled={isSubmitting || !isValid}
+                          // disabled={isSubmitting || !isValid}
                           className="save"
                           isLoading={isSubmitting}
                           type="submit"
