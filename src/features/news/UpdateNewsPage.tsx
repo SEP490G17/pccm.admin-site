@@ -102,7 +102,7 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
                   }}
                   validationSchema={validationSchema}
                 >
-                  {({ handleSubmit, isSubmitting, isValid }) => {
+                  {({ handleSubmit, isSubmitting }) => {
                     return (
                       <Form onSubmit={handleSubmit}>
                         <TextFieldAtoms
@@ -153,7 +153,7 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
 
                         <Stack direction='row' justifyContent='flex-end'>
                           <Button
-                            disabled={isSubmitting || !isValid}
+                            // disabled={isSubmitting || !isValid}
                             className="save"
                             isLoading={isSubmitting}
                             type="submit"

@@ -70,9 +70,7 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
                                 }}
                                 validationSchema={validationSchema}
                             >
-                                {({ handleSubmit, isSubmitting, isValid, errors }) => {
-                                    console.log('Is Valid:', isValid);
-                                    console.log('Errors:', errors);
+                                {({ handleSubmit, isSubmitting }) => {
                                     return (
                                         <Form onSubmit={handleSubmit}>
                                             <TextFieldAtoms
@@ -101,7 +99,7 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
 
                                             <Stack direction='row' justifyContent='flex-end' mt={9}>
                                                 <Button
-                                                    disabled={isSubmitting || !isValid}
+                                                    // disabled={isSubmitting || !isValid}
                                                     className="save"
                                                     isLoading={isSubmitting}
                                                     type="submit"

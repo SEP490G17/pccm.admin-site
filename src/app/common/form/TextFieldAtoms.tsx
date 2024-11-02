@@ -18,6 +18,7 @@ function TextFieldAtoms({ label, isRequired,...props }: IProps) {
           <Input
             {...field}
             {...props}
+            required={false}
             variant="outline"
             _focus={{ boxShadow: 'none', borderColor: 'blue.500' }}
             borderColor="gray.300"
