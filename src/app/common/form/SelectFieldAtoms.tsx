@@ -17,14 +17,14 @@ function SelectFieldAtoms({ label, options, isRequired, ...props }: IProps) {
     <FastField name={props.name}>
       {({ field, form }: any) => (
         <FormControl
-        isInvalid={form.errors[field.name] && form.touched[field.name]}
-        isRequired={isRequired}
-      >
-        <FormLabel className="title_label"> {label}</FormLabel>
+          isInvalid={form.errors[field.name] && form.touched[field.name]}
+          isRequired={isRequired}
+        >
+          {label && <FormLabel className="title_label"> {label}</FormLabel>}
 
           <Select {...field} {...props}
           >
-            {options.map(option =>{
+            {options.map(option => {
               return (
                 <option key={option.value} value={option.value}>
                   {option.label}

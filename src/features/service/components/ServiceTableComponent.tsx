@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import {
   Box,
-  IconButton,
+  Flex,
   Spinner,
   Table,
   TableContainer,
@@ -13,15 +13,17 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
-import { FaEdit } from 'react-icons/fa';
 import { useStore } from '@/app/stores/store';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import UpdateServicePage from '../UpdateServicePage';
+import { toast } from 'react-toastify';
+import EditButtonAtom from '@/app/common/form/EditButtonAtom';
 
 const ServiceTableComponent = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { serviceStore } = useStore();
   const { serviceArray, servicePageParams, loading, loadingInitial, deleteService, detailService } = serviceStore;
+
   const handleOpenEdit = async (id: number) => {
     onOpen();
     await detailService(id);
@@ -57,24 +59,28 @@ const ServiceTableComponent = observer(() => {
                   </Td>
                   <Td>{service.courtClusterName}</Td>
                   <Td>
-                    <IconButton
-                      icon={<FaEdit />}
-                      aria-label="Edit"
-                      colorScheme="teal"
-                      size="sm"
-                      mr={2}
-                      onClick={async () => {
-                        handleOpenEdit(service.id)
-                      }}
-                    />
-                    <DeleteButtonAtom
-                      name={service.serviceName}
-                      loading={loading}
-                      header="Xóa dịch vụ"
-                      onDelete={async () => {
-                        await deleteService(service.id);
-                      }}
-                    />
+                    <Flex gap="3">
+                      <EditButtonAtom
+                        onDelete={async () => {
+                          handleOpenEdit(service.id)
+                        }}
+                      />
+
+                      <DeleteButtonAtom
+                        buttonSize="sm"
+                        name={service.serviceName}
+                        loading={loading}
+                        header='Xóa dịch vụ'
+                        buttonClassName="gap-2"
+                        onDelete={async () => {
+                          try {
+                            await deleteService(service.id);
+                          } catch {
+                            toast.error("Xóa thất bại");
+                          }
+                        }}
+                      />
+                    </Flex>
                   </Td>
                 </Tr>
               ))}
@@ -84,7 +90,7 @@ const ServiceTableComponent = observer(() => {
 
       {serviceArray.length === 0 && !loading && !loadingInitial && (
         <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
-          Danh sách banner rỗng
+          Danh sách service rỗng
         </Box>
       )}
       {loading && !loadingInitial && (

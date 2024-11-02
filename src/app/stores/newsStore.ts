@@ -16,6 +16,7 @@ export default class NewsStore {
   isOrigin: boolean = true;
   isLoadingEdit: boolean = false;
   isloadingStatus: boolean = false;
+  loadingStatusMap = new Map<number, boolean>();
 
   constructor() {
     makeAutoObservable(this);
@@ -112,18 +113,18 @@ export default class NewsStore {
   };
 
   changeStatus = async (newsId: number, status: number) => {
-    this.isloadingStatus = true;
+    this.setLoadingStatus(newsId, true);
     await runInAction(async () => {
       await agent.NewsAgent.changestatus(newsId, status)
         .then((s) => {
           this.setNews(s);
-          toast.success('Cập nhật tức thành công');
+          toast.success('Cập nhật tin tức thành công');
         })
         .catch((error) => {
           console.error('Error creating product:', error);
           toast.error('Cập nhật tin tức thất bại');
         })
-        .finally(() => (this.isloadingStatus = false));
+        .finally(() => this.setLoadingStatus(newsId, false));
     });
   };
   //#endregion
@@ -168,6 +169,14 @@ export default class NewsStore {
     });
     console.groupEnd();
   };
+
+  setLoadingStatus(id: number, isLoading: boolean) {
+    this.loadingStatusMap.set(id, isLoading);
+  }
+
+  isLoading(id: number) {
+    return this.loadingStatusMap.get(id);
+  }
 
   get newsArray() {
     return _.orderBy(Array.from(this.newsRegistry.values()), ['id'], ['desc']);

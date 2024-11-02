@@ -18,14 +18,15 @@ import { observer } from 'mobx-react-lite';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import EditProductPage from '../EditProductPage';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
+import { toast } from 'react-toastify';
 
-const ProductTableComponent =observer(() => {
+const ProductTableComponent = observer(() => {
   const { productStore } = useStore();
   const { productPageParams, loading, productArray, loadingInitial, deleteProduct, detailProduct } = productStore;
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const handleOpenEdit = async (id:number) =>{
-     onOpen();
-     await detailProduct(id);
+  const handleOpenEdit = async (id: number) => {
+    onOpen();
+    await detailProduct(id);
   }
   return (
     <>
@@ -89,9 +90,19 @@ const ProductTableComponent =observer(() => {
                           await handleOpenEdit(product.id);
                         }}
                       />
-                      <DeleteButtonAtom name={product.productName} loading={loading} header='Xóa sản phẩm' onDelete={async () => {
-                          await deleteProduct(product.id)
-                      }} />
+                      <DeleteButtonAtom
+                        buttonSize={'sm'}
+                        name={product.productName}
+                        loading={loading}
+                        buttonClassName={'gap-2'}
+                        onDelete={async () => {
+                          try {
+                            await deleteProduct(product.id);
+                          } catch {
+                            toast.error("Xóa thất bại");
+                          }
+                        }}
+                      />
                     </Center>
                   </Td>
                 </Tr>

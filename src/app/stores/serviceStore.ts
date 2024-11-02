@@ -32,6 +32,9 @@ export default class ServiceStore {
       if (this.servicePageParams.searchTerm) {
         queryParams.append('search', this.servicePageParams.searchTerm);
       }
+      if (this.servicePageParams.filter) {
+        queryParams.append('filter', this.servicePageParams.filter);
+      }
       const { count, data } = await agent.Services.list(`?${queryParams.toString()}`);
       runInAction(() => {
         data.forEach(this.setService);
@@ -47,6 +50,7 @@ export default class ServiceStore {
       });
     }
   };
+
   //#endregion
 
   createService = async (service: ServiceDTO) => {
@@ -150,6 +154,17 @@ export default class ServiceStore {
       this.serviceRegistry.clear();
       this.servicePageParams.clearLazyPage();
       this.servicePageParams.searchTerm = term;
+      await this.loadServices();
+    });
+    this.loadingInitial = false;
+  };
+
+  setFilterTerm = async (term: string) => {
+    this.loadingInitial = true;
+    await runInAction(async () => {
+      this.serviceRegistry.clear();
+      this.servicePageParams.clearLazyPage();
+      this.servicePageParams.filter = term;
       await this.loadServices();
     });
     this.loadingInitial = false;

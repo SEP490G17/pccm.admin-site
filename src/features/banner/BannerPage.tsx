@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Flex, Box, Select, useDisclosure } from '@chakra-ui/react';
+import { Button, Flex, Box, useDisclosure } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -60,17 +60,6 @@ const BannerPage = observer(() => {
       <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách banner', to: '/banner' }]} />
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
-          <Select
-            width="149px"
-            height="35px"
-            borderRadius="4px"
-            border="1px solid #ADADAD"
-            bg="#FFF"
-            color="#03301F"
-          >
-            <option value="all">Tất cả</option>
-          </Select>
-
           <Button
             colorScheme="teal"
             size="md"
@@ -84,7 +73,7 @@ const BannerPage = observer(() => {
           >
             Thêm mới
           </Button>
-          
+
         </Flex>
 
         <Box textAlign="right">
@@ -107,7 +96,7 @@ const BannerPage = observer(() => {
           </Button>
         </Flex>
       )}
-      <CreateBannerPage isOpen={isOpen} onClose={onClose}/>
+      <CreateBannerPage isOpen={isOpen} onClose={onClose} />
     </>
   );
 });

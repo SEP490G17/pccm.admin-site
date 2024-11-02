@@ -3,10 +3,7 @@ import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import {
   Badge,
   Box,
-  Center,
   Flex,
-  IconButton,
-  Skeleton,
   Switch,
   Table,
   TableContainer,
@@ -21,21 +18,18 @@ import { observer } from 'mobx-react-lite';
 import UpdateNewsPage from '../UpdateNewsPage';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import { toast } from "react-toastify";
-import { FaEdit } from 'react-icons/fa';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
-import { useState } from 'react';
+import EditButtonAtom from '@/app/common/form/EditButtonAtom';
 
 const NewsTableComponent = observer(() => {
   const { newsStore } = useStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { newsPageParams, newsArray, loading, loadingInitial, deleteNews, detailNews } = newsStore;
-  const [loadingStatusId, setLoadingStatusId] = useState<number | null>(null);
 
   const handleChangeStatus = async (id: number, currentStatus: number) => {
-    setLoadingStatusId(id);
-    await newsStore.changeStatus(id, currentStatus === 0 ? 1 : 0);
-    setLoadingStatusId(null);
+    await newsStore.changeStatus(id, currentStatus == 1 ? 0 : 1);
   };
+
   const handleOpenEdit = async (id: number) => {
     onOpen();
     await detailNews(id);
@@ -75,7 +69,11 @@ const NewsTableComponent = observer(() => {
                       borderRadius="8px"
                     />
                   </Td>
-                  <Td>{news.title}</Td>
+                  <Td>
+                    <Box whiteSpace="normal" wordBreak="break-word" overflowWrap="break-word">
+                      {news.title}
+                    </Box>
+                  </Td>
                   <Td>
                     <Flex gap={2}>
                       {news.tags.map((tag, index) => (
@@ -86,36 +84,34 @@ const NewsTableComponent = observer(() => {
                     </Flex>
                   </Td>
                   <Td>
-                    <Skeleton width={8} isLoaded={loadingStatusId !== news.id}>
-
-                      <Switch onChange={() => handleChangeStatus(news.id, news.status)}
-                        isChecked={news.status === 1} />
-
-                    </Skeleton>
+                    <Switch
+                      isChecked={news.status === 1}
+                      isDisabled={newsStore.isLoading(news.id)}
+                      onChange={() => handleChangeStatus(news.id, news.status)} />
                   </Td>
                   <Td>{new Date(news.createdAt).toLocaleDateString("vi-VN")}</Td>
                   <Td>
-                    <Center>
-                      <IconButton
-                        onClick={async () => {
-                          handleOpenEdit(news.id)
+                    <Flex gap="3">
+                      <EditButtonAtom
+                        onDelete={async () => {
+                          handleOpenEdit(news.id);
                         }}
-                        icon={<FaEdit />}
-                        aria-label="Edit"
-                        colorScheme="teal"
-                        size="sm"
-                        mr={2}
                       />
-                      <DeleteButtonAtom name={news.title} loading={loading} header='Xóa tin tức' onDelete={async () => {
-                        try {
-                          await deleteNews(news.id)
-                        } catch (error) {
-                          console.error("Error deleting news:", error);
-                          toast.error("Xóa thất bại")
-                        }
-                      }} />
-
-                    </Center>
+                      <DeleteButtonAtom
+                        buttonSize="sm"
+                        name={news.title}
+                        loading={loading}
+                        header='Xóa tin tức'
+                        buttonClassName="gap-2"
+                        onDelete={async () => {
+                          try {
+                            await deleteNews(news.id);
+                          } catch {
+                            toast.error("Xóa thất bại");
+                          }
+                        }}
+                      />
+                    </Flex>
                   </Td>
                 </Tr>
               ))}

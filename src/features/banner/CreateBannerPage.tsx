@@ -151,7 +151,7 @@ const CreateBannerPage = ({ isOpen, onClose }: IProp) => {
                           label='Trạng thái'
                           name='status'
                           isRequired={true}
-                          options={[{ value: 1, label: "Hiển thị" }, { value: 2, label: "Ẩn" }]}
+                          options={[{ value: 1, label: "Hiển thị" }, { value: 0, label: "Ẩn" }]}
                         ></SelectFieldAtoms>
                       </Flex>
                       <Stack direction='row' justifyContent='flex-end' mt={5}>
