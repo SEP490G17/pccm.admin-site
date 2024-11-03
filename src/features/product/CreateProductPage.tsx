@@ -29,8 +29,15 @@ interface IProp {
 const CreateProductPage = ({ isOpen, onClose }: IProp) => {
   const validationSchema = Yup.object().shape({
     productName: Yup.string().required('Tên sản phẩm không được bỏ trống'),
-    quantity: Yup.number().required('Số lượng không được bỏ trống'),
-    price: Yup.number().required('Giả cả không được bỏ trống'),
+    quantity: Yup.number().required('Số lượng không được bỏ trống').positive('Giá nhập phải là số dương'),
+    priceBuy: Yup.number()
+      .typeError('Giá nhập phải là một số')
+      .required('Giá nhập không được bỏ trống')
+      .positive('Giá nhập phải là số dương'),
+    priceSell: Yup.number()
+      .typeError('Giá bán phải là một số')
+      .required('Giá bán không được bỏ trống')
+      .positive('Giá bán phải là số dương'),
     thumbnail: Yup.string().required('Ảnh không được bỏ trống'),
     description: Yup.string().required('Mô tả không được bỏ trống'),
     category: Yup.number().required('Thể loại không được bỏ trống'),
@@ -52,8 +59,9 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
             <Formik
               initialValues={{
                 productName: '',
-                quantity: 2,
-                price: 1,
+                quantity: 1,
+                priceSell: 1,
+                priceBuy: 1,
                 thumbnail: '',
                 description: '',
                 category: categoryOption[0]?.value ?? 1,
@@ -63,7 +71,8 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                 const product = new ProductInput({
                   categoryId: Number(values.category),
                   description: values.description,
-                  price: values.price,
+                  priceSell: values.priceSell,
+                  priceBuy: values.priceBuy,
                   quantity: values.quantity,
                   // thumbnail: values.thumbnail,
                   thumbnailUrl: values.thumbnail,
@@ -75,7 +84,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
               }}
               validationSchema={validationSchema}
             >
-              {({ handleSubmit, isValid, isSubmitting }) => (
+              {({ handleSubmit, isSubmitting }) => (
                 <Form onSubmit={handleSubmit}>
                   <TextFieldAtoms
                     isRequired={true}
@@ -120,9 +129,16 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                     />
                     <NumberFieldAtom
                       isRequired={true}
-                      label="Giá cả"
+                      label="Giá bán"
                       className="input_text"
-                      name="price"
+                      name="priceSell"
+                      placeholder="xxxxxxx"
+                    />
+                    <NumberFieldAtom
+                      isRequired={true}
+                      label="Giá nhập"
+                      className="input_text"
+                      name="priceBuy"
                       placeholder="xxxxxxx"
                     />
                   </Flex>
@@ -142,11 +158,8 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                     placeholder="Mô tả"
                   />
                   <Stack direction="row" justifyContent="flex-end" mt={9}>
-                    <Button className="delete" isLoading={isSubmitting} type="submit">
-                      Xóa
-                    </Button>
                     <Button
-                      disabled={isSubmitting || !isValid || uploadStore.loading}
+                      // disabled={isSubmitting || !isValid || uploadStore.loading}
                       className="save"
                       isLoading={isSubmitting}
                       type="submit"

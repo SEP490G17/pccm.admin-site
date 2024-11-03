@@ -32,7 +32,14 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
   const validationSchema = Yup.object().shape({
     productName: Yup.string().required('Tên sản phẩm không được bỏ trống'),
     quantity: Yup.number().required('Số lượng không được bỏ trống'),
-    price: Yup.number().required('Giả cả không được bỏ trống'),
+    priceBuy: Yup.number()
+      .typeError('Giá nhập phải là một số')
+      .required('Giá nhập không được bỏ trống')
+      .positive('Giá nhập phải là số dương'),
+    priceSell: Yup.number()
+      .typeError('Giá bán phải là một số')
+      .required('Giá bán không được bỏ trống')
+      .positive('Giá bán phải là số dương'),
     thumbnailUrl: Yup.string().required('Ảnh không được bỏ trống'),
     description: Yup.string().required('Mô tả không được bỏ trống'),
     categoryId: Yup.number().required('Thể loại không được bỏ trống'),
@@ -65,30 +72,31 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                 initialValues={{
                   categoryId: selectedProduct.categoryId,
                   description: selectedProduct.description,
-                  price: selectedProduct.price,
+                  priceSell: selectedProduct.priceSell,
+                  priceBuy: selectedProduct.priceBuy,
                   quantity: selectedProduct.quantity,
                   thumbnailUrl: selectedProduct.thumbnailUrl,
                   productName: selectedProduct.productName,
                   courtClusterId: selectedProduct.courtClusterId,
                 }}
-                onSubmit={async (values, { setSubmitting }) => {
+                onSubmit={async (values) => {
                   const product = new ProductInput({
                     categoryId: Number(values.categoryId),
                     description: values.description,
-                    price: values.price,
+                    priceBuy: values.priceBuy,
+                    priceSell: values.priceSell,
                     quantity: values.quantity,
                     productName: values.productName,
                     courtClusterId: Number(values.courtClusterId),
                     thumbnailUrl: values.thumbnailUrl,
                   });
                   await productStore.editProduct(product)
-                    .finally(() => (setSubmitting(false), onClose()));
+                    .finally(onClose);
 
                 }}
                 validationSchema={validationSchema}
-                enableReinitialize={true}
               >
-                {({ handleSubmit, isValid, isSubmitting, dirty }) => (
+                {({ handleSubmit, isSubmitting }) => (
                   <Form onSubmit={handleSubmit}>
                     <TextFieldAtoms
                       isRequired={true}
@@ -133,9 +141,16 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                       />
                       <NumberFieldAtom
                         isRequired={true}
-                        label="Giá cả"
+                        label="Giá bán"
                         className="input_text"
-                        name="price"
+                        name="priceSell"
+                        placeholder="xxxxxxx"
+                      />
+                      <NumberFieldAtom
+                        isRequired={true}
+                        label="Giá nhập"
+                        className="input_text"
+                        name="priceBuy"
                         placeholder="xxxxxxx"
                       />
                     </Flex>
@@ -155,11 +170,7 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                       placeholder="Mô tả"
                     />
                     <Stack direction="row" justifyContent="flex-end" mt={9}>
-                      <Button className="delete" type="button" >
-                        Xóa
-                      </Button>
                       <Button
-                        disabled={isSubmitting || !isValid || uploadStore.loading || !dirty}
                         className="save"
                         isLoading={isSubmitting}
                         type="submit"
