@@ -13,6 +13,7 @@ export default class ProductStore {
   selectedProduct: ProductInput = new ProductInput();
   selectedIdProduct: number | undefined = undefined;
   loading: boolean = false;
+  loadingCreate: boolean = false;
   productPageParams = new ProductPageParams();
   cleanupInterval: number | undefined = undefined;
   loadingInitial: boolean = false;
@@ -70,7 +71,7 @@ export default class ProductStore {
   };
 
   createProduct = async (product: ProductInput) => {
-    this.loading = true;
+    this.loadingCreate = true;
     await runInAction(async () => {
       await agent.Products.create(product)
         .then(this.setProduct)
@@ -78,7 +79,7 @@ export default class ProductStore {
           console.error('Error creating product:', error);
           toast.error('Tạo product thất bại');
         })
-        .finally(() => (this.loading = false));
+        .finally(() => (this.loadingCreate = false));
     });
   };
 

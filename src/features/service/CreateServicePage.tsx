@@ -36,7 +36,10 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
     const validationSchema = Yup.object().shape({
         service_name: Yup.string().required('Tiêu đề dịch vụ không được bỏ trống'),
         description: Yup.string().required('Mô tả không được bỏ trống'),
-        price: Yup.number().required('Giá cả không được bỏ trống'),
+
+        price: Yup.number().typeError('Giá cả phải là một số')
+            .required('Giá cả không được bỏ trống')
+            .positive('Giá cả phải là số dương'),
         courtclusters: Yup.array().required('Thuộc cụm sân không được bỏ trống'),
     });
 

@@ -6,7 +6,8 @@ export interface Product {
   categoryName: string;
   courtClusterName: string;
   quantity: number;
-  price: number;
+  priceBuy: number;
+  priceSell: number;
 }
 
 export class ProductInput {
@@ -15,7 +16,8 @@ export class ProductInput {
   productName: string = '';
   description: string = '';
   quantity: number | '' = '';
-  price: number | '' = '';
+  priceSell: number | '' = '';
+  priceBuy: number | '' = '';
   thumbnailUrl: string = '';
 
   constructor(data?: Partial<ProductInput>) {

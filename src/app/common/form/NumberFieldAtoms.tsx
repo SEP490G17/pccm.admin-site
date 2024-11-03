@@ -22,7 +22,7 @@ function NumberFieldAtom({ label, isRequired, ...props }: IProps) {
         >
           <FormLabel className="title_label"> {label}</FormLabel>
 
-          <NumberInput value={field.value}>
+          <NumberInput value={field.value} clampValueOnBlur min={0}>
             <NumberInputField
               {...field}
               {...props}
@@ -31,10 +31,21 @@ function NumberFieldAtom({ label, isRequired, ...props }: IProps) {
               _focus={{ boxShadow: 'none', borderColor: 'blue.500' }}
               borderColor="gray.300"
               size="lg"
+              onKeyDown={(e) => {
+                if (e.key === 'e' || e.key === 'E' || e.key === '-' || e.key === '+') {
+                  e.preventDefault();
+                }
+              }}
+              onPaste={(e) => {
+                const pastedText = e.clipboardData.getData('Text');
+                if (parseFloat(pastedText) < 0) {
+                  e.preventDefault();
+                }
+              }}
             />
 
           </NumberInput>
-       
+
           <FormErrorMessage paddingLeft={5}>{form.errors[field.name]}</FormErrorMessage>
         </FormControl>
       )}

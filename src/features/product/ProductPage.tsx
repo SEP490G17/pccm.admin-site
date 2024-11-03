@@ -22,7 +22,7 @@ const ProductPage = observer(() => {
         productRegistry,
         setSearchTerm,
         loading,
-        loadingInitial,
+        loadingCreate,
         filterByCategory,
         filterByCourtCluster
     } = productStore;
@@ -146,7 +146,7 @@ const ProductPage = observer(() => {
                     <ButtonPrimaryAtoms
                         className="bg-primary-900"
                         handleOnClick={onOpen}
-                        loading={loadingInitial}
+                        loading={loadingCreate}
                         children={
                             <Center gap={1}>
                                 <PlusIcon color="white" height="1.5rem" width="1.5rem" />
