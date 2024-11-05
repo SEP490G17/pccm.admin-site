@@ -2,7 +2,7 @@ import { Service, ServiceDTO, ServiceEditDTO } from './../models/service.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleServiceData } from '../mock/service.mock';
 import { PageParams } from '../models/pageParams.model';
-import { sleep } from '../helper/utils';
+import { catchErrorHandle, sleep } from '../helper/utils';
 import agent from '../api/agent';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
@@ -25,27 +25,24 @@ export default class ServiceStore {
   //#region CRUD
   loadServices = async () => {
     this.loading = true;
-    try {
-      const queryParams = new URLSearchParams();
-      queryParams.append('skip', `${this.servicePageParams.skip ?? 0}`);
-      queryParams.append('pageSize', `${this.servicePageParams.pageSize}`);
-      if (this.servicePageParams.searchTerm) {
-        queryParams.append('search', this.servicePageParams.searchTerm);
-      }
-      const { count, data } = await agent.Services.list(`?${queryParams.toString()}`);
-      runInAction(() => {
-        data.forEach(this.setService);
-
-        this.servicePageParams.totalElement = count;
-        this.loading = false;
-      });
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.log(error);
-        toast.error('Error loading services');
-      });
+    const queryParams = new URLSearchParams();
+    queryParams.append('skip', `${this.servicePageParams.skip ?? 0}`);
+    queryParams.append('pageSize', `${this.servicePageParams.pageSize}`);
+    if (this.servicePageParams.searchTerm) {
+      queryParams.append('search', this.servicePageParams.searchTerm);
     }
+    const [error, res] = await catchErrorHandle(agent.Services.list(`?${queryParams.toString()}`));
+    runInAction(() => {
+      if (error) {
+        toast.error('Lấy danh sách dịch vụ thất bại');
+      }
+      if (res) {
+        const { count, data } = res;
+        data.forEach(this.setService);
+        this.servicePageParams.totalElement = count;
+      }
+      this.loading = false;
+    });
   };
   //#endregion
 
@@ -146,13 +143,13 @@ export default class ServiceStore {
 
   setSearchTerm = async (term: string) => {
     this.loadingInitial = true;
-    await runInAction(async () => {
-      this.serviceRegistry.clear();
-      this.servicePageParams.clearLazyPage();
-      this.servicePageParams.searchTerm = term;
-      await this.loadServices();
+    this.serviceRegistry.clear();
+    this.servicePageParams.clearLazyPage();
+    this.servicePageParams.searchTerm = term;
+    await this.loadServices();
+    runInAction(() => {
+      this.loadingInitial = false;
     });
-    this.loadingInitial = false;
   };
 
   get serviceArray() {

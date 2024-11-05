@@ -20,6 +20,8 @@ const NewsPage = () => {
 
   useEffect(() => {
     setLoadingInitial(true);
+    newsPageParams.clearLazyPage();
+    newsPageParams.searchTerm = ''; 
     loadNews().finally(() => setLoadingInitial(false));
   }, []);
 
@@ -60,7 +62,17 @@ const NewsPage = () => {
       <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách tin tức', to: '/tin-tuc' }]} />
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
-          <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={onOpen}>
+          <Button
+            colorScheme="teal"
+            size="md"
+            leftIcon={<FaEdit />}
+            width="149px"
+            height="35px"
+            background="#FFF"
+            color="black"
+            border="1px solid #ADADAD"
+            onClick={onOpen}
+          >
             Thêm mới
           </Button>
         </Flex>

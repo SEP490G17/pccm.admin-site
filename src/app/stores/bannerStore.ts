@@ -4,10 +4,9 @@ import agent from '../api/agent';
 import { PageParams } from '../models/pageParams.model';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
-import { customFormatDate } from '../helper/utils';
+import { catchErrorHandle, customFormatDate } from '../helper/utils';
 export default class BannerStore {
   bannerRegistry = new Map<number, Banner>();
-  bannerArray: Banner[] = [];
   selectedBanner: Banner | undefined = undefined;
   loading: boolean = false;
   loadingInitial: boolean = false;
@@ -24,28 +23,26 @@ export default class BannerStore {
   //#region CRUD
   loadBanners = async () => {
     this.loading = true;
-    try {
-      const queryParams = new URLSearchParams();
-      queryParams.append('skip', `${this.bannerPageParams.skip ?? 0}`);
-      queryParams.append('pageSize', `${this.bannerPageParams.pageSize}`);
-      if (this.bannerPageParams.searchTerm) {
-        queryParams.append('search', this.bannerPageParams.searchTerm);
-      }
-      const { count, data } = await agent.Banners.list(`?${queryParams.toString()}`);
-      runInAction(() => {
-        data.forEach(this.setBanner);
-
-        this.bannerPageParams.totalElement = count;
-        this.loadBannerArray();
-        this.loading = false;
-      });
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.log(error);
-        toast.error('Error loading banners');
-      });
+    const queryParams = new URLSearchParams();
+    queryParams.append('skip', `${this.bannerPageParams.skip ?? 0}`);
+    queryParams.append('pageSize', `${this.bannerPageParams.pageSize}`);
+    if (this.bannerPageParams.searchTerm) {
+      queryParams.append('search', this.bannerPageParams.searchTerm);
     }
+    const [err, res] = await catchErrorHandle(agent.Banners.list(`?${queryParams.toString()}`));
+    runInAction(() => {
+      if (err) {
+        toast.error('Lấy danh sách banner thất bại');
+      }
+
+      if (res) {
+        const { data, count, pageSize } = res;
+        data.forEach(this.setBanner);
+        this.bannerPageParams.totalElement = count;
+      }
+
+      this.loading = false;
+    });
   };
 
   createBanner = async (banner: BannerDTO) => {
@@ -99,7 +96,6 @@ export default class BannerStore {
         toast.error('Cập nhật thất bại');
       });
     }
-    this.loadBannerArray();
   };
 
   deleteBanner = async (id: number) => {
@@ -116,7 +112,6 @@ export default class BannerStore {
         console.error('Error deleting banner:', error);
       });
     }
-    this.loadBannerArray();
   };
 
   //#endregion
@@ -147,9 +142,6 @@ export default class BannerStore {
     const { pageSize, skip = 0, totalElement } = this.bannerPageParams;
     const endIndex = skip + pageSize;
     console.log('total element:', totalElement);
-    this.bannerArray = Array.from(this.bannerRegistry.values())
-      .sort((a, b) => a.id - b.id)
-      .slice(skip, endIndex);
   };
   //#endregion
 
@@ -177,40 +169,24 @@ export default class BannerStore {
 
   setSearchTerm = async (term: string) => {
     this.loadingInitial = true;
-    await runInAction(async () => {
-      if (this.bannerPageParams.totalElement === this.bannerRegistry.size && this.isOrigin) {
-        console.log('checking');
-        this.bannerPageParams.searchTerm = term;
-        this.loadBannerArray();
-        return;
-      }
-      this.bannerRegistry.clear();
-      this.bannerPageParams.clearLazyPage();
-      this.bannerPageParams.searchTerm = term;
-      await this.loadBanners();
+    this.bannerRegistry.clear();
+    this.bannerPageParams.clearLazyPage();
+    this.bannerPageParams.searchTerm = term;
+    await this.loadBanners();
+    runInAction(() => {
+      this.loadingInitial = false;
     });
-    this.loadingInitial = false;
   };
 
-  loadBannerArray() {
-    runInAction(() => {
-      const { searchTerm } = this.bannerPageParams;
-      if (this.bannerRegistry.size === this.bannerPageParams.totalElement && searchTerm) {
-        this.bannerArray = Array.from(this.bannerRegistry.values()).filter(
-          (b) => _.includes(b.title, searchTerm) || _.includes(b.description, searchTerm),
-        );
-        return;
-      }
-      this.bannerArray = Array.from(this.bannerRegistry.values());
-    });
+  get bannerArray() {
+    return Array.from(this.bannerRegistry.values());
   }
 
-  //#region private methods
+  //#region private methodsU
   private setBanner = (banner: Banner) => {
     banner.startDate = customFormatDate(new Date(banner.startDate));
     banner.endDate = customFormatDate(new Date(banner.endDate));
     this.bannerRegistry.set(banner.id, banner);
-    console.log(this.bannerRegistry);
   };
 
   get bannersArray() {

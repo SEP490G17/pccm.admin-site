@@ -31,6 +31,7 @@ const BookingEditorTemplateComponent = () => {
             name="StartTime"
             className="e-start e-field e-control e-datetimepicker e-lib e-keyboard"
             aria-labelledby="label_StartTime"
+            step={30}
           ></DateTimePickerComponent>
           <label
             className="e-float-text relative e-label-top"
@@ -49,6 +50,7 @@ const BookingEditorTemplateComponent = () => {
             name="EndTime"
             className=" e-field e-end"
             aria-labelledby="label_EndTime"
+            step={30}
           ></DateTimePickerComponent>
           <label
             className="e-float-text relative e-label-top"

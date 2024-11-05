@@ -11,16 +11,23 @@ import { debounce } from 'lodash';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
 import CreateServicePage from './CreateServicePage';
 
-const ServicePage = () => {
+const ServicePage = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { serviceStore } = useStore();
-  const { loadServices, servicePageParams, serviceRegistry, setSearchTerm, setLoadingInitial, loading } =
-    serviceStore;
+  const {
+    loadServices,
+    servicePageParams,
+    serviceRegistry,
+    setSearchTerm,
+    setLoadingInitial,
+    loading,
+  } = serviceStore;
   const [isPending, setIsPending] = useState(false);
-
 
   useEffect(() => {
     setLoadingInitial(true);
+    servicePageParams.clearLazyPage();
+    servicePageParams.searchTerm = '';
     loadServices().finally(() => setLoadingInitial(false));
   }, []);
 
@@ -49,7 +56,7 @@ const ServicePage = () => {
   const handleSearch = useCallback(
     debounce(async (e) => {
       setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
-      await setSearchTerm(e.target.value);
+      await serviceStore.setSearchTerm(e.target.value);
     }, 500), // Debounce với thời gian 1 giây
     [],
   );
@@ -58,6 +65,8 @@ const ServicePage = () => {
     setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
     await handleSearch(e); // Gọi hàm debounce
   };
+
+  
   return (
     <>
       <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách dịch vụ', to: '/dich-vu' }]} />
@@ -104,6 +113,6 @@ const ServicePage = () => {
       <CreateServicePage isOpen={isOpen} onClose={onClose} />
     </>
   );
-};
+});
 
-export default observer(ServicePage);
+export default ServicePage;

@@ -19,6 +19,8 @@ const BannerPage = observer(() => {
 
   useEffect(() => {
     setLoadingInitial(true);
+    bannerPageParams.clearLazyPage();
+    bannerPageParams.searchTerm = '';
     loadBanners().finally(() => setLoadingInitial(false));
   }, []);
   const handleScroll = useCallback(() => {
