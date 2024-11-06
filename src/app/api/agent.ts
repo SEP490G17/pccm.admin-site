@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { User, UserFormValues, UserManager } from '../models/user.model';
 import { News, NewsDTO } from '../models/news.models';
 import { Banner, BannerDTO } from '../models/banner.model';
-import { CourtCluster, CourtClusterListAll } from '../models/court.model';
+import { CourtCluster, CourtClusterDetailsCreate, CourtClusterListAll } from '../models/court.model';
 import { sleep } from '../helper/utils';
 import { Service, ServiceDTO, ServiceEditDTO } from '../models/service.model';
 import { Product, ProductInput } from '../models/product.model';
@@ -161,7 +161,7 @@ const Products = {
 const CourtClusterAgent = {
   listAll: (): Promise<CourtClusterListAll[]> => requests.get(`/courtCluster/list-all`),
   details: (id: string): Promise<CourtCluster> => requests.get(`/courtCluster/${id}`),
-  create: (court: CourtCluster): Promise<void> => requests.post(`/courtCluster`, court),
+  create: (court: CourtClusterDetailsCreate): Promise<void> => requests.post(`/courtCluster`, court),
   update: (court: CourtCluster): Promise<void> => requests.put(`/courtCluster/${court.id}`, court),
   delete: (id: number): Promise<void> => requests.del(`/courtCluster/${id}`),
   list: (): Promise<PaginationModel<CourtCluster>> => requests.get(`/courtCluster`),

@@ -9,6 +9,7 @@ import {
   Center,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Grid,
   GridItem,
@@ -28,51 +29,52 @@ import { TimePicker } from 'antd';
 import '@reach/combobox/styles.css';
 import { useState } from 'react';
 import dayjs from 'dayjs';
-
-export interface CourtPrice {
-  price: number;
-  startTime: string;
-  endTime: string;
-}
-
-export interface CourtDetails {
-  courtName: string;
-  courtPrice: CourtPrice[];
-  status: number;
-}
-
-export interface CourtClusterDetails {
-  title: string;
-  description: string;
-  startTime: string;
-  endTime: string;
-  courtDetails: CourtDetails[];
-}
-
-// export interface CourtPriceSubmit {
-//   price: number;
-//   startTime: string;
-//   endTime: string;
-// }
-
-// export interface CourtDetailsSubmit {
-//   courtName: string;
-//   courtPrice: CourtPrice[];
-//   status: number;
-// }
-
-// export interface CourtClusterSubmit {
-//   title: string;
-//   description: string;
-//   startTime: string;
-//   endTime: string;
-//   courtDetails: CourtDetails[];
-// }
+import AddressSelectAtom from '@/app/common/form/AddressSelectAtom';
+import * as Yup from 'yup';
+import {
+  CourtClusterDetails,
+  CourtAction,
+  CourtPrice,
+  CourtDetails,
+} from '@/app/models/court.model';
 
 const CourtClusterEditPage = observer(() => {
   const { courtClusterStore } = useStore();
   const { getDetailsCourtCluster, selectedCourt, loadingInitialDetailsPage } = courtClusterStore;
+  const CourtPriceSchema = Yup.object().shape({
+    price: Yup.number().min(0, 'Giá phải lớn hơn hoặc bằng 0').required('Giá là bắt buộc'),
+    fromTime: Yup.string().required('Thời gian bắt đầu là bắt buộc'),
+    toTime: Yup.string().required('Thời gian kết thúc là bắt buộc'),
+  });
 
+  // Định nghĩa schema cho CourtDetails
+  const CourtDetailsSchema = Yup.object().shape({
+    courtName: Yup.string().required('Tên sân là bắt buộc'),
+    actions: Yup.mixed().oneOf(Object.values(CourtAction)).required('Action is required'),
+    courtPrice: Yup.array()
+      .of(CourtPriceSchema)
+      .min(1, 'Phải có ít nhất một mức giá')
+      .required('Giá là bắt buộc'),
+    status: Yup.number()
+      .oneOf([0, 1], 'Trạng thái không hợp lệ')
+      .required('Trạng thái là bắt buộc'),
+  });
+
+  // Định nghĩa schema cho CourtClusterDetails
+  const CourtClusterDetailsSchema = Yup.object().shape({
+    title: Yup.string().required('Tiêu đề là bắt buộc'),
+    description: Yup.string().optional(),
+    openTime: Yup.string().required('Giờ mở cửa là bắt buộc'),
+    closeTime: Yup.string().required('Giờ đóng cửa là bắt buộc'),
+    province: Yup.string().required('Tỉnh là bắt buộc'),
+    district: Yup.string().required('Quận là bắt buộc'),
+    ward: Yup.string().required('Phường là bắt buộc'),
+    address: Yup.string().required('Địa chỉ là bắt buộc'),
+    courtDetails: Yup.array()
+      .of(CourtDetailsSchema)
+      .min(1, 'Phải có ít nhất một sân')
+      .required('Sân là bắt buộc'),
+  });
   //const {id} = useParams();
   // useEffect(() => {
   //     if (id) {
@@ -84,13 +86,25 @@ const CourtClusterEditPage = observer(() => {
   const [initial, setInitial] = useState<CourtClusterDetails>({
     title: '',
     description: '',
-    startTime: '05:00',
-    endTime: '22:00',
+    openTime: '05:00',
+    closeTime: '22:00',
+    province: '',
+    district: '',
+    ward: '',
+    address: '',
     courtDetails: [
       {
-        courtPrice: [],
+        id: 0,
+        courtPrice: [
+          {
+            toTime: '',
+            price: 0,
+            fromTime: '',
+          },
+        ],
         status: 1,
         courtName: '',
+        actions: CourtAction.ADD,
       },
     ],
   });
@@ -107,21 +121,9 @@ const CourtClusterEditPage = observer(() => {
         <CardBody>
           <Formik
             initialValues={initial}
-            onSubmit={(values) => {
-              // handleSubmit(values);
+            validationSchema={CourtClusterDetailsSchema}
+            onSubmit={(values, { isSubmitting }) => {
               console.log(values);
-              // values.courtDetails.forEach((courtDetail) => {
-              //   const courtPriceSubmit: CourtPriceSubmit[] = [];
-
-              //   courtDetail.courtPrice.forEach((cp) => {
-              //     courtPriceSubmit.push({
-              //       price: cp.price,
-              //       startTime: dayjs(cp.startTime).format('HH:mm'),
-              //       endTime: dayjs(cp.endTime).format('HH:mm'),
-              //     });
-              //   });
-
-              // });
             }}
           >
             {(props) => (
@@ -136,68 +138,92 @@ const CourtClusterEditPage = observer(() => {
                           type="text"
                           {...props.getFieldProps('title')}
                         />
+                        {props.errors.courtDetails && (
+                          <div>{JSON.stringify(props.errors.courtDetails, null, 2)}</div>
+                        )}
                       </Grid>
                     </FormControl>
                   </GridItem>
-                  <GridItem colSpan={24}>
-                    <FormControl isRequired={true}>
-                      <Grid templateColumns="10rem 1fr" alignItems="center" gap={2}>
+                  <GridItem colSpan={12}></GridItem>
+
+                  <GridItem colSpan={12}>
+                    <Grid templateColumns="10rem 1fr" alignItems="center" gap={2}>
+                      <FormControl isRequired={true} className="w-full">
                         <FormLabel className="title_label_court">Thời gian</FormLabel>
-                        <Flex className={'gap-3.5'}>
+                      </FormControl>
+                      <Grid templateColumns={'repeat(4,1fr)'} gap={3.5}>
+                        <GridItem colSpan={1}>
                           <Badge
                             colorScheme="green"
                             fontSize="1em"
                             borderRadius={'md'}
-                            padding="8px 16px"
+                            padding="0.5rem 1rem"
+                            className="flex items-center justify-center text-center w-full"
                           >
-                            Giờ bắt đầu
+                            Giờ mở cửa
                           </Badge>
-                          <TimePicker
-                            placeholder={'--:--'}
-                            format={'HH:mm'}
-                            // {...props.getFieldProps('startTime')}
-                            size={'large'}
-                            onBlur={() => props.getFieldHelpers('startTime').setTouched(true)} // Ensure you call handleBlur
-                            defaultValue={dayjs(props.getFieldProps('startTime').value, 'HH:mm')}
-                            onChange={(date) => {
-                              props.setFieldValue('startTime', dayjs(date).format('HH:mm'));
-                              console.log(dayjs(date).format('HH:mm'));
-                            }}
-                          />
-
+                        </GridItem>
+                        <GridItem colSpan={1}>
+                          <FormControl
+                            isInvalid={!!(props.errors.openTime && props.touched.openTime)}
+                          >
+                            <TimePicker
+                              placeholder={'--:--'}
+                              format={'HH:mm'}
+                              size={'large'}
+                              onBlur={() => props.setTouched({ openTime: true })} // Đánh dấu là đã chạm
+                              defaultValue={
+                                props.values.openTime ? dayjs(props.values.openTime, 'HH:mm') : null
+                              }
+                              onChange={(date) => {
+                                props.setFieldValue(
+                                  'openTime',
+                                  date ? dayjs(date).format('HH:mm') : null,
+                                );
+                              }}
+                            />
+                            <FormErrorMessage>{props.errors.openTime}</FormErrorMessage>
+                          </FormControl>
+                        </GridItem>
+                        <GridItem colSpan={1}>
                           <Badge
                             colorScheme="red"
                             fontSize="1em"
                             borderRadius={'md'}
-                            padding="8px 16px"
+                            padding="0.5rem 1rem"
+                            className="flex items-center justify-center text-center w-full"
                           >
-                            Giờ kết thúc
+                            Giờ đóng cửa
                           </Badge>
-
-                          <TimePicker
-                            placeholder={'--:--'}
-                            format={'HH:mm'}
-                            // {...props.getFieldProps('endTime')}
-                            size={'large'}
-                            onBlur={() => props.getFieldHelpers('endTime').setTouched(true)} // Ensure you call handleBlur
-                            defaultValue={dayjs(props.getFieldProps('endTime').value, 'HH:mm')}
-                            onChange={(date) => {
-                              props.setFieldValue('endTime', dayjs(date).format('HH:mm'));
-                              console.log(dayjs(date).format('HH:mm'));
-                            }}
-                          />
-                        </Flex>
+                        </GridItem>
+                        <GridItem colSpan={1}>
+                          <FormControl isRequired={true}>
+                            <TimePicker
+                              placeholder={'--:--'}
+                              format={'HH:mm'}
+                              size={'large'}
+                              onBlur={() => props.getFieldHelpers('closeTime').setTouched(true)} // Ensure you call handleBlur
+                              defaultValue={dayjs(props.values.closeTime, 'HH:mm')}
+                              onChange={(date) => {
+                                props.setFieldValue('closeTime', dayjs(date).format('HH:mm'));
+                                console.log(dayjs(date).format('HH:mm'));
+                              }}
+                            />
+                            <FormErrorMessage>{props.errors.closeTime}</FormErrorMessage>
+                          </FormControl>
+                        </GridItem>
                       </Grid>
-                    </FormControl>
+                    </Grid>
                   </GridItem>
+                  <GridItem colSpan={12}></GridItem>
                   <GridItem colSpan={12}>
                     <FormControl isRequired={true}>
                       <Grid templateColumns="10rem 1fr" alignItems="center" gap={2}>
                         <FormLabel className="title_label_court">Địa chỉ</FormLabel>
-                        <Input
-                          placeholder="Nhập địa chỉ"
-                          type="text"
-                          {...props.getFieldProps('address')}
+                        <AddressSelectAtom
+                          setFieldValue={props.setFieldValue}
+                          values={props.values}
+                          getFieldProps={props.getFieldProps}
                         />
                       </Grid>
                     </FormControl>
@@ -216,15 +242,17 @@ const CourtClusterEditPage = observer(() => {
                       <Button
                         onClick={() => {
                           const newCourtDetails: CourtDetails = {
+                            id: 0,
                             courtName: '',
                             courtPrice: [
                               {
                                 price: 0,
-                                endTime: '',
-                                startTime: '',
+                                toTime: '',
+                                fromTime: '',
                               },
                             ],
-                            status: 1,
+                            status: 0,
+                            actions: CourtAction.ADD,
                           };
                           props.values.courtDetails.push(newCourtDetails);
                           setInitial({
@@ -265,29 +293,42 @@ const CourtClusterEditPage = observer(() => {
                           key={'court' + index}
                           templateColumns={'repeat(12,1fr)'}
                           gap={5}
-                          className={'bg-white py-2  w-full'}
+                          className={`bg-white py-2  w-full 
+                          ${cd.actions === CourtAction.UPDATE && 'bg-gray-200'}  
+                          `}
                         >
-                          <GridItem colSpan={1}>{index + 1}</GridItem>
+                          <GridItem colSpan={1}>
+                            <Center>{index + 1}</Center>
+                          </GridItem>
                           <GridItem colSpan={3}>
                             <FormControl>
                               <Input
                                 {...props.getFieldProps(`courtDetails[${index}].courtName`)}
+                                onChange={(e) => {
+                                  const updatedCourtDetail = {
+                                    ...props.values.courtDetails[index],
+                                    courtName: e.target.value,
+                                    actions: CourtAction.UPDATE, // Đảm bảo cập nhật actions
+                                  };
+                                  props.setFieldValue(`courtDetails[${index}]`, updatedCourtDetail);
+                                  console.log(props.values.courtDetails[index]);
+                                }}
                               ></Input>
                             </FormControl>
                           </GridItem>
                           <GridItem colSpan={3}>
                             <Flex direction={'row'} gap={2}>
                               <TimePicker
-                                placeholder={'Giờ mở cửa'}
+                                placeholder={'Từ'}
                                 size={'large'}
                                 format={'HH:mm'}
                                 defaultValue={
                                   props.getFieldProps(
-                                    `courtDetails[${index}].courtPrice.[0].startTime`,
+                                    `courtDetails[${index}].courtPrice.[0].fromTime`,
                                   ).value
                                     ? dayjs(
                                         props.getFieldProps(
-                                          `courtDetails[${index}].courtPrice.[0].startTime`,
+                                          `courtDetails[${index}].courtPrice.[0].fromTime`,
                                         ).value,
                                         'HH:mm',
                                       )
@@ -295,7 +336,7 @@ const CourtClusterEditPage = observer(() => {
                                 }
                                 onChange={(date) => {
                                   props.setFieldValue(
-                                    `courtDetails[${index}].courtPrice.[0].startTime`,
+                                    `courtDetails[${index}].courtPrice.[0].fromTime`,
                                     dayjs(date).format('HH:mm'),
                                   );
                                   console.log(dayjs(date).format('HH:mm'));
@@ -303,22 +344,22 @@ const CourtClusterEditPage = observer(() => {
                                 onBlur={() =>
                                   props
                                     .getFieldHelpers(
-                                      `courtDetails[${index}].courtPrice.[0].startTime`,
+                                      `courtDetails[${index}].courtPrice.[0].fromTime`,
                                     )
                                     .setTouched(true)
                                 } // Ensure you call handleBlur
                               />
                               <TimePicker
-                                placeholder={'Đóng cửa'}
+                                placeholder={'Đến'}
                                 size={'large'}
                                 format={'HH:mm'}
                                 defaultValue={
                                   props.getFieldProps(
-                                    `courtDetails[${index}].courtPrice.[0].endTime`,
+                                    `courtDetails[${index}].courtPrice.[0].toTime`,
                                   ).value
                                     ? dayjs(
                                         props.getFieldProps(
-                                          `courtDetails[${index}].courtPrice.[0].endTime`,
+                                          `courtDetails[${index}].courtPrice.[0].toTime`,
                                         ).value,
                                         'HH:mm',
                                       )
@@ -326,16 +367,14 @@ const CourtClusterEditPage = observer(() => {
                                 }
                                 onChange={(date) => {
                                   props.setFieldValue(
-                                    `courtDetails[${index}].courtPrice.[0].endTime`,
+                                    `courtDetails[${index}].courtPrice.[0].toTime`,
                                     dayjs(date).format('HH:mm'),
                                   );
                                   console.log(dayjs(date).format('HH:mm'));
                                 }}
                                 onBlur={() =>
                                   props
-                                    .getFieldHelpers(
-                                      `courtDetails[${index}].courtPrice.[0].endTime`,
-                                    )
+                                    .getFieldHelpers(`courtDetails[${index}].courtPrice.[0].toTime`)
                                     .setTouched(true)
                                 } // Ensure you call handleBlur
                               />
@@ -358,7 +397,32 @@ const CourtClusterEditPage = observer(() => {
                             </NumberInput>
                           </GridItem>
                           <GridItem colSpan={3}>
-                            <Center>
+                            <Center gap={3}>
+                              <Button
+                                onClick={() => {
+                                  if (
+                                    props.values.courtDetails &&
+                                    props.values.courtDetails.length > 1
+                                  ) {
+                                    props.values.courtDetails = props.values.courtDetails.filter(
+                                      (_, numIndex) => numIndex !== index,
+                                    );
+                                    if (cd.actions !== CourtAction.ADD) {
+                                      props.setFieldValue('courtDeletedId', [
+                                        ...props.getFieldProps('courtDeletedId').value,
+                                        cd.id,
+                                      ]);
+                                    }
+                                    setInitial({
+                                      ...initial,
+                                      courtDetails: props.values.courtDetails,
+                                    });
+                                  }
+                                }}
+                                colorScheme={'red'}
+                              >
+                                Xoá sân
+                              </Button>
                               <Button
                                 onClick={() => {
                                   if (cd.courtPrice.length > 1) {
@@ -370,8 +434,10 @@ const CourtClusterEditPage = observer(() => {
                                     });
                                   }
                                 }}
+                                colorScheme={'red'}
+
                               >
-                                Xoá khung giờ
+                                Xoá giờ
                               </Button>
                             </Center>
                           </GridItem>
@@ -391,16 +457,16 @@ const CourtClusterEditPage = observer(() => {
                                 <GridItem colSpan={3}>
                                   <Flex direction={'row'} gap={2}>
                                     <TimePicker
-                                      placeholder={'Giờ mở cửa'}
+                                      placeholder={'Từ'}
                                       size={'large'}
                                       format={'HH:mm'}
                                       defaultValue={
                                         props.getFieldProps(
-                                          `courtDetails[${index}].courtPrice.[${no}].startTime`,
+                                          `courtDetails[${index}].courtPrice.[${no}].fromTime`,
                                         ).value
                                           ? dayjs(
                                               props.getFieldProps(
-                                                `courtDetails[${index}].courtPrice.[${no}].startTime`,
+                                                `courtDetails[${index}].courtPrice.[${no}].fromTime`,
                                               ).value,
                                               'HH:mm',
                                             )
@@ -408,7 +474,7 @@ const CourtClusterEditPage = observer(() => {
                                       }
                                       onChange={(date) => {
                                         props.setFieldValue(
-                                          `courtDetails[${index}].courtPrice.[${no}].startTime`,
+                                          `courtDetails[${index}].courtPrice.[${no}].fromTime`,
                                           dayjs(date).format('HH:mm'),
                                         );
                                         console.log(dayjs(date).format('HH:mm'));
@@ -416,25 +482,25 @@ const CourtClusterEditPage = observer(() => {
                                       onBlur={() =>
                                         props
                                           .getFieldHelpers(
-                                            `courtDetails[${index}].courtPrice.[${no}].startTime`,
+                                            `courtDetails[${index}].courtPrice.[${no}].fromTime`,
                                           )
                                           .setTouched(true)
                                       } // Ensure you call handleBlur
                                     />
                                     <TimePicker
-                                      placeholder={'Đóng cửa'}
+                                      placeholder={'Đến'}
                                       size={'large'}
                                       format={'HH:mm'}
                                       {...props.getFieldProps(
-                                        `courtDetails[${index}].courtPrice.[${no}].endTime`,
+                                        `courtDetails[${index}].courtPrice.[${no}].toTime`,
                                       )}
                                       defaultValue={
                                         props.getFieldProps(
-                                          `courtDetails[${index}].courtPrice.[${no}].endTime`,
+                                          `courtDetails[${index}].courtPrice.[${no}].toTime`,
                                         ).value
                                           ? dayjs(
                                               props.getFieldProps(
-                                                `courtDetails[${index}].courtPrice.[${no}].endTime`,
+                                                `courtDetails[${index}].courtPrice.[${no}].toTime`,
                                               ).value,
                                               'HH:mm',
                                             )
@@ -442,7 +508,7 @@ const CourtClusterEditPage = observer(() => {
                                       }
                                       onChange={(date) => {
                                         props.setFieldValue(
-                                          `courtDetails[${index}].courtPrice.[${no}].endTime`,
+                                          `courtDetails[${index}].courtPrice.[${no}].toTime`,
                                           dayjs(date).format('HH:mm'),
                                         );
                                         console.log(dayjs(date).format('HH:mm'));
@@ -450,7 +516,7 @@ const CourtClusterEditPage = observer(() => {
                                       onBlur={() =>
                                         props
                                           .getFieldHelpers(
-                                            `courtDetails[${index}].courtPrice.[${no}].endTime`,
+                                            `courtDetails[${index}].courtPrice.[${no}].toTime`,
                                           )
                                           .setTouched(true)
                                       } // Ensure you call handleBlur
@@ -461,10 +527,9 @@ const CourtClusterEditPage = observer(() => {
                                   <NumberInput>
                                     <InputGroup>
                                       <NumberInputField
-                                        
-                                        {...props.getFieldProps(                                          `courtDetails[${index}].courtPrice.[${no}].price`,
+                                        {...props.getFieldProps(
+                                          `courtDetails[${index}].courtPrice.[${no}].price`,
                                         )}
-
                                       />
                                       <InputRightElement width="4.5rem">
                                         <Text fontSize="sm" color="gray.500">
@@ -493,8 +558,8 @@ const CourtClusterEditPage = observer(() => {
                               onClick={() => {
                                 const newCourtPrice: CourtPrice = {
                                   price: 0,
-                                  endTime: '',
-                                  startTime: '',
+                                  toTime: '',
+                                  fromTime: '',
                                 };
                                 cd.courtPrice.push(newCourtPrice);
                                 const newCourtDetails = props.values.courtDetails;
@@ -526,9 +591,11 @@ const CourtClusterEditPage = observer(() => {
                     </Box>
                     <Flex gap="0.78rem" justifyContent="flex-end">
                       <Button className="delete" isLoading={props.isSubmitting} type="button">
-                        Xóa
+                        Cancel
                       </Button>
-                      <Button className="save" isLoading={props.isSubmitting} type="submit">
+                      <Button
+                      disabled={props.isSubmitting || !props.isValid || !props.dirty}
+                      className="save" isLoading={props.isSubmitting} type="submit">
                         Lưu
                       </Button>
                     </Flex>

@@ -16,14 +16,15 @@ const ImageUpload = ({ initialFileList = [], name, limit }: IProps) => {
   const onChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
     console.log(newFileList);
-    const urls = newFileList.map((file) => {
-      if (file.status === 'done' && file.response) {
-        return file.response.url; 
-      }
-      return file.url; 
-    }).filter((url) => url); 
+    const urls = newFileList
+      .map((file) => {
+        if (file.status === 'done' && file.response) {
+          return file.response.url;
+        }
+        return file.url;
+      })
+      .filter((url) => url);
     helpers.setValue(urls);
-
   };
 
   const onPreview = async (file: UploadFile) => {
@@ -42,7 +43,10 @@ const ImageUpload = ({ initialFileList = [], name, limit }: IProps) => {
   };
 
   return (
-    <ImgCrop rotationSlider>
+    <ImgCrop
+      rotationSlider
+      aspect={16 / 9}
+    >
       <Upload
         action={`${import.meta.env.VITE_API_URL}upload`}
         listType="picture-card"

@@ -39,11 +39,14 @@ const CourtClusterBookingTab = () => {
   });
   const handleActionBegin = (args: any) => {
     const currentTime = new Date();
+
     if (
       (args.requestType === 'eventCreate' || args.requestType === 'eventChange') &&
       args.data &&
       ((Array.isArray(args.data) && args.data.length > 0) || !isNullOrUndefined(args.data))
     ) {
+      console.log(args.data);
+
       if (schedule.current) {
         const eventData = Array.isArray(args.data) ? args.data[0] : args.data;
         const eventField: EventFieldsMapping = schedule.current.eventFields!;
