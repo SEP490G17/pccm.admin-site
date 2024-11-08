@@ -22,7 +22,9 @@ const CourtClusterPage = observer(() => {
     } = courtClusterStore;
 
     useEffect(() => {
-        loadCourtsCluster();
+        if (courtClusterStore.courtClusterRegistry.size == 0) {
+            loadCourtsCluster();
+        }
     }, []);
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

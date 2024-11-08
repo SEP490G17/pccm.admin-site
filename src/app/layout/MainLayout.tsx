@@ -88,6 +88,7 @@ registerLicense(
           px={8}
           as="main"
           className={`${commonStore.isCollapsed && 'collapsed'}`}
+          pt={5}
         >
           <Outlet />
         </Flex>

@@ -19,8 +19,9 @@ const CourtClusterProductsTab = observer(({courtClusterId}:IProps) => {
     useEffect(() => {
         if (productOfClusterRegistry.size == 0) {
             loadProductsOfCourtCluster(courtClusterId);
+            console.log(courtClusterId);
         }
-    }, [courtClusterId])
+    }, [])
 
     return (
         <Box>
@@ -35,7 +36,7 @@ const CourtClusterProductsTab = observer(({courtClusterId}:IProps) => {
                     {
                         productOfCourtClusterArray.map(
                             (product) => (
-                                <ProductCardItemComponent product={product}/>
+                                <ProductCardItemComponent key={product.id} product={product}/>
                             )
                         )
                     }

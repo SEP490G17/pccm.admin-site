@@ -5,9 +5,10 @@ import { FaSearch } from 'react-icons/fa';
 interface IProp {
   handleChange(e: React.ChangeEvent<HTMLInputElement>): void;
   isPending: boolean;
+  value?: string;
 }
 
-const InputSearchBoxAtoms = ({ handleChange, isPending = false }: IProp) => {
+const InputSearchBoxAtoms = ({ handleChange, isPending = false, value  }: IProp) => {
     
   return (
     <Box textAlign="right">
@@ -25,6 +26,7 @@ const InputSearchBoxAtoms = ({ handleChange, isPending = false }: IProp) => {
           outline="none"
           borderRadius="4px"
           onChange={handleChange}
+          value={value}
         />
         <InputRightElement width="4.5rem">
           {isPending ? <Spinner size={'sm'} /> : <FaSearch />}

@@ -3,7 +3,6 @@ import { ServeError } from '../models/serverError.model';
 
 export default class CommonStore {
   error: ServeError | null = null;
-  token: string | null = localStorage.getItem('jwt');
   appLoaded = false;
   isCollapsed = false;
   selectedMenuItem: number = 1;
@@ -25,9 +24,8 @@ export default class CommonStore {
     this.error = err;
   }
 
-  setToken = (token: string | null) => {
-    if (token) localStorage.setItem('jwt', token);
-    this.token = token;
+  setToken = (token: string) => {
+    localStorage.setItem('jwt', token);
   };
   setTokenSession = (token: string | null) => {
     if (token) sessionStorage.setItem('jwt', token);
@@ -42,5 +40,14 @@ export default class CommonStore {
   };
 
   setSelectedMenuItem = (key: number) => runInAction(() => (this.selectedMenuItem = key));
-  setCollapsed = () => {runInAction(() => this.isCollapsed = !this.isCollapsed)}
+  setCollapsed = () => {
+    runInAction(() => (this.isCollapsed = !this.isCollapsed));
+  };
+
+  get token() {
+    if (localStorage.getItem('jwt')) {
+      return localStorage.getItem('jwt');
+    }
+    return sessionStorage.getItem('jwt');
+  }
 }

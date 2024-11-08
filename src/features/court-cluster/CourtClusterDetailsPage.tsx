@@ -37,7 +37,7 @@ const CourtClusterDetailsPage = observer(() => {
                         {selectedTabs === 0 && <CourtClusterDescriptionTab />}
                     </TabPanel>
                     <TabPanel>
-                        {selectedTabs === 1 && <CourtClusterBookingTab />}
+                        {selectedTabs === 1 && <CourtClusterBookingTab courtClusterId={Number(id)}/>}
                     </TabPanel>
                     <TabPanel>
                         {selectedTabs === 2 && id &&<CourtClusterProductsTab courtClusterId={id} />}

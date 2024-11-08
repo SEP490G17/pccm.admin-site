@@ -3,7 +3,7 @@ import agent from '../api/agent';
 import { News, NewsDTO } from '../models/news.models';
 import { sampleNewsData } from '../mock/news.mock';
 import { PageParams } from '../models/pageParams.model';
-import { sleep } from '../helper/utils';
+import { catchErrorHandle, sleep } from '../helper/utils';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
 
@@ -25,26 +25,25 @@ export default class NewsStore {
 
   loadNews = async () => {
     this.loading = true;
-    try {
-      const queryParams = new URLSearchParams();
-      queryParams.append('skip', `${this.newsPageParams.skip ?? 0}`);
-      queryParams.append('pageSize', `${this.newsPageParams.pageSize}`);
-      if (this.newsPageParams.searchTerm) {
-        queryParams.append('search', this.newsPageParams.searchTerm);
+    const queryParams = new URLSearchParams();
+    queryParams.append('skip', `${this.newsPageParams.skip ?? 0}`);
+    queryParams.append('pageSize', `${this.newsPageParams.pageSize}`);
+    if (this.newsPageParams.searchTerm) {
+      queryParams.append('search', this.newsPageParams.searchTerm);
+    }
+    const [err, res] = await catchErrorHandle(agent.NewsAgent.list(`?${queryParams.toString()}`));
+
+    runInAction(() => {
+      if (err) {
+        toast.error('Lấy danh sách tin tức thất bại');
       }
-      const { count, data } = await agent.NewsAgent.list(`?${queryParams.toString()}`);
-      runInAction(() => {
+      if (res) {
+        const { count, data } = res;
         data.forEach(this.setNews);
         this.newsPageParams.totalElement = count;
-        this.loading = false;
-      });
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.log(error);
-        toast.error('Error loading news');
-      });
-    }
+      }
+      this.loading = false;
+    });
   };
 
   createNews = async (news: NewsDTO) => {

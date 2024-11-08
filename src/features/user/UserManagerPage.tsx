@@ -31,7 +31,7 @@ const UserManagerPage = observer(() => {
 
     return (
         <>
-            <PageHeadingAtoms breadCrumb={[{title:'Danh sách người dùng',to:'#'}]} />
+            <PageHeadingAtoms breadCrumb={[{title:'Danh sách người dùng',to:'/users'}]} />
             <Flex width="100%" flexDirection="column" gap="1.5rem" mb="1.5rem">
                 <Flex justifyContent="space-between" alignItems="center" gap="30px">
                     <Flex flex="1" padding="3px 10px" alignItems="center" gap="16px" borderRadius="4px" border="0.5px solid #ADADAD" background="#FFF" >

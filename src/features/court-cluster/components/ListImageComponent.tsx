@@ -29,7 +29,7 @@ const ListImageComponent = ({images}: IProps) => {
                     {
                         images.length === 2 &&
                         images.map(img => (
-                            <GridItem colSpan={12} rowSpan={2}>
+                            <GridItem key={img} colSpan={12} rowSpan={2}>
                                 <Image src={img} loading={'lazy'} className={'object-cover rounded-lg'}
                                        height={'100%'}/>
                             </GridItem>

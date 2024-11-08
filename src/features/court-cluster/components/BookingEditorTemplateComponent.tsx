@@ -2,8 +2,21 @@ import { Grid, GridItem } from '@chakra-ui/react';
 import { DateTimePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { RecurrenceEditorComponent } from '@syncfusion/ej2-react-schedule';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
+import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
+interface Court {
+  courtId: number;
+  courtName: string;
+}
 
-const BookingEditorTemplateComponent = () => {
+
+
+const BookingEditorTemplateComponent = (props:any) => {
+  const courts: { courtId: number; courtName: string }[] = [
+    { courtId: 1, courtName: 'Sân 1' },
+    { courtId: 2, courtName: 'Sân 2' },
+    { courtId: 3, courtName: 'Sân 3' },
+  ];
+  console.log(props);
   return (
     <>
       <Grid templateColumns={'repeat(8,1fr)'} columnGap={5} rowGap={8} className="mt-4">
@@ -31,6 +44,7 @@ const BookingEditorTemplateComponent = () => {
             name="StartTime"
             className="e-start e-field e-control e-datetimepicker e-lib e-keyboard"
             aria-labelledby="label_StartTime"
+            step={30}
           ></DateTimePickerComponent>
           <label
             className="e-float-text relative e-label-top"
@@ -49,6 +63,7 @@ const BookingEditorTemplateComponent = () => {
             name="EndTime"
             className=" e-field e-end"
             aria-labelledby="label_EndTime"
+            step={30}
           ></DateTimePickerComponent>
           <label
             className="e-float-text relative e-label-top"
@@ -59,9 +74,29 @@ const BookingEditorTemplateComponent = () => {
             End Time
           </label>
         </GridItem>
-
+        {props.courtId && (
+          <GridItem colSpan={8} className="relative">
+            <DropDownListComponent
+              id="courtId"
+              name="courtId"
+              value={props.courtId}
+              dataSource={courts}
+              fields={{ text: 'courtName', value: 'courtId' }}
+              placeholder="Chọn Sân"
+              className="e-field"
+            />
+            <label
+              className="e-float-text relative"
+              style={{ top: '-1.8rem' }}
+              htmlFor="courtId"
+              id="label_courtId"
+            >
+              Court
+            </label>
+          </GridItem>
+        )}
         <GridItem colSpan={8}>
-          <RecurrenceEditorComponent  />
+          <RecurrenceEditorComponent />
         </GridItem>
       </Grid>
     </>

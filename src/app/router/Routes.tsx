@@ -4,7 +4,6 @@ import NotFound from '@/features/errors/NotFound';
 import ServerError from '@/features/errors/ServerError';
 import MainLayout from '@/app/layout/MainLayout';
 import LoginPage from '@/features/auth/login/LoginPage';
-import CreateCourtClusterPage from '@/features/court-cluster/CreateCourtClusterPage.tsx';
 import CourtsPage from '@/features/court-cluster/CourtsClusterPage.tsx';
 import BannerPage from '@/features/banner/BannerPage';
 import NewsPage from '@/features/news/NewsPage';
@@ -13,9 +12,12 @@ import ServicePage from '@/features/service/ServicePage';
 import StaffPage from '@/features/staff/StaffPage';
 import UserManagerPage from '@/features/user/UserManagerPage';
 import CourtClusterDetailsPage from "@/features/court-cluster/CourtClusterDetailsPage.tsx";
-import StaffPositionPage from '@/features/staff/StaffPositionPage';
 import StatisticPage from '@/features/statistic/StatisticPage';
 import RevenuePage from '@/features/revenue/RevenuePage';
+import CourtClusterCreatePage from "@/features/court-cluster/CourtClusterCreatePage.tsx";
+import CourtClusterEditPage from "@/features/court-cluster/CourtClusterEditPage.tsx";
+import BookingsPage from '@/features/booking/BookingsPage';
+import BookingDetailsPage from '@/features/booking/BookingDetailsPage';
 
 export const routes: RouteObject[] = [
   {
@@ -39,12 +41,24 @@ export const routes: RouteObject[] = [
         element: <CourtClusterDetailsPage />,
       },
       {
+        path: 'cum-san/chinh-sua/:id',
+        element: <CourtClusterEditPage />,
+      },
+      {
         path: 'cum-san/tao',
-        element: <CreateCourtClusterPage />,
+        element: <CourtClusterCreatePage />,
       },
       {
         path: 'tin-tuc',
         element: <NewsPage />,
+      },
+      {
+        path: 'booking',
+        element: <BookingsPage />,
+      },
+      {
+        path: 'booking/chi-tiet/:id',
+        element: <BookingDetailsPage />,
       },
       {
         path: 'errors',

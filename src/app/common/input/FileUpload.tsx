@@ -14,6 +14,7 @@ import { CloseIcon } from '@chakra-ui/icons';
 import { useField } from 'formik';
 import { toast } from 'react-toastify';
 import { useStore } from '@/app/stores/store';
+import { observer } from 'mobx-react';
 
 interface FileUploadProps extends InputProps {
   name?: string;
@@ -23,7 +24,7 @@ interface FileUploadProps extends InputProps {
   value?: string;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({
+const FileUpload: React.FC<FileUploadProps> = observer(({
   name = 'images',
   limit = 1,
   label,
@@ -170,6 +171,6 @@ const FileUpload: React.FC<FileUploadProps> = ({
       />
     </FormControl>
   );
-};
+});
 
 export default FileUpload;

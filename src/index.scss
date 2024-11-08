@@ -200,6 +200,7 @@ button.primary.outlined {
 .schedule-cell-dimension.e-schedule {
   .e-table-container{
     max-height: 500px !important;
+    width: 100%;
     overflow: auto;
   }
 	.e-vertical-view {
@@ -228,34 +229,20 @@ button.primary.outlined {
 			height: 100px;
 		}
 	}
-	.e-month-view {
-		.e-work-cells {
-			width: 200px;
-			height: 200px;
-		}
-		.e-date-header-wrap {
-			table {
-				col {
-					width: 200px;
-				}
-			}
-		}
-	}
+	
 }
 
 /* csslint ignore:end */
 
-.e-appointment-details {
-  height: 80px !important;
+/* Define colors for each payment status */
+.paid-event {
+  background-color: #4CAF50 !important; /* Green for paid */
 }
-.e-schedule {
-  .e-timeline-view{
-    .e-appointment {
-      min-height: 80px !important;
-      width: 60px;
-    }
-  }
-
+.pending-event {
+  background-color: #FFC107 !important; /* Yellow for pending */
+}
+.unpaid-event {
+  background-color: #F44336 !important; /* Red for unpaid */
 }
 
 
@@ -263,11 +250,28 @@ button.primary.outlined {
   height: auto; /* Để chiều cao tự động điều chỉnh theo nội dung */
 }
 
-.e-appointment {
-  min-height: 50px; /* Đảm bảo chiều cao tối thiểu đủ để hiển thị một số sự kiện */
-}
 
 .e-past-time-slot {
   background-color: #d3d3d3 !important; /* Màu xám nhạt cho ô thời gian quá khứ */
   opacity: 0.6;
+}
+.places-container {
+  position: absolute !important;
+  top: 10px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 9999 !important;
+  width: 300px !important;
+  background: #fff !important;
+  
+}
+
+.map-container {
+  width: 100% !important;
+  height: 500px !important;
+}
+
+.combobox-input {
+  width: 100% !important;
+  padding: 0.5rem !important;
 }

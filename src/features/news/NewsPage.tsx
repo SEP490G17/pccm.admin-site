@@ -21,6 +21,8 @@ const NewsPage = () => {
 
   useEffect(() => {
     setLoadingInitial(true);
+    newsPageParams.clearLazyPage();
+    newsPageParams.searchTerm = ''; 
     loadNews().finally(() => setLoadingInitial(false));
   }, []);
 
