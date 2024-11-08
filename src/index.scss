@@ -200,32 +200,33 @@ button.primary.outlined {
 .schedule-cell-dimension.e-schedule {
   .e-table-container{
     max-height: 500px !important;
+    width: 100%;
     overflow: auto;
   }
 	.e-vertical-view {
 		.e-date-header-wrap {
 			table {
 				col {
-					width: 150px;
+					width: 200px;
 				}
 			}
 		}
 		.e-content-wrap {
 			table {
 				col {
-					width: 150px;
+					width: 200px;
 				}
 			}
 		}
 		.e-time-cells-wrap {
 			table {
 				td {
-					height: 75px;
+					height: 100px;
 				}
 			}
 		}
 		.e-work-cells {
-			height: 75px;
+			height: 100px;
 		}
 	}
 	
@@ -233,17 +234,15 @@ button.primary.outlined {
 
 /* csslint ignore:end */
 
-.e-appointment-details {
-  height: 80px !important;
+/* Define colors for each payment status */
+.paid-event {
+  background-color: #4CAF50 !important; /* Green for paid */
 }
-.e-schedule {
-  .e-timeline-view{
-    .e-appointment {
-      min-height: 80px !important;
-      width: 60px;
-    }
-  }
-
+.pending-event {
+  background-color: #FFC107 !important; /* Yellow for pending */
+}
+.unpaid-event {
+  background-color: #F44336 !important; /* Red for unpaid */
 }
 
 
@@ -251,9 +250,6 @@ button.primary.outlined {
   height: auto; /* Để chiều cao tự động điều chỉnh theo nội dung */
 }
 
-.e-appointment {
-  min-height: 50px; /* Đảm bảo chiều cao tối thiểu đủ để hiển thị một số sự kiện */
-}
 
 .e-past-time-slot {
   background-color: #d3d3d3 !important; /* Màu xám nhạt cho ô thời gian quá khứ */

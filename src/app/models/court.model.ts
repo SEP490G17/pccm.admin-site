@@ -79,3 +79,8 @@ export interface CourtDetailsCreate {
   courtPrice: CourtPrice[];
   status: number;
 }
+
+export interface Court {
+  courtId: number;
+  courtName: string;
+}

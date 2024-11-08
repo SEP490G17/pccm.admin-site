@@ -16,6 +16,8 @@ import StatisticPage from '@/features/statistic/StatisticPage';
 import RevenuePage from '@/features/revenue/RevenuePage';
 import CourtClusterCreatePage from "@/features/court-cluster/CourtClusterCreatePage.tsx";
 import CourtClusterEditPage from "@/features/court-cluster/CourtClusterEditPage.tsx";
+import BookingsPage from '@/features/booking/BookingsPage';
+import BookingDetailsPage from '@/features/booking/BookingDetailsPage';
 
 export const routes: RouteObject[] = [
   {
@@ -49,6 +51,14 @@ export const routes: RouteObject[] = [
       {
         path: 'tin-tuc',
         element: <NewsPage />,
+      },
+      {
+        path: 'booking',
+        element: <BookingsPage />,
+      },
+      {
+        path: 'booking/chi-tiet/:id',
+        element: <BookingDetailsPage />,
       },
       {
         path: 'errors',

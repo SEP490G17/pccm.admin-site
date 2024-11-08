@@ -16,9 +16,8 @@
     "@chakra-ui/react": "^2.10.1",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "@reach/combobox": "^0.16.5",
-    "@react-google-maps/api": "^2.7.0",
     "@syncfusion/ej2-react-calendars": "^27.1.57",
+    "@syncfusion/ej2-react-dropdowns": "^27.1.58",
     "@syncfusion/ej2-react-inputs": "^27.1.55",
     "@syncfusion/ej2-react-schedule": "^27.1.57",
     "antd": "^5.21.5",
@@ -42,7 +41,6 @@
     "react-select": "^5.8.1",
     "react-toastify": "^10.0.5",
     "sass-embedded": "^1.79.4",
-    "use-places-autocomplete": "^1.11.0",
     "yup": "^1.4.0"
   },
   "devDependencies": {

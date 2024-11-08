@@ -12,7 +12,7 @@ function PageHeadingAtoms({ breadCrumb }: IProp) {
   const location = useLocation();
   return (
     <Box>
-      <Breadcrumb separator={<Image src={arrowRight} />} fontSize={'2rem'} pb={1} pt={1}>
+      <Breadcrumb separator={<Image src={arrowRight} w={4} h={4}/>} fontSize={'1rem'} pb={1} pt={1}>
         {breadCrumb.map(({ title, to }, index) => (
           <BreadcrumbItem key={index}>
             <BreadcrumbLink
@@ -20,7 +20,7 @@ function PageHeadingAtoms({ breadCrumb }: IProp) {
               style={{ textDecoration: 'none' }}
               to={to}
               className={to === location.pathname ? 'isCurrentPage' : 'prevPage'}
-              fontSize={'2rem'}
+              fontSize={'1rem'}
               isCurrentPage={false}
             >
               {title}
@@ -28,15 +28,7 @@ function PageHeadingAtoms({ breadCrumb }: IProp) {
           </BreadcrumbItem>
         ))}
       </Breadcrumb>
-      <Box>
-        <Divider
-          orientation="horizontal"
-          marginBottom={'2rem'}
-          background={'linear-gradient(90deg, #00423D 0%, #0A3351 100%)'}
-          width={'9.3rem'}
-          height={1}
-        />
-      </Box>
+     
     </Box>
   );
 }

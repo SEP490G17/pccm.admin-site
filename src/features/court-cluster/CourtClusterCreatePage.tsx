@@ -18,12 +18,10 @@ import {
   InputRightElement,
   NumberInput,
   NumberInputField,
-  Skeleton,
   Text,
 } from '@chakra-ui/react';
 import ImageUpload from '@/app/common/input/ImageUpload.tsx';
 import ReactQuillComponent from '@/app/common/input/ReactQuill.tsx';
-import { useStore } from '@/app/stores/store.ts';
 import { observer } from 'mobx-react';
 import { TimePicker } from 'antd';
 import '@reach/combobox/styles.css';
@@ -155,8 +153,8 @@ const CourtClusterCreatePage = observer(() => {
                             colorScheme="green"
                             fontSize="1em"
                             borderRadius={'md'}
-                            padding="0.5rem 1rem"
-                            className="flex items-center justify-center text-center w-full"
+                            padding="0.5rem 1rem "
+                            className="flex items-center justify-center text-center w-full h-10"
                           >
                             Giờ mở cửa
                           </Badge>
@@ -167,8 +165,8 @@ const CourtClusterCreatePage = observer(() => {
                           >
                             <TimePicker
                               placeholder={'--:--'}
+                              className='h-10'
                               format={'HH:mm'}
-                              size={'large'}
                               onBlur={() => props.setTouched({ openTime: true })} // Đánh dấu là đã chạm
                               defaultValue={
                                 props.values.openTime ? dayjs(props.values.openTime, 'HH:mm') : null
@@ -188,8 +186,8 @@ const CourtClusterCreatePage = observer(() => {
                             colorScheme="red"
                             fontSize="1em"
                             borderRadius={'md'}
-                            padding="0.5rem 1rem"
-                            className="flex items-center justify-center text-center w-full"
+                            padding="0.5rem 1rem "
+                            className="flex items-center justify-center text-center w-full h-10"
                           >
                             Giờ đóng cửa
                           </Badge>
@@ -198,8 +196,8 @@ const CourtClusterCreatePage = observer(() => {
                           <FormControl isRequired={true}>
                             <TimePicker
                               placeholder={'--:--'}
+                              className='h-10'
                               format={'HH:mm'}
-                              size={'large'}
                               onBlur={() => props.getFieldHelpers('closeTime').setTouched(true)} // Ensure you call handleBlur
                               defaultValue={
                                 props.values.closeTime
