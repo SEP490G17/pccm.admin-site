@@ -21,7 +21,6 @@ const ServicePage = observer(() => {
     loadServices,
     servicePageParams,
     serviceRegistry,
-    setSearchTerm,
     setLoadingInitial,
     loading,
   } = serviceStore;

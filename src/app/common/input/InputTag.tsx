@@ -27,7 +27,7 @@ const InputTag: React.FC<TagProps> = ({ tags = [], onChange }: TagProps) => {
     useEffect(() => {
         window.addEventListener("keyup", handleKeyUp);
         return () => window.removeEventListener("keyup", handleKeyUp);
-    }, [dataInput, onChange]);
+    }, [dataInput, onChange, handleKeyUp]);
 
     const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
