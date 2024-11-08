@@ -14,6 +14,7 @@ export default class BannerStore {
   cleanupInterval: number | undefined = undefined;
   isOrigin: boolean = true;
   loadingEdit: boolean = false;
+  loadingStatusMap = new Map<number, boolean>();
 
   constructor() {
     console.log('banner store initialized');
@@ -49,9 +50,9 @@ export default class BannerStore {
     this.loading = true;
     await runInAction(async () => {
       await agent.Banners.create(banner)
-        .then(() => {
+        .then((s) => {
           this.loading = false;
-          this.setBanner(banner);
+          this.setBanner(s);
           toast.success('Tạo banner thành công');
         })
         .catch((error) => {
@@ -151,6 +152,14 @@ export default class BannerStore {
       this.loadingInitial = isLoad;
     });
   };
+
+  setLoadingStatus(id: number, isLoading: boolean) {
+    this.loadingStatusMap.set(id, isLoading);
+  }
+
+  isLoading(id: number) {
+    return this.loadingStatusMap.get(id);
+  }
 
   // setCurrentPage = (pageIndex: number) => {
   //   runInAction(() => {

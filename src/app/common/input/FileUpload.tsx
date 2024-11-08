@@ -125,7 +125,7 @@ const FileUpload: React.FC<FileUploadProps> = observer(({
   };
 
   return (
-    <FormControl>
+    <FormControl >
       <FormLabel className="title_label">{label}</FormLabel>
 
       <Box

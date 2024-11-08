@@ -36,7 +36,10 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
     const validationSchema = Yup.object().shape({
         service_name: Yup.string().required('Tiêu đề dịch vụ không được bỏ trống'),
         description: Yup.string().required('Mô tả không được bỏ trống'),
-        price: Yup.number().required('Giá cả không được bỏ trống'),
+
+        price: Yup.number().typeError('Giá cả phải là một số')
+            .required('Giá cả không được bỏ trống')
+            .positive('Giá cả phải là số dương'),
         courtclusters: Yup.array().required('Thuộc cụm sân không được bỏ trống'),
     });
 
@@ -70,9 +73,7 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
                                 }}
                                 validationSchema={validationSchema}
                             >
-                                {({ handleSubmit, isSubmitting, isValid, errors }) => {
-                                    console.log('Is Valid:', isValid);
-                                    console.log('Errors:', errors);
+                                {({ handleSubmit, isSubmitting }) => {
                                     return (
                                         <Form onSubmit={handleSubmit}>
                                             <TextFieldAtoms
@@ -101,7 +102,7 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
 
                                             <Stack direction='row' justifyContent='flex-end' mt={9}>
                                                 <Button
-                                                    disabled={isSubmitting || !isValid}
+                                                    // disabled={isSubmitting || !isValid}
                                                     className="save"
                                                     isLoading={isSubmitting}
                                                     type="submit"

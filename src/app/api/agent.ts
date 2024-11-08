@@ -106,6 +106,8 @@ const Banners = {
   create: (banner: BannerDTO): Promise<Banner> => requests.post(`/banner`, banner),
   update: (banner: BannerDTO): Promise<void> => requests.put(`/banner/${banner.id}`, banner),
   delete: (id: number): Promise<void> => requests.del(`/banner/${id}`),
+  changestatus: (bannerId: number, status: number): Promise<Banner> =>
+    requests.put(`/Banner?id=${bannerId}&status=${status}`, {}),
 };
 const Services = {
   list: (queryParams: string = ''): Promise<PaginationModel<Service>> =>

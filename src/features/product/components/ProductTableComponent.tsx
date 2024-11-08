@@ -18,14 +18,15 @@ import { observer } from 'mobx-react-lite';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import EditProductPage from '../EditProductPage';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
+import { toast } from 'react-toastify';
 
-const ProductTableComponent =observer(() => {
+const ProductTableComponent = observer(() => {
   const { productStore } = useStore();
   const { productPageParams, loading, productArray, loadingInitial, deleteProduct, detailProduct } = productStore;
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const handleOpenEdit = async (id:number) =>{
-     onOpen();
-     await detailProduct(id);
+  const handleOpenEdit = async (id: number) => {
+    onOpen();
+    await detailProduct(id);
   }
   return (
     <>
@@ -40,20 +41,21 @@ const ProductTableComponent =observer(() => {
             <Tr>
               <Th w={'5rem'} py={'1rem'}>STT</Th>
               <Th w={'15rem'}>Ảnh sản phẩm</Th>
-              <Th w={'20rem'}>Tên sản phẩm</Th>
+              <Th w={'15rem'}>Tên sản phẩm</Th>
               <Th w={'15rem'}>Thể loại</Th>
               <Th w={'15rem'}>Cụm sân</Th>
-              <Th w={'12rem'}>Số lượng</Th>
-              <Th w={'10rem'}>Giá cả</Th>
+              <Th w={'10rem'}>Số lượng</Th>
+              <Th w={'15rem'}>Giá bán</Th>
+              <Th w={'15rem'}>Giá nhập</Th>
               {/* <Th >
                 Mô tả
               </Th> */}
-              <Th w={'8rem'}>Tùy chọn</Th>
+              <Th w={'10rem'}>Tùy chọn</Th>
             </Tr>
           </Thead>
           <Tbody>
             {loadingInitial && (
-              <SkeletonTableAtoms numOfColumn={7} pageSize={productPageParams.pageSize} />
+              <SkeletonTableAtoms numOfColumn={8} pageSize={productPageParams.pageSize} />
             )}
 
             {!loadingInitial &&
@@ -74,9 +76,11 @@ const ProductTableComponent =observer(() => {
                   <Td>{product.courtClusterName}</Td>
                   <Td>{product.quantity}</Td>
                   <Td>
-                    {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                    {product.priceSell.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                   </Td>
-
+                  <Td>
+                    {product.priceBuy.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                  </Td>
                   <Td>
                     <Center>
                       <IconButton
@@ -89,9 +93,19 @@ const ProductTableComponent =observer(() => {
                           await handleOpenEdit(product.id);
                         }}
                       />
-                      <DeleteButtonAtom name={product.productName} loading={loading} header='Xóa sản phẩm' onDelete={async () => {
-                          await deleteProduct(product.id)
-                      }} />
+                      <DeleteButtonAtom
+                        buttonSize={'sm'}
+                        name={product.productName}
+                        loading={loading}
+                        buttonClassName={'gap-2'}
+                        onDelete={async () => {
+                          try {
+                            await deleteProduct(product.id);
+                          } catch {
+                            toast.error("Xóa thất bại");
+                          }
+                        }}
+                      />
                     </Center>
                   </Td>
                 </Tr>

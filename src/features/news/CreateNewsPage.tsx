@@ -37,6 +37,7 @@ const CreateNewsPage = ({ isOpen, onClose }: IProp) => {
     tags: Yup.array().required('Tag không được bỏ trống'),
     description: Yup.string().required('Mô tả không được bỏ trống'),
     thumbnail: Yup.string().required('Ảnh tin tức không được bỏ trống'),
+    location: Yup.string().required('Địa điểm không được bỏ trống'),
     startTime: Yup.string().required('Giờ bắt đầu không được bỏ trống'),
     endTime: Yup.string()
       .required('Giờ kết thúc không được bỏ trống')
@@ -95,7 +96,7 @@ const CreateNewsPage = ({ isOpen, onClose }: IProp) => {
                 }}
                 validationSchema={validationSchema}
               >
-                {({ handleSubmit, isSubmitting, isValid }) => {
+                {({ handleSubmit, isSubmitting }) => {
                   return (
                     <Form onSubmit={handleSubmit}>
                       <TextFieldAtoms
@@ -145,7 +146,7 @@ const CreateNewsPage = ({ isOpen, onClose }: IProp) => {
 
                       <Stack direction='row' justifyContent='flex-end'>
                         <Button
-                          disabled={isSubmitting || !isValid}
+                          // disabled={isSubmitting || !isValid}
                           className="save"
                           isLoading={isSubmitting}
                           type="submit"

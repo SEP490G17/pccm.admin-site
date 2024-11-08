@@ -1,11 +1,11 @@
-import {useCallback, useEffect, useState} from 'react';
-import {Flex, useDisclosure, Center} from '@chakra-ui/react';
-import {observer} from 'mobx-react-lite';
-import {useStore} from '../../app/stores/store';
+import { useCallback, useEffect, useState } from 'react';
+import { Flex, useDisclosure, Center } from '@chakra-ui/react';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '../../app/stores/store';
 import './style.scss';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import CreateProductPage from './CreateProductPage';
-import {debounce} from 'lodash';
+import { debounce } from 'lodash';
 import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
 import ProductTableComponent from './components/ProductTableComponent';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
@@ -14,7 +14,7 @@ import PlusIcon from '../atoms/PlusIcon';
 import Select from 'react-select';
 
 const ProductPage = observer(() => {
-    const {productStore, categoryStore, courtClusterStore} = useStore();
+    const { productStore, categoryStore, courtClusterStore } = useStore();
     const {
         loadProducts,
         setLoadingInitial,
@@ -22,13 +22,13 @@ const ProductPage = observer(() => {
         productRegistry,
         setSearchTerm,
         loading,
-        loadingInitial,
+        loadingCreate,
         filterByCategory,
         filterByCourtCluster
     } = productStore;
-    const {loadCategories} = categoryStore;
+    const { loadCategories } = categoryStore;
     const [isPending, setIsPending] = useState(false);
-    const {isOpen, onOpen, onClose} = useDisclosure();
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     useEffect(() => {
         setLoadingInitial(true);
@@ -69,16 +69,16 @@ const ProductPage = observer(() => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, [handleScroll]);
-    const handleChangeCategory = async ({value}: { value: number, label: string }) => {
+    const handleChangeCategory = async ({ value }: { value: number, label: string }) => {
         await filterByCategory(value);
     }
-    const handleChangeCourtCluster = async ({value}: { value: number, label: string }) => {
+    const handleChangeCourtCluster = async ({ value }: { value: number, label: string }) => {
         await filterByCourtCluster(value);
 
     }
     return (
         <>
-            <PageHeadingAtoms breadCrumb={[{title: 'Danh sách sản phẩm', to: '/hang-hoa'}]}/>
+            <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách sản phẩm', to: '/hang-hoa' }]} />
 
             <Flex
                 width="100%"
@@ -89,18 +89,26 @@ const ProductPage = observer(() => {
             >
                 <Flex flexWrap={'wrap'} gap={'1rem'}>
                     <Select
-                        options={[{value: '', label: 'Reset'}, ...courtClusterStore.courtClusterListAllOptions]}
+                        options={[{ value: 0, label: 'Tất cả' }, ...courtClusterStore.courtClusterListAllOptions]}
                         placeholder="Cụm sân"
                         className='w-56 p-2 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]'
-                        onChange={async (e) => await handleChangeCourtCluster(e)}
+                        onChange={async (e) => {
+                            if (e) {
+                                await handleChangeCourtCluster({ value: e.value, label: e.label });
+                            }
+                        }}
                         isSearchable={true}
                     >
                     </Select>
                     <Select
-                        options={[{value: '', label: 'Reset'}, ...categoryStore.categoryOption]}
+                        options={[{ value: 0, label: 'Tất cả' }, ...categoryStore.categoryOption]}
                         placeholder="Thể loại"
                         className='w-56 p-2 rounded border-[0.5px solid #ADADAD] shadow-none hover:border-[0.5px solid #ADADAD]'
-                        onChange={async (e) => await handleChangeCategory(e)}
+                        onChange={async (e) => {
+                            if (e) {
+                                await handleChangeCategory({ value: e.value, label: e.label });
+                            }
+                        }}
                         isSearchable={true}
                     >
                     </Select>
@@ -123,7 +131,7 @@ const ProductPage = observer(() => {
                 </Flex>
 
                 <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
-                    <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending}/>
+                    <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
                     {/* <Button
             colorScheme="teal"
             variant={'outline'}
@@ -138,17 +146,17 @@ const ProductPage = observer(() => {
                     <ButtonPrimaryAtoms
                         className="bg-primary-900"
                         handleOnClick={onOpen}
-                        loading={loadingInitial}
+                        loading={loadingCreate}
                         children={
                             <Center gap={1}>
-                                <PlusIcon color="white" height="1.5rem" width="1.5rem"/>
+                                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
                                 Thêm mới
                             </Center>
                         }
                     />
                 </Flex>
             </Flex>
-            <ProductTableComponent/>
+            <ProductTableComponent />
 
             <LoadMoreButtonAtoms
                 handleOnClick={() => {
@@ -158,7 +166,7 @@ const ProductPage = observer(() => {
                 hidden={productRegistry.size >= productPageParams.totalElement}
                 loading={loading}
             />
-            <CreateProductPage isOpen={isOpen} onClose={onClose}/>
+            <CreateProductPage isOpen={isOpen} onClose={onClose} />
         </>
     );
 });

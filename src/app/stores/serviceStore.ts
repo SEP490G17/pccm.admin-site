@@ -44,6 +44,7 @@ export default class ServiceStore {
       this.loading = false;
     });
   };
+
   //#endregion
 
   createService = async (service: ServiceDTO) => {
@@ -142,6 +143,17 @@ export default class ServiceStore {
   };
 
   setSearchTerm = async (term: string) => {
+    this.loadingInitial = true;
+    this.serviceRegistry.clear();
+    this.servicePageParams.clearLazyPage();
+    this.servicePageParams.searchTerm = term;
+    await this.loadServices();
+    runInAction(() => {
+      this.loadingInitial = false;
+    });
+  };
+
+  setFilterTerm = async (term: string) => {
     this.loadingInitial = true;
     this.serviceRegistry.clear();
     this.servicePageParams.clearLazyPage();

@@ -2,8 +2,7 @@ import { useStore } from '@/app/stores/store';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import {
   Box,
-  Center,
-  IconButton,
+  Flex,
   Spinner,
   Switch,
   Table,
@@ -16,12 +15,11 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import { getBannerStatus } from '@/app/models/banner.model';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import UpdateBannerPage from '../UpdateBannerPage';
-import { FaEdit } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
+import EditButtonAtom from '@/app/common/form/EditButtonAtom';
 
 const BannerTableComponent = observer(() => {
 
@@ -32,6 +30,10 @@ const BannerTableComponent = observer(() => {
     onOpen();
     await bannerStore.detailBanner(id);
   }
+  const handleChangeStatus = async (id: number, currentStatus: number) => {
+    await bannerStore.changeStatus(id, currentStatus == 1 ? 0 : 1);
+  };
+
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -45,14 +47,13 @@ const BannerTableComponent = observer(() => {
               <Th w={'10rem'}>Tên banner</Th>
               <Th w={'10rem'}>Mô tả</Th>
               <Th w={'15rem'}>Khoảng ngày</Th>
-              <Th w={'10rem'}>Link</Th>
               <Th w={'8rem'}>Trạng thái</Th>
               <Th w={'10rem'}>Tùy chọn</Th>
             </Tr>
           </Thead>
           <Tbody>
             {loadingInitial && (
-              <SkeletonTableAtoms numOfColumn={7} pageSize={bannerPageParams.pageSize} />
+              <SkeletonTableAtoms numOfColumn={6} pageSize={bannerPageParams.pageSize} />
             )}
             {!loadingInitial &&
               bannerArray.map((banner, index) => (
@@ -66,42 +67,48 @@ const BannerTableComponent = observer(() => {
                       borderRadius={'8px'}
                     />
                   </Td>
-                  <Td>{banner.title}</Td>
-                  <Td>{banner.description}</Td>
+                  <Td><Box whiteSpace="normal" wordBreak="break-word" overflowWrap="break-word">
+                    {banner.title}
+                  </Box></Td>
+                  <Td>
+                    <Box whiteSpace="normal" wordBreak="break-word" overflowWrap="break-word">
+                      {banner.description}
+                    </Box>
+                  </Td>
                   <Td>
                     Từ ngày: {banner.startDate}
                     <br />
+                    <br />
                     Đến ngày: {banner.endDate}
                   </Td>
-                  <Td>{banner.linkUrl}</Td>
                   <Td>
-                    <Center>
-                      <Switch isChecked={getBannerStatus(banner.status)} />
-                    </Center>
+                    <Switch
+                      isChecked={banner.status == 1 ? true : false}
+                      isDisabled={bannerStore.isLoading(banner.id)}
+                      onChange={() => handleChangeStatus(banner.id, banner.status)} />
                   </Td>
                   <Td>
-                    <Center>
-                      <IconButton
-                        icon={<FaEdit />}
-                        aria-label="Edit"
-                        colorScheme="teal"
-                        size="sm"
-                        mr={2}
-                        onClick={() => handleOpenEdit(banner.id)}
+                    <Flex gap="3">
+                      <EditButtonAtom
+                        onDelete={async () => handleOpenEdit(banner.id)}
                       />
-                      <DeleteButtonAtom name={banner.title} loading={loading} header='Xóa banner' onDelete={async () => {
-                        try {
-                          await deleteBanner(banner.id).then(
-                            () => {
-                              toast.success("Xóa thành công")
-                            }
-                          );
-                        } catch (error) {
-                          console.error("Error deleting news:", error);
-                          toast.error("Xóa thất bại")
-                        }
-                      }} />
-                    </Center>
+
+                      <DeleteButtonAtom
+                        buttonSize="sm"
+                        name={banner.title}
+                        loading={loading}
+                        header='Xóa banner'
+                        buttonClassName="gap-2"
+                        onDelete={async () => {
+                          try {
+                            await deleteBanner(banner.id);
+                          } catch {
+                            toast.error("Xóa thất bại");
+                          }
+                        }}
+                      />
+                    </Flex>
+
                   </Td>
                 </Tr>
               ))}

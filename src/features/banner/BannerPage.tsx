@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Flex, Box, Select, useDisclosure } from '@chakra-ui/react';
+import { Button, Flex, Box, useDisclosure, Center } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -8,7 +8,8 @@ import CreateBannerPage from './CreateBannerPage';
 import { debounce } from 'lodash';
 import BannerTableComponent from './components/BannerTableComponent';
 import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
-import { FaEdit } from 'react-icons/fa';
+import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
+import PlusIcon from '../atoms/PlusIcon';
 
 const BannerPage = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -62,31 +63,17 @@ const BannerPage = observer(() => {
       <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách banner', to: '/banner' }]} />
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
-          <Select
-            width="149px"
-            height="35px"
-            borderRadius="4px"
-            border="1px solid #ADADAD"
-            bg="#FFF"
-            color="#03301F"
-          >
-            <option value="all">Tất cả</option>
-          </Select>
+          <ButtonPrimaryAtoms
+            className="bg-primary-900"
+            handleOnClick={onOpen}
+            children={
+              <Center gap={1}>
+                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+                Thêm mới
+              </Center>
+            }
+          />
 
-          <Button
-            colorScheme="teal"
-            size="md"
-            leftIcon={<FaEdit />}
-            width="149px"
-            height="35px"
-            background="#FFF"
-            color="black"
-            border="1px solid #ADADAD"
-            onClick={onOpen}
-          >
-            Thêm mới
-          </Button>
-          
         </Flex>
 
         <Box textAlign="right">
@@ -109,7 +96,7 @@ const BannerPage = observer(() => {
           </Button>
         </Flex>
       )}
-      <CreateBannerPage isOpen={isOpen} onClose={onClose}/>
+      <CreateBannerPage isOpen={isOpen} onClose={onClose} />
     </>
   );
 });
