@@ -1,4 +1,4 @@
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Divider, Image } from '@chakra-ui/react';
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Image } from '@chakra-ui/react';
 import React from 'react';
 import arrowRight from '@/assets/arrow-rignt.svg';
 import { Link, useLocation } from 'react-router-dom';

@@ -19,12 +19,20 @@ import { StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
 import { Staff } from '../models/staff.model';
-import { DataExpend, DataTop, DataTotal, FilterData, FilterDataDTO } from '../models/filter.model';
+import {
+  DataExpend,
+  DataTop,
+  DataTotal,
+  FilterData,
+  FilterDataDTO,
+} from '../models/statistic.model';
 import {
   CourtClusterStatisticDetails,
+  ExpenseDetailsDTO,
+  ExpenseDto,
   FilterCourtClusterStatisticDetailsDTO,
-} from '../models/details.models';
-import { BookingCreate, BookingModel } from '../models/booking.model';
+} from '../models/revenue.models';
+import { BookingCreate, BookingModel, BookingRecent } from '../models/booking.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -87,7 +95,6 @@ const requests = {
   post: <T>(url: string, body: object) => axios.post<T>(url, body).then(responseBody),
   put: <T>(url: string, body: object) => axios.put<T>(url, body).then(responseBody),
   del: <T>(url: string) => axios.delete<T>(url).then(responseBody),
-  filter: <T>(url: string) => axios.get<T>(url).then(responseBody),
 };
 
 const NewsAgent = {
@@ -122,7 +129,7 @@ const Services = {
 
 const Statistic = {
   getincome: (filterData: FilterDataDTO): Promise<FilterData[]> =>
-    requests.filter(
+    requests.get(
       `/statistic/?Year=${filterData.year}&Month=${filterData.month}&CourtClusterId=${filterData.courtClusterId}`,
     ),
   years: (): Promise<number[]> => requests.get(`/statistic/years`),
@@ -131,17 +138,23 @@ const Statistic = {
     requests.get(`/statistic/ExpendStatistics?month=${filterData.month}&year=${filterData.year}`),
   top: (filterData: FilterDataDTO): Promise<DataTop> =>
     requests.get(`/statistic/TopStatistics?month=${filterData.month}&year=${filterData.year}`),
+  bookingRecent: (): Promise<BookingRecent[]> => requests.get(`/statistic/BookingRecently`),
 };
 
 const Revenue = {
   getrevenue: (
     filterData: FilterCourtClusterStatisticDetailsDTO,
   ): Promise<CourtClusterStatisticDetails> =>
-    requests.filter(
+    requests.get(
       `/statistic/ClusterStatistics?date=${filterData.date}&clusterId=${filterData.courtClusterId}`,
     ),
   years: (): Promise<number[]> => requests.get(`/statistic/years`),
   count: (): Promise<DataTotal> => requests.get(`/statistic/count`),
+  saveExpense: (data: ExpenseDetailsDTO): Promise<ExpenseDto> => requests.post(`/statistic`, data),
+  exportExcel: (filterData: FilterCourtClusterStatisticDetailsDTO): Promise<any> =>
+    requests.get(
+      `/statistic/ExportExcel?date=${filterData.date}&clusterId=${filterData.courtClusterId}`,
+    ),
 };
 
 const StaffPositions = {

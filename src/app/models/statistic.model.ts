@@ -9,10 +9,11 @@ export interface FilterData {
 }
 
 export interface DataTotal {
-  totalCourtClusters: string;
-  totalCourts: number;
-  totalUsers: number;
-  totalStaff: number;
+  newUser: string;
+  totalBookingToday: number;
+  totalBookingMonth: number;
+  productInMonth: number;
+  serviceInMonth: number;
 }
 
 export interface DataExpend {
