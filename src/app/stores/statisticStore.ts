@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
-import { DataExpend, DataTop, DataTotal, FilterData, FilterDataDTO } from '../models/filter.model';
+import { DataExpend, DataTop, DataTotal, FilterData, FilterDataDTO } from '../models/statistic.model';
+import { BookingRecent } from '../models/booking.model';
 
 export default class StatisticStore {
   loadingData: boolean = false;
@@ -11,6 +12,7 @@ export default class StatisticStore {
   dataTop: DataTop | undefined = undefined;
   dataExpense: DataExpend | undefined = undefined;
   loadingDataTotal: boolean = false;
+  bookingRecent: BookingRecent[] | undefined = undefined;
 
   constructor() {
     makeAutoObservable(this);
@@ -85,6 +87,19 @@ export default class StatisticStore {
     await runInAction(async () => {
       try {
         this.dataTop = await agent.Statistic.top(filterData);
+      } catch (error) {
+        console.error('Failed to load total data:', error);
+      } finally {
+        this.loadingDataTotal = false;
+      }
+    });
+  };
+
+  getBookingRecent = async () => {
+    this.loadingDataTotal = true;
+    await runInAction(async () => {
+      try {
+        this.bookingRecent = await agent.Statistic.bookingRecent();
       } catch (error) {
         console.error('Failed to load total data:', error);
       } finally {
