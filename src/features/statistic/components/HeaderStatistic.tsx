@@ -1,5 +1,10 @@
-import { DataTotal } from '@/app/models/filter.model'
+import { DataTotal } from '@/app/models/statistic.model'
 import { Box, Flex, FormControl, Text } from '@chakra-ui/react'
+import ContentSidebar from './ContentSideBar'
+import './style.scss'
+import { HiMiniShoppingCart } from "react-icons/hi2";
+import { FaUser } from "react-icons/fa";
+import { AiFillProduct } from "react-icons/ai";
 
 interface IProps {
     data: DataTotal | undefined
@@ -8,71 +13,79 @@ interface IProps {
 const HeaderStatistic = ({ data }: IProps) => {
     return (
         <FormControl>
-            <Flex alignItems="center" gap={5} padding={4} borderRadius="md">
-                <Flex gap={4} width="100%" justifyContent="space-around">
+            <Flex alignItems="center" margin='20px 0'>
+                <Flex width="100%" justifyContent="space-between">
                     <Box
-                        width="15rem"
+                        width="23rem"
                         border="1px solid #e2e8f0"
                         boxShadow="sm"
-                        borderRadius="md"
+                        borderRadius={'10px'}
                         padding={4}
                         display="flex"
                         flexDirection="column"
                         alignItems="center"
                         justifyContent="center"
-                        backgroundColor="white"
+                        backgroundColor={'#1acd81'}
                     >
-                        <Text fontWeight="bold" fontSize="larger" color="gray.700">SỐ CỤM SÂN</Text>
-                        <Text fontSize="xl" fontWeight="bold" color="blue.500">{data?.totalCourtClusters}</Text>
+                        <Flex alignItems="center" justifyContent="space-between" width="90%">
+                            <Box width={'30%'}>
+                                <FaUser className='icon-card' />
+                            </Box>
+                            <Box width={'60%'}>
+                                <Text fontSize="50px" color="white" textAlign={'right'}>{data?.newUser}</Text>
+                                <Text fontSize="18px" color="white" marginTop={'-15px'} textAlign={'right'}>Người dùng mới</Text>
+                            </Box>
+                        </Flex>
+
                     </Box>
 
                     <Box
-                        width="15rem"
+                        width="23rem"
                         border="1px solid #e2e8f0"
                         boxShadow="sm"
-                        borderRadius="md"
+                        borderRadius={'10px'}
                         padding={4}
                         display="flex"
                         flexDirection="column"
                         alignItems="center"
                         justifyContent="center"
-                        backgroundColor="white"
+                        backgroundColor={'#119fe6'}
                     >
-                        <Text fontWeight="bold" fontSize="larger" color="gray.700">SỐ SÂN</Text>
-                        <Text fontSize="xl" fontWeight="bold" color="red.500">{data?.totalCourts}</Text>
+                        <Flex alignItems="center" justifyContent="space-between" width="90%">
+                            <Box width={'30%'}>
+                                <HiMiniShoppingCart className='icon-card' />
+                            </Box>
+                            <Box width={'60%'}>
+                                <Text fontSize="50px" color="white" textAlign={'right'}>{data?.productInMonth}</Text>
+                                <Text fontSize="18px" color="white" marginTop={'-15px'} textAlign={'right'}>Hàng hóa đã bán</Text>
+                            </Box>
+                        </Flex>
+
                     </Box>
 
                     <Box
-                        width="15rem"
+                        width="23rem"
                         border="1px solid #e2e8f0"
                         boxShadow="sm"
-                        borderRadius="md"
+                        borderRadius={'10px'}
                         padding={4}
                         display="flex"
                         flexDirection="column"
                         alignItems="center"
                         justifyContent="center"
-                        backgroundColor="white"
+                        backgroundColor={'yellow.500'}
                     >
-                        <Text fontWeight="bold" fontSize="larger" color="gray.700">SỐ NGƯỜI DÙNG</Text>
-                        <Text fontSize="xl" fontWeight="bold" color="green.500">{data?.totalUsers}</Text>
+                        <Flex alignItems="center" justifyContent="space-between" width="90%">
+                            <Box width={'30%'}>
+                                <AiFillProduct className='icon-card' />
+                            </Box>
+                            <Box width={'60%'}>
+                                <Text fontSize="50px" color="white" textAlign={'right'}>{data?.serviceInMonth}</Text>
+                                <Text fontSize="18px" color="white" marginTop={'-15px'} textAlign={'right'}>Dịch vụ đã bán</Text>
+                            </Box>
+                        </Flex>
                     </Box>
-
-                    <Box
-                        width="15rem"
-                        border="1px solid #e2e8f0"
-                        boxShadow="sm"
-                        borderRadius="md"
-                        padding={4}
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        justifyContent="center"
-                        backgroundColor="white"
-                    >
-                        <Text fontWeight="bold" fontSize="larger" color="gray.700">SỐ STAFF</Text>
-                        <Text fontSize="xl" fontWeight="bold" color="purple.500">{data?.totalStaff}</Text>
-                    </Box>
+                    <ContentSidebar data={data}></ContentSidebar>
                 </Flex>
             </Flex>
         </FormControl>

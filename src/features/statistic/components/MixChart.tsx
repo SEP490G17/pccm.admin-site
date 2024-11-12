@@ -22,6 +22,7 @@ const MixedChart = ({ data, labelLeft, labelRight, text }: IProps) => {
                     display: true,
                     text: labelLeft,
                 },
+                suggestedMax: Math.max(...data.datasets[0].data.filter(item => typeof item === 'number')) * 1.3,
             },
             y2: {
                 type: 'linear',
@@ -34,6 +35,7 @@ const MixedChart = ({ data, labelLeft, labelRight, text }: IProps) => {
                 grid: {
                     drawOnChartArea: false,
                 },
+                suggestedMax: Math.max(...data.datasets[1].data.filter(item => typeof item === 'number')) * 1.3,
             },
             x: {
                 title: {
@@ -43,8 +45,10 @@ const MixedChart = ({ data, labelLeft, labelRight, text }: IProps) => {
             },
         },
     };
+    
 
-    return <Chart type="bar" data={data} options={options} />;
+
+    return <Chart height={'170%'} type="bar" data={data} options={options} />;
 };
 
 export default MixedChart;
