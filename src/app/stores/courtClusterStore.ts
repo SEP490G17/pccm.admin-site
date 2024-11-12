@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { PaginationModel } from '@/app/models/pagination.model.ts';
 import { Product } from '@/app/models/product.model.ts';
 import { Service } from '@/app/models/service.model.ts';
+import { CourtClusterMessage, CourtMessage } from '../common/toastMessage';
 
 export default class CourtClusterStore {
   //registry
@@ -39,13 +40,13 @@ export default class CourtClusterStore {
   }
 
   //#region Court
-  loadCourtOfCluster = async (id: number) => {
+  loadCourtOfCluster = async (id: number, chakraToast:any) => {
     if (id) {
       this.loadingCourt = true;
       const [error, res] = await catchErrorHandle(agent.CourtAgent.list(id));
       runInAction(() => {
         if (error) {
-          toast.error('Lấy danh sách dịch vụ của sân thất bại');
+          chakraToast(CourtMessage.loadCourtOfCourtClusterFail);
         }
         if (res) {
           res.forEach(this.setCourt);
@@ -59,7 +60,7 @@ export default class CourtClusterStore {
     this.courtOfClusterRegistry.set(court.courtId, court);
   };
 
-  get courtOfClusterArray (){
+  get courtOfClusterArray() {
     return Array.from(this.courtOfClusterRegistry.values());
   }
   //#endRegion
@@ -146,14 +147,14 @@ export default class CourtClusterStore {
   };
   // 2. Get Details court cluster for admin
 
-  getDetailsCourtCluster = async (id: string) => {
+  getDetailsCourtCluster = async (id: string, chakraToast: any) => {
     this.loadingInitialDetailsPage = true;
     const [error, response] = await catchErrorHandle<CourtCluster>(
       agent.CourtClusterAgent.details(id),
     );
     runInAction(() => {
       if (error) {
-        toast.error('Tải thông tin cụm sân thất bại');
+        chakraToast(CourtClusterMessage.loadDetailsFail);
       } else {
         this.selectedCourt = response;
       }

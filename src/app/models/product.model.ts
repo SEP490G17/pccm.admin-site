@@ -6,8 +6,8 @@ export interface Product {
   categoryName: string;
   courtClusterName: string;
   quantity: number;
-  priceBuy: number;
-  priceSell: number;
+  importFee: number;
+  price: number;
 }
 
 export class ProductInput {

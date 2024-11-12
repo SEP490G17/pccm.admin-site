@@ -24,6 +24,7 @@
     "antd-img-crop": "^4.23.0",
     "axios": "^1.7.7",
     "chart.js": "^4.4.5",
+    "dayjs-plugin-utc": "^0.1.2",
     "formik": "^2.4.6",
     "framer-motion": "^11.11.1",
     "mobx": "^6.13.5",

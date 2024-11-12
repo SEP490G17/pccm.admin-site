@@ -1,24 +1,25 @@
-import { createContext, useContext } from "react";
-import CommonStore from "./commonStore";
-import AuthStore from "./authStore";
-import NewsStore from "./newsStore";
-import BannerStore from "./bannerStore"; 
-import CourtClusterStore from "./courtClusterStore.ts";
-import ProductStore from "./productStore"
-import ServiceStore from "./serviceStore";
-import StaffStore from "./staffStore";
-import UserStore from "./userStore";
-import StaffPositionStore from "./staffPositionStore";
-import UploadStore from "./uploadStore";
-import CategoryStore from "./categoryStore";
+import { createContext, useContext } from 'react';
+import CommonStore from './commonStore';
+import AuthStore from './authStore';
+import NewsStore from './newsStore';
+import BannerStore from './bannerStore';
+import CourtClusterStore from './courtClusterStore.ts';
+import ProductStore from './productStore';
+import ServiceStore from './serviceStore';
+import StaffStore from './staffStore';
+import UserStore from './userStore';
+import StaffPositionStore from './staffPositionStore';
+import UploadStore from './uploadStore';
+import CategoryStore from './categoryStore';
 import StatisticStore from './statisticStore';
 import revenueStore from './revenueStore';
+import BookingStore from './bookingStore.ts';
 
 interface Store {
   commonStore: CommonStore;
   authStore: AuthStore;
   newsStore: NewsStore;
-  bannerStore: BannerStore; 
+  bannerStore: BannerStore;
   courtClusterStore: CourtClusterStore;
   productStore: ProductStore;
   serviceStore: ServiceStore;
@@ -29,6 +30,7 @@ interface Store {
   categoryStore: CategoryStore;
   statisticStore: StatisticStore;
   revenueStore: revenueStore;
+  bookingStore: BookingStore;
 }
 
 export const store: Store = {
@@ -46,6 +48,7 @@ export const store: Store = {
   categoryStore: new CategoryStore(), // add more stores as needed
   statisticStore: new StatisticStore(),
   revenueStore: new revenueStore(),
+  bookingStore: new BookingStore(),
 };
 
 export const StoreContext = createContext(store);

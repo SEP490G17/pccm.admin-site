@@ -4,7 +4,7 @@ import {useEffect} from "react";
 
 import {useParams} from "react-router-dom";
 import CourtPageHeader from "@/features/court-cluster/components/CourtPageHeader.tsx";
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
+import { Tabs, TabList, TabPanels, Tab, TabPanel, useToast } from '@chakra-ui/react'
 import CourtClusterDescriptionTab from "@/features/court-cluster/CourtClusterDescriptionTab.tsx";
 import CourtClusterProductsTab from "@/features/court-cluster/CourtClusterProductsTab.tsx";
 import CourtClusterServicesTab from "@/features/court-cluster/CourtClusterServicesTab.tsx";
@@ -13,11 +13,11 @@ import CourtClusterBookingTab from '@/features/court-cluster/CourtClusterBooking
 const CourtClusterDetailsPage = observer(() => {
     const {courtClusterStore} = useStore();
     const {getDetailsCourtCluster, selectedTabs, setSelectedTab} = courtClusterStore;
-
+    const chakraToast = useToast();
     const {id} = useParams();
     useEffect(() => {
         if (id) {
-            getDetailsCourtCluster(id).finally();
+            getDetailsCourtCluster(id,chakraToast).finally();
         }
     }, [id,getDetailsCourtCluster])
 

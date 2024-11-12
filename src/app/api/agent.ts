@@ -24,6 +24,7 @@ import {
   CourtClusterStatisticDetails,
   FilterCourtClusterStatisticDetailsDTO,
 } from '../models/details.models';
+import { BookingCreate, BookingModel } from '../models/booking.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -194,6 +195,10 @@ const Staffs = {
   list: (): Promise<PaginationModel<Staff>> => requests.get('/staff'),
 };
 
+const BookingAgent = {
+  create:(booking:BookingCreate) => requests.post<BookingModel>('/booking/v2', booking),
+  getList:(): Promise<PaginationModel<BookingModel>> => requests.get('/booking/v1'),
+}
 const agent = {
   requests,
   Account,
@@ -210,7 +215,8 @@ const agent = {
   Categories,
   Statistic,
   Revenue,
-  CourtAgent
+  CourtAgent,
+  BookingAgent
 };
 
 export default agent;

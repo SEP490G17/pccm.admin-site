@@ -16,35 +16,33 @@ import { Heading, useToast } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
+import { BookingCreate } from '@/app/models/booking.model';
+import { PaymentStatus } from '@/app/models/payment.model';
 interface IProps {
   courtClusterId: number;
 }
 const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
   const toast = useToast();
   const fields = {
-    subject: {
-      name: 'Subject',
+    phoneNumber: {
+      name: 'phoneNumber',
       validation: { required: true, minLength: 10, number: true },
       default: '0865869202',
     },
-    startTime: { name: 'StartTime', validation: { required: true } },
-    endTime: { name: 'EndTime', validation: { required: true } },
+    startTime: { name: 'startTime', validation: { required: true } },
+    endTime: { name: 'endTime', validation: { required: true } },
     courtId: { name: 'courtId', validation: { required: true } },
+    recurrence: { name: 'recurrence', validation: { required: true } },
+    fullName: { name: 'fullName', validation: { required: true } },
   };
-  const { courtClusterStore } = useStore();
+  const { courtClusterStore, bookingStore } = useStore();
   const { courtOfClusterArray, loadCourtOfCluster, loadingCourt } = courtClusterStore;
- 
-  const courts = [
-    { courtId: 1, courtName: 'Sân 1' },
-    { courtId: 2, courtName: 'Sân 2' },
-    { courtId: 3, courtName: 'Sân 3' },
-  ];
+  const { bookingArray, createBooking, loadingBooking: loading} =bookingStore;
   useEffect(() => {
-    loadCourtOfCluster(courtClusterId);
-  },[courtClusterId]);
+    loadCourtOfCluster(courtClusterId, toast);
+    bookingStore.loadBooking(toast);
+  }, [courtClusterId]);
 
-
- 
   const group = { resources: ['courts'] };
   const schedule = useRef<ScheduleComponent>(null);
   L10n.load({
@@ -56,7 +54,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
       },
     },
   });
-  const handleActionBegin = (args: any) => {
+  const handleActionBegin = async (args: any) => {
     const currentTime = new Date();
     if (
       (args.requestType === 'eventCreate' || args.requestType === 'eventChange') &&
@@ -102,6 +100,67 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
           });
           return;
         }
+        if (args.data[0].Recurrence) {
+          switch (args.data[0].Recurrence) {
+            case 1: {
+              const until = dayjs(endDate).add(1, 'month').format('YYYYMMDDTHHmmss[Z]');
+              args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};` ;
+              args.data[0].untilTime = until.toString();
+              break;
+            }
+            case 2: {
+              const until = dayjs(endDate).add(3, 'month').format('YYYYMMDDTHHmmss[Z]');
+              args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};` ;
+              args.data[0].untilTime = until.toString();
+              break;
+            }
+            case 3: {
+              const until = dayjs(endDate).add(12, 'month').format('YYYYMMDDTHHmmss[Z]');
+              args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};` ;
+              args.data[0].untilTime = until.toString();
+              break;
+            }
+          }
+        }
+        args.data[0].paymentStatus = 'pending';
+        const bookingPost: BookingCreate = {
+          FullName: eventData.fullName,
+          CourtId: eventData.courtId,
+          StartTime: eventData.startTime,
+          EndTime: eventData.endTime,
+          PhoneNumber: eventData.phoneNumber,
+          RecurrenceRule: eventData.RecurrenceRule ?? '',
+          UntilTime: eventData.untilTime ?? null,
+        };
+
+        args.cancel = true;
+
+        const pendingToast = toast({
+          title: 'Đang sư lý',
+          description: 'Đợi một chút',
+          status: 'loading',
+        });
+        await createBooking(bookingPost)
+          .then(() => {
+            toast.close(pendingToast);
+            toast({
+              title: 'Đặt lịch thành công',
+              description: 'Lịch đã được đặt thành công',
+              status: 'success',
+              duration: 5000,
+              isClosable: true,
+            });
+          })
+          .catch(() => {
+            toast({
+              title: 'Đặt lịch thất bại',
+              description: 'Đã xảy ra l��i khi đặt lịch',
+              status: 'error',
+              duration: 5000,
+              isClosable: true,
+            });
+            args.cancel = true;
+          });
       }
     }
   };
@@ -120,27 +179,25 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
   };
   const handleEventRendered = (args: any) => {
     const paymentStatus = args.data.paymentStatus;
-
+    const isComplete = args.data.isSuccess;
     // Apply color class based on paymentStatus
-    if (paymentStatus === 'paid') {
-      args.element.classList.add('paid-event');
-    } else if (paymentStatus === 'pending') {
-      args.element.classList.add('pending-event');
-    } else if (paymentStatus === 'unpaid') {
-      args.element.classList.add('unpaid-event');
+    if (Number(paymentStatus) == PaymentStatus.Pending) {
+      args.element.classList.add('pending-payment');
+    }
+
+    if (isComplete) {
+      args.element.classList.add('booking-complete');
     }
   };
-  if(loadingCourt || !courtOfClusterArray){
-    return <div>Loading...</div>
+  if (loadingCourt || !courtOfClusterArray || loading) {
+    return <div>Loading...</div>;
   }
-
-  console.log('store',courtOfClusterArray);
-  console.log('mock',courts);
   return (
     <>
       <Heading size={'lg'} className="my-4">
         Lịch đặt
       </Heading>
+
       <ScheduleComponent
         ref={schedule}
         group={group}
@@ -150,34 +207,21 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         startHour="05:00"
         endHour="23:00"
         timezone="Asia/Bangkok"
-        editorTemplate={BookingEditorTemplateComponent}
+        editorTemplate={(props: any) => (
+          <BookingEditorTemplateComponent
+            {...props}
+            courtOfClusterArray={courtOfClusterArray} // Truyền dataSource vào editor template
+          />
+        )}
         cssClass="schedule-cell-dimension"
         eventRendered={handleEventRendered}
         eventSettings={{
           fields: fields,
-          dataSource: [
-            {
-              Subject: '0865869202',
-              StartTime: '2024-11-07T01:00:00.000Z',
-              EndTime: '2024-11-07T02:00:00.000Z',
-              courtId: 1,
-              courtClusterId: 1,
-              RecurrenceRule: 'FREQ=DAILY;INTERVAL=1;UNTIL=20241206T161902Z;',
-              paymentStatus: 'pending',
-            },
-            {
-              Subject: '0865869202',
-              StartTime: '2024-11-07T02:00:00.000Z',
-              EndTime: '2024-11-07T03:00:00.000Z',
-              courtId: 1,
-              RecurrenceRule: 'FREQ=DAILY;INTERVAL=1;UNTIL=20250106T000649Z;',
-              paymentStatus: 'paid',
-            },
-          ],
+          dataSource: bookingArray,
         }}
         rowAutoHeight={true}
         quickInfoOnSelectionEnd={true}
-        actionBegin={handleActionBegin} // Đảm bảo hàm hành động
+        actionBegin={async (prop: any) => await handleActionBegin(prop)} // Đảm bảo hàm hành động
         renderCell={handleRenderCell}
         enableAdaptiveUI={true}
       >
@@ -190,9 +234,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
             title="Sân"
             name="courts"
             allowMultiple={true}
-            dataSource={courtClusterStore.courtOfClusterArray
-              
-            }
+            dataSource={courtClusterStore.courtOfClusterArray}
             textField="courtName"
             idField="courtId"
           ></ResourceDirective>

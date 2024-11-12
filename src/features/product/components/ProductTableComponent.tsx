@@ -76,10 +76,10 @@ const ProductTableComponent = observer(() => {
                   <Td>{product.courtClusterName}</Td>
                   <Td>{product.quantity}</Td>
                   <Td>
-                    {product.priceSell.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                    {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                   </Td>
                   <Td>
-                    {product.priceBuy.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                    {product.importFee.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                   </Td>
                   <Td>
                     <Center>

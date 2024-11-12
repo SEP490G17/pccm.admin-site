@@ -235,14 +235,11 @@ button.primary.outlined {
 /* csslint ignore:end */
 
 /* Define colors for each payment status */
-.paid-event {
+.booking-complete {
   background-color: #4CAF50 !important; /* Green for paid */
 }
-.pending-event {
-  background-color: #FFC107 !important; /* Yellow for pending */
-}
-.unpaid-event {
-  background-color: #F44336 !important; /* Red for unpaid */
+.pending-payment {
+  background-color: $secondaryColor500 !important; /* Yellow for pending */
 }
 
 

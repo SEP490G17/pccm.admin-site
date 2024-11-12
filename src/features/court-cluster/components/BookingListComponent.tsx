@@ -1,5 +1,5 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
-import BookingAcceptedComponent from './BookingAcceptComponent';
+import BookingTodayComponent from './BookingTodayComponent';
 
 const BookingListComponent = () => {
   return (
@@ -7,18 +7,18 @@ const BookingListComponent = () => {
       <Tabs isFitted variant={'line'} mt={4} colorScheme={'green'} bg={'white'} borderRadius={'md'}>
         <TabList>
           <Tab _selected={{ color: 'white', bg: 'teal.600' }} borderTopLeftRadius={'md'}>
-            Đơn ngày
+            Đơn hôm nay
           </Tab>
-          <Tab _selected={{ color: 'white', bg: 'teal.600' }}>Đơn theo tháng</Tab>
           <Tab _selected={{ color: 'white', bg: 'teal.600' }}>Chờ duyệt</Tab>
+          <Tab _selected={{ color: 'white', bg: 'teal.600' }}>Đơn đã huỷ</Tab>
           <Tab _selected={{ color: 'white', bg: 'teal.600' }} borderTopRightRadius={'md'}>
-            Đơn huỷ
+            Tất cả
           </Tab>
         </TabList>
 
         <TabPanels minHeight={'50rem'} className="">
           <TabPanel>
-            <BookingAcceptedComponent />
+            <BookingTodayComponent />
           </TabPanel>
           <TabPanel></TabPanel>
           <TabPanel></TabPanel>

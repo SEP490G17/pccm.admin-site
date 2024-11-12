@@ -1,4 +1,4 @@
-import { ToastContainer } from 'react-toastify';
+import { Slide, ToastContainer } from 'react-toastify';
 import { Outlet } from 'react-router-dom';
 import { Box, Button, Center, Flex, Spacer, Text } from '@chakra-ui/react';
 import Header from './Header';
@@ -14,7 +14,7 @@ registerLicense(
 
   return (
     <>
-      <ToastContainer position="top-right" hideProgressBar theme="colored" />
+      <ToastContainer position="bottom-center" hideProgressBar theme="colored" transition={Slide}/>
       <Box
         color="blackAlpha.700"
         p={0}
