@@ -59,13 +59,13 @@ const UpdateServicePage = ({ isOpen, onClose }: IProp) => {
                                         service_name: selectedService?.serviceName,
                                         description: selectedService?.description,
                                         price: selectedService?.price,
-                                        courtclusters: [selectedService?.courtClusterId],
+                                        courtclusters: selectedService?.courtClusterId ? [selectedService.courtClusterId] : [],
                                     }}
                                     onSubmit={async (values) => {
                                         console.log(values)
                                         const service = new ServiceEditDTO({
                                             id: selectedService?.id,
-                                            courtClusterId: values.courtclusters[0],
+                                            courtClusterId: values.courtclusters,
                                             serviceName: values.service_name,
                                             description: values.description,
                                             price: values.price,
