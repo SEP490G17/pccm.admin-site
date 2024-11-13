@@ -159,8 +159,9 @@ const StatisticPage = observer(() => {
                         }
                     )
                     await Promise.all([loadDataFilter(dataFilter),
-                    statisticStore.loadExpense(dataFilter),
-                    statisticStore.loadTop(dataFilter)])
+                        // statisticStore.loadExpense(dataFilter),
+                        // statisticStore.loadTop(dataFilter)
+                    ])
                 }
                 }
             >
@@ -204,7 +205,7 @@ const StatisticPage = observer(() => {
 
                             <FormControl mt={10}>
 
-                                <Flex gap={10} width={'100%'} justifyContent={'space-between'}>
+                                <Flex gap={10} justifyContent={'space-between'}>
 
                                     <Box
                                         width={'70%'}
@@ -219,11 +220,14 @@ const StatisticPage = observer(() => {
                                         </Skeleton>
                                     </Box>
                                     <Box
-                                        width={'30%'}
+                                        width={'30rem'}
                                         backgroundColor={'white'}
                                         padding={5}
                                     >
-                                        <OrderActivity data={bookingRecent} />
+                                        <Skeleton height={'100%'} isLoaded={!statisticStore.loadingBookingRecent}>
+                                            <OrderActivity data={bookingRecent} />
+                                        </Skeleton>
+
                                     </Box>
                                 </Flex>
                                 {/* <Flex gap="4" direction="row">

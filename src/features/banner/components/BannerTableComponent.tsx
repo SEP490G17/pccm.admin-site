@@ -20,6 +20,7 @@ import UpdateBannerPage from '../UpdateBannerPage';
 import { toast } from 'react-toastify';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
 import EditButtonAtom from '@/app/common/form/EditButtonAtom';
+import { useEffect, useMemo, useState } from 'react';
 
 const BannerTableComponent = observer(() => {
 
@@ -30,8 +31,41 @@ const BannerTableComponent = observer(() => {
     onOpen();
     await bannerStore.detailBanner(id);
   }
+  const [localStatuses, setLocalStatuses] = useState<LocalStatuses>({});
+  interface LocalStatuses {
+    [key: number]: number;
+  }
+
+  useMemo(() => {
+    return bannerArray.reduce((acc, banner) => {
+      acc[banner.id] = banner.status;
+      return acc;
+    }, {} as LocalStatuses);
+  }, [bannerArray]);
+
+  useEffect(() => {
+    setLocalStatuses(prevStatuses => {
+      const bannerStatuses = { ...prevStatuses };
+      for (const banner of bannerArray) {
+        if (!(banner.id in prevStatuses)) {
+          bannerStatuses[banner.id] = banner.status;
+        }
+      }
+      return bannerStatuses;
+    });
+  }, [bannerArray]);
+
   const handleChangeStatus = async (id: number, currentStatus: number) => {
-    await bannerStore.changeStatus(id, currentStatus == 1 ? 0 : 1);
+    const bannerStatus = currentStatus === 1 ? 0 : 1;
+    setLocalStatuses(prevStatuses => ({ ...prevStatuses, [id]: bannerStatus }));
+
+    try {
+      await bannerStore.changeStatus(id, bannerStatus);
+    } catch (error) {
+      setLocalStatuses(prevStatuses => ({ ...prevStatuses, [id]: currentStatus }));
+      toast.error("Cập nhật trạng thái thất bại");
+      console.error('Failed to update status:', error);
+    }
   };
 
   return (
@@ -83,9 +117,12 @@ const BannerTableComponent = observer(() => {
                   </Td>
                   <Td>
                     <Switch
-                      isChecked={banner.status == 1 ? true : false}
+                      isChecked={localStatuses[banner.id] === 1}
                       isDisabled={bannerStore.isLoading(banner.id)}
-                      onChange={() => handleChangeStatus(banner.id, banner.status)} />
+                      onChange={() => {
+                        handleChangeStatus(banner.id, localStatuses[banner.id])
+                      }}
+                    />
                   </Td>
                   <Td>
                     <Flex gap="3">

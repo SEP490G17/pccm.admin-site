@@ -11,13 +11,13 @@ export interface Product {
 }
 
 export class ProductInput {
-  categoryId: number|2  = 2;
+  categoryId: number | 2 = 2;
   courtClusterId: number | 2 = 2;
   productName: string = '';
   description: string = '';
   quantity: number | '' = '';
-  priceSell: number | '' = '';
-  priceBuy: number | '' = '';
+  price: number | '' = '';
+  importFee: number | '' = '';
   thumbnailUrl: string = '';
 
   constructor(data?: Partial<ProductInput>) {

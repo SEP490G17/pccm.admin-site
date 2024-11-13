@@ -32,11 +32,11 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
   const validationSchema = Yup.object().shape({
     productName: Yup.string().required('Tên sản phẩm không được bỏ trống'),
     quantity: Yup.number().required('Số lượng không được bỏ trống'),
-    priceBuy: Yup.number()
+    price: Yup.number()
       .typeError('Giá nhập phải là một số')
       .required('Giá nhập không được bỏ trống')
       .positive('Giá nhập phải là số dương'),
-    priceSell: Yup.number()
+    importFee: Yup.number()
       .typeError('Giá bán phải là một số')
       .required('Giá bán không được bỏ trống')
       .positive('Giá bán phải là số dương'),
@@ -72,8 +72,8 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                 initialValues={{
                   categoryId: selectedProduct.categoryId,
                   description: selectedProduct.description,
-                  priceSell: selectedProduct.priceSell,
-                  priceBuy: selectedProduct.priceBuy,
+                  importFee: selectedProduct.importFee,
+                  price: selectedProduct.price,
                   quantity: selectedProduct.quantity,
                   thumbnailUrl: selectedProduct.thumbnailUrl,
                   productName: selectedProduct.productName,
@@ -83,8 +83,8 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                   const product = new ProductInput({
                     categoryId: Number(values.categoryId),
                     description: values.description,
-                    priceBuy: values.priceBuy,
-                    priceSell: values.priceSell,
+                    price: values.price,
+                    importFee: values.importFee,
                     quantity: values.quantity,
                     productName: values.productName,
                     courtClusterId: Number(values.courtClusterId),
@@ -133,6 +133,7 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
 
                     <Flex className="items-start gap-4">
                       <NumberFieldAtom
+                        isDisabled={true}
                         isRequired={true}
                         label="Số lượng"
                         className="input_text"
@@ -140,17 +141,19 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                         placeholder="xxxxxxx"
                       />
                       <NumberFieldAtom
+                        isDisabled={true}
                         isRequired={true}
                         label="Giá bán"
                         className="input_text"
-                        name="priceSell"
+                        name="importFee"
                         placeholder="xxxxxxx"
                       />
                       <NumberFieldAtom
+                        isDisabled={true}
                         isRequired={true}
                         label="Giá nhập"
                         className="input_text"
-                        name="priceBuy"
+                        name="price"
                         placeholder="xxxxxxx"
                       />
                     </Flex>
