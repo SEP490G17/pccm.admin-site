@@ -24,7 +24,7 @@ export class ServiceDTO {
 
 export class ServiceEditDTO {
   id: number = 0;
-  courtClusterId: number = 0;
+  courtClusterId: number[] = [];
   serviceName: string = '';
   description: string = '';
   price: number = 0;
