@@ -116,7 +116,7 @@ const RevenuePage = observer(() => {
 
     const handleExportExcel = () => {
         const data = new FilterCourtClusterStatisticDetailsDTO({
-            courtClusterId: courtClusterListAllOptions[0].value,
+            courtClusterId: Number(selectedCourt),
             date: dayjs(selectedTime).format('YYYY-MM')
         });
         revenueStore.exportExcel(data);
@@ -132,6 +132,7 @@ const RevenuePage = observer(() => {
                 }}
                 enableReinitialize
                 onSubmit={async (values) => {
+                    setSelectedCourt(values.selectedCourt);
                     const data = new FilterCourtClusterStatisticDetailsDTO({
                         courtClusterId: Number.parseInt(values.selectedCourt),
                         date: values.timeSelected ? values.timeSelected.format('MM/YYYY') : ''
@@ -185,7 +186,7 @@ const RevenuePage = observer(() => {
                                                     <Th color="white" borderRight="1px solid #ddd">Số lượng</Th>
                                                     <Th color="white" borderRight="1px solid #ddd">Mã số</Th>
                                                     <Th color="white" borderRight="1px solid #ddd">Thành tiền</Th>
-                                                    <Th color="white" width="50px">
+                                                    <Th color="white" width="50px" textAlign={'center'}>
                                                         <Button colorScheme="green" onClick={handleExportExcel}>
                                                             <FaRegFileExcel />
                                                         </Button>

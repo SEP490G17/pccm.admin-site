@@ -20,6 +20,7 @@ import FileUploadFieldAtoms from '@/app/common/form/FileUploadFieldAtoms';
 import { useStore } from '@/app/stores/store';
 import { ProductInput } from '@/app/models/product.model';
 import SelectFieldAtoms from '@/app/common/form/SelectFieldAtoms';
+import { observer } from 'mobx-react';
 
 interface IProp {
   isOpen: boolean;
@@ -30,7 +31,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
   const validationSchema = Yup.object().shape({
     productName: Yup.string().required('Tên sản phẩm không được bỏ trống'),
     quantity: Yup.number().required('Số lượng không được bỏ trống').positive('Giá nhập phải là số dương'),
-    priceBuy: Yup.number()
+    importFee: Yup.number()
       .typeError('Giá nhập phải là một số')
       .required('Giá nhập không được bỏ trống')
       .positive('Giá nhập phải là số dương'),
@@ -40,8 +41,8 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
       .positive('Giá bán phải là số dương'),
     thumbnail: Yup.string().required('Ảnh không được bỏ trống'),
     description: Yup.string().required('Mô tả không được bỏ trống'),
-    category: Yup.number().required('Thể loại không được bỏ trống'),
-    courtCluster: Yup.number().required('Khu không được bỏ trống'),
+    categoryId: Yup.number().required('Thể loại không được bỏ trống'),
+    courtClusterId: Yup.number().required('Khu không được bỏ trống'),
   });
   const { categoryStore, courtClusterStore, productStore, uploadStore } = useStore();
   const { categoryOption } = categoryStore;
@@ -61,23 +62,23 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                 productName: '',
                 quantity: 1,
                 priceSell: 1,
-                priceBuy: 1,
+                importFee: 1,
                 thumbnail: '',
                 description: '',
-                category: categoryOption[0]?.value ?? 1,
-                courtCluster: courtClusterListAllOptions[0]?.value ?? 1,
+                categoryId: categoryOption[0]?.value ?? 1,
+                courtClusterId: courtClusterListAllOptions[0]?.value ?? 1,
               }}
               onSubmit={async (values) => {
                 const product = new ProductInput({
-                  categoryId: Number(values.category),
+                  categoryId: Number(values.categoryId),
                   description: values.description,
-                  priceSell: values.priceSell,
-                  priceBuy: values.priceBuy,
+                  price: values.priceSell,
+                  importFee: values.importFee,
                   quantity: values.quantity,
                   // thumbnail: values.thumbnail,
                   thumbnailUrl: values.thumbnail,
                   productName: values.productName,
-                  courtClusterId: Number(values.courtCluster)
+                  courtClusterId: Number(values.courtClusterId)
                 });
                 await productStore.createProduct(product);
                 onClose()
@@ -138,7 +139,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                       isRequired={true}
                       label="Giá nhập"
                       className="input_text"
-                      name="priceBuy"
+                      name="importFee"
                       placeholder="xxxxxxx"
                     />
                   </Flex>
@@ -179,4 +180,4 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
   );
 };
 
-export default CreateProductPage;
+export default observer(CreateProductPage);
