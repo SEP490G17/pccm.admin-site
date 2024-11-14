@@ -32,7 +32,15 @@ import {
   ExpenseDto,
   FilterCourtClusterStatisticDetailsDTO,
 } from '../models/revenue.models';
-import { BookingCreate, BookingModel, BookingRecent } from '../models/booking.model';
+import {
+  BookingCreate,
+  BookingDetails,
+  BookingForList,
+  BookingModel,
+  BookingRecent,
+} from '../models/booking.model';
+import { PaymentType } from '../models/payment.model';
+import { OrderCreate, OrderOfBooking } from '../models/order.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -209,9 +217,22 @@ const Staffs = {
 };
 
 const BookingAgent = {
-  create:(booking:BookingCreate) => requests.post<BookingModel>('/booking/v2', booking),
-  getList:(): Promise<PaginationModel<BookingModel>> => requests.get('/booking/v1'),
-}
+  create: (booking: BookingCreate) => requests.post<BookingModel>('/booking/v2', booking),
+  getListForSchedule: (courtClusterId: number): Promise<BookingModel[]> =>
+    requests.get('/booking/v1?courtClusterId=' + courtClusterId),
+  getListV2: (queryParam: string = ''): Promise<PaginationModel<BookingForList>> =>
+    requests.get(`/booking/v2${queryParam}`),
+  getDetailsV1: (id: number): Promise<BookingDetails> => requests.get(`/booking/v1/${id}`),
+};
+
+const PaymentAgent = {
+  create: (type: PaymentType, id: number, amount: number) =>
+    requests.post<string>(`/payment/${type}/${id}/process-payment?amout=${amount}`, {}),
+};
+
+const OrderAgent = {
+  create: (model: OrderCreate) => requests.post<OrderOfBooking>(`/order/v1`, model),
+};
 const agent = {
   requests,
   Account,
@@ -229,7 +250,9 @@ const agent = {
   Statistic,
   Revenue,
   CourtAgent,
-  BookingAgent
+  BookingAgent,
+  PaymentAgent,
+  OrderAgent
 };
 
 export default agent;

@@ -8,26 +8,31 @@ import {
   AlertDialogOverlay,
   Button,
   Heading,
+  Link,
   ListItem,
   Text,
   UnorderedList,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import React, { FC } from 'react';
-import PaymentVNPButtonAtom from './PaymentVNPButtonAtom';
+import { useStore } from '@/app/stores/store';
+import { PaymentType } from '@/app/models/payment.model';
 
 interface PaymentButtonAtomProps {
   paymentUrl?: string;
   bookingId: number;
+  amount: number;
 }
 
-const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }) => {
+const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId, amount }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef<HTMLButtonElement | null>(null);
-
+  const { paymentStore, bookingClusterStore: bookingStore } = useStore();
+  const toast = useToast();
   return (
     <>
-      <Button onClick={onOpen} colorScheme="blue">
+      <Button onClick={onOpen} colorScheme="blue" className='w-28'>
         Thanh toán
       </Button>
       <AlertDialog
@@ -48,9 +53,35 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
           <AlertDialogBody>
             <Heading size={'md'}>Thanh toán bằng VNPay</Heading>
             <UnorderedList className="px-2 mt-2">
-              <ListItem>Nhấn <PaymentVNPButtonAtom paymentUrl={paymentUrl} /> để thanh toán bằng VNPay</ListItem>
               <ListItem>
-                Nhấn vào đây để tạo lại thanh toán VNPay nếu thanh toán đã quá hạn
+                Nhấn{' '}
+                <Link
+                  onClick={async () => {
+                    if (paymentUrl) {
+                      window.open(paymentUrl, '_blank');
+                    } else {
+                      await paymentStore.getPayment(PaymentType.Booking, bookingId, amount, toast);
+                      window.open(paymentStore.paymentUrl, '_blank');
+                      bookingStore.updateTodayUrlBooking(paymentStore.paymentUrl,bookingId);
+                    }
+                  }}
+                >
+                  vào đây
+                </Link>{' '}
+                để thanh toán bằng VNPay
+              </ListItem>
+              <ListItem>
+                Nhấn{' '}
+                <Link
+                  onClick={async() => {
+                    await paymentStore.getPayment(PaymentType.Booking, bookingId, amount, toast);
+                    window.open(paymentStore.paymentUrl, '_blank');
+                    bookingStore.updateTodayUrlBooking(paymentStore.paymentUrl,bookingId);
+                  }}
+                >
+                  vào đây
+                </Link>{' '}
+                để tạo lại thanh toán VNPay nếu thanh toán đã quá hạn
               </ListItem>
             </UnorderedList>
             <Heading size={'md'} className="mt-6">

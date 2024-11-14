@@ -5,19 +5,20 @@ import {useEffect} from "react";
 import {useParams} from "react-router-dom";
 import CourtPageHeader from "@/features/court-cluster/components/CourtPageHeader.tsx";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, useToast } from '@chakra-ui/react'
-import CourtClusterDescriptionTab from "@/features/court-cluster/CourtClusterDescriptionTab.tsx";
-import CourtClusterProductsTab from "@/features/court-cluster/CourtClusterProductsTab.tsx";
-import CourtClusterServicesTab from "@/features/court-cluster/CourtClusterServicesTab.tsx";
-import CourtClusterBookingTab from '@/features/court-cluster/CourtClusterBookingTab.tsx';
+import CourtClusterDescriptionTab from "@/features/court-cluster/tabs/CourtClusterDescriptionTab";
+import CourtClusterProductsTab from "@/features/court-cluster/tabs/CourtClusterProductsTab";
+import CourtClusterServicesTab from "@/features/court-cluster/tabs/CourtClusterServicesTab";
+import CourtClusterBookingTab from "./tabs/CourtClusterBookingTab";
 
 const CourtClusterDetailsPage = observer(() => {
-    const {courtClusterStore} = useStore();
+    const {courtClusterStore, bookingClusterStore} = useStore();
     const {getDetailsCourtCluster, selectedTabs, setSelectedTab} = courtClusterStore;
     const chakraToast = useToast();
     const {id} = useParams();
     useEffect(() => {
-        if (id) {
+        if (id && Number(id)) {
             getDetailsCourtCluster(id,chakraToast).finally();
+            bookingClusterStore.setCourtClusterId(Number(id));
         }
     }, [id,getDetailsCourtCluster])
 

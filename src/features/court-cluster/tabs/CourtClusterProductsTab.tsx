@@ -5,7 +5,7 @@ import ProductCardItemComponent from "@/features/court-cluster/components/Produc
 import {useStore} from "@/app/stores/store.ts";
 import {useEffect} from "react";
 interface IProps{
-    courtClusterId: string;
+    courtClusterId: number;
 }
 const CourtClusterProductsTab = observer(({courtClusterId}:IProps) => {
     const {courtClusterStore} = useStore();

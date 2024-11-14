@@ -66,7 +66,7 @@ export default class CourtClusterStore {
   //#endRegion
 
   //#region Services
-  loadServicesOfCourtCluster = async (id: string) => {
+  loadServicesOfCourtCluster = async (id: number) => {
     if (id) {
       this.loadingServicesPage = true;
       const queryParams = new URLSearchParams();
@@ -94,7 +94,7 @@ export default class CourtClusterStore {
   //#endRegion
 
   //#region Product
-  loadProductsOfCourtCluster = async (id: string) => {
+  loadProductsOfCourtCluster = async (id: number) => {
     if (id) {
       this.loadingProductsPage = true;
       const queryParams = new URLSearchParams();

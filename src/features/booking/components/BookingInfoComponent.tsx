@@ -1,33 +1,40 @@
 import {
+  BookingDetails,
+  BookingStatus,
+  getBookingStatusColor,
+  getBookingStatusText,
+} from '@/app/models/booking.model';
+import {
   Badge,
-  Button,
   Flex,
   Grid,
   GridItem,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tr,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import { FC } from 'react';
+import dayjs from 'dayjs';
+import { getPaymentStatusColor, getPaymentStatusText } from '@/app/models/payment.model';
+import OrdersOfBookingComponent from './OrdersOfBookingComponent';
+import BookingButtonAtom from '@/features/court-cluster/atoms/BookingButtonAtom';
+import OrderDetailsPopup from '../popups/OrderDetailsPopup';
+import { observer } from 'mobx-react';
+interface BookingInfoComponentProps {
+  booking: BookingDetails;
+}
 
-interface BookingInfoComponentProps {}
+const BookingInfoComponent: FC<BookingInfoComponentProps> = observer(({ booking }) => {
+  const { bookingDetails, ordersOfBooking } = booking;
 
-const BookingInfoComponent: FC<BookingInfoComponentProps> = ({}) => {
   return (
     <>
-      <Grid templateColumns={'repeat(24, 1fr)'} className='min-h-[30rem]' gap={2}>
+      <Grid templateColumns={'repeat(24, 1fr)'} className="min-h-[30rem]" gap={2}>
         <GridItem colSpan={3}>
           <Text fontSize={'xl'}>Họ và tên:</Text>
         </GridItem>
 
         <GridItem colSpan={21} className="text-start">
           <Text fontSize={'xl'} fontWeight={'thin'}>
-            Nguyễn Văn A
+            {bookingDetails.fullName}
           </Text>
         </GridItem>
 
@@ -37,7 +44,7 @@ const BookingInfoComponent: FC<BookingInfoComponentProps> = ({}) => {
 
         <GridItem colSpan={21} className="text-start">
           <Text fontSize={'xl'} fontWeight={'thin'}>
-            0865869202
+            {bookingDetails.phoneNumber}
           </Text>
         </GridItem>
 
@@ -47,78 +54,88 @@ const BookingInfoComponent: FC<BookingInfoComponentProps> = ({}) => {
 
         <GridItem colSpan={21} className="text-start">
           <Text fontSize={'xl'} fontWeight={'thin'}>
-            07h-09h
+            {bookingDetails.playTime}
           </Text>
         </GridItem>
 
         <GridItem colSpan={3}>
-          <Text fontSize={'xl'}>Ngày thuê:</Text>
+          <Text fontSize={'xl'}>Ngày bắt đầu:</Text>
         </GridItem>
 
         <GridItem colSpan={21} className="text-start">
           <Text fontSize={'xl'} fontWeight={'thin'}>
-            Ngày 14/04/2024
+            Ngày {dayjs(bookingDetails.startDay).add(7, 'hour').format('DD/MM/YYYY')}
           </Text>
         </GridItem>
+        <GridItem colSpan={3}>
+          <Text fontSize={'xl'}>Ngày kết thúc:</Text>
+        </GridItem>
 
+        <GridItem colSpan={21} className="text-start">
+          <Text fontSize={'xl'} fontWeight={'thin'}>
+            Ngày {dayjs(bookingDetails.endDay).add(7, 'hour').format('DD/MM/YYYY')}
+          </Text>
+        </GridItem>
         <GridItem colSpan={3}>
           <Text fontSize={'xl'}>Trạng thái:</Text>
         </GridItem>
 
         <GridItem colSpan={21} className="text-start">
           <Text fontSize={'xl'} fontWeight={'thin'}>
-            <Badge colorScheme="red" fontSize={'1rem'}>
-              Đang chờ thanh toán
+            <Badge
+              colorScheme={`${getBookingStatusColor(bookingDetails.status)}`}
+              fontSize={'1rem'}
+            >
+              {getBookingStatusText(bookingDetails.status)}
             </Badge>
           </Text>
         </GridItem>
+        <GridItem colSpan={3}>
+          <Text fontSize={'xl'}>Thuê tại:</Text>
+        </GridItem>
+
+        <GridItem colSpan={21} className="text-start">
+          <Text fontSize={'xl'} fontWeight={'thin'}>
+            Ngày {dayjs(bookingDetails.endDay).add(7, 'hour').format('DD/MM/YYYY')}
+          </Text>
+        </GridItem>
+        {bookingDetails.status === BookingStatus.Confirmed && (
+          <>
+            <GridItem colSpan={3}>
+              <Text fontSize={'xl'}>Thanh toán:</Text>
+            </GridItem>
+
+            <GridItem colSpan={21} className="text-start">
+              <Text fontSize={'xl'} fontWeight={'thin'}>
+                <Badge
+                  colorScheme={`${getPaymentStatusColor(bookingDetails.paymentStatus)}`}
+                  fontSize={'1rem'}
+                >
+                  {getPaymentStatusText(bookingDetails.paymentStatus)}
+                </Badge>
+              </Text>
+            </GridItem>
+          </>
+        )}
 
         <GridItem colSpan={3}>
           <Text fontSize={'xl'}>Danh sách Order: </Text>
         </GridItem>
-        <GridItem colSpan={21}>
-            <Button colorScheme="teal">Tạo Order</Button>
-        </GridItem>
+       
         <GridItem colSpan={24}>
-          <TableContainer>
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>STT</Th>
-                  <Th>Ngày tạo</Th>
-                  <Th>Trạng thái</Th>
-                  <Th>Tổng giá</Th>
-                  <Th>Hành động</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                <Tr className='cursor-pointer'>
-                  <Td>1</Td>
-                  <Td>07:00, Ngày 14/04/2024</Td>
-                  <Td>
-                    <Badge colorScheme="red">Chưa thanh toán</Badge>
-                  </Td>
-                  <Td>200 000 VND</Td>
-                  <Td>
-                    <Flex gap={4}>
-                      <Button colorScheme="blue">Chi tiết</Button>
-                      <Button colorScheme="red">Hủy đơn</Button>
-                    </Flex>
-                  </Td>
-                </Tr>
-              </Tbody>
-            </Table>
-          </TableContainer>
+          <OrdersOfBookingComponent orders={ordersOfBooking} />
         </GridItem>
         <GridItem colSpan={24} className='mt-10'>
-          <Flex gap={4} className="float-end">
-            <Button colorScheme="blue">Thanh toán</Button>
-            <Button colorScheme="red">Hủy lịch</Button>
+          <OrderDetailsPopup booking={booking} />
+        </GridItem>
+        <GridItem colSpan={24} className="mt-10">
+          <Flex className="float-end">
+            <BookingButtonAtom booking={bookingDetails} />
           </Flex>
         </GridItem>
       </Grid>
     </>
   );
-};
+});
 
 export default BookingInfoComponent;

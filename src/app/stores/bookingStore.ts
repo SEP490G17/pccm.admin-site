@@ -1,79 +1,39 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
-import { catchErrorHandle } from '@/app/helper/utils.ts';
-import { BookingCreate, BookingForList, BookingModel, BookingStatus, mapBookingToBookingForList } from '../models/booking.model';
-import { PaginationModel } from '../models/pagination.model';
+import { BookingDetails } from '../models/booking.model';
+import { catchErrorHandle } from '../helper/utils';
 import { BookingMessage } from '../common/toastMessage';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import { OrderOfBooking } from '../models/order.model';
 
 export default class BookingStore {
-  loadingBooking: boolean = false;
   loadingInitial: boolean = false;
-  bookingRegistry = new Map<number, BookingModel>();
-  bookingTodayRegistry = new Map<number, BookingForList>();
+
+  selectedBooking?: BookingDetails;
   constructor() {
+    console.log('user store initialized');
     makeAutoObservable(this);
+    // this.cleanupInterval = window.setInterval(this.cleanUserCache, 30000);
   }
 
-  loadBooking = async (toast: any) => {
-    this.loadingBooking = true;
-    const [error, res] = await catchErrorHandle<PaginationModel<BookingModel>>(
-      agent.BookingAgent.getList(),
-    );
-
+  getDetailsBooking = async (id: number, toast: any) => {
+    this.loadingInitial = true;
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.getDetailsV1(id));
     runInAction(() => {
-      if (error) {
-        toast(BookingMessage.loadFailure);
-        return;
+      if (err) {
+        toast(BookingMessage.getDetailFailure);
       }
       if (res) {
-        res.data.forEach((booking) => {          
-          this.setBookingToday(booking);
-          this.setBooking(booking);
-        }); // Use arrow function to preserve `this`
+        this.selectedBooking = res;
       }
-      this.loadingBooking = false;
-    });
-  };
-  createBooking = async (booking: BookingCreate) => {
-    const [, res] = await catchErrorHandle(agent.BookingAgent.create(booking));
-    runInAction(() => {
-      if (res) {
-        this.setBooking(res);
-      }
+      this.loadingInitial = false;
     });
   };
 
-  private setBooking(booking: BookingModel) {
-    booking.startTime = dayjs(booking.startTime).format('YYYY-MM-DDTHH:mm:ss[Z]');
-    booking.endTime = dayjs(booking.endTime).format('YYYY-MM-DDTHH:mm:ss[Z]');
-    if(booking?.recurrenceRule !== ''){
-      booking.RecurrenceRule = booking.recurrenceRule;
-    }
-    console.log(booking);
-    this.bookingRegistry.set(booking.id, booking);
-  }
-
-  private setBookingToday = (booking: BookingModel) => {
-    const today = dayjs().utc().startOf('day');
-    const bookingStartTime = dayjs(booking.startTime).utc().startOf('day'); 
-    if ( booking.status == BookingStatus.Confirmed && bookingStartTime.isSame(today, 'day')) {
-       const bookingToday = mapBookingToBookingForList(booking);
-      // Add to registry
-      this.bookingTodayRegistry.set(booking.id, bookingToday);
+  pushOrderForBooking = (order: OrderOfBooking) => {
+    console.log('begin push')
+    if (this.selectedBooking) {
+      console.log('pushing order')
+      this.selectedBooking.ordersOfBooking.push(order);
     }
   };
-
-  get bookingArray() {
-    return Array.from(this.bookingRegistry.values());
-  }
-
-  get bookingTodayArray() {
-    return Array.from(this.bookingTodayRegistry.values());
-  }
 }

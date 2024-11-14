@@ -4,7 +4,7 @@ import {useStore} from "@/app/stores/store.ts";
 import {useEffect} from "react";
 import ServiceCardItemComponent from "@/features/court-cluster/components/ServiceCardItemComponent.tsx";
 interface  IProps{
-    courtClusterId:string;
+    courtClusterId:number;
 }
 const CourtClusterServicesTab = observer(({courtClusterId}:IProps) => {
     const {courtClusterStore} =useStore();

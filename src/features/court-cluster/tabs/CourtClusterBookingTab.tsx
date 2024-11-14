@@ -8,16 +8,16 @@ import {
   ResourceDirective,
   ResourcesDirective,
 } from '@syncfusion/ej2-react-schedule';
-import BookingEditorTemplateComponent from './components/BookingEditorTemplateComponent';
 import { useEffect, useRef } from 'react';
 import { isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
-import BookingListComponent from './components/BookingListComponent';
 import { Heading, useToast } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
 import { BookingCreate } from '@/app/models/booking.model';
 import { PaymentStatus } from '@/app/models/payment.model';
+import BookingEditorTemplateComponent from '../components/BookingTabs/BookingEditorTemplateComponent';
+import BookingListComponent from '../components/BookingTabs/BookingListComponent';
 interface IProps {
   courtClusterId: number;
 }
@@ -27,7 +27,6 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     phoneNumber: {
       name: 'phoneNumber',
       validation: { required: true, minLength: 10, number: true },
-      default: '0865869202',
     },
     startTime: { name: 'startTime', validation: { required: true } },
     endTime: { name: 'endTime', validation: { required: true } },
@@ -35,12 +34,12 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     recurrence: { name: 'recurrence', validation: { required: true } },
     fullName: { name: 'fullName', validation: { required: true } },
   };
-  const { courtClusterStore, bookingStore } = useStore();
+  const { courtClusterStore, bookingClusterStore: bookingStore } = useStore();
   const { courtOfClusterArray, loadCourtOfCluster, loadingCourt } = courtClusterStore;
-  const { bookingArray, createBooking, loadingBooking: loading} =bookingStore;
+  const { bookingArray, createBooking, loadingBookingForSchedule: loading } = bookingStore;
   useEffect(() => {
     loadCourtOfCluster(courtClusterId, toast);
-    bookingStore.loadBooking(toast);
+    bookingStore.loadBookingForSchedule(toast);
   }, [courtClusterId]);
 
   const group = { resources: ['courts'] };
@@ -104,19 +103,19 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
           switch (args.data[0].Recurrence) {
             case 1: {
               const until = dayjs(endDate).add(1, 'month').format('YYYYMMDDTHHmmss[Z]');
-              args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};` ;
+              args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};`;
               args.data[0].untilTime = until.toString();
               break;
             }
             case 2: {
               const until = dayjs(endDate).add(3, 'month').format('YYYYMMDDTHHmmss[Z]');
-              args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};` ;
+              args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};`;
               args.data[0].untilTime = until.toString();
               break;
             }
             case 3: {
               const until = dayjs(endDate).add(12, 'month').format('YYYYMMDDTHHmmss[Z]');
-              args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};` ;
+              args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};`;
               args.data[0].untilTime = until.toString();
               break;
             }
