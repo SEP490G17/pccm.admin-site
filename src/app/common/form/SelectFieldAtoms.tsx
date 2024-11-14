@@ -22,7 +22,7 @@ function SelectFieldAtoms({ label, options, isRequired, ...props }: IProps) {
         >
           {label && <FormLabel className="title_label"> {label}</FormLabel>}
 
-          <Select {...field} {...props}
+          <Select {...field} {...props} backgroundColor={'white'}
           >
             {options.map(option => {
               return (

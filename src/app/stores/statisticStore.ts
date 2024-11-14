@@ -12,6 +12,7 @@ export default class StatisticStore {
   dataTop: DataTop | undefined = undefined;
   dataExpense: DataExpend | undefined = undefined;
   loadingDataTotal: boolean = false;
+  loadingBookingRecent: boolean = false;
   bookingRecent: BookingRecent[] | undefined = undefined;
 
   constructor() {
@@ -96,14 +97,14 @@ export default class StatisticStore {
   };
 
   getBookingRecent = async () => {
-    this.loadingDataTotal = true;
+    this.loadingBookingRecent = true;
     await runInAction(async () => {
       try {
         this.bookingRecent = await agent.Statistic.bookingRecent();
       } catch (error) {
         console.error('Failed to load total data:', error);
       } finally {
-        this.loadingDataTotal = false;
+        this.loadingBookingRecent = false;
       }
     });
   };

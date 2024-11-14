@@ -99,6 +99,22 @@ export default class BannerStore {
     }
   };
 
+  changeStatus = async (bannerId: number, status: number) => {
+    this.setLoadingStatus(bannerId, true);
+    await runInAction(async () => {
+      await agent.Banners.changestatus(bannerId, status)
+        .then((s) => {
+          this.setBanner(s);
+          toast.success('Cập nhật banner thành công');
+        })
+        .catch((error) => {
+          console.error('Error creating product:', error);
+          toast.error('Cập nhật banner thất bại');
+        })
+        .finally(() => this.setLoadingStatus(bannerId, false));
+    });
+  };
+
   deleteBanner = async (id: number) => {
     this.loading = true;
     try {

@@ -96,6 +96,7 @@ const ProductTableComponent = observer(() => {
                       <DeleteButtonAtom
                         buttonSize={'sm'}
                         name={product.productName}
+                        header='Xóa sản phẩm'
                         loading={loading}
                         buttonClassName={'gap-2'}
                         onDelete={async () => {

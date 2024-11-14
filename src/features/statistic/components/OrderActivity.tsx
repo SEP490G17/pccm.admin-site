@@ -34,9 +34,9 @@ export default function OrderActivity({ data }: IProps) {
                                         </Text>
                                     </Box>
                                 </Flex>
-                                <Text color="gray.400">
+                                {/* <Text color="gray.400">
                                     {Math.floor(Math.random() * (40 - 1) + 1)} phút trước
-                                </Text>
+                                </Text> */}
                             </Flex>
                         </ListItem>
                         {index < data.length - 1 && <Divider my={2} />}
