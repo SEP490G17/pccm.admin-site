@@ -1,0 +1,70 @@
+.modalContent {
+  width: 800px;
+  max-width: 90vw;
+  padding: 2rem;
+  overflow: hidden;
+  justify-content: space-between;
+
+  .header {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .status {
+      font-size: 1.5rem;
+      margin-left: 0.5rem;
+      font-weight: bold;
+    }
+  }
+
+  .avatarSection {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+
+    .avatar {
+      width: 180px;
+      height: 180px;
+      border-radius: 15px;
+      border: 2px solid #ccc;
+    }
+
+    .infoSection {
+      font-size: 1.2rem;
+      margin-left: 20px;
+      flex-grow: 1;
+    }
+  }
+  .role {
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+  }
+
+  .contactSection {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .contactItem {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      svg {
+        font-size: 1.5rem;
+      }
+
+      span {
+        word-wrap: break-word;
+      }
+    }
+  }
+
+  .label {
+    color: gray;
+    font-size: 0.9rem;
+  }
+}
