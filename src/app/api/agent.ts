@@ -38,6 +38,7 @@ import {
   BookingForList,
   BookingModel,
   BookingRecent,
+  CourtPriceBooking,
 } from '../models/booking.model';
 import { PaymentType } from '../models/payment.model';
 import { OrderCreate, OrderOfBooking } from '../models/order.model';
@@ -223,6 +224,8 @@ const BookingAgent = {
   getListV2: (queryParam: string = ''): Promise<PaginationModel<BookingForList>> =>
     requests.get(`/booking/v2${queryParam}`),
   getDetailsV1: (id: number): Promise<BookingDetails> => requests.get(`/booking/v1/${id}`),
+  priceCourt: (data: number): Promise<CourtPriceBooking[]> =>
+    requests.get(`/Booking/priceCourt?courtClusterId=${data}`),
 };
 
 const PaymentAgent = {

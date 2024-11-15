@@ -1,4 +1,4 @@
-import { BookingForList } from '@/app/models/booking.model';
+import { BookingForList, CourtPriceBooking } from '@/app/models/booking.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
 import { catchErrorHandle } from '@/app/helper/utils.ts';
@@ -20,7 +20,8 @@ dayjs.extend(timezone);
 
 export default class BookingClusterStore {
   courtClusterId?: number;
-
+  loadingSlot: boolean = false;
+  courtPrice: CourtPriceBooking[] | null = [];
   // #region loading
   loadingBookingForSchedule: boolean = false;
   loadingInitial: boolean = false;
@@ -223,6 +224,22 @@ export default class BookingClusterStore {
     booking.endDay = endTime.format('DD/MM/YYYY');
     return booking;
   }
+
+  loadCourtPrice = async (value: number) => {
+    this.loadingSlot = true;
+    const [error, res] = await catchErrorHandle<CourtPriceBooking[]>(
+      agent.BookingAgent.priceCourt(value),
+    );
+    runInAction(() => {
+      if (error) {
+        return;
+      }
+      if (res) {
+        this.courtPrice = res;
+      }
+    });
+    this.loadingSlot = false;
+  };
 
   get bookingArray() {
     return Array.from(this.bookingForScheduleRegistry.values());

@@ -1,5 +1,5 @@
 import PageHeadingAtoms from '@/features/atoms/PageHeadingAtoms.tsx';
-import { FastField, Form, Formik } from 'formik';
+import { Form, Formik } from 'formik';
 import {
   Badge,
   Box,
@@ -168,12 +168,12 @@ const CourtClusterCreatePage = observer(() => {
                               format={'HH:mm'}
                               onBlur={() => props.setTouched({ openTime: true })} // Đánh dấu là đã chạm
                               defaultValue={
-                                props.values.openTime ? dayjs(props.values.openTime, 'HH:mm') : null
+                                props.values.openTime ? dayjs(props.values.openTime, 'HH:mm:ss') : null
                               }
                               onChange={(date) => {
                                 props.setFieldValue(
                                   'openTime',
-                                  date ? dayjs(date).format('HH:mm') : null,
+                                  date ? dayjs(date).format('HH:mm:ss') : null,
                                 );
                               }}
                             />
@@ -204,8 +204,8 @@ const CourtClusterCreatePage = observer(() => {
                                   : null
                               }
                               onChange={(date) => {
-                                props.setFieldValue('closeTime', dayjs(date).format('HH:mm'));
-                                console.log(dayjs(date).format('HH:mm'));
+                                props.setFieldValue('closeTime', dayjs(date).format('HH:mm:ss'));
+                                console.log(dayjs(date).format('HH:mm:ss'));
                               }}
                             />
                             <FormErrorMessage>{props.errors.closeTime}</FormErrorMessage>

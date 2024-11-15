@@ -67,7 +67,12 @@ export interface BookingInfo extends BookingForList {
   address:string;
 }
 
-
+export interface CourtPriceBooking {
+  courtId: number;
+  courtName: string;
+  time: string;
+  price: number;
+}
 
 
 

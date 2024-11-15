@@ -8,6 +8,8 @@ import { OrderOfBooking } from '../models/order.model';
 export default class BookingStore {
   loadingInitial: boolean = false;
 
+
+
   selectedBooking?: BookingDetails;
   constructor() {
     console.log('user store initialized');
@@ -29,10 +31,12 @@ export default class BookingStore {
     });
   };
 
+
+
   pushOrderForBooking = (order: OrderOfBooking) => {
-    console.log('begin push')
+    console.log('begin push');
     if (this.selectedBooking) {
-      console.log('pushing order')
+      console.log('pushing order');
       this.selectedBooking.ordersOfBooking.push(order);
     }
   };
