@@ -175,6 +175,9 @@ const Roles = {
 
 const Categories = {
   list: (): Promise<ICategory[]> => requests.get(`/category`),
+  create: (category: { categoryName: string }): Promise<ICategory> => requests.post(`/category`, category),
+  update: (category: ICategory): Promise<ICategory> => requests.put(`/category/${category.id}`, category),
+  delete: (id: number): Promise<void> => requests.del(`/category/${id}`),
 };
 
 const Products = {
@@ -211,6 +214,7 @@ const Account = {
 const Users = {
   list: (queryParams: string = ''): Promise<PaginationModel<UserManager>> =>
     requests.get(`/user${queryParams}`),
+  details: (userId: string): Promise<UserManager> => requests.get(`/user/details/${userId}`), 
 };
 const Staffs = {
   list: (): Promise<PaginationModel<Staff>> => requests.get('/staff'),

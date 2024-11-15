@@ -1,0 +1,62 @@
+.modalContent {
+  width: 600px; // Độ rộng của modal
+  max-width: 90vw;
+  padding: 2rem;
+
+  .header {
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+
+    .status {
+      font-size: 1.5rem;
+      margin-left: 0.5rem;
+      font-weight: bold; 
+    }
+  }
+
+  .avatarSection2 {
+    display: flex;
+    align-items: center;
+
+    .avatar {
+      width: 180px; 
+      height: 200px;
+      border-radius: 15px; 
+      border: 2px solid #ccc;
+      margin-right: 1.5rem;
+    }
+
+    .infoSection {
+      font-size: 1.2rem;
+
+      .label {
+        color: gray;
+        font-size: 0.9rem;
+      }
+
+      .link {
+        color: blue;
+      }
+    }
+  }
+
+  .contactSection {
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    gap: 1rem;
+
+    .contactItem {
+      display: flex;
+      align-items: center;
+
+      svg {
+        font-size: 1.5rem;
+      }
+
+      span {
+        margin-left: 0.5rem;
+      }
+    }
+  }
+}

@@ -38,6 +38,22 @@ export default class UserStore {
     }
   };
 
+  loadUserDetails = async (userId: string) => {
+    this.loading = true;
+    try {
+      const userDetails = await agent.Users.details(userId);
+      runInAction(() => {
+        this.selectedUser = userDetails; 
+      });
+    } catch (error) {
+      runInAction(() => {
+        console.error('Error loading user details:', error);
+        this.selectedUser = undefined;
+      });
+    } finally {
+      this.loading = false;
+    }
+  };
   //#endregion
 
   //#region mock-up
