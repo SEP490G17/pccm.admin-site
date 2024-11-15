@@ -40,7 +40,7 @@ import {
   BookingRecent,
 } from '../models/booking.model';
 import { PaymentType } from '../models/payment.model';
-import { OrderCreate, OrderOfBooking } from '../models/order.model';
+import { OrderModel, OrderOfBooking } from '../models/order.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -223,15 +223,25 @@ const BookingAgent = {
   getListV2: (queryParam: string = ''): Promise<PaginationModel<BookingForList>> =>
     requests.get(`/booking/v2${queryParam}`),
   getDetailsV1: (id: number): Promise<BookingDetails> => requests.get(`/booking/v1/${id}`),
+  acceptedBooking: (id: number): Promise<BookingForList> =>
+    requests.put(`/booking/accepted/${id}`, {}),
+  completeBooking: (id: number): Promise<BookingForList> =>
+    requests.put(`/booking/completed/${id}`, {}),
+  cancelBooking: (id: number): Promise<BookingForList> => requests.put(`/booking/cancel/${id}`, {}),
+  denyBooking: (id: number): Promise<BookingForList> => requests.put(`/booking/deny/${id}`, {}),
+
+  // getCourtPrices: (id:courtClusterId): 
 };
 
 const PaymentAgent = {
-  create: (type: PaymentType, id: number, amount: number) =>
-    requests.post<string>(`/payment/${type}/${id}/process-payment?amout=${amount}`, {}),
+  create: (type: PaymentType, id: number) =>
+    requests.post<string>(`/payment/${type}/${id}/process-payment`, {}),
 };
 
 const OrderAgent = {
-  create: (model: OrderCreate) => requests.post<OrderOfBooking>(`/order/v1`, model),
+  create: (model: OrderModel) => requests.post<OrderOfBooking>(`/order/v1`, model),
+  details: (id: number) => requests.get<OrderModel>(`/order/v1/${id}`),
+  update: (model: OrderModel): Promise<OrderOfBooking> => requests.put(`/order/v1/edit`, model),
 };
 const agent = {
   requests,
@@ -252,7 +262,7 @@ const agent = {
   CourtAgent,
   BookingAgent,
   PaymentAgent,
-  OrderAgent
+  OrderAgent,
 };
 
 export default agent;

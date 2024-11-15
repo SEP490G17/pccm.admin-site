@@ -1,5 +1,6 @@
 import {
   Button,
+  Flex,
   Grid,
   GridItem,
   Heading,
@@ -10,41 +11,51 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Skeleton,
   Tab,
   TabList,
   TabPanel,
   TabPanels,
   Tabs,
+  useDisclosure,
   useToast,
 } from '@chakra-ui/react';
 import { FC, useState } from 'react';
 import BookingProductTab from '../components/BookingProductsTab';
-import BookingServicesTab from '../components/BookingServicesTab';
 import OrderTotalInfoComponent from '../components/OrderTotalInfoComponent';
+import BookingServicesTab from '../components/BookingServicesTab';
+import { BookingDetails } from '@/app/models/booking.model';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
-import { PaymentStatus } from '@/app/models/payment.model';
 
-interface OrderDetailsProps {
-  isOpen: boolean;
-  onClose: () => void;
+interface OrderCreatePopupProps {
+  booking: BookingDetails;
 }
 
-const OrderDetailsPopUp: FC<OrderDetailsProps> = observer(({ isOpen, onClose }) => {
+const OrderCreatePopup: FC<OrderCreatePopupProps> = observer(({ booking }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [tabIndex, setTabIndex] = useState(0);
   const { bookingStore } = useStore();
-  const { selectedBooking: booking, loadingOrder, updateOrder, selectedOrder } = bookingStore;
-
-  if (!booking) return;
+  const { createOrder } = bookingStore;
   const toast = useToast();
-  const handleUpdateOrder = async () => {
-    await updateOrder(toast);
+  const handleCreateOrder = async () => {
+    await createOrder(booking.bookingDetails.id, toast);
+    onClose();
   };
-
   return (
     <>
-      <Modal id="order-details" isOpen={isOpen} onClose={onClose} size={'full'}>
+      <Flex className="float-end">
+        <Button
+          onClick={() => {
+            onOpen();
+            bookingStore.clearOrderList();
+          }}
+          colorScheme="teal"
+        >
+          Tạo Order
+        </Button>
+      </Flex>
+
+      <Modal isOpen={isOpen} onClose={onClose} size={'full'} id='order-details' isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -67,12 +78,12 @@ const OrderDetailsPopUp: FC<OrderDetailsProps> = observer(({ isOpen, onClose }) 
 
                   <TabPanels minHeight={'50rem'}>
                     <TabPanel>
-                      {booking.bookingDetails.courtClusterId && (
+                      {tabIndex === 0 && booking.bookingDetails.courtClusterId && (
                         <BookingProductTab courtClusterId={booking.bookingDetails.courtClusterId} />
                       )}
                     </TabPanel>
                     <TabPanel>
-                      {booking.bookingDetails.courtClusterId && (
+                      {tabIndex === 1 && booking.bookingDetails.courtClusterId && (
                         <BookingServicesTab
                           courtClusterId={booking.bookingDetails.courtClusterId}
                         />
@@ -82,8 +93,7 @@ const OrderDetailsPopUp: FC<OrderDetailsProps> = observer(({ isOpen, onClose }) 
                 </Tabs>
               </GridItem>
               <GridItem colSpan={10}>
-                {loadingOrder && <Skeleton height={'100%'} />}
-                {!loadingOrder && <OrderTotalInfoComponent />}
+                <OrderTotalInfoComponent />
               </GridItem>
             </Grid>
           </ModalBody>
@@ -91,11 +101,9 @@ const OrderDetailsPopUp: FC<OrderDetailsProps> = observer(({ isOpen, onClose }) 
             <Button colorScheme="blue" mr={3} onClick={onClose}>
               Đóng
             </Button>
-            {selectedOrder?.paymentStatus && selectedOrder.paymentStatus !== PaymentStatus.Success && (
-              <Button variant="ghost" onClick={handleUpdateOrder}>
-                Lưu
-              </Button>
-            )}
+            <Button variant="ghost" onClick={handleCreateOrder}>
+              Lưu
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -103,4 +111,4 @@ const OrderDetailsPopUp: FC<OrderDetailsProps> = observer(({ isOpen, onClose }) 
   );
 });
 
-export default OrderDetailsPopUp;
+export default OrderCreatePopup;

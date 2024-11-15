@@ -10,7 +10,7 @@ const BookingDetailsPage = observer(() => {
   const { id } = useParams();
   const { bookingStore } = useStore();
   const toast = useToast();
-  const { loadingInitial, getDetailsBooking, selectedBooking } = bookingStore;
+  const { loadingInitial, getDetailsBooking } = bookingStore;
   useEffect(() => {
     if (id && !isNaN(Number(id))) {
       getDetailsBooking(Number(id), toast);
@@ -20,8 +20,8 @@ const BookingDetailsPage = observer(() => {
     <Skeleton isLoaded={!loadingInitial} height={'100rem'}>
       <PageHeadingAtoms
         breadCrumb={[
-          { title: '/booking', to: 'Danh sách booking' },
-          { title: 'Chi tiết booking 1', to: '/booking/chi-tiet/1' },
+          { title: 'Danh sách Booking', to: '/booking' },
+          { title: `Chi tiết booking ${id}`, to: `/booking/chi-tiet/${id}` },
         ]}
       />
 
@@ -29,7 +29,9 @@ const BookingDetailsPage = observer(() => {
         <CardHeader>
           <Heading size={'xl'}>Chi tiết booking {id}</Heading>
         </CardHeader>
-        <CardBody>{selectedBooking && <BookingInfoComponent booking={selectedBooking} />}</CardBody>
+        <CardBody>
+          <BookingInfoComponent />
+        </CardBody>
       </Card>
     </Skeleton>
   );

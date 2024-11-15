@@ -1,4 +1,5 @@
 import { FormControl, Select, Input, Grid, GridItem } from '@chakra-ui/react';
+import { FastField } from 'formik';
 import { useEffect, useState } from 'react';
 
 interface Province {
@@ -159,7 +160,9 @@ const AddressSelectAtom: React.FC<AddressSelectAtomProps> = ({
       </GridItem>
       <GridItem colSpan={3}>
         <FormControl>
-          <Input placeholder="Nhập địa chỉ cụ thể" type="text" {...getFieldProps('address')} />
+          <FastField name="address">
+            {({ field }: any) => <Input placeholder="Nhập địa chỉ cụ thể" type="text" {...field}/>}
+          </FastField>
         </FormControl>
       </GridItem>
     </Grid>

@@ -31,6 +31,9 @@ export default class ServiceStore {
     if (this.servicePageParams.searchTerm) {
       queryParams.append('search', this.servicePageParams.searchTerm);
     }
+    if(this.servicePageParams.filter){
+      queryParams.append('filter', this.servicePageParams.filter);
+    }
     const [error, res] = await catchErrorHandle(agent.Services.list(`?${queryParams.toString()}`));
     runInAction(() => {
       if (error) {
@@ -157,7 +160,7 @@ export default class ServiceStore {
     this.loadingInitial = true;
     this.serviceRegistry.clear();
     this.servicePageParams.clearLazyPage();
-    this.servicePageParams.searchTerm = term;
+    this.servicePageParams.filter = term;
     await this.loadServices();
     runInAction(() => {
       this.loadingInitial = false;

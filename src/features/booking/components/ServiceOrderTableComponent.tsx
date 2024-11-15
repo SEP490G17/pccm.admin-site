@@ -16,16 +16,13 @@ import {
 import { observer } from 'mobx-react';
 interface IProps{
     booking:BookingDetails;
-    totalServiceAmount:number;
-    setTotalServiceAmount: (amount: number) => any;
 }
-const ServiceOrderTableComponent = observer(({booking, setTotalServiceAmount}:IProps) => {
-  const { orderStore, courtClusterStore } = useStore();
+const ServiceOrderTableComponent = observer(({booking}:IProps) => {
+  const { bookingStore, courtClusterStore } = useStore();
   const { servicesOfClusterRegistry } = courtClusterStore;
-  const { ServiceItemIdArray, removeServiceFromOrder } = orderStore;
+  const { ServiceItemIdArray, removeServiceFromOrder } = bookingStore;
   const [startTime, endTime] = booking.bookingDetails.playTime.split('-');
   const playHours = calculateTimeDifferenceInHours(startTime, endTime);
-  let sum = 0;
   return (
     <>
       <TableContainer className="mt-8">
@@ -46,8 +43,6 @@ const ServiceOrderTableComponent = observer(({booking, setTotalServiceAmount}:IP
 
               if (service) {
                 const total = service.price * playHours;
-                sum += total;
-                setTotalServiceAmount(sum);
                 return (
                   <Tr key={service.id}>
                     <Td>{service.serviceName}</Td>

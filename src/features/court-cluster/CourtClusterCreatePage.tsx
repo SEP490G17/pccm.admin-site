@@ -19,6 +19,7 @@ import {
   NumberInput,
   NumberInputField,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import ImageUpload from '@/app/common/input/ImageUpload.tsx';
 import ReactQuillComponent from '@/app/common/input/ReactQuill.tsx';
@@ -34,7 +35,8 @@ import {
   CourtDetailsCreate,
 } from '@/app/models/court.model';
 import agent from '@/app/api/agent';
-import { toast } from 'react-toastify';
+import { CommonMessage } from '@/app/common/toastMessage';
+import { router } from '@/app/router/Routes';
 
 const CourtClusterCreatePage = observer(() => {
   const CourtPriceSchema = Yup.object().shape({
@@ -70,14 +72,7 @@ const CourtClusterCreatePage = observer(() => {
       .min(1, 'Phải có ít nhất một sân')
       .required('Sân là bắt buộc'),
   });
-  //const {id} = useParams();
-  // useEffect(() => {
-  //     if (id) {
-  //         if (!selectedCourt || (selectedCourt && selectedCourt.id !== Number(id))) {
-  //             getDetailsCourtCluster(id).finally();
-  //         }
-  //     }
-  // }, [id, getDetailsCourtCluster])
+  const toast = useToast();
   const [initial, setInitial] = useState<CourtClusterDetailsCreate>({
     title: '',
     description: '',
@@ -115,13 +110,34 @@ const CourtClusterCreatePage = observer(() => {
           <Formik
             initialValues={initial}
             validationSchema={CourtClusterDetailsSchema}
-            onSubmit={async (values, { isSubmitting }:any) => {
+            validateOnChange={false}
+            validateOnBlur={false}
+            onSubmit={async (values, { isSubmitting }: any) => {
+              const pending = toast(CommonMessage.loadingMessage('Tạo cụm sân'));
               await agent.CourtClusterAgent.create(values)
-              .catch(()=>toast.error('Tạo cụm sân thất bại'))
-              .finally(()=>{
-                isSubmitting(false);
-                toast.success('Tạo cụm sân thành công');
-              });
+                .then(() => {
+                  toast.close(pending);
+                  toast({
+                    title: 'Tạo cụm sân',
+                    description: 'Tạo cụm sân thành công',
+                    duration: 3000,
+                    status: 'success',
+                    isClosable: true,
+                  });
+                  router.navigate('/cum-san');
+                })
+                .catch((err) => {
+                  toast({
+                    title: 'Tạo cụm sân',
+                    description: err.message,
+                    duration: 3000,
+                    status: 'error',
+                    isClosable: true,
+                  });
+                })
+                .finally(() => {
+                  isSubmitting(false);
+                });
             }}
           >
             {(props) => (
@@ -131,11 +147,11 @@ const CourtClusterCreatePage = observer(() => {
                     <FormControl isRequired={true}>
                       <Grid templateColumns="10rem 1fr" alignItems="center" gap={2}>
                         <FormLabel className="title_label_court">Tên cụm sân</FormLabel>
-                        <Input
-                          placeholder="Nhập tiêu đề cho cụm sân"
-                          type="text"
-                          {...props.getFieldProps('title')}
-                        />
+                        <FastField name="title">
+                          {({ field }: any) => {
+                            return <Input placeholder="Nhập tiêu đề cho cụm sân" type="text" {...field} />;
+                          }}
+                        </FastField>
                       </Grid>
                     </FormControl>
                   </GridItem>
@@ -164,7 +180,7 @@ const CourtClusterCreatePage = observer(() => {
                           >
                             <TimePicker
                               placeholder={'--:--'}
-                              className='h-10'
+                              className="h-10"
                               format={'HH:mm'}
                               onBlur={() => props.setTouched({ openTime: true })} // Đánh dấu là đã chạm
                               defaultValue={
@@ -173,7 +189,7 @@ const CourtClusterCreatePage = observer(() => {
                               onChange={(date) => {
                                 props.setFieldValue(
                                   'openTime',
-                                  date ? dayjs(date).format('HH:mm') : null,
+                                  date ? dayjs(date).format('HH:mm:ss') : null,
                                 );
                               }}
                             />
@@ -195,7 +211,7 @@ const CourtClusterCreatePage = observer(() => {
                           <FormControl isRequired={true}>
                             <TimePicker
                               placeholder={'--:--'}
-                              className='h-10'
+                              className="h-10"
                               format={'HH:mm'}
                               onBlur={() => props.getFieldHelpers('closeTime').setTouched(true)} // Ensure you call handleBlur
                               defaultValue={
@@ -204,8 +220,8 @@ const CourtClusterCreatePage = observer(() => {
                                   : null
                               }
                               onChange={(date) => {
-                                props.setFieldValue('closeTime', dayjs(date).format('HH:mm'));
-                                console.log(dayjs(date).format('HH:mm'));
+                                props.setFieldValue('closeTime', dayjs(date).format('HH:mm:ss'));
+                                console.log(dayjs(date).format('HH:mm:ss'));
                               }}
                             />
                             <FormErrorMessage>{props.errors.closeTime}</FormErrorMessage>
@@ -235,7 +251,7 @@ const CourtClusterCreatePage = observer(() => {
                       </Grid>
                     </FormControl>
                   </GridItem>
-                  <GridItem key={'them-san'} colSpan={24}>
+                  <GridItem colSpan={24}>
                     <Flex direction={'row'} gap={3} alignItems={'center'}>
                       <FormLabel className="title_label_court">Thông tin sân</FormLabel>
                       <Button
@@ -332,7 +348,7 @@ const CourtClusterCreatePage = observer(() => {
                                 onChange={(date) => {
                                   props.setFieldValue(
                                     `courtDetails[${index}].courtPrice.[0].fromTime`,
-                                    dayjs(date).format('HH:mm'),
+                                    dayjs(date).format('HH:mm:ss'),
                                   );
                                   console.log(dayjs(date).format('HH:mm'));
                                 }}
@@ -363,7 +379,7 @@ const CourtClusterCreatePage = observer(() => {
                                 onChange={(date) => {
                                   props.setFieldValue(
                                     `courtDetails[${index}].courtPrice.[0].toTime`,
-                                    dayjs(date).format('HH:mm'),
+                                    dayjs(date).format('HH:mm:ss'),
                                   );
                                   console.log(dayjs(date).format('HH:mm'));
                                 }}
@@ -464,7 +480,7 @@ const CourtClusterCreatePage = observer(() => {
                                       onChange={(date) => {
                                         props.setFieldValue(
                                           `courtDetails[${index}].courtPrice.[${no}].fromTime`,
-                                          dayjs(date).format('HH:mm'),
+                                          dayjs(date).format('HH:mm:ss'),
                                         );
                                         console.log(dayjs(date).format('HH:mm'));
                                       }}
@@ -498,7 +514,7 @@ const CourtClusterCreatePage = observer(() => {
                                       onChange={(date) => {
                                         props.setFieldValue(
                                           `courtDetails[${index}].courtPrice.[${no}].toTime`,
-                                          dayjs(date).format('HH:mm'),
+                                          dayjs(date).format('HH:mm:ss'),
                                         );
                                         console.log(dayjs(date).format('HH:mm'));
                                       }}

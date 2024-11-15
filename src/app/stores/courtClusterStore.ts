@@ -49,6 +49,7 @@ export default class CourtClusterStore {
           chakraToast(CourtMessage.loadCourtOfCourtClusterFail);
         }
         if (res) {
+          this.courtOfClusterRegistry.clear();
           res.forEach(this.setCourt);
         }
         this.loadingCourt = false;

@@ -1,7 +1,6 @@
 import { Avatar, Button, Center, Divider, Flex, Image, Text } from '@chakra-ui/react';
 import notificationIcon from '@/assets/notification.svg';
 import defaultUserIcon from '@/assets/defaultUser.png';
-import arrowDownIcon from '@/assets/arrow-down.svg';
 import { useStore } from '../stores/store';
 import { observer } from 'mobx-react-lite';
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from 'react-icons/ai';
@@ -50,9 +49,6 @@ const Header = () => {
               0865859202
             </Text>
           </Flex>
-          <button>
-            <Image src={arrowDownIcon} width={'1.5rem'} height={'1.5rem'} />
-          </button>
         </Flex>
       </Flex>
     </>

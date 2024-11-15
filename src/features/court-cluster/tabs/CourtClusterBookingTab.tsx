@@ -99,24 +99,27 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
           });
           return;
         }
-        if (args.data[0].Recurrence) {
-          switch (args.data[0].Recurrence) {
+        if (args.data[0].recurrence) {
+          switch (args.data[0].recurrence) {
             case 1: {
               const until = dayjs(endDate).add(1, 'month').format('YYYYMMDDTHHmmss[Z]');
               args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};`;
-              args.data[0].untilTime = until.toString();
+              const untilSave = dayjs(endDate).add(1, 'month').format('YYYY-MM-DDTHH:mm:ss[Z]');
+              args.data[0].untilTime = untilSave.toString();
               break;
             }
             case 2: {
               const until = dayjs(endDate).add(3, 'month').format('YYYYMMDDTHHmmss[Z]');
               args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};`;
-              args.data[0].untilTime = until.toString();
+              const untilSave = dayjs(endDate).add(3, 'month').format('YYYY-MM-DDTHH:mm:ss[Z]');
+              args.data[0].untilTime = untilSave.toString();
               break;
             }
             case 3: {
               const until = dayjs(endDate).add(12, 'month').format('YYYYMMDDTHHmmss[Z]');
               args.data[0].RecurrenceRule = `FREQ=DAILY;INTERVAL=1;UNTIL=${until.toString()};`;
-              args.data[0].untilTime = until.toString();
+              const untilSave = dayjs(endDate).add(12, 'month').format('YYYY-MM-DDTHH:mm:ss[Z]');
+              args.data[0].untilTime = untilSave.toString();
               break;
             }
           }
@@ -205,6 +208,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         workHours={{ highlight: true, start: '05:00', end: '22:00' }}
         startHour="05:00"
         endHour="23:00"
+        showQuickInfo={false}
         timezone="Asia/Bangkok"
         editorTemplate={(props: any) => (
           <BookingEditorTemplateComponent

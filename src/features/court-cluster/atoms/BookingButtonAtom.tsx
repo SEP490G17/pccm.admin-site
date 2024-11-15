@@ -1,20 +1,43 @@
 import { BookingForList, BookingStatus } from '@/app/models/booking.model';
 import { PaymentStatus } from '@/app/models/payment.model';
-import { Button, Flex, Tag, TagLabel, TagLeftIcon } from '@chakra-ui/react';
+import { Button, Flex, Tag, TagLabel, TagLeftIcon, useToast } from '@chakra-ui/react';
 import { FC } from 'react';
 import PaymentButtonAtom from './PaymentButtonAtom';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { observer } from 'mobx-react';
+import { useStore } from '@/app/stores/store';
 
 interface BookingButtonAtomProps {
   booking: BookingForList;
 }
 
-const BookingButtonAtom: FC<BookingButtonAtomProps> = ({ booking }) => {
+const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => {
+  const { bookingClusterStore } = useStore();
+  const { acceptedBooking, completeBooking, denyBooking, cancelBooking } = bookingClusterStore;
+  const toast = useToast();
+  const handleAccepted = async () => {
+    await acceptedBooking(booking.id, toast);
+  };
+
+  const handleCompleted = async () => {
+    await completeBooking(booking.id, toast);
+  }
+
+  const handleDenyBooking = async () => {
+    await denyBooking(booking.id, toast);
+  }
+
+  const handleCancelBooking = async () => {
+    await cancelBooking(booking.id, toast);
+  }
+
+
+
   if (booking.status === BookingStatus.Confirmed) {
     return (
       <Flex gap={2}>
         {!booking.isSuccess && booking.paymentStatus == PaymentStatus.Success && (
-          <Button colorScheme="teal" className="w-28">
+          <Button colorScheme="teal" className="w-28" onClick={handleCompleted}>
             Hoàn thành
           </Button>
         )}
@@ -22,11 +45,10 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = ({ booking }) => {
           <PaymentButtonAtom
             bookingId={booking.id}
             paymentUrl={booking.paymentUrl}
-            amount={booking.totalPrice}
           />
         )}
         {!booking.isSuccess && (
-          <Button colorScheme="red" className="w-28">
+          <Button colorScheme="red" className="w-28" onClick={handleCancelBooking}>
             Huỷ lịch
           </Button>
         )}
@@ -48,10 +70,14 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = ({ booking }) => {
   if (booking.status === BookingStatus.Pending) {
     return (
       <Flex className="justify-start gap-2">
-        <Button colorScheme="blue" className="w-28">
+        <Button colorScheme="blue" className="w-28"
+         onClick={handleAccepted}
+        >
           Xác thực
         </Button>
-        <Button colorScheme="red" className='w-28'>Từ chối</Button>
+        <Button colorScheme="red" className="w-28" onClick={handleDenyBooking}>
+          Từ chối
+        </Button>
       </Flex>
     );
   }
@@ -69,6 +95,6 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = ({ booking }) => {
       </Tag>
     );
   }
-};
+});
 
 export default BookingButtonAtom;

@@ -8,11 +8,15 @@ export interface OrderOfBooking {
   totalAmount: number;
 }
 
-export interface OrderCreate {
+export interface OrderModel {
   bookingId: number;
+  id?: number;
+  paymentStatus?: PaymentStatus;
   orderForProducts: OrderForProducts[];
   orderForServices: OrderForServices[];
 }
+
+
 
 export interface OrderForProducts {
   productId: number;

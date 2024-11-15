@@ -198,55 +198,52 @@ button.primary.outlined {
 /* csslint ignore:start */
 
 .schedule-cell-dimension.e-schedule {
-  .e-table-container{
+  .e-table-container {
     max-height: 500px !important;
     width: 100%;
     overflow: auto;
   }
-	.e-vertical-view {
-		.e-date-header-wrap {
-			table {
-				col {
-					width: 200px;
-				}
-			}
-		}
-		.e-content-wrap {
-			table {
-				col {
-					width: 200px;
-				}
-			}
-		}
-		.e-time-cells-wrap {
-			table {
-				td {
-					height: 100px;
-				}
-			}
-		}
-		.e-work-cells {
-			height: 100px;
-		}
-	}
-	
+  .e-vertical-view {
+    .e-date-header-wrap {
+      table {
+        col {
+          width: 200px;
+        }
+      }
+    }
+    .e-content-wrap {
+      table {
+        col {
+          width: 200px;
+        }
+      }
+    }
+    .e-time-cells-wrap {
+      table {
+        td {
+          height: 100px;
+        }
+      }
+    }
+    .e-work-cells {
+      height: 100px;
+    }
+  }
 }
 
 /* csslint ignore:end */
 
 /* Define colors for each payment status */
 .booking-complete {
-  background-color: #4CAF50 !important; /* Green for paid */
+  background-color: #4caf50 !important; /* Green for paid */
 }
 .pending-payment {
   background-color: $secondaryColor500 !important; /* Yellow for pending */
 }
 
-
 .e-appointment-wrapper {
   height: auto; /* Để chiều cao tự động điều chỉnh theo nội dung */
 }
-
 
 .e-past-time-slot {
   background-color: #d3d3d3 !important; /* Màu xám nhạt cho ô thời gian quá khứ */
@@ -260,7 +257,6 @@ button.primary.outlined {
   z-index: 9999 !important;
   width: 300px !important;
   background: #fff !important;
-  
 }
 
 .map-container {
@@ -271,4 +267,7 @@ button.primary.outlined {
 .combobox-input {
   width: 100% !important;
   padding: 0.5rem !important;
+}
+#chakra-modal-order-details {
+    width: 94% !important;
 }

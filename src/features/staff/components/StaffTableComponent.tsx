@@ -32,12 +32,11 @@ function StaffTableComponent() {
               <Th w={'10rem'}>Chức vụ</Th>
               <Th w={'10rem'}>Cụm sân</Th>
               <Th w={'20rem'}>Quyền hạn</Th>
-              <Th w={'10rem'}>Ca làm</Th>
               <Th w={'10rem'}>Tùy chọn</Th>
             </Tr>
           </Thead>
           <Tbody>
-            {loadingInitial && <SkeletonTableAtoms numOfColumn={7} pageSize={staffPageParams.pageSize} />}
+            {loadingInitial && <SkeletonTableAtoms numOfColumn={6} pageSize={staffPageParams.pageSize} />}
             {StaffArray.map((staff, index) => (
               <Tr key={staff.id}>
                 <Td>{index + 1}</Td>
@@ -60,7 +59,6 @@ function StaffTableComponent() {
                     ))}
                   </Flex>
                 </Td>
-                <Td>{staff.shift}</Td>
                 <Td>
                   <Flex direction={'row'} gap={'2'}>
                     <IconButton
