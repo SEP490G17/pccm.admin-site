@@ -281,7 +281,17 @@ const RevenuePage = observer(() => {
                                                     <Td borderRight="1px solid #ddd"></Td>
                                                     <Td borderRight="1px solid #ddd"></Td>
                                                     <Td borderRight="1px solid #ddd"></Td>
-                                                    <Td borderRight="1px solid #ddd"></Td>
+                                                    <Td borderRight="1px solid #ddd">
+                                                    <Flex gap={5}>
+                                                            <Button colorScheme="blue" className='w-24' onClick={handleUpdateExpense}>
+                                                                {isEditing !== null ? 'Cập nhật' : 'Thêm'}
+                                                            </Button>
+                                                            <Button colorScheme="green" className='w-24' onClick={handleSaveExpense}>
+                                                                {'Lưu'}
+                                                            </Button>
+                                                        </Flex>
+
+                                                    </Td>
                                                 </Tr>
                                                 <Tr>
                                                     <Td borderRight="1px solid #ddd"></Td>
@@ -305,14 +315,7 @@ const RevenuePage = observer(() => {
                                                     <Td
                                                         borderRight="1px solid #ddd"
                                                     >
-                                                        <Flex gap={5}>
-                                                            <Button colorScheme="orange" onClick={handleUpdateExpense} width={20}>
-                                                                {isEditing !== null ? 'Cập nhật' : 'Thêm'}
-                                                            </Button>
-                                                            <Button colorScheme="green" width={20} onClick={handleSaveExpense}>
-                                                                {'Lưu'}
-                                                            </Button>
-                                                        </Flex>
+                                                       
                                                     </Td>
                                                 </Tr>
                                                 {/* {dataDetail?.expenseDetails.map((expense, index) => (
@@ -343,10 +346,10 @@ const RevenuePage = observer(() => {
                                                         <Td borderRight="1px solid #ddd">{formatPrice(expense.totalPrice)}</Td>
                                                         <Td borderRight="1px solid #ddd">
                                                             <Flex gap={5}>
-                                                                <Button colorScheme="blue" size={'sm'} width={20} onClick={() => handleEditExpense(index)}>
+                                                                <Button colorScheme="blue" className='w-24'  onClick={() => handleEditExpense(index)}>
                                                                     Sửa
                                                                 </Button>
-                                                                <Button colorScheme="red" size={'sm'} width={20} onClick={() => handleDeleteExpense(index)}>
+                                                                <Button colorScheme="red" className='w-24' onClick={() => handleDeleteExpense(index)}>
                                                                     Xóa
                                                                 </Button>
                                                             </Flex>

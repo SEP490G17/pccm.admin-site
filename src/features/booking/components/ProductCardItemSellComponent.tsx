@@ -3,25 +3,39 @@ import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
 import { observer } from 'mobx-react';
 import { Product } from '@/app/models/product.model.ts';
 import { useStore } from '@/app/stores/store';
+import { PaymentStatus } from '@/app/models/payment.model';
 
 interface Iprops {
   product: Product;
 }
 const ProductCardItemSellComponent = observer(({ product }: Iprops) => {
-  const { orderStore } = useStore();
-  const {addProductToOrder, selectedProductItems} = orderStore;
+  const { bookingStore } = useStore();
+  const { addProductToOrder, selectedProductItems, selectedOrder, orderOfBooking } = bookingStore;
+
+  const checkIsPaymentSuccess = () => {
+    return (
+      selectedOrder &&
+      selectedOrder.id &&
+      orderOfBooking.find((o) => o.id == selectedOrder.id)?.paymentStatus === PaymentStatus.Success
+    );
+  };
+  const handleAddProductToOrder = (productId: number) => {
+    if (!checkIsPaymentSuccess()) {
+      addProductToOrder(productId);
+    }
+  };
+
 
   return (
     <>
-      <GridItem>
+      <GridItem colSpan={{ base: 2, xl: 1 }}>
         <Grid
           templateColumns={'repeat(24,1fr)'}
           className={`h-44  px-3 py-3 rounded-md cursor-pointer 
             ${selectedProductItems.get(product.id) !== undefined && 'bg-green-200'} `}
           gap={4}
-          onClick={()=>addProductToOrder(product.id)}
-          style={{boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px'}}
-
+          onClick={() => handleAddProductToOrder(product.id)}
+          style={{ boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px' }}
         >
           <GridItem colSpan={12} className={'h-full flex items-center'}>
             <LazyImageAtom

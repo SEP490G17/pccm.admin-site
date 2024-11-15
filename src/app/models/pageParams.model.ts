@@ -1,4 +1,3 @@
-import { BookingStatus } from './booking.model';
 
 export interface IPageParams {
   pageIndex?: number;
@@ -32,3 +31,6 @@ export class ProductPageParams extends PageParams {
   category?: number;
 }
 
+export class BookingPageParams extends PageParams{
+  courtClusterId?: number;
+}

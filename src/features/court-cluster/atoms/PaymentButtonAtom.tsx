@@ -22,10 +22,9 @@ import { PaymentType } from '@/app/models/payment.model';
 interface PaymentButtonAtomProps {
   paymentUrl?: string;
   bookingId: number;
-  amount: number;
 }
 
-const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId, amount }) => {
+const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef<HTMLButtonElement | null>(null);
   const { paymentStore, bookingClusterStore: bookingStore } = useStore();
@@ -60,7 +59,7 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId, 
                     if (paymentUrl) {
                       window.open(paymentUrl, '_blank');
                     } else {
-                      await paymentStore.getPayment(PaymentType.Booking, bookingId, amount, toast);
+                      await paymentStore.getPayment(PaymentType.Booking, bookingId, toast);
                       window.open(paymentStore.paymentUrl, '_blank');
                       bookingStore.updateTodayUrlBooking(paymentStore.paymentUrl,bookingId);
                     }
@@ -74,7 +73,7 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId, 
                 Nhấn{' '}
                 <Link
                   onClick={async() => {
-                    await paymentStore.getPayment(PaymentType.Booking, bookingId, amount, toast);
+                    await paymentStore.getPayment(PaymentType.Booking, bookingId, toast);
                     window.open(paymentStore.paymentUrl, '_blank');
                     bookingStore.updateTodayUrlBooking(paymentStore.paymentUrl,bookingId);
                   }}

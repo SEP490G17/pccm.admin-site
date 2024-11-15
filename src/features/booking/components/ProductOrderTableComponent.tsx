@@ -1,3 +1,4 @@
+import { PaymentStatus } from '@/app/models/payment.model';
 import { useStore } from '@/app/stores/store';
 import {
   Button,
@@ -12,16 +13,37 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react';
-interface IProps{
-  totalProductAmount: number;
-  setTotalProductAmount: (amount: number) => any;
-}
-const ProductOrderTableComponent = observer(({setTotalProductAmount}:IProps) => {
-  const { orderStore, courtClusterStore } = useStore();
+const ProductOrderTableComponent = observer(() => {
+  const { bookingStore, courtClusterStore } = useStore();
   const { productOfClusterRegistry } = courtClusterStore;
-  const { ProductItemIdArray, selectedProductItems, minusProductToOrder, removeProductFromOrder } =
-    orderStore;
-  let sum = 0;
+  const {
+    ProductItemIdArray,
+    selectedProductItems,
+    minusProductToOrder,
+    removeProductFromOrder,
+    selectedOrder,
+    orderOfBooking,
+  } = bookingStore;
+  const checkIsPaymentSuccess = () => {
+    return (
+      selectedOrder &&
+      selectedOrder.id &&
+      orderOfBooking.find((o) => o.id == selectedOrder.id)?.paymentStatus === PaymentStatus.Success
+    );
+  };
+
+  const handleMinusProductToOrder = (id: number) => {
+    if (!checkIsPaymentSuccess()) {
+      minusProductToOrder(id);
+    }
+  };
+
+  const handleremoveProductFromOrder = (id: number) => {
+    if (!checkIsPaymentSuccess()) {
+      removeProductFromOrder(id);
+    }
+  };
+
   return (
     <>
       <TableContainer className="mt-8">
@@ -42,8 +64,6 @@ const ProductOrderTableComponent = observer(({setTotalProductAmount}:IProps) => 
 
               if (product) {
                 const total = product.price * (selectedProductItems.get(productItemId) ?? 0);
-                sum += total;
-                setTotalProductAmount(sum);
                 return (
                   <Tr key={product.id}>
                     <Td>{product.productName}</Td>
@@ -54,14 +74,14 @@ const ProductOrderTableComponent = observer(({setTotalProductAmount}:IProps) => 
                       <Flex gap={2}>
                         <Button
                           colorScheme="red"
-                          onClick={() => minusProductToOrder(productItemId)}
+                          onClick={() => handleMinusProductToOrder(productItemId)}
                         >
                           Giảm
                         </Button>
                         <Button
                           colorScheme="gray"
                           onClick={() => {
-                            removeProductFromOrder(productItemId);
+                            handleremoveProductFromOrder(productItemId);
                           }}
                         >
                           Huỷ
@@ -75,7 +95,6 @@ const ProductOrderTableComponent = observer(({setTotalProductAmount}:IProps) => 
           </Tbody>
         </Table>
       </TableContainer>
-    
     </>
   );
 });

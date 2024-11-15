@@ -6,12 +6,12 @@ interface IProps {
   service: Service;
 }
 const ServiceCardItemSellComponent = observer(({ service }: IProps) => {
-  const { orderStore } = useStore();
-  const { addServiceToOrder, selectedServiceItems } = orderStore;
+  const { bookingStore } = useStore();
+  const { addServiceToOrder, selectedServiceItems } = bookingStore;
   return (
     <>
-      <GridItem>
-        <Grid
+      <GridItem colSpan={{ base: 2, xl: 1 }}>
+      <Grid
           templateRows={'repeat(6,1fr)'}
           className={`h-44  px-3 pb-3 pt-4 rounded-md cursor-pointer 
                         ${selectedServiceItems.get(service.id) !== undefined && 'bg-green-200'} `}

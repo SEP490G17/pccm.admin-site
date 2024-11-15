@@ -19,7 +19,7 @@ const BookingServicesTab = observer(({ courtClusterId }: IProps) => {
         Danh sách dịch vụ của cụm sân
       </Heading>
       {!loadingServicesPage && (
-        <Grid templateColumns={'repeat(2,1fr)'} gap={4} maxHeight={'40rem'} overflow={'scroll'}>
+        <Grid templateColumns={'repeat(2,1fr)'} gap={4} maxHeight={'40rem'} overflowY={'auto'}>
           {serviceOfCourtClusterArray.map((service) => (
             <ServiceCardItemSellComponent service={service} />
           ))}
@@ -28,7 +28,7 @@ const BookingServicesTab = observer(({ courtClusterId }: IProps) => {
       {loadingServicesPage && (
         <Grid templateColumns={'repeat(2,1fr)'} gap={4}>
           {Array.from({ length: 6 }, (_, index) => (
-            <GridItem key={index}>
+            <GridItem key={index} colSpan={{ base: 2, xl: 1 }}>
               <Skeleton height="11rem" />
             </GridItem>
           ))}

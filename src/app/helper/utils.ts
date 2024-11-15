@@ -1,5 +1,11 @@
 import { dateFormatOptions } from './settings';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import { BookingForList } from '../models/booking.model';
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
 export const sleep = (ms: number) => {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
@@ -33,6 +39,15 @@ export const catchErrorHandle = async <T>(
     });
 };
    
+
+export const convertBookingStartAndEndUTCToG7 = (booking: BookingForList) => {
+  const startTime = dayjs(booking.startDay).add(7, 'hour'); // Convert to GMT+7
+  const endTime = dayjs(booking.endDay).add(7, 'hour'); // Convert to GMT+7
+  const startDay = startTime.format('DD/MM/YYYY');
+  const endDay = endTime.format('DD/MM/YYYY');
+  return { ...booking, startDay, endDay };
+}
+
 export const isNumber = (value: any): boolean =>{
   return typeof value === 'number' &&!isNaN(value);
 }

@@ -58,7 +58,7 @@ const CourtClusterTableComponent = observer(() => {
                             aria-label={'Details'}
                         />
                       </Tooltip>
-                      <DeleteButtonAtom name={court.title} header={"Cụm sân"}  loading={loading} onDelete={ async () =>{}} />
+                      <DeleteButtonAtom buttonSize='md' name={court.title} header={"Cụm sân"}  loading={loading} onDelete={ async () =>{}} />
                   </Flex>
                 </Td>
               </Tr>

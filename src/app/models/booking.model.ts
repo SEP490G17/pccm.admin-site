@@ -48,6 +48,7 @@ export interface BookingForList {
   phoneNumber: string;
   fullName: string;
   courtName: string;
+  courtClusterName?:string;
   playTime: string; // Thời gian bắt đầu đặt sân
   startDay: string;
   endDay: string;
@@ -87,6 +88,7 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
   // Format startDay and endDay in 'YYYY-MM-DD' in GMT+7
   const startDay = startTime.format('DD/MM/YYYY');
   const endDay = untilTime ? untilTime.format('DD/MM/YYYY') : endTime.format('DD/MM/YYYY');
+  const recu =  booking.RecurrenceRule ?  booking.RecurrenceRule :  booking.recurrenceRule;
   return {
     id: booking.id,
     phoneNumber: booking.phoneNumber,
@@ -100,8 +102,8 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
     status: booking.status,
     isSuccess: booking.isSuccess,
     totalPrice: booking.totalPrice,
-    RecurrenceRule: booking.RecurrenceRule,
-    recurrenceRule: booking.RecurrenceRule,
+    RecurrenceRule: recu,
+    recurrenceRule: recu,
   };
 };
 

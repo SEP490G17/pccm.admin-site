@@ -1,19 +1,21 @@
-import { BookingForList, CourtPriceBooking } from '@/app/models/booking.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
 import { catchErrorHandle } from '@/app/helper/utils.ts';
 import {
   BookingCreate,
+  BookingForList,
   BookingModel,
   BookingStatus,
+  CourtPriceBooking,
   mapBookingToBookingForList,
 } from '../models/booking.model';
-import { BookingMessage } from '../common/toastMessage';
+import { BookingMessage, CommonMessage, DefaultBookingText } from '../common/toastMessage';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { PaginationModel } from '../models/pagination.model';
 import { PageParams } from '../models/pageParams.model';
+import { CreateToastFnReturn } from '@chakra-ui/react';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -54,7 +56,7 @@ export default class BookingClusterStore {
   }
 
   // #region load danh sách booking
-  loadBookingForSchedule = async (toast: any) => {
+  loadBookingForSchedule = async (toast: CreateToastFnReturn) => {
     if (this.courtClusterId) {
       this.loadingBookingForSchedule = true;
       const [error, res] = await catchErrorHandle<BookingModel[]>(
@@ -62,12 +64,12 @@ export default class BookingClusterStore {
       );
       runInAction(() => {
         if (error) {
-          toast(BookingMessage.loadFailure);
+          toast(BookingMessage.loadFailure());
           return;
         }
         if (res) {
           res.forEach((booking) => {
-            this.setBookingToday(booking);
+            this.setBookingToday(mapBookingToBookingForList(booking));
             this.setBooking(booking);
           });
         }
@@ -75,7 +77,7 @@ export default class BookingClusterStore {
       });
     }
   };
-  loadBookingCancel = async (toast: any) => {
+  loadBookingCancel = async (toast: CreateToastFnReturn) => {
     if (this.courtClusterId) {
       this.loadingBookingCancel = true;
       const queryParams = new URLSearchParams();
@@ -91,21 +93,21 @@ export default class BookingClusterStore {
       );
       runInAction(() => {
         if (err) {
-          toast(BookingMessage.loadingCancelFailure);
+          toast(BookingMessage.loadCancelFailure());
         }
         if (res) {
           res.data.forEach((booking) => {
             this.setBookingCancel(booking);
           });
           this.bookingCancelPageParam.pageSize = res.pageSize;
-          this.bookingCancelPageParam.skip = this.bookingPendingRegistry.size;
+          this.bookingCancelPageParam.skip = this.bookingCancelRegistry.size;
           this.bookingCancelPageParam.totalElement = res.count;
         }
         this.loadingBookingCancel = false;
       });
     }
   };
-  loadBookingPending = async (toast: any) => {
+  loadBookingPending = async (toast: CreateToastFnReturn) => {
     if (this.courtClusterId) {
       this.loadingBookingPending = true;
       const queryParams = new URLSearchParams();
@@ -122,7 +124,7 @@ export default class BookingClusterStore {
 
       runInAction(() => {
         if (err) {
-          toast(BookingMessage.loadingPendingFailure);
+          toast(BookingMessage.loadPendingFailure());
         }
         if (!err && res) {
           res.data.forEach((booking) => {
@@ -137,7 +139,7 @@ export default class BookingClusterStore {
     }
   };
 
-  loadBookingAll = async (toast: any) => {
+  loadBookingAll = async (toast: CreateToastFnReturn) => {
     if (this.courtClusterId) {
       this.loadingBookingAll = true;
       const queryParams = new URLSearchParams();
@@ -153,14 +155,14 @@ export default class BookingClusterStore {
 
       runInAction(() => {
         if (err) {
-          toast(BookingMessage.loadingPendingFailure);
+          toast(BookingMessage.loadPendingFailure());
         }
         if (!err && res) {
           res.data.forEach((booking) => {
             this.setBookingAll(booking);
           });
           this.bookingAllPageParam.pageSize = res.pageSize;
-          this.bookingAllPageParam.skip = this.bookingPendingRegistry.size;
+          this.bookingAllPageParam.skip = this.bookingAllRegistry.size;
           this.bookingAllPageParam.totalElement = res.count;
         }
         this.loadingBookingAll = false;
@@ -169,11 +171,77 @@ export default class BookingClusterStore {
   };
   // #endregion
 
+  acceptedBooking = async (id: number, toast: CreateToastFnReturn) => {
+    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.title.accept));
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.acceptedBooking(id));
+    runInAction(() => {
+      toast.close(pendingToast);
+      if (err) {
+        toast(BookingMessage.acceptFailure(undefined, err.message));
+      }
+      if (res) {
+        toast(BookingMessage.acceptSuccess());
+        this.bookingPendingRegistry.delete(id);
+        console.log(res);
+        this.setBookingAll(res);
+        this.setBookingToday(this.convertBookingStartAndEndUTCToG7(res));
+      }
+    });
+  };
+
+  completeBooking = async (id: number, toast: CreateToastFnReturn) => {
+    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.title.accept));
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.completeBooking(id));
+    runInAction(() => {
+      toast.close(pendingToast);
+      if (err) {
+        toast(BookingMessage.acceptFailure(undefined, err.message));
+      }
+      if (res) {
+        toast(BookingMessage.acceptSuccess());
+        this.setBookingAll(res);
+        this.setBookingToday(this.convertBookingStartAndEndUTCToG7(res));
+      }
+    });
+  };
+
+  denyBooking = async (id: number, toast: CreateToastFnReturn) => {
+    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.title.accept));
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.denyBooking(id));
+    runInAction(() => {
+      toast.close(pendingToast);
+      if (err) {
+        toast(BookingMessage.acceptFailure(undefined, err.message));
+      }
+      if (res) {
+        toast(BookingMessage.acceptSuccess());
+        this.setBookingAll(res);
+      }
+    });
+  };
+
+  cancelBooking = async (id: number, toast: CreateToastFnReturn) => {
+    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.title.accept));
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.cancelBooking(id));
+    runInAction(() => {
+      toast.close(pendingToast);
+      if (err) {
+        toast(BookingMessage.acceptFailure(undefined, err.message));
+      }
+      if (res) {
+        toast(BookingMessage.acceptSuccess());
+        this.setBookingAll(res);
+        this.setBookingCancel(res);
+      }
+    });
+  };
+
   createBooking = async (booking: BookingCreate) => {
     const [, res] = await catchErrorHandle(agent.BookingAgent.create(booking));
     runInAction(() => {
       if (res) {
         this.setBooking(res);
+        this.setBookingToday(mapBookingToBookingForList(res));
       }
     });
   };
@@ -196,13 +264,26 @@ export default class BookingClusterStore {
     this.bookingForScheduleRegistry.set(booking.id, booking);
   }
 
-  private setBookingToday = (booking: BookingModel) => {
-    const today = dayjs().utc().startOf('day');
-    const bookingStartTime = dayjs(booking.startTime).utc().startOf('day');
-    if (booking.status == BookingStatus.Confirmed && bookingStartTime.isSame(today, 'day')) {
-      const bookingToday = mapBookingToBookingForList(booking);
+  private setBookingToday = (booking: BookingForList) => {
+    const today = dayjs().tz('Asia/Ho_Chi_Minh').startOf('day'); // Ngày hôm nay theo GMT+7
+    const bookingStartTime = dayjs(booking.startDay, 'DD/MM/YYYY')
+      .tz('Asia/Ho_Chi_Minh')
+      .startOf('day');
+    const bookingEndTime = dayjs(booking.endDay, 'DD/MM/YYYY')
+      .tz('Asia/Ho_Chi_Minh')
+      .startOf('day');
+    console.log('check start time', bookingStartTime.isSame(today, 'day'));
+    console.log('check tody', today);
+    console.log('check start time', bookingStartTime);
+
+    if (
+      booking.status === BookingStatus.Confirmed &&
+      (bookingStartTime.isSame(today, 'day') ||
+        bookingEndTime.isSame(today, 'day') ||
+        (bookingStartTime.isBefore(today, 'day') && bookingEndTime.isAfter(today, 'day')))
+    ) {
       // Add to registry
-      this.bookingTodayRegistry.set(booking.id, bookingToday);
+      this.bookingTodayRegistry.set(booking.id, booking);
     }
   };
 
@@ -220,9 +301,9 @@ export default class BookingClusterStore {
   private convertBookingStartAndEndUTCToG7(booking: BookingForList) {
     const startTime = dayjs(booking.startDay).add(7, 'hour'); // Convert to GMT+7
     const endTime = dayjs(booking.endDay).add(7, 'hour'); // Convert to GMT+7
-    booking.startDay = startTime.format('DD/MM/YYYY');
-    booking.endDay = endTime.format('DD/MM/YYYY');
-    return booking;
+    const startDay = startTime.format('DD/MM/YYYY');
+    const endDay = endTime.format('DD/MM/YYYY');
+    return { ...booking, startDay, endDay };
   }
 
   loadCourtPrice = async (value: number) => {

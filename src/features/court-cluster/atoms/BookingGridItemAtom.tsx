@@ -10,7 +10,7 @@ interface BookingGridItemAtomProps {
 }
 
 const BookingGridItemAtom: FC<BookingGridItemAtomProps> = ({ bookingToday, index }) => {
-  console.log(`check ${index} -- ${bookingToday.RecurrenceRule}`);
+  console.log(bookingToday.recurrenceRule)
   return (
     <>
       <Grid
@@ -34,7 +34,7 @@ const BookingGridItemAtom: FC<BookingGridItemAtomProps> = ({ bookingToday, index
                     fontSize="0.8em"
                     colorScheme={bookingToday.recurrenceRule ? 'pink' : 'blue'}
                   >
-                    {bookingToday.recurrenceRule ? 'Đơn combo' : 'Đơn ngày'}
+                    {bookingToday.recurrenceRule  ? 'Đơn combo' : 'Đơn ngày'}
                   </Badge>
                 }
               </GridItem>
