@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Flex, Box, Select, Heading, Divider } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
-import './style.scss';
+import './style/style.scss';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import CreateStaffPage from './CreateStaffPage';
 import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';

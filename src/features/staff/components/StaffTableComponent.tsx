@@ -14,12 +14,20 @@ import {
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { CgFileDocument } from "react-icons/cg";
+import StaffDetailPopUp from '@/features/staff/StaffDetailPopUp';
+import { useState } from 'react';
+import { Staff } from '@/app/models/staff.model'; 
 
 import { useStore } from '@/app/stores/store';
 
 function StaffTableComponent() {
   const { staffStore } = useStore();
   const { loadingInitial, StaffArray, staffPageParams } = staffStore;
+  const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
+
+  const handleDetailsClick = (staff: Staff) => {
+    setSelectedStaff(staff);
+  };
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -66,6 +74,7 @@ function StaffTableComponent() {
                       size={'sm'}
                       colorScheme="blue"
                       aria-label={'Details'}
+                      onClick={() => handleDetailsClick(staff)}
                     />
                     <IconButton icon={<FaEdit />} aria-label="Edit" colorScheme="orange" size="sm" />
                     <IconButton
@@ -81,6 +90,9 @@ function StaffTableComponent() {
           </Tbody>
         </Table>
       </TableContainer>
+      {selectedStaff && (
+        <StaffDetailPopUp isOpen={!!selectedStaff} onClose={() => setSelectedStaff(null)} staff={selectedStaff} />
+      )}
     </>
   );
 }

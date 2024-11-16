@@ -16,7 +16,7 @@ import {
     useDisclosure,
     VStack,
 } from "@chakra-ui/react";
-import "./style.scss";
+import "./style/style.scss";
 import { Form, Formik } from "formik";
 import MultiSelectData from "@/app/common/input/MultiSelectData";
 import { FaEdit } from "react-icons/fa";

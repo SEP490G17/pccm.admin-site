@@ -12,6 +12,7 @@ import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
 import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
 import PlusIcon from '../atoms/PlusIcon';
 import Select from 'react-select';
+import CategoryPopUp from '../category/CategoryPopUp';
 
 const ProductPage = observer(() => {
     const { productStore, categoryStore, courtClusterStore } = useStore();
@@ -29,6 +30,7 @@ const ProductPage = observer(() => {
     const { loadCategories } = categoryStore;
     const [isPending, setIsPending] = useState(false);
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { isOpen: isCategoryOpen, onOpen: onCategoryOpen, onClose: onCategoryClose } = useDisclosure();
 
     useEffect(() => {
         setLoadingInitial(true);
@@ -112,7 +114,18 @@ const ProductPage = observer(() => {
                         isSearchable={true}
                     >
                     </Select>
-
+                    <Flex flexWrap="wrap" gap="1rem" style={{ padding: '0.5rem' }}>
+                        {/* Category Button */}
+                        <ButtonPrimaryAtoms
+                            className="bg-primary-900"
+                            handleOnClick={onCategoryOpen}
+                            children={
+                                <Center gap={1}>
+                                    Category
+                                </Center>
+                            }
+                        />
+                    </Flex>
                     {/* <Select
             size={'md'}
             borderRadius="4px"
@@ -167,6 +180,7 @@ const ProductPage = observer(() => {
                 loading={loading}
             />
             <CreateProductPage isOpen={isOpen} onClose={onClose} />
+            <CategoryPopUp isOpen={isCategoryOpen} onClose={onCategoryClose} />
         </>
     );
 });
