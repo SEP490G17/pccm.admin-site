@@ -30,6 +30,7 @@ export default class BookingClusterStore {
   loadingBookingPending: boolean = false;
   loadingBookingCancel: boolean = false;
   loadingBookingAll: boolean = false;
+  loadingCourtPrice: boolean = false;
 
   // #endregion
 
@@ -318,7 +319,7 @@ export default class BookingClusterStore {
   }
 
   loadCourtPrice = async (value: number) => {
-    this.loadingSlot = true;
+    this.loadingCourtPrice = true;
     const [error, res] = await catchErrorHandle<CourtPriceBooking[]>(
       agent.BookingAgent.priceCourt(value),
     );
@@ -330,7 +331,7 @@ export default class BookingClusterStore {
         this.courtPrice = res;
       }
     });
-    this.loadingSlot = false;
+    this.loadingCourtPrice = false;
   };
 
   get bookingScheduleArray() {
