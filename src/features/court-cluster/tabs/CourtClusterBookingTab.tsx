@@ -36,8 +36,9 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
   };
   const { courtClusterStore, bookingClusterStore: bookingStore } = useStore();
   const { courtOfClusterArray, loadCourtOfCluster, loadingCourt } = courtClusterStore;
-  const { bookingArray, createBooking, loadingBookingForSchedule: loading } = bookingStore;
+  const { bookingArray, createBooking, loadingBookingForSchedule: loading, courtPrice} = bookingStore;
   useEffect(() => {
+    bookingStore.loadCourtPrice(courtClusterId);
     loadCourtOfCluster(courtClusterId, toast);
     bookingStore.loadBookingForSchedule(toast);
   }, [courtClusterId]);
@@ -213,6 +214,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         editorTemplate={(props: any) => (
           <BookingEditorTemplateComponent
             {...props}
+            prices={courtPrice}
             courtOfClusterArray={courtOfClusterArray} // Truyền dataSource vào editor template
           />
         )}

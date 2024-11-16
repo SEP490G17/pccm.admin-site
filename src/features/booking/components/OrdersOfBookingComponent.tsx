@@ -64,17 +64,19 @@ const OrdersOfBookingComponent = observer(() => {
               {(order.paymentStatus == PaymentStatus.Pending ||
                 order.paymentStatus == PaymentStatus.Cancel ||
                 order.paymentStatus == PaymentStatus.Failed) && (
-                <>
-                  <Button colorScheme="blue" className='w-28' onClick={async () => await handlePayment(order.id)}>
-                    Thanh toán
-                  </Button>
-                  <Button colorScheme="red" className='w-28'>Hủy đơn</Button>
-                </>
-              )}
+                  <>
+                    <Button colorScheme="blue" className='w-28' onClick={async () => await handlePayment(order.id)}>
+                      Thanh toán
+                    </Button>
+                    <Button colorScheme="red" className='w-28'>Hủy đơn</Button>
+                  </>
+                )}
               {order.paymentStatus == PaymentStatus.Success && (
                 <>
-                  <Button colorScheme="blue" className='w-28' onClick={async()=>{await handleOpenDetaisOrder(order.id)}}>Xem chi tiết</Button>
-                  <Button colorScheme="red" className='w-28'>In hoá đơn</Button>
+                  <Button colorScheme="blue" className='w-28' onClick={async () => { await handleOpenDetaisOrder(order.id) }}>Xem chi tiết</Button>
+                  <Button colorScheme="red" className='w-28' onClick={() => {
+                    bookingStore.exportBillOrder(order.id)
+                  }}>In hoá đơn</Button>
                 </>
               )}
             </Flex>
