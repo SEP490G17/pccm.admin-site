@@ -18,7 +18,7 @@ const CourtClusterPage = observer(() => {
     if (courtClusterStore.courtClusterRegistry.size == 0) {
       loadCourtsCluster();
     }
-  }, [courtClusterStore.courtClusterRegistry.size,loadCourtsCluster]);
+  }, [courtClusterStore.courtClusterRegistry.size, loadCourtsCluster]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     courtClusterStore.setSearchTerm(e.target.value);

@@ -8,7 +8,7 @@ import {
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import { FaEdit, FaSearch } from 'react-icons/fa';
-import './style.scss';
+import './style/style.scss';
 import { router } from '@/app/router/Routes';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import UserTableComponents from './components/UserTableComponents';

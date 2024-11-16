@@ -39,16 +39,16 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     courtOfClusterArray,
     loadCourtOfCluster,
     loadingInitialBookingPage,
-    setLoadingInitialBookingPage
+    setLoadingInitialBookingPage,
   } = courtClusterStore;
-  const { bookingScheduleArray: bookingArray, createBooking } = bookingStore;
+  const { bookingScheduleArray: bookingArray, createBooking, courtPrice } = bookingStore;
   useEffect(() => {
     setLoadingInitialBookingPage(true);
     Promise.all([
+      bookingStore.loadCourtPrice(courtClusterId),
       loadCourtOfCluster(courtClusterId, toast),
-      bookingStore.loadBookingForSchedule(toast)
+      bookingStore.loadBookingForSchedule(toast),
     ]).then(() => setLoadingInitialBookingPage(false));
-   
   }, [courtClusterId, bookingStore, loadCourtOfCluster, setLoadingInitialBookingPage, toast]);
 
   const group = { resources: ['courts'] };
@@ -229,6 +229,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         editorTemplate={(props: any) => (
           <BookingEditorTemplateComponent
             {...props}
+            prices={courtPrice}
             courtOfClusterArray={courtOfClusterArray} // Truyền dataSource vào editor template
           />
         )}

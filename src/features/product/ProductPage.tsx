@@ -12,6 +12,7 @@ import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
 import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
 import PlusIcon from '../atoms/PlusIcon';
 import Select from 'react-select';
+import CategoryPopUp from '../category/CategoryPopUp';
 
 const ProductPage = observer(() => {
   const { productStore, categoryStore, courtClusterStore } = useStore();
@@ -30,6 +31,11 @@ const ProductPage = observer(() => {
   const { loadCategories } = categoryStore;
   const [isPending, setIsPending] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: isCategoryOpen,
+    onOpen: onCategoryOpen,
+    onClose: onCategoryClose,
+  } = useDisclosure();
 
   useEffect(() => {
     setLoadingInitial(true);
@@ -38,7 +44,7 @@ const ProductPage = observer(() => {
       loadCategories(),
       courtClusterStore.loadCourtClusterListAll(),
     ]).finally(() => setLoadingInitial(false));
-  }, [courtClusterStore,loadCategories,loadProducts,setLoadingInitial]);
+  }, [courtClusterStore, loadCategories, loadProducts, setLoadingInitial]);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -131,6 +137,11 @@ const ProductPage = observer(() => {
               </Center>
             }
           />
+          <ButtonPrimaryAtoms
+            className="bg-primary-900"
+            handleOnClick={onCategoryOpen}
+            children={<Center gap={1}>Danh sách thể loại</Center>}
+          />
         </Flex>
       </Flex>
       <ProductTableComponent />
@@ -144,6 +155,7 @@ const ProductPage = observer(() => {
         loading={loading}
       />
       <CreateProductPage isOpen={isOpen} onClose={onClose} />
+      <CategoryPopUp isOpen={isCategoryOpen} onClose={onCategoryClose} />
     </>
   );
 });

@@ -190,7 +190,7 @@ const CourtClusterCreatePage = observer(() => {
                               className="h-10"
                               format={'HH:mm'}
                               defaultValue={
-                                props.values.openTime ? dayjs(props.values.openTime, 'HH:mm') : null
+                                props.values.openTime ? dayjs(props.values.openTime, 'HH:mm:ss') : null
                               }
                               onBlur={() => props.getFieldHelpers('openTime').setTouched(true)} // Ensure you call handleBlur
                               onChange={(date) => {

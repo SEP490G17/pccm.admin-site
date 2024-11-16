@@ -13,8 +13,9 @@ export interface UserManager {
   username: string;
   email: string;
   phoneNumber: string;
+  citizenIdentification : string;
+  imageUrl: string;
   lockoutEnable: boolean;
   lockoutEnd: boolean;
   isDisabled: boolean;
 }
-

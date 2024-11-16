@@ -18,7 +18,7 @@ const HeaderStatistic = ({ data }: IProps) => {
                     <Box
                         width="23rem"
                         border="1px solid #e2e8f0"
-                        boxShadow="sm"
+                        boxShadow="md"
                         borderRadius={'10px'}
                         padding={4}
                         display="flex"
@@ -42,7 +42,7 @@ const HeaderStatistic = ({ data }: IProps) => {
                     <Box
                         width="23rem"
                         border="1px solid #e2e8f0"
-                        boxShadow="sm"
+                        boxShadow="md"
                         borderRadius={'10px'}
                         padding={4}
                         display="flex"
@@ -66,7 +66,7 @@ const HeaderStatistic = ({ data }: IProps) => {
                     <Box
                         width="23rem"
                         border="1px solid #e2e8f0"
-                        boxShadow="sm"
+                        boxShadow="md"
                         borderRadius={'10px'}
                         padding={4}
                         display="flex"

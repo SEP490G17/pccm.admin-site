@@ -17,10 +17,17 @@ import {
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import { CgFileDocument } from 'react-icons/cg';
 import { MdLockReset } from 'react-icons/md';
+import { useDisclosure } from '@chakra-ui/react';
+import UserDetailPopUp from '@/features/user/UserDetailPopUp';
+import { useState } from 'react';
+import { UserManager } from '@/app/models/user.model';
 
 function UserTableComponents() {
   const { userStore } = useStore();
   const { userArray, loading, userPageParams } = userStore;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedUser, setSelectedUser] = useState<UserManager | null>(null);
+
   const renderStatus = (status: string) => {
     let color = '';
     switch (status) {
@@ -38,7 +45,10 @@ function UserTableComponents() {
     }
     return <Box color={color}>{status}</Box>;
   };
-
+  const handleViewDetails = (user: UserManager) => {
+    setSelectedUser(user);
+    onOpen();
+  };
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -78,6 +88,7 @@ function UserTableComponents() {
                           size={'sm'}
                           colorScheme="blue"
                           aria-label={'Details'}
+                          onClick={() => handleViewDetails(user)}
                         />
                       </Tooltip>
                       <Tooltip hasArrow placement='top' label="Reset mật khẩu" bg="gray.300" color="black">
@@ -96,6 +107,9 @@ function UserTableComponents() {
           </Tbody>
         </Table>
       </TableContainer>
+      {selectedUser && (
+        <UserDetailPopUp isOpen={isOpen} onClose={onClose} user={selectedUser} />
+      )}
     </>
   );
 }

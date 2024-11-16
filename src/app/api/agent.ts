@@ -38,6 +38,7 @@ import {
   BookingForList,
   BookingModel,
   BookingRecent,
+  CourtPriceBooking,
 } from '../models/booking.model';
 import { PaymentType } from '../models/payment.model';
 import { OrderModel, OrderOfBooking } from '../models/order.model';
@@ -175,6 +176,9 @@ const Roles = {
 
 const Categories = {
   list: (): Promise<ICategory[]> => requests.get(`/category`),
+  create: (category: { categoryName: string }): Promise<ICategory> => requests.post(`/category`, category),
+  update: (category: ICategory): Promise<ICategory> => requests.put(`/category/${category.id}`, category),
+  delete: (id: number): Promise<void> => requests.del(`/category/${id}`),
 };
 
 const Products = {
@@ -211,6 +215,7 @@ const Account = {
 const Users = {
   list: (queryParams: string = ''): Promise<PaginationModel<UserManager>> =>
     requests.get(`/user${queryParams}`),
+  details: (userId: string): Promise<UserManager> => requests.get(`/user/details/${userId}`), 
 };
 const Staffs = {
   list: (): Promise<PaginationModel<Staff>> => requests.get('/staff'),
@@ -223,14 +228,18 @@ const BookingAgent = {
   getListV2: (queryParam: string = ''): Promise<PaginationModel<BookingForList>> =>
     requests.get(`/booking/v2${queryParam}`),
   getDetailsV1: (id: number): Promise<BookingDetails> => requests.get(`/booking/v1/${id}`),
+  priceCourt: (data: number): Promise<CourtPriceBooking[]> =>
+    requests.get(`/Booking/priceCourt?courtClusterId=${data}`),
   acceptedBooking: (id: number): Promise<BookingForList> =>
     requests.put(`/booking/accepted/${id}`, {}),
   completeBooking: (id: number): Promise<BookingForList> =>
     requests.put(`/booking/completed/${id}`, {}),
   cancelBooking: (id: number): Promise<BookingForList> => requests.put(`/booking/cancel/${id}`, {}),
   denyBooking: (id: number): Promise<BookingForList> => requests.put(`/booking/deny/${id}`, {}),
-
-  // getCourtPrices: (id:courtClusterId): 
+  exportBill: (courtClusterId: number): Promise<any> =>
+    requests.get(`/bill/billbooking/${courtClusterId}`),
+  exportBillOrder: (orderId: number): Promise<any> =>
+    requests.get(`/bill/billorder/${orderId}`),
 };
 
 const PaymentAgent = {

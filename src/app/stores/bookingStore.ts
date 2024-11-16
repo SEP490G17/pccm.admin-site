@@ -1,7 +1,11 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
 import { BookingDetails, BookingForList } from '../models/booking.model';
-import { calculateTimeDifferenceInHours, catchErrorHandle, convertBookingStartAndEndUTCToG7 } from '../helper/utils';
+import {
+  calculateTimeDifferenceInHours,
+  catchErrorHandle,
+  convertBookingStartAndEndUTCToG7,
+} from '../helper/utils';
 import { BookingMessage, CommonMessage, OrderMessage } from '../common/toastMessage';
 import { OrderModel, OrderForProducts, OrderOfBooking } from '../models/order.model';
 import { CreateToastFnReturn } from '@chakra-ui/react';
@@ -63,16 +67,15 @@ export default class BookingStore {
     });
   };
 
-  filterByCourtCluster = async (courtCluster: number, toast:CreateToastFnReturn) => {
+  filterByCourtCluster = async (courtCluster: number, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     this.bookingPageParams.clearLazyPage();
     this.bookingPageParams.courtClusterId = courtCluster;
     this.bookingRegistry.clear();
     await this.loadBookingAll(toast);
-    runInAction(() => this.loadingInitial = false);
-
-}
-  get bookingArray (){
+    runInAction(() => (this.loadingInitial = false));
+  };
+  get bookingArray() {
     return Array.from(this.bookingRegistry.values());
   }
 
@@ -274,4 +277,82 @@ export default class BookingStore {
     }
     return 0;
   }
+
+  exportBill = (courtClusterId: number) => {
+    runInAction(async () => {
+      try {
+        const response = await agent.BookingAgent.exportBill(courtClusterId);
+        const byteCharacters = atob(response.fileContents);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+          const slice = byteCharacters.slice(
+            offset,
+            Math.min(byteCharacters.length, offset + 1024),
+          );
+          const byteArray = new Uint8Array(slice.length);
+
+          for (let i = 0; i < slice.length; i++) {
+            byteArray[i] = slice.charCodeAt(i);
+          }
+
+          byteArrays.push(byteArray);
+        }
+
+        const blob = new Blob(byteArrays, {
+          type: 'application/pdf',
+        });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+
+        link.setAttribute('download', `Hoa_don.pdf`);
+
+        document.body.appendChild(link);
+        link.click();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Failed to export bill:', error);
+      }
+    });
+  };
+
+  exportBillOrder = (orderId: number) => {
+    runInAction(async () => {
+      try {
+        const response = await agent.BookingAgent.exportBillOrder(orderId);
+        const byteCharacters = atob(response.fileContents);
+        const byteArrays = [];
+
+        for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
+          const slice = byteCharacters.slice(
+            offset,
+            Math.min(byteCharacters.length, offset + 1024),
+          );
+          const byteArray = new Uint8Array(slice.length);
+
+          for (let i = 0; i < slice.length; i++) {
+            byteArray[i] = slice.charCodeAt(i);
+          }
+
+          byteArrays.push(byteArray);
+        }
+
+        const blob = new Blob(byteArrays, {
+          type: 'application/pdf',
+        });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+
+        link.setAttribute('download', `Hoa_don.pdf`);
+
+        document.body.appendChild(link);
+        link.click();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Failed to export bill:', error);
+      }
+    });
+  };
 }

@@ -10,3 +10,8 @@ export class Category implements ICategory {
     this.categoryName = categoryName;
   }
 }
+
+export class CategoryDTO {
+    id: number = 0;
+    categoryName: string = '';  
+}
