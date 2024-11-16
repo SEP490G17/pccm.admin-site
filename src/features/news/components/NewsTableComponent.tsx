@@ -128,7 +128,7 @@ const NewsTableComponent = observer(() => {
                   <Td>
                     <Flex gap="3">
                       <EditButtonAtom
-                        onDelete={async () => {
+                        onUpdate={async () => {
                           handleOpenEdit(news.id);
                         }}
                       />

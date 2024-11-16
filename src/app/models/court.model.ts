@@ -70,6 +70,7 @@ export interface CourtClusterDetailsCreate{
   ward: string;
   address: string;
   courtDetails: CourtDetailsCreate[];
+  images:string[];
 }
 
 

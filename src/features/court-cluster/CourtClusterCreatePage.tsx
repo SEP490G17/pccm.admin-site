@@ -1,5 +1,5 @@
 import PageHeadingAtoms from '@/features/atoms/PageHeadingAtoms.tsx';
-import { FastField, Form, Formik } from 'formik';
+import { FastField, Field, FieldInputProps, Form, Formik, FormikProps } from 'formik';
 import {
   Badge,
   Box,
@@ -13,6 +13,7 @@ import {
   FormLabel,
   Grid,
   GridItem,
+  Heading,
   Input,
   InputGroup,
   InputRightElement,
@@ -40,7 +41,7 @@ import { router } from '@/app/router/Routes';
 
 const CourtClusterCreatePage = observer(() => {
   const CourtPriceSchema = Yup.object().shape({
-    price: Yup.number().min(0, 'Giá phải lớn hơn hoặc bằng 0').required('Giá là bắt buộc'),
+    price: Yup.number().min(1000, 'Giá phải lớn hơn hoặc bằng 1000').required('Giá là bắt buộc'),
     fromTime: Yup.string().required('Thời gian bắt đầu là bắt buộc'),
     toTime: Yup.string().required('Thời gian kết thúc là bắt buộc'),
   });
@@ -60,13 +61,17 @@ const CourtClusterCreatePage = observer(() => {
   // Định nghĩa schema cho CourtClusterDetails
   const CourtClusterDetailsSchema = Yup.object().shape({
     title: Yup.string().required('Tiêu đề là bắt buộc'),
-    description: Yup.string().optional(),
+    description: Yup.string().required(),
     openTime: Yup.string().required('Giờ mở cửa là bắt buộc'),
     closeTime: Yup.string().required('Giờ đóng cửa là bắt buộc'),
     province: Yup.string().required('Tỉnh là bắt buộc'),
     district: Yup.string().required('Quận là bắt buộc'),
     ward: Yup.string().required('Phường là bắt buộc'),
     address: Yup.string().required('Địa chỉ là bắt buộc'),
+    images: Yup.array()
+      .of(Yup.string().url('URL không hợp lệ'))
+      .min(4, 'Cần ít nhất 4 ảnh')
+      .required('Ảnh là bắt buộc'),
     courtDetails: Yup.array()
       .of(CourtDetailsSchema)
       .min(1, 'Phải có ít nhất một sân')
@@ -82,6 +87,7 @@ const CourtClusterCreatePage = observer(() => {
     district: '',
     ward: '',
     address: '',
+    images: [],
     courtDetails: [
       {
         id: 0,
@@ -101,17 +107,18 @@ const CourtClusterCreatePage = observer(() => {
     <>
       <PageHeadingAtoms
         breadCrumb={[
-          { title: 'Danh sách cụm sân', to: '/cum-san' },
+          { title: 'Cụm sân', to: '/cum-san' },
           { title: 'Tạo sân', to: `/cum-san/tao` },
         ]}
       />
+      <Heading className="mb-4 mt-2">Tạo cụm sân</Heading>
+
       <Card>
         <CardBody>
           <Formik
             initialValues={initial}
             validationSchema={CourtClusterDetailsSchema}
             validateOnChange={false}
-            validateOnBlur={false}
             onSubmit={async (values, { isSubmitting }: any) => {
               const pending = toast(CommonMessage.loadingMessage('Tạo cụm sân'));
               await agent.CourtClusterAgent.create(values)
@@ -144,24 +151,24 @@ const CourtClusterCreatePage = observer(() => {
               <Form onSubmit={props.handleSubmit}>
                 <Grid templateColumns={'repeat(24,1fr)'} gap={5}>
                   <GridItem colSpan={12}>
-                    <FormControl isRequired={true}>
-                      <Grid templateColumns="10rem 1fr" alignItems="center" gap={2}>
-                        <FormLabel className="title_label_court">Tên cụm sân</FormLabel>
-                        <FastField name="title">
-                          {({ field }: any) => {
-                            return <Input placeholder="Nhập tiêu đề cho cụm sân" type="text" {...field} />;
-                          }}
-                        </FastField>
-                      </Grid>
-                    </FormControl>
+                    <FastField name="title">
+                      {({ field, form }: any) => (
+                        <FormControl isInvalid={form.errors.title && form.touched.title}>
+                          <Grid templateColumns="10rem 1fr" alignItems="center" columnGap={2}>
+                            <FormLabel className="title_label_court">Tên cụm sân</FormLabel>
+                            <Input placeholder="Nhập tiêu đề cho cụm sân" type="text" {...field} />
+                            <div></div>
+                            <FormErrorMessage>{form.errors.title}</FormErrorMessage>
+                          </Grid>
+                        </FormControl>
+                      )}
+                    </FastField>
                   </GridItem>
                   <GridItem colSpan={12}></GridItem>
 
                   <GridItem colSpan={12}>
                     <Grid templateColumns="10rem 1fr" alignItems="center" gap={2}>
-                      <FormControl isRequired={true} className="w-full">
-                        <FormLabel className="title_label_court">Thời gian</FormLabel>
-                      </FormControl>
+                      <FormLabel className="title_label_court">Thời gian</FormLabel>
                       <Grid templateColumns={'repeat(4,1fr)'} gap={3.5}>
                         <GridItem colSpan={1}>
                           <Badge
@@ -182,10 +189,10 @@ const CourtClusterCreatePage = observer(() => {
                               placeholder={'--:--'}
                               className="h-10"
                               format={'HH:mm'}
-                              onBlur={() => props.setTouched({ openTime: true })} // Đánh dấu là đã chạm
                               defaultValue={
                                 props.values.openTime ? dayjs(props.values.openTime, 'HH:mm') : null
                               }
+                              onBlur={() => props.getFieldHelpers('openTime').setTouched(true)} // Ensure you call handleBlur
                               onChange={(date) => {
                                 props.setFieldValue(
                                   'openTime',
@@ -208,7 +215,9 @@ const CourtClusterCreatePage = observer(() => {
                           </Badge>
                         </GridItem>
                         <GridItem colSpan={1}>
-                          <FormControl isRequired={true}>
+                          <FormControl
+                            isInvalid={!!(props.errors.closeTime && props.touched.closeTime)}
+                          >
                             <TimePicker
                               placeholder={'--:--'}
                               className="h-10"
@@ -232,29 +241,42 @@ const CourtClusterCreatePage = observer(() => {
                   </GridItem>
                   <GridItem colSpan={12}></GridItem>
                   <GridItem colSpan={12}>
-                    <FormControl isRequired={true}>
-                      <Grid templateColumns="10rem 1fr" alignItems="center" gap={2}>
-                        <FormLabel className="title_label_court">Địa chỉ</FormLabel>
-                        <AddressSelectAtom
-                          setFieldValue={props.setFieldValue}
-                          values={props.values}
-                          getFieldProps={props.getFieldProps}
-                        />
-                      </Grid>
-                    </FormControl>
+                    <Grid templateColumns="10rem 1fr" alignItems="center" gap={2}>
+                      <FormLabel className="title_label_court">Địa chỉ</FormLabel>
+                      <AddressSelectAtom
+                        setFieldValue={props.setFieldValue}
+                        values={props.values}
+                        errors={props.errors}
+                        touched={props.touched}
+                      />
+                    </Grid>
                   </GridItem>
                   <GridItem colSpan={24}>
-                    <FormControl>
+                    <FormControl isInvalid={!!(props.errors.images && props.touched.images)}>
                       <Grid templateColumns="10rem 1fr" alignItems="center" gap={2} mt={2}>
                         <FormLabel className="title_label_court">Ảnh sân</FormLabel>
-                        <ImageUpload limit={4} name="images" />
+                        {/* <ImageUpload limit={4} name="images" /> */}
+                        <GridItem>
+                          <Field name="images">
+                            {({ field, form }: any) => (
+                              <ImageUpload name="images" limit={4} initialFileList={[]} />
+                            )}
+                          </Field>
+                          <FormErrorMessage>{props.errors.images}</FormErrorMessage>
+                        </GridItem>
                       </Grid>
                     </FormControl>
                   </GridItem>
                   <GridItem colSpan={24}>
-                    <Flex direction={'row'} gap={3} alignItems={'center'}>
+                    <Flex
+                      direction={'row'}
+                      gap={3}
+                      alignItems={'center'}
+                      className="justify-between"
+                    >
                       <FormLabel className="title_label_court">Thông tin sân</FormLabel>
                       <Button
+                        colorScheme="teal"
                         onClick={() => {
                           const newCourtDetails: CourtDetailsCreate = {
                             id: 0,
@@ -304,7 +326,7 @@ const CourtClusterCreatePage = observer(() => {
                     {props.values.courtDetails.map((cd, index) => (
                       <>
                         <Grid
-                          key={'court' + index}
+                          key={`court${index * 2}`}
                           templateColumns={'repeat(12,1fr)'}
                           gap={5}
                           className={`bg-white py-2  w-full`}
@@ -313,99 +335,134 @@ const CourtClusterCreatePage = observer(() => {
                             <Center>{index + 1}</Center>
                           </GridItem>
                           <GridItem colSpan={3}>
-                            <FormControl>
-                              <Input
-                                {...props.getFieldProps(`courtDetails[${index}].courtName`)}
-                                onChange={(e) => {
-                                  const updatedCourtDetail = {
-                                    ...props.values.courtDetails[index],
-                                    courtName: e.target.value,
-                                  };
-                                  props.setFieldValue(`courtDetails[${index}]`, updatedCourtDetail);
-                                  console.log(props.values.courtDetails[index]);
-                                }}
-                              ></Input>
-                            </FormControl>
+                            <FastField name={`courtDetails[${index}].courtName`}>
+                              {({ field, form }: any) => (
+                                <FormControl
+                                  isInvalid={
+                                    form.errors.courtDetails?.[index]?.courtName &&
+                                    form.touched.courtDetails?.[index]?.courtName
+                                  }
+                                >
+                                  <Input
+                                    key={`ten-san${index}`}
+                                    {...field}
+                                    placeholder="Tên sân"
+                                  ></Input>
+                                  <FormErrorMessage>
+                                    {form.errors.courtDetails?.[index]?.courtName}
+                                  </FormErrorMessage>
+                                </FormControl>
+                              )}
+                            </FastField>
                           </GridItem>
                           <GridItem colSpan={3}>
                             <Flex direction={'row'} gap={2}>
-                              <TimePicker
-                                placeholder={'Từ'}
-                                size={'large'}
-                                format={'HH:mm'}
-                                defaultValue={
-                                  props.getFieldProps(
-                                    `courtDetails[${index}].courtPrice.[0].fromTime`,
-                                  ).value
-                                    ? dayjs(
-                                        props.getFieldProps(
-                                          `courtDetails[${index}].courtPrice.[0].fromTime`,
-                                        ).value,
-                                        'HH:mm',
-                                      )
-                                    : null
+                              <FormControl
+                                isInvalid={
+                                  !!props.errors.courtDetails?.[index]?.courtPrice?.[0]?.fromTime
                                 }
-                                onChange={(date) => {
-                                  props.setFieldValue(
-                                    `courtDetails[${index}].courtPrice.[0].fromTime`,
-                                    dayjs(date).format('HH:mm:ss'),
-                                  );
-                                  console.log(dayjs(date).format('HH:mm'));
-                                }}
-                                onBlur={() =>
-                                  props
-                                    .getFieldHelpers(
+                              >
+                                <TimePicker
+                                  key={`from${index}`}
+                                  placeholder={'Từ'}
+                                  size={'large'}
+                                  format={'HH:mm'}
+                                  defaultValue={
+                                    props.getFieldProps(
                                       `courtDetails[${index}].courtPrice.[0].fromTime`,
-                                    )
-                                    .setTouched(true)
-                                } // Ensure you call handleBlur
-                              />
-                              <TimePicker
-                                placeholder={'Đến'}
-                                size={'large'}
-                                format={'HH:mm'}
-                                defaultValue={
-                                  props.getFieldProps(
-                                    `courtDetails[${index}].courtPrice.[0].toTime`,
-                                  ).value
-                                    ? dayjs(
-                                        props.getFieldProps(
-                                          `courtDetails[${index}].courtPrice.[0].toTime`,
-                                        ).value,
-                                        'HH:mm',
+                                    ).value
+                                      ? dayjs(
+                                          props.getFieldProps(
+                                            `courtDetails[${index}].courtPrice.[0].fromTime`,
+                                          ).value,
+                                          'HH:mm',
+                                        )
+                                      : null
+                                  }
+                                  onChange={(date) => {
+                                    props.setFieldValue(
+                                      `courtDetails[${index}].courtPrice.[0].fromTime`,
+                                      dayjs(date).format('HH:mm:ss'),
+                                    );
+                                    console.log(dayjs(date).format('HH:mm'));
+                                  }}
+                                  onBlur={() =>
+                                    props
+                                      .getFieldHelpers(
+                                        `courtDetails[${index}].courtPrice.[0].fromTime`,
                                       )
-                                    : null
+                                      .setTouched(true)
+                                  } // Ensure you call handleBlur
+                                />
+                                <FormErrorMessage>
+                                  {props.errors.courtDetails?.[index]?.courtPrice?.[0]?.fromTime}
+                                </FormErrorMessage>
+                              </FormControl>
+                              <FormControl
+                                isInvalid={
+                                  !!props.errors.courtDetails?.[index]?.courtPrice?.[0]?.toTime
                                 }
-                                onChange={(date) => {
-                                  props.setFieldValue(
-                                    `courtDetails[${index}].courtPrice.[0].toTime`,
-                                    dayjs(date).format('HH:mm:ss'),
-                                  );
-                                  console.log(dayjs(date).format('HH:mm'));
-                                }}
-                                onBlur={() =>
-                                  props
-                                    .getFieldHelpers(`courtDetails[${index}].courtPrice.[0].toTime`)
-                                    .setTouched(true)
-                                } // Ensure you call handleBlur
-                              />
+                              >
+                                <TimePicker
+                                  key={`to${index}`}
+                                  placeholder={'Đến'}
+                                  size={'large'}
+                                  format={'HH:mm'}
+                                  defaultValue={
+                                    props.getFieldProps(
+                                      `courtDetails[${index}].courtPrice.[0].toTime`,
+                                    ).value
+                                      ? dayjs(
+                                          props.getFieldProps(
+                                            `courtDetails[${index}].courtPrice.[0].toTime`,
+                                          ).value,
+                                          'HH:mm',
+                                        )
+                                      : null
+                                  }
+                                  onChange={(date) => {
+                                    props.setFieldValue(
+                                      `courtDetails[${index}].courtPrice.[0].toTime`,
+                                      dayjs(date).format('HH:mm:ss'),
+                                    );
+                                  }}
+                                  onBlur={() =>
+                                    props
+                                      .getFieldHelpers(
+                                        `courtDetails[${index}].courtPrice.[0].toTime`,
+                                      )
+                                      .setTouched(true)
+                                  } // Ensure you call handleBlur
+                                />
+
+                                <FormErrorMessage>
+                                  {props.errors.courtDetails?.[index]?.courtPrice?.[0]?.toTime}
+                                </FormErrorMessage>
+                              </FormControl>
                             </Flex>
                           </GridItem>
                           <GridItem colSpan={2}>
-                            <NumberInput>
-                              <InputGroup>
-                                <NumberInputField
-                                  {...props.getFieldProps(
-                                    `courtDetails[${index}].courtPrice.[0].price`,
-                                  )}
-                                />
-                                <InputRightElement width="4.5rem">
-                                  <Text fontSize="sm" color="gray.500">
-                                    VNĐ
-                                  </Text>
-                                </InputRightElement>
-                              </InputGroup>
-                            </NumberInput>
+                            <FastField name={`courtDetails[${index}].courtPrice[0].price`}>
+                              {({ field, form }: any) => (
+                                <FormControl
+                                  isInvalid={!!form.errors.courtDetails?.[0]?.courtPrice?.[0].price}
+                                >
+                                  <NumberInput>
+                                    <InputGroup>
+                                      <NumberInputField key={`price${index}`} {...field} />
+                                      <InputRightElement width="4.5rem">
+                                        <Text fontSize="sm" color="gray.500">
+                                          VNĐ
+                                        </Text>
+                                      </InputRightElement>
+                                    </InputGroup>
+                                  </NumberInput>
+                                  <FormErrorMessage>
+                                    {form.errors.courtDetails?.[index]?.courtPrice?.[0].price}
+                                  </FormErrorMessage>
+                                </FormControl>
+                              )}
+                            </FastField>
                           </GridItem>
                           <GridItem colSpan={3}>
                             <Center gap={3}>
@@ -452,7 +509,7 @@ const CourtClusterCreatePage = observer(() => {
                           if (no > 0) {
                             return (
                               <Grid
-                                key={'khoangia' + no}
+                                key={`price-${no + 1}`}
                                 templateColumns={'repeat(12,1fr)'}
                                 gap={5}
                                 className={'bg-white py-2 w-full'}
@@ -518,13 +575,6 @@ const CourtClusterCreatePage = observer(() => {
                                         );
                                         console.log(dayjs(date).format('HH:mm'));
                                       }}
-                                      onBlur={() =>
-                                        props
-                                          .getFieldHelpers(
-                                            `courtDetails[${index}].courtPrice.[${no}].toTime`,
-                                          )
-                                          .setTouched(true)
-                                      } // Ensure you call handleBlur
                                     />
                                   </Flex>
                                 </GridItem>
@@ -559,7 +609,7 @@ const CourtClusterCreatePage = observer(() => {
                           <GridItem colSpan={3}>
                             <Button
                               size={'sm'}
-                              colorScheme={'orange'}
+                              colorScheme={'teal'}
                               onClick={() => {
                                 const newCourtPrice: CourtPrice = {
                                   price: 0,
@@ -574,7 +624,7 @@ const CourtClusterCreatePage = observer(() => {
                                 });
                               }}
                             >
-                              Thêm mới
+                              Thêm khung giờ
                             </Button>
                           </GridItem>
                           <GridItem colSpan={2}></GridItem>
@@ -585,30 +635,44 @@ const CourtClusterCreatePage = observer(() => {
                   </GridItem>
                 </Grid>
 
-                <FormControl mt="4.75rem" isRequired={true}>
-                  <FormLabel className="title_label_court">Mô tả sân</FormLabel>
-                  <Box>
-                    <Box>
+                <FastField name="description">
+                  {({
+                    field,
+                    form,
+                  }: {
+                    field: FieldInputProps<string>;
+                    form: FormikProps<{ description: string }>;
+                  }) => (
+                    <FormControl
+                      isInvalid={!!(form.errors.description && form.touched.description)}
+                    >
+                      <FormLabel className="title_label_court">Mô tả sân</FormLabel>
                       <ReactQuillComponent
-                        content={props.values.description}
-                        onChange={(value) => props.setFieldValue('description', value)}
+                        content={form.values.description??''}
+                        onChange={(value: string) => form.setFieldValue('description', value)}
                       />
-                    </Box>
-                    <Flex gap="0.78rem" justifyContent="flex-end">
-                      <Button className="delete" isLoading={props.isSubmitting} type="button">
-                        Xóa
-                      </Button>
-                      <Button
-                        disabled={props.isSubmitting || !props.isValid}
-                        className="save"
-                        isLoading={props.isSubmitting}
-                        type="submit"
-                      >
-                        Lưu
-                      </Button>
-                    </Flex>
-                  </Box>
-                </FormControl>
+                      <FormErrorMessage>{form.errors.description}</FormErrorMessage>
+                    </FormControl>
+                  )}
+                </FastField>
+                <Flex gap="0.78rem" justifyContent="flex-end">
+                  {/* <Button
+                    className="delete"
+                    onClick={() => props.resetForm()}
+                    isLoading={props.isSubmitting}
+                    type="button"
+                  >
+                    Reset
+                  </Button> */}
+                  <Button
+                    disabled={props.isSubmitting}
+                    className="save"
+                    isLoading={props.isSubmitting}
+                    type="submit"
+                  >
+                    Lưu
+                  </Button>
+                </Flex>
               </Form>
             )}
           </Formik>

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Flex, Box, useDisclosure, Center } from '@chakra-ui/react';
+import { Flex, useDisclosure, Center, Heading } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -11,6 +11,7 @@ import { debounce } from 'lodash';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
 import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
 import PlusIcon from '../atoms/PlusIcon';
+import Select from 'react-select';
 
 const NewsPage = () => {
   const { newsStore } = useStore();
@@ -22,7 +23,7 @@ const NewsPage = () => {
   useEffect(() => {
     setLoadingInitial(true);
     newsPageParams.clearLazyPage();
-    newsPageParams.searchTerm = ''; 
+    newsPageParams.searchTerm = '';
     loadNews().finally(() => setLoadingInitial(false));
   }, []);
 
@@ -60,9 +61,25 @@ const NewsPage = () => {
 
   return (
     <>
-      <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách tin tức', to: '/tin-tuc' }]} />
+      <PageHeadingAtoms breadCrumb={[{ title: 'Tin tức', to: '/tin-tuc' }]} />
+
+      <Heading className="mb-4 mt-2">Danh sách tin tức</Heading>
+
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
+          <Select
+            options={[
+              { value: 0, label: 'Tất cả' },
+              { value: 1, label: 'Hiển thị' },
+              { value: 2, label: 'Không hiển thị' },
+            ]}
+            placeholder="Trạng thái"
+            className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+          ></Select>
+        </Flex>
+
+        <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
+          <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
           <ButtonPrimaryAtoms
             className="bg-primary-900"
             handleOnClick={onOpen}
@@ -74,10 +91,6 @@ const NewsPage = () => {
             }
           />
         </Flex>
-
-        <Box textAlign="right">
-          <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
-        </Box>
       </Flex>
       <NewsTableComponent />
       <LoadMoreButtonAtoms

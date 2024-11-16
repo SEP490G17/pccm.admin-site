@@ -13,19 +13,10 @@ import StaffPositionTableComponent from './components/StaffPositionTableComponen
 
 const StaffPage = observer(() => {
   const { staffStore, staffPositionStore } = useStore();
-  const {
-    loadStaffs,
-    setSearchTerm,
-    staffPageParams,
-    staffRegistry,
-    loading,
-    setLoadingInitial,
-  } = staffStore;
+  const { loadStaffs, setSearchTerm, staffPageParams, staffRegistry, loading, setLoadingInitial } =
+    staffStore;
 
-  const {
-    loadRoles,
-    loadStaffPosition,
-  } =staffPositionStore;
+  const { loadRoles, loadStaffPosition } = staffPositionStore;
   const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
@@ -33,7 +24,7 @@ const StaffPage = observer(() => {
     Promise.all([loadStaffs(), loadRoles(), loadStaffPosition()]).then(() => {
       setLoadingInitial(false);
     });
-  }, []);
+  }, [loadStaffs,loadRoles, loadStaffPosition,setLoadingInitial]);
 
   const handleSearch = useCallback(
     debounce(async (e) => {
@@ -49,7 +40,10 @@ const StaffPage = observer(() => {
 
   return (
     <>
-      <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách nhân viên', to: '/nhan-vien' }]} />
+      <PageHeadingAtoms breadCrumb={[{ title: 'Nhân viên', to: '/nhan-vien' }]} />
+
+      <Heading className="mb-4 mt-2">Danh sách nhân viên</Heading>
+
       <Heading size={'md'}>Chức vụ</Heading>
       <Divider
         orientation="horizontal"

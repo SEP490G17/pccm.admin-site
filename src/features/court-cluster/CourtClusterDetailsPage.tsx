@@ -20,7 +20,7 @@ const CourtClusterDetailsPage = observer(() => {
             getDetailsCourtCluster(id,chakraToast).finally();
             bookingClusterStore.setCourtClusterId(Number(id));
         }
-    }, [id,getDetailsCourtCluster])
+    }, [id,getDetailsCourtCluster, bookingClusterStore, chakraToast])
 
     return (
         <div className={'mt-6 pb-8'}>
@@ -41,10 +41,10 @@ const CourtClusterDetailsPage = observer(() => {
                         {selectedTabs === 1 && <CourtClusterBookingTab courtClusterId={Number(id)}/>}
                     </TabPanel>
                     <TabPanel>
-                        {selectedTabs === 2 && id &&<CourtClusterProductsTab courtClusterId={id} />}
+                        {selectedTabs === 2 && id &&<CourtClusterProductsTab courtClusterId={Number(id)} />}
                     </TabPanel>
                     <TabPanel>
-                        {selectedTabs === 3 && id &&<CourtClusterServicesTab courtClusterId={id} />}
+                        {selectedTabs === 3 && id &&<CourtClusterServicesTab courtClusterId={Number(id)} />}
                     </TabPanel>
                 </TabPanels>
             </Tabs>

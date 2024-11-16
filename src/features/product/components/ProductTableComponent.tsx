@@ -40,8 +40,8 @@ const ProductTableComponent = observer(() => {
           <Thead>
             <Tr>
               <Th w={'5rem'} py={'1rem'}>STT</Th>
-              <Th w={'15rem'}>Ảnh sản phẩm</Th>
-              <Th w={'15rem'}>Tên sản phẩm</Th>
+              <Th w={'15rem'}>Ảnh hàng hoá</Th>
+              <Th w={'15rem'}>Tên hàng hoá</Th>
               <Th w={'15rem'}>Thể loại</Th>
               <Th w={'15rem'}>Cụm sân</Th>
               <Th w={'10rem'}>Số lượng</Th>

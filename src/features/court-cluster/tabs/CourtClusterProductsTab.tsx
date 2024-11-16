@@ -8,20 +8,21 @@ interface IProps{
     courtClusterId: number;
 }
 const CourtClusterProductsTab = observer(({courtClusterId}:IProps) => {
-    const {courtClusterStore} = useStore();
+    const {courtClusterStore, categoryStore} = useStore();
     const {
         loadProductsOfCourtCluster,
         productOfCourtClusterArray,
         productOfClusterRegistry,
         loadingProductsPage
     } = courtClusterStore;
-    
+    const {loadCategories} = categoryStore; 
     useEffect(() => {
-        if (productOfClusterRegistry.size == 0) {
+        loadCategories();
+        if (productOfClusterRegistry.size <=1) {
             loadProductsOfCourtCluster(courtClusterId);
             console.log(courtClusterId);
         }
-    }, [])
+    }, [courtClusterId,loadCategories,loadProductsOfCourtCluster,productOfClusterRegistry.size])
 
     return (
         <Box>

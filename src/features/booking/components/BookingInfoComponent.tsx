@@ -116,7 +116,9 @@ const BookingInfoComponent = observer(() => {
           <Text fontSize={'xl'}>Danh sách Order: </Text>
         </GridItem>
         <GridItem colSpan={21} className="mt-5">
-          {!booking.bookingDetails.isSuccess && <OrderCreatePopup booking={booking} />}
+          {  !booking.bookingDetails.isSuccess 
+          && (booking.bookingDetails.status === BookingStatus.Confirmed)
+          && <OrderCreatePopup booking={booking} />}
         </GridItem>
         {booking.ordersOfBooking.length > 0 && (
           <GridItem colSpan={24}>

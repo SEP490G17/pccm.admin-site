@@ -54,11 +54,15 @@ export default class BookingClusterStore {
   }
 
   // #region load danh sách booking
-  loadBookingForSchedule = async (toast: CreateToastFnReturn) => {
+  loadBookingForSchedule = async (toast: CreateToastFnReturn, selectedDate?: string) => {
     if (this.courtClusterId) {
       this.loadingBookingForSchedule = true;
+     
       const [error, res] = await catchErrorHandle<BookingModel[]>(
-        agent.BookingAgent.getListForSchedule(this.courtClusterId),
+        agent.BookingAgent.getListForSchedule({
+          courtClusterId: this.courtClusterId,
+          selectedDate: selectedDate,
+        }),
       );
       runInAction(() => {
         if (error) {
@@ -212,6 +216,8 @@ export default class BookingClusterStore {
         toast(BookingMessage.acceptFailure(undefined, err.message));
       }
       if (res) {
+        this.bookingTodayRegistry.delete(res.id);
+        this.bookingForScheduleRegistry.delete(res.id);
         toast(BookingMessage.acceptSuccess());
         this.setBookingAll(res);
       }
@@ -227,8 +233,10 @@ export default class BookingClusterStore {
         toast(BookingMessage.acceptFailure(undefined, err.message));
       }
       if (res) {
+        this.bookingTodayRegistry.delete(res.id);
         toast(BookingMessage.acceptSuccess());
         this.setBookingAll(res);
+        this.bookingForScheduleRegistry.delete(res.id);
         this.setBookingCancel(res);
       }
     });
@@ -239,7 +247,9 @@ export default class BookingClusterStore {
     runInAction(() => {
       if (res) {
         this.setBooking(res);
-        this.setBookingToday(mapBookingToBookingForList(res));
+        console.log('before convert',res);
+        const convert = mapBookingToBookingForList(res);
+        this.setBookingToday(convert);
       }
     });
   };
@@ -263,6 +273,7 @@ export default class BookingClusterStore {
   }
 
   private setBookingToday = (booking: BookingForList) => {
+    console.log(booking);
     const today = dayjs().tz('Asia/Ho_Chi_Minh').startOf('day'); // Ngày hôm nay theo GMT+7
     const bookingStartTime = dayjs(booking.startDay, 'DD/MM/YYYY')
       .tz('Asia/Ho_Chi_Minh')
@@ -304,7 +315,7 @@ export default class BookingClusterStore {
     return { ...booking, startDay, endDay };
   }
 
-  get bookingArray() {
+  get bookingScheduleArray() {
     return Array.from(this.bookingForScheduleRegistry.values());
   }
 

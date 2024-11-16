@@ -10,7 +10,7 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import { useEffect, useRef } from 'react';
 import { isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
-import { Heading, useToast } from '@chakra-ui/react';
+import { Heading, Skeleton, useToast } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
@@ -35,12 +35,21 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     fullName: { name: 'fullName', validation: { required: true } },
   };
   const { courtClusterStore, bookingClusterStore: bookingStore } = useStore();
-  const { courtOfClusterArray, loadCourtOfCluster, loadingCourt } = courtClusterStore;
-  const { bookingArray, createBooking, loadingBookingForSchedule: loading } = bookingStore;
+  const {
+    courtOfClusterArray,
+    loadCourtOfCluster,
+    loadingInitialBookingPage,
+    setLoadingInitialBookingPage
+  } = courtClusterStore;
+  const { bookingScheduleArray: bookingArray, createBooking } = bookingStore;
   useEffect(() => {
-    loadCourtOfCluster(courtClusterId, toast);
-    bookingStore.loadBookingForSchedule(toast);
-  }, [courtClusterId]);
+    setLoadingInitialBookingPage(true);
+    Promise.all([
+      loadCourtOfCluster(courtClusterId, toast),
+      bookingStore.loadBookingForSchedule(toast)
+    ]).then(() => setLoadingInitialBookingPage(false));
+   
+  }, [courtClusterId, bookingStore, loadCourtOfCluster, setLoadingInitialBookingPage, toast]);
 
   const group = { resources: ['courts'] };
   const schedule = useRef<ScheduleComponent>(null);
@@ -191,11 +200,18 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
       args.element.classList.add('booking-complete');
     }
   };
-  if (loadingCourt || !courtOfClusterArray || loading) {
-    return <div>Loading...</div>;
-  }
+
+  const handleNavigation = async (args: any) => {
+    console.log(args);
+    if (args.action === 'date') {
+      // Lấy ngày hiện tại trên lịch
+      const selectedDate = args.currentDate;
+      console.log('Ngày được chọn:', selectedDate);
+      await bookingStore.loadBookingForSchedule(toast, selectedDate);
+    }
+  };
   return (
-    <>
+    <Skeleton isLoaded={!loadingInitialBookingPage} minHeight={'300rem'}>
       <Heading size={'lg'} className="my-4">
         Lịch đặt
       </Heading>
@@ -227,6 +243,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         actionBegin={async (prop: any) => await handleActionBegin(prop)} // Đảm bảo hàm hành động
         renderCell={handleRenderCell}
         enableAdaptiveUI={true}
+        navigating={async (args: any) => await handleNavigation(args)}
       >
         <ViewsDirective>
           <ViewDirective option="Week" dateFormat="dd-MMM-yyyy" />
@@ -245,7 +262,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         <Inject services={[Week]} />
       </ScheduleComponent>
       <BookingListComponent />
-    </>
+    </Skeleton>
   );
 });
 

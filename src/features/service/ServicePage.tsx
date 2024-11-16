@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Flex, Box, useDisclosure, Center } from '@chakra-ui/react';
+import { Flex, useDisclosure, Center, Heading } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -17,13 +17,8 @@ const ServicePage = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { serviceStore, courtClusterStore } = useStore();
 
-  const {
-    loadServices,
-    servicePageParams,
-    serviceRegistry,
-    setLoadingInitial,
-    loading,
-  } = serviceStore;
+  const { loadServices, servicePageParams, serviceRegistry, setLoadingInitial, loading } =
+    serviceStore;
   const [isPending, setIsPending] = useState(false);
   const { courtClusterListAllOptions } = courtClusterStore;
 
@@ -71,13 +66,15 @@ const ServicePage = observer(() => {
 
   return (
     <>
-      <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách dịch vụ', to: '/dich-vu' }]} />
+      <PageHeadingAtoms breadCrumb={[{ title: 'Dịch vụ', to: '/dich-vu' }]} />
+      <Heading className="mb-4 mt-2">Danh sách dịch vụ</Heading>
+
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
-        <Flex gap="30px" alignItems="center">
+        <Flex alignItems="center">
           <Select
             options={[{ value: 0, label: 'Tất cả' }, ...courtClusterListAllOptions]}
             placeholder="Cụm sân"
-            className="w-56 p-2 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+            className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
             onChange={async (e) => {
               if (e) {
                 await serviceStore.setFilterTerm(e.value.toString());
@@ -85,7 +82,10 @@ const ServicePage = observer(() => {
             }}
             isSearchable={true}
           ></Select>
+        </Flex>
 
+        <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
+          <InputSearchBoxAtoms isPending={isPending} handleChange={onSearchChange} />
           <ButtonPrimaryAtoms
             className="bg-primary-900"
             handleOnClick={onOpen}
@@ -97,10 +97,6 @@ const ServicePage = observer(() => {
             }
           />
         </Flex>
-
-        <Box textAlign="right">
-          <InputSearchBoxAtoms isPending={isPending} handleChange={onSearchChange} />
-        </Box>
       </Flex>
       <ServiceTableComponent />
       <LoadMoreButtonAtoms

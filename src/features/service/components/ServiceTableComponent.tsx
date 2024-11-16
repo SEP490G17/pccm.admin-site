@@ -61,7 +61,7 @@ const ServiceTableComponent = observer(() => {
                   <Td>
                     <Flex gap="3">
                       <EditButtonAtom
-                        onDelete={async () => {
+                        onUpdate={async () => {
                           handleOpenEdit(service.id)
                         }}
                       />

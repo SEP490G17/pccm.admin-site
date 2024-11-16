@@ -3,6 +3,7 @@ import {
     Box,
     Button,
     Flex,
+    Heading,
     Input,
     Skeleton,
     Table,
@@ -125,6 +126,7 @@ const RevenuePage = observer(() => {
     return (
         <>
             <PageHeadingAtoms breadCrumb={[{ title: 'Doanh thu', to: '/doanh-thu' }]} />
+            <Heading className="mt-2">Thống kê doanh thu</Heading>
             <Formik
                 initialValues={{
                     timeSelected: isoDate ? dayjs(isoDate) : null,

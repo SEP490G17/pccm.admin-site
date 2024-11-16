@@ -48,8 +48,7 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
   const { categoryStore, courtClusterStore, productStore, uploadStore } = useStore();
   const { categoryOption } = categoryStore;
   const { courtClusterListAllOptions } = courtClusterStore;
-  const { loadingEdit, selectedProduct } = productStore;
-  console.log(loadingEdit);
+  const { selectedProduct } = productStore;
   return (
     <Modal
       isOpen={isOpen}
@@ -62,7 +61,7 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
       <ModalOverlay />
       <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
         <ModalHeader bg="#00423D" color="white" borderRadius="20px 20px 0 0">
-          Thêm Hàng Hóa
+          {selectedProduct ? 'Chỉnh sửa hàng hoá': 'Thêm mới hàng hoá'}
         </ModalHeader>
         <ModalCloseButton color="#FFF" />
         <ModalBody>

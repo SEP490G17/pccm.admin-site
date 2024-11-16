@@ -9,7 +9,8 @@ import { AiOutlineLogout } from 'react-icons/ai';
 import { registerLicense } from "@syncfusion/ej2-base";
 registerLicense(
  "ORg4AjUWIQA/Gnt2UlhhQlVMfV5DQmFAYVF2R2dJflx6dl1MY15BNQtUQF1hTX9TdUVjWn9XcHVRQ2lc"
-);const App = () => {
+);
+const App = observer(() => {
   const { authStore, commonStore } = useStore();
 
   return (
@@ -95,6 +96,6 @@ registerLicense(
       </Box>
     </>
   );
-};
+});
 
-export default observer(App);
+export default App;

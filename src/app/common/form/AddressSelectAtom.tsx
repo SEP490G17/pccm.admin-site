@@ -1,5 +1,6 @@
-import { FormControl, Select, Input, Grid, GridItem } from '@chakra-ui/react';
-import { FastField } from 'formik';
+import { CourtClusterDetailsCreate } from '@/app/models/court.model';
+import { FormControl, Select, Input, Grid, GridItem, FormErrorMessage } from '@chakra-ui/react';
+import { FastField, FormikErrors, FormikTouched } from 'formik';
 import { useEffect, useState } from 'react';
 
 interface Province {
@@ -27,13 +28,15 @@ interface FormValues {
 interface AddressSelectAtomProps {
   setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
   values: FormValues;
-  getFieldProps: (field: string) => any;
+  errors: FormikErrors<CourtClusterDetailsCreate>;
+  touched: FormikTouched<CourtClusterDetailsCreate>;
 }
 
 const AddressSelectAtom: React.FC<AddressSelectAtomProps> = ({
   setFieldValue,
   values,
-  getFieldProps,
+  errors,
+  touched,
 }) => {
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
@@ -104,7 +107,7 @@ const AddressSelectAtom: React.FC<AddressSelectAtomProps> = ({
   return (
     <Grid templateColumns={'repeat(3,1fr)'} templateRows={'repeat(2,1fr)'} rowGap={5} columnGap={2}>
       <GridItem colSpan={1}>
-        <FormControl isRequired>
+        <FormControl isInvalid={!!(errors.province && touched.province)}>
           <Select
             value={values.province}
             onChange={handleProvinceChange}
@@ -118,11 +121,12 @@ const AddressSelectAtom: React.FC<AddressSelectAtomProps> = ({
               </option>
             ))}
           </Select>
+          <FormErrorMessage>{errors.province}</FormErrorMessage>
         </FormControl>
       </GridItem>
 
       <GridItem colSpan={1}>
-        <FormControl isRequired>
+        <FormControl isInvalid={!!(errors.district && touched.district)}>
           <Select
             value={values.district}
             onChange={handleDistrictChange}
@@ -137,11 +141,12 @@ const AddressSelectAtom: React.FC<AddressSelectAtomProps> = ({
               </option>
             ))}
           </Select>
+          <FormErrorMessage>{errors.district}</FormErrorMessage>
         </FormControl>
       </GridItem>
 
       <GridItem colSpan={1}>
-        <FormControl isRequired>
+        <FormControl isInvalid={!!(errors.district && touched.district)}>
           <Select
             value={values.ward}
             onChange={handleWardChange}
@@ -156,14 +161,18 @@ const AddressSelectAtom: React.FC<AddressSelectAtomProps> = ({
               </option>
             ))}
           </Select>
+          <FormErrorMessage>{errors.ward}</FormErrorMessage>
         </FormControl>
       </GridItem>
       <GridItem colSpan={3}>
-        <FormControl>
-          <FastField name="address">
-            {({ field }: any) => <Input placeholder="Nhập địa chỉ cụ thể" type="text" {...field}/>}
-          </FastField>
-        </FormControl>
+        <FastField name="address">
+          {({ field, form }: any) => (
+            <FormControl isInvalid={form.errors.address && form.touched.address}>
+              <Input placeholder="Nhập địa chỉ cụ thể" type="text" {...field} />
+              <FormErrorMessage>{form.errors.address}</FormErrorMessage>
+            </FormControl>
+          )}
+        </FastField>
       </GridItem>
     </Grid>
   );

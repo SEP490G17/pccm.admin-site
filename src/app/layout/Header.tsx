@@ -1,15 +1,15 @@
-import { Avatar, Button, Center, Divider, Flex, Image, Text } from '@chakra-ui/react';
-import notificationIcon from '@/assets/notification.svg';
+import { Avatar, Button, Flex, Text } from '@chakra-ui/react';
+// import notificationIcon from '@/assets/notification.svg';
 import defaultUserIcon from '@/assets/defaultUser.png';
 import { useStore } from '../stores/store';
 import { observer } from 'mobx-react-lite';
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from 'react-icons/ai';
 import { useEffect } from 'react';
-const Header = () => {
+const Header = observer(() => {
   const { commonStore, authStore } = useStore();
   useEffect(() =>{
     authStore.getUser();
-  } , []);
+  } , [authStore]);
   return (
     <>
       <Button
@@ -25,7 +25,7 @@ const Header = () => {
         )}
       </Button>
       <Flex flexDirection={'row'} justifyContent={'space-between'} alignItems={'center'} gap={6}>
-        <Flex
+        {/* <Flex
           display={'inline-flex'}
           justifyContent={'center'}
           alignItems={'center'}
@@ -38,7 +38,7 @@ const Header = () => {
         </Flex>
         <Center>
           <Divider orientation="vertical" height={'2rem'} borderWidth={'0.15rem'} />
-        </Center>
+        </Center> */}
         <Flex flexDirection={'row'} justifyContent={'center'} alignItems={'center'} gap={3}>
           <Avatar src={defaultUserIcon} size={'md'} />
           <Flex flexDirection={'column'}>
@@ -53,6 +53,6 @@ const Header = () => {
       </Flex>
     </>
   );
-};
+});
 
-export default observer(Header);
+export default Header;

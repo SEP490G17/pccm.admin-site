@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Button, Flex, Box, useDisclosure, Center } from '@chakra-ui/react';
+import { Button, Flex, useDisclosure, Center, Heading } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -10,6 +10,7 @@ import BannerTableComponent from './components/BannerTableComponent';
 import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
 import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
 import PlusIcon from '../atoms/PlusIcon';
+import Select from 'react-select';
 
 const BannerPage = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -60,9 +61,34 @@ const BannerPage = observer(() => {
   };
   return (
     <>
-      <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách banner', to: '/banner' }]} />
+      <PageHeadingAtoms breadCrumb={[{ title: 'Banner', to: '/banner' }]} />
+
+      <Heading className="mb-4 mt-2">Danh sách banner</Heading>
+
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
-        <Flex gap="30px" alignItems="center">
+        <Flex alignItems="center" gap={30}>
+          <Select
+            options={[
+              { value: 0, label: 'Tất cả' },
+              { value: 1, label: 'Banner' },
+              { value: 2, label: 'Sự kiện' },
+            ]}
+            placeholder="Thể loại"
+            className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+          ></Select>
+          <Select
+            options={[
+              { value: 0, label: 'Tất cả' },
+              { value: 1, label: 'Hiển thị' },
+              { value: 2, label: 'Không hiển thị' },
+            ]}
+            placeholder="Trạng thái"
+            className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+          ></Select>
+        </Flex>
+
+        <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
+          <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
           <ButtonPrimaryAtoms
             className="bg-primary-900"
             handleOnClick={onOpen}
@@ -73,12 +99,7 @@ const BannerPage = observer(() => {
               </Center>
             }
           />
-
         </Flex>
-
-        <Box textAlign="right">
-          <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
-        </Box>
       </Flex>
 
       <BannerTableComponent />

@@ -127,7 +127,7 @@ const BannerTableComponent = observer(() => {
                   <Td>
                     <Flex gap="3">
                       <EditButtonAtom
-                        onDelete={async () => handleOpenEdit(banner.id)}
+                        onUpdate={async () => handleOpenEdit(banner.id)}
                       />
 
                       <DeleteButtonAtom

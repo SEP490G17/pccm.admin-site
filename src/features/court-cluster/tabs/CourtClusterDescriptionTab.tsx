@@ -1,20 +1,32 @@
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store.ts';
-import { Center } from '@chakra-ui/react';
+import { Card, CardBody, CardHeader, Center, Heading, Skeleton } from '@chakra-ui/react';
 
 const CourtClusterDescriptionTab = observer(() => {
   const { courtClusterStore } = useStore();
   const { selectedCourt } = courtClusterStore;
   return (
     <>
-      {selectedCourt && (
-        <Center>
-          <div
-            className="w-[50.5rem]"
-            dangerouslySetInnerHTML={{ __html: selectedCourt.description }}
-          />
-        </Center>
-      )}
+      <Skeleton minHeight={'300rem'} isLoaded={!courtClusterStore.loadingInitialDetailsPage}>
+        {selectedCourt && (
+          <Card size={'md'}>
+            <CardHeader>
+              <Center>
+                <Heading size="xl">Thông tin về {selectedCourt.title}</Heading>
+              </Center>
+            </CardHeader>
+
+            <CardBody>
+              <Center>
+                <div
+                  className="w-[50rem]"
+                  dangerouslySetInnerHTML={{ __html: selectedCourt.description }}
+                />
+              </Center>
+            </CardBody>
+          </Card>
+        )}
+      </Skeleton>
     </>
   );
 });

@@ -32,12 +32,15 @@ export default class CourtClusterStore {
   loadingInitialDetailsPage: boolean = false;
   loadingProductsPage: boolean = false;
   loadingServicesPage: boolean = false;
+  loadingInitialBookingPage: boolean = false;
   loadingCourt: boolean = false;
 
   constructor() {
     console.log('court-cluster store initialized');
     makeAutoObservable(this);
   }
+
+  setLoadingInitialBookingPage =(load:boolean) => this.loadingInitialBookingPage = load;
 
   //#region Court
   loadCourtOfCluster = async (id: number, chakraToast:any) => {

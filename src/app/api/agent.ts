@@ -218,8 +218,8 @@ const Staffs = {
 
 const BookingAgent = {
   create: (booking: BookingCreate) => requests.post<BookingModel>('/booking/v2', booking),
-  getListForSchedule: (courtClusterId: number): Promise<BookingModel[]> =>
-    requests.get('/booking/v1?courtClusterId=' + courtClusterId),
+  getListForSchedule: (body:object): Promise<BookingModel[]> =>
+    requests.post('/booking/v1' ,body),
   getListV2: (queryParam: string = ''): Promise<PaginationModel<BookingForList>> =>
     requests.get(`/booking/v2${queryParam}`),
   getDetailsV1: (id: number): Promise<BookingDetails> => requests.get(`/booking/v1/${id}`),

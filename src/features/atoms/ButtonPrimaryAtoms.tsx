@@ -10,7 +10,7 @@ interface IProp extends React.PropsWithChildren {
 function ButtonPrimaryAtoms({ handleOnClick, children, loading = false, className }: IProp) {
   return (
     <button
-      className={`px-4 py-2 text-white rounded-md relative flex justify-center items-center ${loading ? 'opacity-70':'opacity-100'} ${className} `}
+      className={`px-4 py-2 bg-primary-900 text-white rounded-md relative flex justify-center items-center ${loading ? 'opacity-70':'opacity-100'} ${className} `}
       onClick={handleOnClick}
       disabled={loading}
     >

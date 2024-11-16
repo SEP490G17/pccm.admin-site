@@ -73,9 +73,11 @@ export interface BookingInfo extends BookingForList {
 
 
 export const mapBookingToBookingForList = (booking: BookingModel): BookingForList => {
-  const startTime = dayjs(booking.startTime).add(7, 'hour'); // Convert to GMT+7
-  const endTime = dayjs(booking.endTime).add(7, 'hour'); // Convert to GMT+7
-  const untilTime = booking.untilTime ? dayjs(booking.untilTime).add(7, 'hour') : null; // Convert to GMT+7
+  const startTime = dayjs(booking.startTime); // Convert to GMT+7
+  const endTime = dayjs(booking.endTime); // Convert to GMT+7
+  const untilTime = booking.untilTime ? dayjs(booking.untilTime) : null; // Convert to GMT+7
+  console.log('origin',booking.startTime);
+  console.log('+7h',startTime);
 
   // Format playTime in 24-hour format: HH:mm - HH:mm
   const playTime = `${startTime.format('HH:mm')} - ${endTime.format('HH:mm')}`;
