@@ -198,11 +198,9 @@ button.primary.outlined {
 /* csslint ignore:start */
 
 .schedule-cell-dimension.e-schedule {
-  .e-table-container {
-    max-height: 500px !important;
-    width: 100%;
-    overflow: auto;
-  }
+  max-height: 500px !important;
+  overflow: auto;
+  width: 100%;
   .e-vertical-view {
     .e-date-header-wrap {
       table {
