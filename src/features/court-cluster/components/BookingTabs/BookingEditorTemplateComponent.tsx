@@ -1,25 +1,27 @@
-import { Grid, GridItem } from '@chakra-ui/react';
+import { Box, Grid, GridItem, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import { DateTimePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
+import { CourtPriceBooking } from '@/app/models/booking.model';
+import { useState } from 'react';
 
 const BookingEditorTemplateComponent = observer((props: any) => {
   const { courtClusterStore } = useStore();
- 
+
   const court = courtClusterStore.courtOfClusterArray.map((c) => {
     return {
       courtId: c.courtId,
       courtName: c.courtName,
     };
   });
- 
-  // const [selectedCourtId, setSelectedCourtId] = useState(court[0].courtId??undefined);
- 
-  
-  // const filteredPrices = props.prices.filter((price: CourtPriceBooking) => price.courtId === selectedCourtId);
- 
+
+  const [selectedCourtId, setSelectedCourtId] = useState(court[0].courtId ?? undefined);
+
+
+  const filteredPrices = props.prices.filter((price: CourtPriceBooking) => price.courtId === selectedCourtId);
+
   const recurrence = [
     {
       value: 0,
@@ -57,7 +59,7 @@ const BookingEditorTemplateComponent = observer((props: any) => {
             className="e-field w-full e-phoneNumber"
           />
         </GridItem>
- 
+
         <GridItem colSpan={4}>
           <label id="label_StartTime" htmlFor="StartTime">
             Từ:
@@ -71,7 +73,7 @@ const BookingEditorTemplateComponent = observer((props: any) => {
             step={30}
           ></DateTimePickerComponent>
         </GridItem>
- 
+
         <GridItem colSpan={4}>
           <label id="label_EndTime" htmlFor="EndTime">
             Đến:
@@ -96,7 +98,7 @@ const BookingEditorTemplateComponent = observer((props: any) => {
               fields={{ text: 'courtName', value: 'courtId' }}
               placeholder="Chọn Sân"
               className="e-field"
-              // onChange={(e: any) => setSelectedCourtId(e.value)}
+              onChange={(e: any) => setSelectedCourtId(e.value)}
             />
           </GridItem>
         )}
@@ -113,21 +115,19 @@ const BookingEditorTemplateComponent = observer((props: any) => {
           />
         </GridItem>
       </Grid>
-      {/* <Box mt={4}>
+      <Box mt={4}>
         <label>Giá tiền: </label>
         <TableContainer height='130px' maxHeight="130px" overflowY="auto">
           <Table variant="simple">
             <Thead>
               <Tr>
-                <Th width={'33%'}>Tên sân</Th>
-                <Th width={'33%'}>Khung giờ</Th>
-                <Th width={'33%'}>Giá tiền</Th>
+                <Th width={'50%'}>Khung giờ</Th>
+                <Th width={'50%'}>Giá tiền</Th>
               </Tr>
             </Thead>
             <Tbody>
               {filteredPrices && filteredPrices.map((price: CourtPriceBooking) => (
                 <Tr key={`${price.courtId}-${price.time}`}>
-                  <Td>{price.courtName}</Td>
                   <Td>{price.time}</Td>
                   <Td>{price.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Td>
                 </Tr>
@@ -135,11 +135,10 @@ const BookingEditorTemplateComponent = observer((props: any) => {
             </Tbody>
           </Table>
         </TableContainer>
-      </Box> */}
+      </Box>
     </>
   );
 });
- 
+
 export default BookingEditorTemplateComponent;
- 
- 
+
