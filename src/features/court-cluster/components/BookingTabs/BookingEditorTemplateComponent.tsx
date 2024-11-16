@@ -17,7 +17,7 @@ const BookingEditorTemplateComponent = observer((props: any) => {
     };
   });
 
-  const [selectedCourtId, setSelectedCourtId] = useState(court[0].courtId | 0);
+  const [selectedCourtId, setSelectedCourtId] = useState(court?.[0].courtId ?? 0);
 
   const filteredPrices = props.prices.filter((price: CourtPriceBooking) => price.courtId === selectedCourtId);
 
@@ -116,7 +116,7 @@ const BookingEditorTemplateComponent = observer((props: any) => {
       </Grid>
       <Box mt={4}>
         <label>Giá tiền: </label>
-        <TableContainer maxHeight="150px" overflowY="auto">
+        <TableContainer height='130px' maxHeight="130px" overflowY="auto">
           <Table variant="simple">
             <Thead>
               <Tr>

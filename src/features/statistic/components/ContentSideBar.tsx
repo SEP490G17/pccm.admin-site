@@ -10,7 +10,7 @@ interface IProps {
 export default function ContentSidebar({ data }: IProps) {
     return (
         <div>
-            <Box width="25rem" className="side-card" position="relative" padding="4" boxShadow="md" borderRadius="md">
+            <Box width="25rem" className="side-card" position="relative" padding="4" boxShadow="md" borderRadius="10px">
                 <VStack spacing="6" align="flex-start">
                     <Heading size="lg" color={"white"}>
                         Hôm nay

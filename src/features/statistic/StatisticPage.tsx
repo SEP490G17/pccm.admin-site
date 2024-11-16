@@ -208,10 +208,9 @@ const StatisticPage = observer(() => {
                                 <Flex gap={10} justifyContent={'space-between'}>
 
                                     <Box
-                                        width={'70%'}
+                                        width={'73%'}
                                         border="1px solid #e2e8f0"
-                                        boxShadow="sm"
-                                        borderRadius="md"
+                                        borderRadius="10px"
                                         padding={4}
                                         backgroundColor={'white'}
                                     >
@@ -220,9 +219,10 @@ const StatisticPage = observer(() => {
                                         </Skeleton>
                                     </Box>
                                     <Box
-                                        width={'30rem'}
+                                        width={'25rem'}
                                         backgroundColor={'white'}
                                         padding={5}
+                                        borderRadius="10px"
                                     >
                                         <Skeleton height={'100%'} isLoaded={!statisticStore.loadingBookingRecent}>
                                             <OrderActivity data={bookingRecent} />

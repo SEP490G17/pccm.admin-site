@@ -232,8 +232,10 @@ const BookingAgent = {
     requests.put(`/booking/completed/${id}`, {}),
   cancelBooking: (id: number): Promise<BookingForList> => requests.put(`/booking/cancel/${id}`, {}),
   denyBooking: (id: number): Promise<BookingForList> => requests.put(`/booking/deny/${id}`, {}),
-
-  // getCourtPrices: (id:courtClusterId): 
+  exportBill: (courtClusterId: number): Promise<any> =>
+    requests.get(`/bill/billbooking/${courtClusterId}`),
+  exportBillOrder: (orderId: number): Promise<any> =>
+    requests.get(`/bill/billorder/${orderId}`),
 };
 
 const PaymentAgent = {
