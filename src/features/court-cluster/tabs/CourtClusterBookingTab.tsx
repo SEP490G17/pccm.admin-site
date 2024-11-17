@@ -56,9 +56,9 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
   L10n.load({
     'en-US': {
       schedule: {
-        cancelButton: 'Close',
-        deleteButton: 'Cancel Booking',
-        newEvent: 'Create New Booking',
+        cancelButton: 'Đóng',
+        deleteButton: 'Huỷ lịch',
+        newEvent: 'Đặt lịch chơi',
       },
     },
   });
@@ -216,52 +216,54 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         Lịch đặt
       </Heading>
 
-      <ScheduleComponent
-        ref={schedule}
-        group={group}
-        timeFormat="HH:mm"
-        timeScale={{ enable: true, interval: 60, slotCount: 1 }}
-        workHours={{ highlight: true, start: '05:00', end: '22:00' }}
-        startHour="05:00"
-        endHour="23:00"
-        showQuickInfo={false}
-        timezone="Asia/Bangkok"
-        editorTemplate={(props: any) => (
-          <BookingEditorTemplateComponent
-            {...props}
-            prices={courtPrice}
-            courtOfClusterArray={courtOfClusterArray} // Truyền dataSource vào editor template
-          />
-        )}
-        cssClass="schedule-cell-dimension"
-        eventRendered={handleEventRendered}
-        eventSettings={{
-          fields: fields,
-          dataSource: bookingArray,
-        }}
-        rowAutoHeight={true}
-        quickInfoOnSelectionEnd={true}
-        actionBegin={async (prop: any) => await handleActionBegin(prop)} // Đảm bảo hàm hành động
-        renderCell={handleRenderCell}
-        enableAdaptiveUI={true}
-        navigating={async (args: any) => await handleNavigation(args)}
-      >
-        <ViewsDirective>
-          <ViewDirective option="Week" dateFormat="dd-MMM-yyyy" />
-        </ViewsDirective>
-        <ResourcesDirective>
-          <ResourceDirective
-            field="courtId"
-            title="Sân"
-            name="courts"
-            allowMultiple={true}
-            dataSource={courtClusterStore.courtOfClusterArray}
-            textField="courtName"
-            idField="courtId"
-          ></ResourceDirective>
-        </ResourcesDirective>
-        <Inject services={[Week]} />
-      </ScheduleComponent>
+      {!loadingInitialBookingPage && (
+        <ScheduleComponent
+          ref={schedule}
+          group={group}
+          timeFormat="HH:mm"
+          timeScale={{ enable: true, interval: 60, slotCount: 1 }}
+          workHours={{ highlight: true, start: '05:00', end: '22:00' }}
+          startHour="05:00"
+          endHour="23:00"
+          showQuickInfo={false}
+          timezone="Asia/Bangkok"
+          editorTemplate={(props: any) => (
+            <BookingEditorTemplateComponent
+              {...props}
+              prices={courtPrice}
+              courtOfClusterArray={courtOfClusterArray} // Truyền dataSource vào editor template
+            />
+          )}
+          cssClass="schedule-cell-dimension"
+          eventRendered={handleEventRendered}
+          eventSettings={{
+            fields: fields,
+            dataSource: bookingArray,
+          }}
+          rowAutoHeight={true}
+          quickInfoOnSelectionEnd={true}
+          actionBegin={async (prop: any) => await handleActionBegin(prop)} // Đảm bảo hàm hành động
+          renderCell={handleRenderCell}
+          enableAdaptiveUI={true}
+          navigating={async (args: any) => await handleNavigation(args)}
+        >
+          <ViewsDirective>
+            <ViewDirective option="Week" dateFormat="dd-MMM-yyyy" />
+          </ViewsDirective>
+          <ResourcesDirective>
+            <ResourceDirective
+              field="courtId"
+              title="Sân"
+              name="courts"
+              allowMultiple={true}
+              dataSource={courtClusterStore.courtOfClusterArray}
+              textField="courtName"
+              idField="courtId"
+            ></ResourceDirective>
+          </ResourcesDirective>
+          <Inject services={[Week]} />
+        </ScheduleComponent>
+      )}
       <BookingListComponent />
     </Skeleton>
   );

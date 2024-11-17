@@ -7,6 +7,7 @@ import {
   BookingModel,
   BookingStatus,
   CourtPriceBooking,
+  mapBookingResponseToBookingModel,
   mapBookingToBookingForList,
 } from '../models/booking.model';
 import { BookingMessage, CommonMessage, DefaultBookingText } from '../common/toastMessage';
@@ -23,7 +24,7 @@ dayjs.extend(timezone);
 export default class BookingClusterStore {
   courtClusterId?: number;
   loadingSlot: boolean = false;
-  courtPrice: CourtPriceBooking[] | null = [];
+  courtPrice: CourtPriceBooking[]= [];
   // #region loading
   loadingBookingForSchedule: boolean = false;
   loadingInitial: boolean = false;
@@ -189,8 +190,10 @@ export default class BookingClusterStore {
         console.log(res);
         this.setBookingAll(res);
         this.setBookingToday(this.convertBookingStartAndEndUTCToG7(res));
+        this.setBooking(mapBookingResponseToBookingModel(res));
       }
     });
+    return {err,res}
   };
 
   completeBooking = async (id: number, toast: CreateToastFnReturn) => {
@@ -207,6 +210,7 @@ export default class BookingClusterStore {
         this.setBookingToday(this.convertBookingStartAndEndUTCToG7(res));
       }
     });
+    return {err, res}
   };
 
   denyBooking = async (id: number, toast: CreateToastFnReturn) => {
@@ -224,6 +228,8 @@ export default class BookingClusterStore {
         this.setBookingAll(res);
       }
     });
+    return {err, res}
+
   };
 
   cancelBooking = async (id: number, toast: CreateToastFnReturn) => {
@@ -242,6 +248,8 @@ export default class BookingClusterStore {
         this.setBookingCancel(res);
       }
     });
+    return {err, res}
+
   };
 
   createBooking = async (booking: BookingCreate) => {

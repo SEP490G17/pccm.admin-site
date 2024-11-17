@@ -79,7 +79,7 @@ axios.interceptors.response.use(
         }
         break;
       case 401:
-        toast.error('unauthorized');
+        router.navigate('/login');
         break;
       case 403:
         toast.error('forbidden');

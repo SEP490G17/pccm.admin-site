@@ -48,7 +48,8 @@ export interface BookingForList {
   phoneNumber: string;
   fullName: string;
   courtName: string;
-  courtClusterName?:string;
+  courtId?: number;
+  courtClusterName?: string;
   playTime: string; // Thời gian bắt đầu đặt sân
   startDay: string;
   endDay: string;
@@ -61,11 +62,9 @@ export interface BookingForList {
   recurrenceRule?: string;
 }
 
-
 export interface BookingInfo extends BookingForList {
-  courtId:number;
-  courtClusterId:number;
-  address:string;
+  courtClusterId: number;
+  address: string;
 }
 
 export interface CourtPriceBooking {
@@ -75,14 +74,12 @@ export interface CourtPriceBooking {
   price: number;
 }
 
-
-
 export const mapBookingToBookingForList = (booking: BookingModel): BookingForList => {
   const startTime = dayjs(booking.startTime); // Convert to GMT+7
   const endTime = dayjs(booking.endTime); // Convert to GMT+7
   const untilTime = booking.untilTime ? dayjs(booking.untilTime) : null; // Convert to GMT+7
-  console.log('origin',booking.startTime);
-  console.log('+7h',startTime);
+  console.log('origin', booking.startTime);
+  console.log('+7h', startTime);
 
   // Format playTime in 24-hour format: HH:mm - HH:mm
   const playTime = `${startTime.format('HH:mm')} - ${endTime.format('HH:mm')}`;
@@ -90,7 +87,7 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
   // Format startDay and endDay in 'YYYY-MM-DD' in GMT+7
   const startDay = startTime.format('DD/MM/YYYY');
   const endDay = untilTime ? untilTime.format('DD/MM/YYYY') : endTime.format('DD/MM/YYYY');
-  const recu =  booking.RecurrenceRule ?  booking.RecurrenceRule :  booking.recurrenceRule;
+  const recu = booking.RecurrenceRule ? booking.RecurrenceRule : booking.recurrenceRule;
   return {
     id: booking.id,
     phoneNumber: booking.phoneNumber,
@@ -106,6 +103,26 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
     totalPrice: booking.totalPrice,
     RecurrenceRule: recu,
     recurrenceRule: recu,
+  };
+};
+export const mapBookingResponseToBookingModel = (booking: BookingForList): BookingModel => {
+  const recu = booking.RecurrenceRule ? booking.RecurrenceRule : booking.recurrenceRule;
+  return {
+    courtId: booking.courtId ?? 0,
+    courtName: booking.courtName,
+    endTime: booking.endDay,
+    startTime: booking.startDay,
+    paymentStatus: booking.paymentStatus,
+    paymentUrl: booking.paymentUrl,
+    status: booking.status,
+    isSuccess: booking.isSuccess,
+    fullName: booking.fullName,
+    phoneNumber: booking.phoneNumber,
+    totalPrice: booking.totalPrice,
+    RecurrenceRule: recu ?? '',
+    recurrenceRule: recu,
+    id: booking.id,
+    untilTime: '',
   };
 };
 
@@ -129,7 +146,7 @@ export interface BookingDetails {
   ordersOfBooking: OrderOfBooking[];
 }
 
-export const getBookingStatusText = (status:number) =>{
+export const getBookingStatusText = (status: number) => {
   switch (status) {
     case BookingStatus.Pending:
       return 'Chờ xác nhận';
@@ -142,9 +159,9 @@ export const getBookingStatusText = (status:number) =>{
     default:
       return 'Không xác nhận';
   }
-}
+};
 
-export const getBookingStatusColor = (status:number):ThemeTypings['colorSchemes'] =>{
+export const getBookingStatusColor = (status: number): ThemeTypings['colorSchemes'] => {
   switch (status) {
     case BookingStatus.Pending:
       return 'blue';
@@ -157,4 +174,4 @@ export const getBookingStatusColor = (status:number):ThemeTypings['colorSchemes'
     default:
       return 'blackAlpha';
   }
-}
+};

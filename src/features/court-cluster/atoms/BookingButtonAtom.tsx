@@ -6,29 +6,47 @@ import PaymentButtonAtom from './PaymentButtonAtom';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
+import { convertBookingStartAndEndUTCToG7 } from '@/app/helper/utils';
 
 interface BookingButtonAtomProps {
   booking: BookingForList;
 }
 
 const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => {
-  const { bookingClusterStore } = useStore();
+  const { bookingClusterStore,bookingStore } = useStore();
   const { acceptedBooking, completeBooking, denyBooking, cancelBooking } = bookingClusterStore;
   const toast = useToast();
+  
   const handleAccepted = async () => {
-    await acceptedBooking(booking.id, toast);
+    await acceptedBooking(booking.id, toast).then((data)=>{
+      if(data.res){
+        bookingStore.bookingRegistry.set(data.res.id,convertBookingStartAndEndUTCToG7(data.res));
+      }
+    });
   };
 
   const handleCompleted = async () => {
-    await completeBooking(booking.id, toast);
+    await completeBooking(booking.id, toast).then((data)=>{
+      if(data.res){
+        bookingStore.bookingRegistry.set(data.res.id,convertBookingStartAndEndUTCToG7(data.res));
+      }
+    });;
   }
 
   const handleDenyBooking = async () => {
-    await denyBooking(booking.id, toast);
+    await denyBooking(booking.id, toast).then((data)=>{
+      if(data.res){
+        bookingStore.bookingRegistry.set(data.res.id,convertBookingStartAndEndUTCToG7(data.res));
+      }
+    });;
   }
 
   const handleCancelBooking = async () => {
-    await cancelBooking(booking.id, toast);
+    await cancelBooking(booking.id, toast).then((data)=>{
+      if(data.res){
+        bookingStore.bookingRegistry.set(data.res.id,convertBookingStartAndEndUTCToG7(data.res));
+      }
+    });;
   }
 
 

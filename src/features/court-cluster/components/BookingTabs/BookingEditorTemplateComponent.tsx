@@ -1,10 +1,12 @@
-import { Grid, GridItem } from '@chakra-ui/react';
+import { Box, Grid, GridItem, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import { DateTimePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
-
+import { CourtPriceBooking } from '@/app/models/booking.model';
+import { useState } from 'react';
+ 
 const BookingEditorTemplateComponent = observer((props: any) => {
   const { courtClusterStore } = useStore();
  
@@ -15,10 +17,10 @@ const BookingEditorTemplateComponent = observer((props: any) => {
     };
   });
  
-  // const [selectedCourtId, setSelectedCourtId] = useState(court[0].courtId??undefined);
+  const [selectedCourtId, setSelectedCourtId] = useState(court[0].courtId);
  
-  
-  // const filteredPrices = props.prices.filter((price: CourtPriceBooking) => price.courtId === selectedCourtId);
+
+  const filteredPrices = props.prices.filter((price: CourtPriceBooking) => price.courtId === selectedCourtId);
  
   const recurrence = [
     {
@@ -96,7 +98,7 @@ const BookingEditorTemplateComponent = observer((props: any) => {
               fields={{ text: 'courtName', value: 'courtId' }}
               placeholder="Chọn Sân"
               className="e-field"
-              // onChange={(e: any) => setSelectedCourtId(e.value)}
+              onChange={(e: any) => setSelectedCourtId(e.value)}
             />
           </GridItem>
         )}
@@ -113,7 +115,7 @@ const BookingEditorTemplateComponent = observer((props: any) => {
           />
         </GridItem>
       </Grid>
-      {/* <Box mt={4}>
+      <Box mt={4}>
         <label>Giá tiền: </label>
         <TableContainer height='130px' maxHeight="130px" overflowY="auto">
           <Table variant="simple">
@@ -135,7 +137,7 @@ const BookingEditorTemplateComponent = observer((props: any) => {
             </Tbody>
           </Table>
         </TableContainer>
-      </Box> */}
+      </Box>
     </>
   );
 });
