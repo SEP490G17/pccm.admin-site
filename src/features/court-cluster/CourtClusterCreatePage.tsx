@@ -229,8 +229,10 @@ const CourtClusterCreatePage = observer(() => {
                                   : null
                               }
                               onChange={(date) => {
-                                props.setFieldValue('closeTime', dayjs(date).format('HH:mm:ss'));
-                                console.log(dayjs(date).format('HH:mm:ss'));
+                                props.setFieldValue(
+                                  'closeTime',
+                                  date ? dayjs(date).format('HH:mm:ss') : null,
+                                );
                               }}
                             />
                             <FormErrorMessage>{props.errors.closeTime}</FormErrorMessage>

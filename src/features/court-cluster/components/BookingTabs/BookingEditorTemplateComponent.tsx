@@ -1,5 +1,4 @@
 import { Box, Grid, GridItem, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
-import { Box, Grid, GridItem, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
 import { DateTimePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
@@ -99,7 +98,6 @@ const BookingEditorTemplateComponent = observer((props: any) => {
               fields={{ text: 'courtName', value: 'courtId' }}
               placeholder="Chọn Sân"
               className="e-field"
-              onChange={(e: any) => setSelectedCourtId(e.value)}
               onChange={(e: any) => setSelectedCourtId(e.value)}
             />
           </GridItem>

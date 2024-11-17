@@ -20,10 +20,7 @@ import BookingsPage from '@/features/booking/BookingsPage';
 import BookingDetailsPage from '@/features/booking/BookingDetailsPage';
 
 export const routes: RouteObject[] = [
-  {
-    path: '/login',
-    element: <LoginPage key="login" />,
-  },
+ 
   {
     path: '/',
     element: <MainLayout />,
@@ -94,6 +91,10 @@ export const routes: RouteObject[] = [
         element: <RevenuePage />,
       },
     ],
+  },
+  {
+    path: '/login',
+    element: <LoginPage key="login" />,
   },
   {
     path: 'not-found',
