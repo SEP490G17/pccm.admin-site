@@ -360,4 +360,12 @@ export default class BookingClusterStore {
   get bookingAllArray() {
     return Array.from(this.bookingAllRegistry.values());
   }
+
+  clearBookingForSchedule(){
+    this.bookingForScheduleRegistry.clear();
+    this.bookingTodayRegistry.clear();
+    this.bookingCancelRegistry.clear();
+    this.bookingAllRegistry.clear();
+    this.bookingForScheduleRegistry.clear();
+  }
 }

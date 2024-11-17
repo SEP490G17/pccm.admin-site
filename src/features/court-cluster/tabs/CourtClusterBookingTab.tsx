@@ -40,16 +40,18 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     loadCourtOfCluster,
     loadingInitialBookingPage,
     setLoadingInitialBookingPage,
+    
   } = courtClusterStore;
-  const { bookingScheduleArray: bookingArray, createBooking, courtPrice, loadingCourtPrice } = bookingStore;
+  const { bookingScheduleArray: bookingArray, createBooking, courtPrice, clearBookingForSchedule } = bookingStore;
   useEffect(() => {
     setLoadingInitialBookingPage(true);
+    bookingStore.clearBookingForSchedule();
     Promise.all([
       bookingStore.loadCourtPrice(courtClusterId),
       loadCourtOfCluster(courtClusterId, toast),
       bookingStore.loadBookingForSchedule(toast),
     ]).then(() => setLoadingInitialBookingPage(false));
-  }, [courtClusterId, bookingStore, loadCourtOfCluster, setLoadingInitialBookingPage, toast]);
+  }, [courtClusterId, bookingStore, loadCourtOfCluster, setLoadingInitialBookingPage, toast,clearBookingForSchedule]);
 
   const group = { resources: ['courts'] };
   const schedule = useRef<ScheduleComponent>(null);
