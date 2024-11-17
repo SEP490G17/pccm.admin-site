@@ -41,7 +41,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     loadingInitialBookingPage,
     setLoadingInitialBookingPage,
   } = courtClusterStore;
-  const { bookingScheduleArray: bookingArray, createBooking, courtPrice } = bookingStore;
+  const { bookingScheduleArray: bookingArray, createBooking, courtPrice, loadingCourtPrice } = bookingStore;
   useEffect(() => {
     setLoadingInitialBookingPage(true);
     Promise.all([
