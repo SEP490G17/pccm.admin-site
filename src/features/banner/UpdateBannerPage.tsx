@@ -48,7 +48,6 @@ const UpdateBannerPage = ({ isOpen, onClose }: IProp) => {
                     name: "is-after-start-time",
                     message: "Giờ kết thúc phải sau giờ bắt đầu",
                     test: function (value) {
-                        console.log(startDate)
                         if (typeof startDate[0] === 'string' && typeof value === 'string') {
                             return new Date(value) > new Date(startDate[0]);
                         }
@@ -86,7 +85,6 @@ const UpdateBannerPage = ({ isOpen, onClose }: IProp) => {
                                         destination: selectedBanner?.bannerInPage,
                                     }}
                                     onSubmit={async (values) => {
-                                        console.log(values)
                                         const banner = new BannerDTO({
                                             id: selectedBanner?.id,
                                             title: values.title,
@@ -107,8 +105,6 @@ const UpdateBannerPage = ({ isOpen, onClose }: IProp) => {
                                     validationSchema={validationSchema}
                                 >
                                     {({ handleSubmit, isSubmitting, isValid, errors }) => {
-                                        console.log('Is Valid:', isValid);
-                                        console.log('Errors:', errors);
 
                                         return (
                                             <Form onSubmit={handleSubmit}>

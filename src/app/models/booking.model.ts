@@ -88,6 +88,7 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
   const startDay = startTime.format('DD/MM/YYYY');
   const endDay = untilTime ? untilTime.format('DD/MM/YYYY') : endTime.format('DD/MM/YYYY');
   const recu = booking.RecurrenceRule ? booking.RecurrenceRule : booking.recurrenceRule;
+  console.log('start Day>>> ',startDay);
   return {
     id: booking.id,
     phoneNumber: booking.phoneNumber,

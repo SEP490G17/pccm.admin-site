@@ -62,7 +62,6 @@ const UpdateServicePage = ({ isOpen, onClose }: IProp) => {
                                         courtclusters: selectedService?.courtClusterId ? [selectedService.courtClusterId] : [],
                                     }}
                                     onSubmit={async (values) => {
-                                        console.log(values)
                                         const service = new ServiceEditDTO({
                                             id: selectedService?.id,
                                             courtClusterId: values.courtclusters,

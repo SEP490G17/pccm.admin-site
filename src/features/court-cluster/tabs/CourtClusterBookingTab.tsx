@@ -61,6 +61,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         cancelButton: 'Đóng',
         deleteButton: 'Huỷ lịch',
         newEvent: 'Đặt lịch chơi',
+        saveButton:'Lưu'
       },
     },
   });
@@ -71,7 +72,6 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
       args.data &&
       ((Array.isArray(args.data) && args.data.length > 0) || !isNullOrUndefined(args.data))
     ) {
-      console.log(args.data);
 
       if (schedule.current) {
         const eventData = Array.isArray(args.data) ? args.data[0] : args.data;
@@ -204,11 +204,9 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
   };
 
   const handleNavigation = async (args: any) => {
-    console.log(args);
     if (args.action === 'date') {
       // Lấy ngày hiện tại trên lịch
       const selectedDate = args.currentDate;
-      console.log('Ngày được chọn:', selectedDate);
       await bookingStore.loadBookingForSchedule(toast, selectedDate);
     }
   };

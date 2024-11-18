@@ -51,7 +51,6 @@ const CreateStaffPage = () => {
                                 initialValues={{ title: "", description: "" }}
                                 onSubmit={(values) => {
                                     // handleSubmit(values);
-                                    console.log(values);
                                 }}
                             >
                                 {(props) => (

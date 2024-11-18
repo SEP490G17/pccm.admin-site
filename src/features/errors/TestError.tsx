@@ -7,7 +7,6 @@ export default function TestErrors() {
   const baseUrl = import.meta.env.VITE_API_URL;
   const [errors, setErrors] = useState(null);
   function handleNotFound() {
-    console.log('start');
     agent.requests.get(baseUrl + 'buggy/not-found');
   }
 
@@ -29,7 +28,6 @@ export default function TestErrors() {
 
   function handleValidationError() {
     agent.requests.post(baseUrl + 'activities', {}).catch((err) => {
-      console.log('axios', err);
       setErrors(err);
     });
   }

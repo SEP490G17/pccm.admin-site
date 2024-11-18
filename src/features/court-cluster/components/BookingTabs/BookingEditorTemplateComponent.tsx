@@ -1,12 +1,22 @@
-import { Box, Grid, GridItem, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import {
+  Box,
+  Grid,
+  GridItem,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from '@chakra-ui/react';
 import { DateTimePickerComponent } from '@syncfusion/ej2-react-calendars';
-import { TextBoxComponent } from '@syncfusion/ej2-react-inputs';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
 import { CourtPriceBooking } from '@/app/models/booking.model';
 import { useState } from 'react';
- 
+
 const BookingEditorTemplateComponent = observer((props: any) => {
   const { courtClusterStore } = useStore();
 
@@ -16,12 +26,13 @@ const BookingEditorTemplateComponent = observer((props: any) => {
       courtName: c.courtName,
     };
   });
- 
-  const [selectedCourtId, setSelectedCourtId] = useState(court[0].courtId);
- 
 
-  const filteredPrices = props.prices.filter((price: CourtPriceBooking) => price.courtId === selectedCourtId);
- 
+  const [selectedCourtId, setSelectedCourtId] = useState(court[0].courtId);
+
+  const filteredPrices = props.prices.filter(
+    (price: CourtPriceBooking) => price.courtId === selectedCourtId,
+  );
+
   const recurrence = [
     {
       value: 0,
@@ -45,18 +56,26 @@ const BookingEditorTemplateComponent = observer((props: any) => {
       <Grid templateColumns={'repeat(8,1fr)'} columnGap={5} rowGap={8} className="mt-4">
         <GridItem colSpan={4} className="w-full">
           <label>Họ và tên:</label>
-          <TextBoxComponent
-            name="fullName" // Khớp với trường trong fields
+          <input
+            name="fullName"
             id="fullName"
-            className=" e-field w-full "
+            className=" e-field w-full e-input "
+            data-name="fullName"
+            required
           />
         </GridItem>
         <GridItem colSpan={4} className="w-full">
           <label>Số điện thoại:</label>
-          <TextBoxComponent
-            name="phoneNumber" // Khớp với trường trong fields
+          <input
+            name="phoneNumber" // Phải khớp với fields.phoneNumber.name
             id="phoneNumber"
-            className="e-field w-full e-phoneNumber"
+            className="e-field e-input w-full" // Phải có class "e-field"
+            data-name="phoneNumber"
+            type="number"
+            min={0}
+            minLength={10}
+            required
+            pattern="[0-9]*"
           />
         </GridItem>
 
@@ -116,31 +135,36 @@ const BookingEditorTemplateComponent = observer((props: any) => {
         </GridItem>
       </Grid>
       <Box mt={4}>
-      <Box mt={4}>
-        <label>Giá tiền: </label>
-        <TableContainer height='130px' maxHeight="130px" overflowY="auto">
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th width={'50%'}>Khung giờ</Th>
-                <Th width={'50%'}>Giá tiền</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {filteredPrices && filteredPrices.map((price: CourtPriceBooking) => (
-                <Tr key={`${price.courtId}-${price.time}`}>
-                  <Td>{price.time}</Td>
-                  <Td>{price.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</Td>
+        <Box mt={4}>
+          <label>Giá tiền: </label>
+          <TableContainer height="130px" maxHeight="130px" overflowY="auto">
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th width={'50%'}>Khung giờ</Th>
+                  <Th width={'50%'}>Giá tiền</Th>
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
-      </Box>
+              </Thead>
+              <Tbody>
+                {filteredPrices &&
+                  filteredPrices.map((price: CourtPriceBooking) => (
+                    <Tr key={`${price.courtId}-${price.time}`}>
+                      <Td>{price.time}</Td>
+                      <Td>
+                        {price.price.toLocaleString('vi-VN', {
+                          style: 'currency',
+                          currency: 'VND',
+                        })}
+                      </Td>
+                    </Tr>
+                  ))}
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </Box>
       </Box>
     </>
   );
 });
 
 export default BookingEditorTemplateComponent;
-

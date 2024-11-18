@@ -15,7 +15,6 @@ const ImageUpload = ({ initialFileList = [], name, limit }: IProps) => {
   const [, , helpers] = useField(name);
   const onChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
     setFileList(newFileList);
-    console.log(newFileList);
     const urls = newFileList
       .map((file) => {
         if (file.status === 'done' && file.response) {

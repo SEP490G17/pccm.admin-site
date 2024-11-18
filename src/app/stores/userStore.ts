@@ -13,7 +13,6 @@ export default class UserStore {
   cleanupInterval: number | undefined = undefined;
 
   constructor() {
-    console.log('user store initialized');
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanUserCache, 30000);
   }
@@ -82,11 +81,9 @@ export default class UserStore {
   //#region common
   setSearchTerm = (term: string) => {
     runInAction(() => {
-      console.log('begin user store');
       this.userPageParams.searchTerm = term;
       this.cleanUserCache();
       this.loadUsers();
-      console.log('term:', term);
     });
   };
 
@@ -114,7 +111,6 @@ export default class UserStore {
 
   private cleanUserCache = () => {
     runInAction(() => {
-      console.log('cleanUserCache');
       this.userRegistry.clear();
     });
   };

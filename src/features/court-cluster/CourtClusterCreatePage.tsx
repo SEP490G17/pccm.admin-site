@@ -386,7 +386,6 @@ const CourtClusterCreatePage = observer(() => {
                                       `courtDetails[${index}].courtPrice.[0].fromTime`,
                                       dayjs(date).format('HH:mm:ss'),
                                     );
-                                    console.log(dayjs(date).format('HH:mm'));
                                   }}
                                   onBlur={() =>
                                     props
@@ -541,7 +540,6 @@ const CourtClusterCreatePage = observer(() => {
                                           `courtDetails[${index}].courtPrice.[${no}].fromTime`,
                                           dayjs(date).format('HH:mm:ss'),
                                         );
-                                        console.log(dayjs(date).format('HH:mm'));
                                       }}
                                       onBlur={() =>
                                         props
@@ -575,7 +573,6 @@ const CourtClusterCreatePage = observer(() => {
                                           `courtDetails[${index}].courtPrice.[${no}].toTime`,
                                           dayjs(date).format('HH:mm:ss'),
                                         );
-                                        console.log(dayjs(date).format('HH:mm'));
                                       }}
                                     />
                                   </Flex>

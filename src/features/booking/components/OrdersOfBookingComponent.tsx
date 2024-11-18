@@ -14,7 +14,7 @@ import dayjs from 'dayjs';
 const OrdersOfBookingComponent = observer(() => {
   const { paymentStore, bookingStore } = useStore();
   const toast = useToast();
-  const { selectedBooking, orderOfBooking } = bookingStore;
+  const { selectedBooking } = bookingStore;
   if (!selectedBooking) return;
   const handlePayment = async (orderId: number) => {
     await paymentStore.getPayment(PaymentType.Order, orderId, toast).then((data) => {
@@ -37,7 +37,7 @@ const OrdersOfBookingComponent = observer(() => {
         <GridItem colSpan={2}>Tổng giá</GridItem>
         <GridItem colSpan={3}>Hành động</GridItem>
       </Grid>
-      {orderOfBooking.map((order, index) => (
+      {bookingStore.orderOfBooking.map((order, index) => (
         <Grid key={order.id} templateColumns="repeat(12, 1fr)" className="p-4 border-b-[1px] ">
           <GridItem
             colSpan={9}

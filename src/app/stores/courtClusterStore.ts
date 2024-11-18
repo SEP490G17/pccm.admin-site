@@ -36,7 +36,6 @@ export default class CourtClusterStore {
   loadingCourt: boolean = false;
 
   constructor() {
-    console.log('court-cluster store initialized');
     makeAutoObservable(this);
   }
 
@@ -141,7 +140,6 @@ export default class CourtClusterStore {
     runInAction(() => {
       if (error) {
         toast.error('Tải danh sách cụm sân thất bại'); // Cải thiện thông báo lỗi nếu cần
-        console.log(error);
       } else {
         response.data.forEach(this.setCourtCluster);
         this.courtPageParams.totalElement = response.count;
@@ -200,10 +198,8 @@ export default class CourtClusterStore {
 
   setSearchTerm = (term: string) => {
     runInAction(() => {
-      console.log('begin court-cluster store');
       this.courtPageParams.searchTerm = term;
       this.cleanCourtCache();
-      console.log('term:', term);
     });
   };
 
@@ -254,7 +250,6 @@ export default class CourtClusterStore {
   };
 
   private cleanCourtCache = () => {
-    console.log('cleanCourtCache');
     this.courtClusterRegistry.clear();
   };
 

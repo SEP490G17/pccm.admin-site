@@ -14,7 +14,6 @@ export default class StaffStore {
   staffPageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
   constructor() {
-    console.log('Staff store initialized');
     this.staffPageParams.pageIndex = 1;
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanStaffCache, 30000);
@@ -52,11 +51,8 @@ export default class StaffStore {
   //#region common
   setSearchTerm = (term: string) => {
     runInAction(() => {
-      console.log('begin staff store');
       this.staffPageParams.searchTerm = term;
       this.cleanStaffCache();
-
-      console.log('term:', term);
     });
   };
 
@@ -71,7 +67,6 @@ export default class StaffStore {
 
   private cleanStaffCache = () => {
     runInAction(() => {
-      console.log('cleanStaffCache');
       this.staffRegistry.clear();
     });
   };

@@ -17,7 +17,6 @@ export default class BannerStore {
   loadingStatusMap = new Map<number, boolean>();
 
   constructor() {
-    console.log('banner store initialized');
     makeAutoObservable(this);
   }
 
@@ -158,7 +157,6 @@ export default class BannerStore {
   mockLoadBannerArray = async () => {
     const { pageSize, skip = 0, totalElement } = this.bannerPageParams;
     const endIndex = skip + pageSize;
-    console.log('total element:', totalElement);
   };
   //#endregion
 

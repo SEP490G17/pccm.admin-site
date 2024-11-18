@@ -20,7 +20,6 @@ export default class ProductStore {
   loadingEdit: boolean = false;
 
   constructor() {
-    console.log('product store initialized');
     this.productPageParams.pageIndex = 1;
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanProductCache, 30000);

@@ -17,7 +17,6 @@ export default class ServiceStore {
   loadingEdit: boolean = false;
 
   constructor() {
-    console.log('Service store initialized');
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanServiceCache, 30000);
   }
@@ -177,7 +176,6 @@ export default class ServiceStore {
 
   private cleanServiceCache = () => {
     runInAction(() => {
-      console.log('cleanServiceCache');
       this.serviceRegistry.clear();
     });
   };
