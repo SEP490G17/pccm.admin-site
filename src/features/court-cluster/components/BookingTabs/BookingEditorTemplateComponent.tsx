@@ -75,7 +75,6 @@ const BookingEditorTemplateComponent = observer((props: any) => {
             min={0}
             minLength={10}
             required
-            pattern="[0-9]*"
           />
         </GridItem>
 
