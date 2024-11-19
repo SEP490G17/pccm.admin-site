@@ -1,4 +1,3 @@
-
 export interface IPageParams {
   pageIndex?: number;
   skip?: number;
@@ -31,6 +30,20 @@ export class ProductPageParams extends PageParams {
   category?: number;
 }
 
-export class BookingPageParams extends PageParams{
+export class ProductLogPageParams extends PageParams {
+  courtCluster?: number;
+  LogType?: number;
+  fromDate?: string | null;
+  toDate?:string | null;
+}
+
+export class ServiceLogPageParams extends PageParams {
+  courtCluster?: number;
+  LogType?: number;
+  fromDate?: string | null;
+  toDate?:string | null;
+}
+
+export class BookingPageParams extends PageParams {
   courtClusterId?: number;
 }

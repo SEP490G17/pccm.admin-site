@@ -13,8 +13,8 @@ import {
   CourtClusterListAll,
 } from '../models/court.model';
 import { sleep } from '../helper/utils';
-import { Service, ServiceDTO, ServiceEditDTO } from '../models/service.model';
-import { Product, ProductInput } from '../models/product.model';
+import { Service, ServiceDTO, ServiceEditDTO, ServiceLog } from '../models/service.model';
+import { Product, ProductInput, ProductLog } from '../models/product.model';
 import { StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
@@ -126,6 +126,8 @@ const Banners = {
 const Services = {
   list: (queryParams: string = ''): Promise<PaginationModel<Service>> =>
     requests.get(`/service${queryParams}`),
+  listlogs: (queryParams: string = ''): Promise<PaginationModel<ServiceLog>> =>
+    requests.get(`/service/log/${queryParams}`),
   details: (id: number): Promise<Service> => requests.get(`/service/${id}`),
   create: (service: ServiceDTO): Promise<Service> => requests.post(`/service`, service),
   update: (service: ServiceEditDTO): Promise<Service> =>
@@ -173,14 +175,18 @@ const Roles = {
 
 const Categories = {
   list: (): Promise<ICategory[]> => requests.get(`/category`),
-  create: (category: { categoryName: string }): Promise<ICategory> => requests.post(`/category`, category),
-  update: (category: ICategory): Promise<ICategory> => requests.put(`/category/${category.id}`, category),
+  create: (category: { categoryName: string }): Promise<ICategory> =>
+    requests.post(`/category`, category),
+  update: (category: ICategory): Promise<ICategory> =>
+    requests.put(`/category/${category.id}`, category),
   delete: (id: number): Promise<void> => requests.del(`/category/${id}`),
 };
 
 const Products = {
   list: (queryParams: string = ''): Promise<PaginationModel<Product>> =>
-    requests.get(`/product${queryParams}`),
+    requests.get(`/product/${queryParams}`),
+  listlogs: (queryParams: string = ''): Promise<PaginationModel<ProductLog>> =>
+    requests.get(`/product/log/${queryParams}`),
   details: (id: number): Promise<ProductInput> => requests.get(`/product/${id}`),
   create: (product: ProductInput): Promise<Product> => requests.post(`/product`, product),
   delete: (id: number): Promise<void> => requests.del(`/product/${id}`),
@@ -212,7 +218,7 @@ const Account = {
 const Users = {
   list: (queryParams: string = ''): Promise<PaginationModel<UserManager>> =>
     requests.get(`/user${queryParams}`),
-  details: (userId: string): Promise<UserManager> => requests.get(`/user/details/${userId}`), 
+  details: (userId: string): Promise<UserManager> => requests.get(`/user/details/${userId}`),
 };
 const Staffs = {
   list: (): Promise<PaginationModel<Staff>> => requests.get('/staff'),
@@ -220,8 +226,7 @@ const Staffs = {
 
 const BookingAgent = {
   create: (booking: BookingCreate) => requests.post<BookingModel>('/booking/v2', booking),
-  getListForSchedule: (body:object): Promise<BookingModel[]> =>
-    requests.post('/booking/v1' ,body),
+  getListForSchedule: (body: object): Promise<BookingModel[]> => requests.post('/booking/v1', body),
   getListV2: (queryParam: string = ''): Promise<PaginationModel<BookingForList>> =>
     requests.get(`/booking/v2${queryParam}`),
   getDetailsV1: (id: number): Promise<BookingDetails> => requests.get(`/booking/v1/${id}`),
@@ -235,8 +240,7 @@ const BookingAgent = {
   denyBooking: (id: number): Promise<BookingForList> => requests.put(`/booking/deny/${id}`, {}),
   exportBill: (courtClusterId: number): Promise<any> =>
     requests.get(`/bill/billbooking/${courtClusterId}`),
-  exportBillOrder: (orderId: number): Promise<any> =>
-    requests.get(`/bill/billorder/${orderId}`),
+  exportBillOrder: (orderId: number): Promise<any> => requests.get(`/bill/billorder/${orderId}`),
 };
 
 const PaymentAgent = {

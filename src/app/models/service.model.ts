@@ -36,3 +36,14 @@ export class ServiceEditDTO {
     }
   }
 }
+
+export interface ServiceLog {
+  id: number;
+  courtClusterName: string;
+  serviceName: string;
+  description: string;
+  price: number;
+  logType: string;
+  createAt: string;
+  createBy: string;
+}
