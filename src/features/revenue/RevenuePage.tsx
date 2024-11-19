@@ -19,7 +19,7 @@ import SelectFieldAtoms from '@/app/common/form/SelectFieldAtoms';
 import { useStore } from '@/app/stores/store';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import { observer } from 'mobx-react';
-import { ExpenseDetails, ExpenseDetailsDTO, FilterCourtClusterStatisticDetailsDTO } from '@/app/models/revenue.models';
+import { ExpenseDetails, ExpenseDetailsDTO, FilterCourtClusterStatisticDetailsDTO, RevenueDetails } from '@/app/models/revenue.models';
 import { DatePicker } from 'antd';
 import agent from '@/app/api/agent';
 import { toast } from 'react-toastify';
@@ -121,6 +121,20 @@ const RevenuePage = observer(() => {
             date: dayjs(selectedTime).format('YYYY-MM')
         });
         revenueStore.exportExcel(data);
+    };
+
+    const handleSaveRevenue = async () => {
+        const data = new RevenueDetails({
+            courtClusterId: Number(selectedCourt),
+            date: dayjs(selectedTime).toISOString(),
+            orderProductDetails: dataDetail?.orderProductDetails,
+            bookingDetails: dataDetail?.bookingDetails,
+            orderServiceDetails: dataDetail?.orderServiceDetails,
+            expenseDetails: dataDetail?.expenseDetails
+        });
+        await agent.Revenue.saveRevenue(data)
+            .then(() => (toast.success("Lưu thành công")))
+            .catch(() => (toast.error("Lưu thất bại")))
     };
 
     return (
@@ -284,7 +298,7 @@ const RevenuePage = observer(() => {
                                                     <Td borderRight="1px solid #ddd"></Td>
                                                     <Td borderRight="1px solid #ddd"></Td>
                                                     <Td borderRight="1px solid #ddd">
-                                                    <Flex gap={5}>
+                                                        <Flex gap={5}>
                                                             <Button colorScheme="blue" className='w-24' onClick={handleUpdateExpense}>
                                                                 {isEditing !== null ? 'Cập nhật' : 'Thêm'}
                                                             </Button>
@@ -317,7 +331,7 @@ const RevenuePage = observer(() => {
                                                     <Td
                                                         borderRight="1px solid #ddd"
                                                     >
-                                                       
+
                                                     </Td>
                                                 </Tr>
                                                 {/* {dataDetail?.expenseDetails.map((expense, index) => (
@@ -348,7 +362,7 @@ const RevenuePage = observer(() => {
                                                         <Td borderRight="1px solid #ddd">{formatPrice(expense.totalPrice)}</Td>
                                                         <Td borderRight="1px solid #ddd">
                                                             <Flex gap={5}>
-                                                                <Button colorScheme="blue" className='w-24'  onClick={() => handleEditExpense(index)}>
+                                                                <Button colorScheme="blue" className='w-24' onClick={() => handleEditExpense(index)}>
                                                                     Sửa
                                                                 </Button>
                                                                 <Button colorScheme="red" className='w-24' onClick={() => handleDeleteExpense(index)}>
@@ -374,7 +388,11 @@ const RevenuePage = observer(() => {
                                                     <Td borderRight="1px solid #ddd"></Td>
                                                     <Td borderRight="1px solid #ddd">(5) = (1) + (2) + (3) - (4)</Td>
                                                     <Td borderRight="1px solid #ddd">{formatPrice(totalProfit)}</Td>
-                                                    <Td borderRight="1px solid #ddd"></Td>
+                                                    <Td borderRight="1px solid #ddd" textAlign={'center'}>
+                                                        <Button colorScheme="green" className='w-30' onClick={handleSaveRevenue}>
+                                                            Lưu doanh thu
+                                                        </Button>
+                                                    </Td>
                                                 </Tr>
                                             </Tbody>
                                         </Table>

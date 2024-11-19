@@ -69,21 +69,31 @@ const BannerPage = observer(() => {
         <Flex alignItems="center" gap={30}>
           <Select
             options={[
-              { value: 0, label: 'Tất cả' },
-              { value: 1, label: 'Banner' },
-              { value: 2, label: 'Sự kiện' },
+              { value: -1, label: 'Tất cả' },
+              { value: 0, label: 'Banner' },
+              { value: 1, label: 'Sự kiện' },
             ]}
             placeholder="Thể loại"
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+            onChange={async (e) => {
+              if (e) {
+                await bannerStore.setCategoryTerm(e.value.toString());
+              }
+            }}
           ></Select>
           <Select
             options={[
-              { value: 0, label: 'Tất cả' },
+              { value: -1, label: 'Tất cả' },
               { value: 1, label: 'Hiển thị' },
-              { value: 2, label: 'Không hiển thị' },
+              { value: 0, label: 'Không hiển thị' },
             ]}
             placeholder="Trạng thái"
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+            onChange={async (e) => {
+              if (e) {
+                await bannerStore.setStatusTerm(e.value.toString());
+              }
+            }}
           ></Select>
         </Flex>
 

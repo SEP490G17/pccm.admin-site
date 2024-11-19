@@ -31,6 +31,7 @@ import {
   ExpenseDetailsDTO,
   ExpenseDto,
   FilterCourtClusterStatisticDetailsDTO,
+  RevenueDetails,
 } from '../models/revenue.models';
 import {
   BookingCreate,
@@ -74,7 +75,7 @@ axios.interceptors.response.use(
             }
           }
           throw modalStateErrors.flat();
-        } 
+        }
         break;
       case 401:
         router.navigate('/login');
@@ -159,6 +160,8 @@ const Revenue = {
   years: (): Promise<number[]> => requests.get(`/statistic/years`),
   count: (): Promise<DataTotal> => requests.get(`/statistic/count`),
   saveExpense: (data: ExpenseDetailsDTO): Promise<ExpenseDto> => requests.post(`/statistic`, data),
+  saveRevenue: (data: RevenueDetails): Promise<any> =>
+    requests.post(`/statistic/SaveRevenue`, data),
   exportExcel: (filterData: FilterCourtClusterStatisticDetailsDTO): Promise<any> =>
     requests.get(
       `/statistic/ExportExcel?date=${filterData.date}&clusterId=${filterData.courtClusterId}`,

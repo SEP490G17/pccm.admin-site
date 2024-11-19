@@ -69,12 +69,17 @@ const NewsPage = () => {
         <Flex gap="30px" alignItems="center">
           <Select
             options={[
-              { value: 0, label: 'Tất cả' },
+              { value: -1, label: 'Tất cả' },
               { value: 1, label: 'Hiển thị' },
-              { value: 2, label: 'Không hiển thị' },
+              { value: 0, label: 'Không hiển thị' },
             ]}
             placeholder="Trạng thái"
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+            onChange={async (e) => {
+              if (e) {
+                await newsStore.setFilterTerm(e.value.toString());
+              }
+            }}
           ></Select>
         </Flex>
 
