@@ -1,4 +1,4 @@
-import { Button, Flex } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import ButtonPrimaryAtoms from './ButtonPrimaryAtoms';
 
 interface IProps {

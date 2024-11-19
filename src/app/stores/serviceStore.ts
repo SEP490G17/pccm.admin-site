@@ -1,18 +1,20 @@
-import { Service, ServiceDTO, ServiceEditDTO } from './../models/service.model';
+import { Service, ServiceDTO, ServiceEditDTO, ServiceLog } from './../models/service.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleServiceData } from '../mock/service.mock';
-import { PageParams } from '../models/pageParams.model';
+import { PageParams, ServiceLogPageParams } from '../models/pageParams.model';
 import { catchErrorHandle, sleep } from '../helper/utils';
 import agent from '../api/agent';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
 export default class ServiceStore {
   serviceRegistry = new Map<number, Service>();
+  serviceLogRegistry = new Map<number, ServiceLog>();
   selectedService: Service | undefined = undefined;
   loading: boolean = false;
   loadingInitial: boolean = false;
   isOrigin: boolean = true;
   servicePageParams = new PageParams();
+  serviceLogPageParams = new ServiceLogPageParams();
   cleanupInterval: number | undefined = undefined;
   loadingEdit: boolean = false;
 
@@ -31,7 +33,7 @@ export default class ServiceStore {
     if (this.servicePageParams.searchTerm) {
       queryParams.append('search', this.servicePageParams.searchTerm);
     }
-    if(this.servicePageParams.filter){
+    if (this.servicePageParams.filter) {
       queryParams.append('filter', this.servicePageParams.filter);
     }
     const [error, res] = await catchErrorHandle(agent.Services.list(`?${queryParams.toString()}`));
@@ -48,6 +50,43 @@ export default class ServiceStore {
     });
   };
 
+  loadServicesLog = async () => {
+    this.loading = true;
+    const queryParams = new URLSearchParams();
+    queryParams.append('skip', `${this.serviceLogPageParams.skip ?? 0}`);
+    queryParams.append('pageSize', `${this.serviceLogPageParams.pageSize}`);
+    if (this.serviceLogPageParams.searchTerm) {
+      queryParams.append('search', this.serviceLogPageParams.searchTerm);
+    }
+    if (this.serviceLogPageParams.filter) {
+      queryParams.append('filter', this.serviceLogPageParams.filter);
+    }
+    if (this.serviceLogPageParams.LogType) {
+      queryParams.append('logType', `${this.serviceLogPageParams.LogType}`);
+    }
+    if (this.serviceLogPageParams.fromDate != null) {
+      queryParams.append('fromDate', this.serviceLogPageParams.fromDate);
+    }
+    if (this.serviceLogPageParams.toDate != null) {
+      queryParams.append('toDate', this.serviceLogPageParams.toDate);
+    }
+
+    const [error, res] = await catchErrorHandle(
+      agent.Services.listlogs(`?${queryParams.toString()}`),
+    );
+    runInAction(() => {
+      if (error) {
+        toast.error('Lấy danh sách dịch vụ thất bại');
+      }
+      if (res) {
+        const { count, data } = res;
+        data.forEach(this.setServiceLog);
+        this.serviceLogPageParams.totalElement = count;
+      }
+      this.loading = false;
+    });
+  };
+
   //#endregion
 
   createService = async (service: ServiceDTO) => {
@@ -56,6 +95,7 @@ export default class ServiceStore {
       await agent.Services.create(service)
         .then(() => {
           this.loadServices();
+          this.loadServicesLog();
           toast.success('Tạo dịch vụ thành công');
         })
         .catch((error) => {
@@ -90,6 +130,7 @@ export default class ServiceStore {
         const newService = await agent.Services.update(service);
         this.serviceRegistry.delete(this.selectedService?.id);
         this.setService(newService);
+        this.loadServicesLog();
         this.loading = false;
         toast.success('Cập nhật dịch vụ thành công');
       }
@@ -107,6 +148,7 @@ export default class ServiceStore {
     try {
       await agent.Services.delete(id);
       runInAction(() => {
+        this.loadServicesLog();
         this.serviceRegistry.delete(id);
         this.loading = false;
       });
@@ -156,9 +198,20 @@ export default class ServiceStore {
     });
   };
 
+  setSearchLogTerm = async (term: string) => {
+    this.loadingInitial = true;
+    this.cleanServiceLogCache();
+    this.serviceLogPageParams.clearLazyPage();
+    this.serviceLogPageParams.searchTerm = term;
+    await this.loadServicesLog();
+    runInAction(() => {
+      this.loadingInitial = false;
+    });
+  };
+
   setFilterTerm = async (term: string) => {
     this.loadingInitial = true;
-    this.serviceRegistry.clear();
+    this.cleanServiceCache();
     this.servicePageParams.clearLazyPage();
     this.servicePageParams.filter = term;
     await this.loadServices();
@@ -167,18 +220,62 @@ export default class ServiceStore {
     });
   };
 
+  setFilterTermLog = async (term: string) => {
+    this.loadingInitial = true;
+    this.cleanServiceLogCache();
+    this.serviceLogPageParams.clearLazyPage();
+    this.serviceLogPageParams.filter = term;
+    await this.loadServicesLog();
+    runInAction(() => {
+      this.loadingInitial = false;
+    });
+  };
+
+  filterLogByLogType = async (logTypeId: number) => {
+    this.loadingInitial = true;
+    this.serviceLogPageParams.clearLazyPage();
+    this.serviceLogPageParams.LogType = logTypeId;
+    this.cleanServiceLogCache();
+    await this.loadServicesLog();
+    runInAction(() => (this.loadingInitial = false));
+  };
+
+  filterLogByDate = async (date1: string | null, date2: string | null) => {
+    this.loadingInitial = true;
+    this.serviceLogPageParams.clearLazyPage();
+    this.serviceLogPageParams.fromDate = date1 ?? null;
+    this.serviceLogPageParams.toDate = date2 ?? null;
+    this.cleanServiceLogCache();
+    await this.loadServicesLog();
+    runInAction(() => (this.loadingInitial = false));
+  };
+
   get serviceArray() {
     return _.orderBy(Array.from(this.serviceRegistry.values()), ['id'], ['desc']);
   }
+
+  get serviceLogArray() {
+    return _.orderBy(Array.from(this.serviceLogRegistry.values()), ['id'], ['desc']);
+  }
+
   //#region private methods
   private setService = (service: Service) => {
     this.serviceRegistry.set(service.id, service);
   };
 
+  private setServiceLog = (service: ServiceLog) => {
+    this.serviceLogRegistry.set(service.id, service);
+  };
+
   private cleanServiceCache = () => {
     runInAction(() => {
-      console.log('cleanServiceCache');
       this.serviceRegistry.clear();
+    });
+  };
+
+  private cleanServiceLogCache = () => {
+    runInAction(() => {
+      this.serviceLogRegistry.clear();
     });
   };
 

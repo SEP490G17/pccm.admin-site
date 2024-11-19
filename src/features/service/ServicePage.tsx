@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Flex, useDisclosure, Center, Heading } from '@chakra-ui/react';
+import { Flex, useDisclosure, Center, Heading, Button } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -12,20 +12,26 @@ import CreateServicePage from './CreateServicePage';
 import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
 import PlusIcon from '../atoms/PlusIcon';
 import Select from 'react-select';
+import ServiceLogTableComponent from './components/ServiceLogTableComponent';
+import { DatePicker } from 'antd';
+import { Dayjs } from 'dayjs';
 
 const ServicePage = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { serviceStore, courtClusterStore } = useStore();
 
-  const { loadServices, servicePageParams, serviceRegistry, setLoadingInitial, loading } =
+  const { loadServices, loadServicesLog, filterLogByLogType, servicePageParams, serviceLogRegistry, serviceRegistry, serviceLogPageParams, setLoadingInitial, loading } =
     serviceStore;
   const [isPending, setIsPending] = useState(false);
+  const [openServiceList, setOpenServiceList] = useState(true);
+  const [openServiceLog, setOpenServiceLog] = useState(false);
   const { courtClusterListAllOptions } = courtClusterStore;
 
   useEffect(() => {
     setLoadingInitial(true);
     servicePageParams.clearLazyPage();
     servicePageParams.searchTerm = '';
+    loadServicesLog();
     loadServices().finally(() => setLoadingInitial(false));
   }, []);
 
@@ -35,12 +41,20 @@ const ServicePage = observer(() => {
 
     // Kiểm tra nếu cuộn gần đến cuối (có thể điều chỉnh giá trị 100 theo nhu cầu)
     if (scrollPosition >= documentHeight - 50) {
-      servicePageParams.skip = serviceRegistry.size;
-      if (servicePageParams.totalElement > serviceRegistry.size) {
-        loadServices();
+      if (openServiceList) {
+        servicePageParams.skip = serviceRegistry.size;
+        if (servicePageParams.totalElement > serviceRegistry.size) {
+          loadServices();
+        }
+      }
+      else if (openServiceLog) {
+        serviceLogPageParams.skip = serviceLogRegistry.size;
+        if (serviceLogPageParams.totalElement > serviceLogRegistry.size) {
+          loadServicesLog();
+        }
       }
     }
-  }, []);
+  }, [openServiceList, openServiceLog, loadServices, loadServicesLog, servicePageParams, serviceRegistry.size]);
 
   // Gắn sự kiện cuộn
   useEffect(() => {
@@ -59,9 +73,36 @@ const ServicePage = observer(() => {
     [],
   );
 
+  const handleSearchLog = useCallback(
+    debounce(async (e) => {
+      setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
+      await serviceStore.setSearchLogTerm(e.target.value);
+    }, 500), // Debounce với thời gian 1 giây
+    [],
+  );
+
   const onSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
     await handleSearch(e); // Gọi hàm debounce
+  };
+
+  const onSearchLogChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
+    await handleSearchLog(e); // Gọi hàm debounce
+  };
+
+  const handleChangeLogType = async ({ value }: { value: number; label: string }) => {
+    await filterLogByLogType(value);
+  };
+
+  const handleDateRangeChange = async (value1: Dayjs | null, value2: Dayjs | null) => {
+    if (value1 && value2) {
+      await serviceStore.filterLogByDate(value1.startOf('day').format('DD/MM/YYYY HH:mm:ss'), value2.endOf('day').format('DD/MM/YYYY HH:mm:ss'))
+    }
+    else {
+      await serviceStore.filterLogByDate(null, null)
+
+    }
   };
 
   return (
@@ -71,40 +112,130 @@ const ServicePage = observer(() => {
 
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex alignItems="center">
-          <Select
-            options={[{ value: 0, label: 'Tất cả' }, ...courtClusterListAllOptions]}
-            placeholder="Cụm sân"
-            className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
-            onChange={async (e) => {
-              if (e) {
-                await serviceStore.setFilterTerm(e.value.toString());
-              }
-            }}
-            isSearchable={true}
-          ></Select>
+          {
+            openServiceList ?
+              <Select
+                options={[{ value: 0, label: 'Tất cả' }, ...courtClusterListAllOptions]}
+                placeholder="Cụm sân"
+                className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+                onChange={async (e) => {
+                  if (e) {
+                    await serviceStore.setFilterTerm(e.value.toString());
+                  }
+                }}
+                isSearchable={true}
+              ></Select>
+              :
+              <Flex gap={3}>
+                <Select
+                  options={[{ value: 0, label: 'Tất cả' }, ...courtClusterListAllOptions]}
+                  placeholder="Cụm sân"
+                  className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+                  onChange={async (e) => {
+                    if (e) {
+                      await serviceStore.setFilterTermLog(e.value.toString());
+                    }
+                  }}
+                  isSearchable={true}
+                ></Select>
+                <Select
+                  options={[
+                    { value: 0, label: 'Tất cả' },
+                    { value: 1, label: 'Thêm dịch vụ' },
+                    { value: 2, label: 'Cập nhật dịch vụ' },
+                    { value: 3, label: 'Đặt dịch vụ' },
+                    { value: 4, label: 'Xóa dịch vụ' },
+                  ]}
+                  placeholder="Loại log"
+                  className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+                  onChange={async (e) => {
+                    if (e) {
+                      await handleChangeLogType({ value: e.value, label: e.label });
+                    }
+                  }}
+                  isSearchable={true}
+                ></Select>
+              </Flex>
+          }
         </Flex>
+        {
+          openServiceList ?
+            <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
+              <InputSearchBoxAtoms isPending={isPending} handleChange={onSearchChange} />
+              <ButtonPrimaryAtoms
+                className="bg-primary-900"
+                handleOnClick={onOpen}
+                children={
+                  <Center gap={1}>
+                    <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+                    Thêm mới
+                  </Center>
+                }
+              />
+            </Flex>
+            :
+            <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
+              <DatePicker.RangePicker
+                format={'DD/MM/YYYY'}
+                placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
+                style={{ border: '0.5px solid #ADADAD' }}
+                onChange={(value) => {
+                  if (value && value.length === 2) {
+                    handleDateRangeChange(value[0], value[1]);
+                  } else {
+                    handleDateRangeChange(null, null);
+                  }
+                }}
+              />
+              <InputSearchBoxAtoms isPending={isPending} handleChange={onSearchLogChange} />
+            </Flex>
+        }
 
-        <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
-          <InputSearchBoxAtoms isPending={isPending} handleChange={onSearchChange} />
-          <ButtonPrimaryAtoms
-            className="bg-primary-900"
-            handleOnClick={onOpen}
-            children={
-              <Center gap={1}>
-                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
-                Thêm mới
-              </Center>
-            }
-          />
-        </Flex>
       </Flex>
-      <ServiceTableComponent />
+      <Flex
+        width="100%"
+        justifyContent="flex-start"
+        alignItems="center"
+        mb="1.5rem"
+        gap={4}
+        flexWrap="wrap"
+      >
+        <Button
+          style={openServiceList ? { backgroundColor: '#115363', color: 'white' } : { backgroundColor: '#b7b7b7', color: 'white' }}
+          onClick={() => {
+            setOpenServiceList(true);
+            setOpenServiceLog(false);
+          }}
+        >
+          <Center gap={1}>
+            Danh sách dịch vụ
+          </Center>
+        </Button>
+        <Button
+          style={openServiceLog ? { backgroundColor: '#115363', color: 'white' } : { backgroundColor: '#b7b7b7', color: 'white' }}
+          onClick={() => {
+            setOpenServiceList(false);
+            setOpenServiceLog(true);
+          }}
+        >
+          <Center gap={1}>
+            Danh sách log
+          </Center>
+        </Button>
+      </Flex>
+      {
+        openServiceList ?
+          <ServiceTableComponent />
+          :
+          <ServiceLogTableComponent />
+      }
+
       <LoadMoreButtonAtoms
         handleOnClick={() => {
           servicePageParams.skip = serviceRegistry.size;
           loadServices();
         }}
-        hidden={serviceRegistry.size > servicePageParams.totalElement}
+        hidden={serviceRegistry.size >= servicePageParams.totalElement}
         loading={loading}
       />
       <CreateServicePage isOpen={isOpen} onClose={onClose} />

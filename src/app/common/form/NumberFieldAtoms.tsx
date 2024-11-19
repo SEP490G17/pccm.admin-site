@@ -11,14 +11,16 @@ interface IProps extends InputProps {
   label?: string;
   name?: string;
   isRequired?: boolean;
+  isDisabled?: boolean;
 }
-function NumberFieldAtom({ label, isRequired, ...props }: IProps) {
+function NumberFieldAtom({ label, isRequired, isDisabled, ...props }: IProps) {
   return (
     <FastField name={props.name}>
       {({ field, form }: any) => (
         <FormControl
           isInvalid={form.errors[field.name] && form.touched[field.name]}
           isRequired={isRequired}
+          isDisabled={isDisabled}
         >
           <FormLabel className="title_label"> {label}</FormLabel>
 
