@@ -166,8 +166,6 @@ const StatisticPage = observer(() => {
                 }
             >
                 {({ handleSubmit, isValid, errors }) => {
-                    console.log('Is Valid:', isValid);
-                    console.log('Errors:', errors);
                     return (
                         <Form onSubmit={handleSubmit} style={{ marginBottom: '30px' }}>
                             <Skeleton isLoaded={!loadingDataTotal}>

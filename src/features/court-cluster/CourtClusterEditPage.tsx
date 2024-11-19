@@ -122,7 +122,6 @@ const CourtClusterEditPage = observer(() => {
             initialValues={initial}
             validationSchema={CourtClusterDetailsSchema}
             onSubmit={(values, { isSubmitting }) => {
-              console.log(values);
             }}
           >
             {(props) => (
@@ -205,7 +204,6 @@ const CourtClusterEditPage = observer(() => {
                               defaultValue={dayjs(props.values.closeTime, 'HH:mm')}
                               onChange={(date) => {
                                 props.setFieldValue('closeTime', dayjs(date).format('HH:mm'));
-                                console.log(dayjs(date).format('HH:mm'));
                               }}
                             />
                             <FormErrorMessage>{props.errors.closeTime}</FormErrorMessage>
@@ -310,7 +308,6 @@ const CourtClusterEditPage = observer(() => {
                                     actions: CourtAction.UPDATE, // Đảm bảo cập nhật actions
                                   };
                                   props.setFieldValue(`courtDetails[${index}]`, updatedCourtDetail);
-                                  console.log(props.values.courtDetails[index]);
                                 }}
                               ></Input>
                             </FormControl>
@@ -338,7 +335,6 @@ const CourtClusterEditPage = observer(() => {
                                     `courtDetails[${index}].courtPrice.[0].fromTime`,
                                     dayjs(date).format('HH:mm'),
                                   );
-                                  console.log(dayjs(date).format('HH:mm'));
                                 }}
                                 onBlur={() =>
                                   props
@@ -369,7 +365,6 @@ const CourtClusterEditPage = observer(() => {
                                     `courtDetails[${index}].courtPrice.[0].toTime`,
                                     dayjs(date).format('HH:mm'),
                                   );
-                                  console.log(dayjs(date).format('HH:mm'));
                                 }}
                                 onBlur={() =>
                                   props
@@ -476,7 +471,6 @@ const CourtClusterEditPage = observer(() => {
                                           `courtDetails[${index}].courtPrice.[${no}].fromTime`,
                                           dayjs(date).format('HH:mm'),
                                         );
-                                        console.log(dayjs(date).format('HH:mm'));
                                       }}
                                       onBlur={() =>
                                         props
@@ -510,7 +504,6 @@ const CourtClusterEditPage = observer(() => {
                                           `courtDetails[${index}].courtPrice.[${no}].toTime`,
                                           dayjs(date).format('HH:mm'),
                                         );
-                                        console.log(dayjs(date).format('HH:mm'));
                                       }}
                                       onBlur={() =>
                                         props

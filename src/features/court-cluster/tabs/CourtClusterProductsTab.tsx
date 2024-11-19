@@ -20,7 +20,6 @@ const CourtClusterProductsTab = observer(({courtClusterId}:IProps) => {
         loadCategories();
         if (productOfClusterRegistry.size <=1) {
             loadProductsOfCourtCluster(courtClusterId);
-            console.log(courtClusterId);
         }
     }, [courtClusterId,loadCategories,loadProductsOfCourtCluster,productOfClusterRegistry.size])
 

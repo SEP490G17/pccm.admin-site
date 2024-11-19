@@ -7,9 +7,11 @@ import { AiOutlineMenuFold, AiOutlineMenuUnfold } from 'react-icons/ai';
 import { useEffect } from 'react';
 const Header = observer(() => {
   const { commonStore, authStore } = useStore();
-  useEffect(() =>{
-    authStore.getUser();
-  } , [authStore]);
+  useEffect(() => {
+    if (!authStore.userApp) {
+      authStore.getUser();
+    }
+  }, [authStore]);
   return (
     <>
       <Button

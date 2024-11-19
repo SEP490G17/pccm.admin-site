@@ -40,25 +40,28 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     loadCourtOfCluster,
     loadingInitialBookingPage,
     setLoadingInitialBookingPage,
+    
   } = courtClusterStore;
-  const { bookingScheduleArray: bookingArray, createBooking, courtPrice, loadingCourtPrice } = bookingStore;
+  const { bookingScheduleArray: bookingArray, createBooking, courtPrice, clearBookingForSchedule } = bookingStore;
   useEffect(() => {
     setLoadingInitialBookingPage(true);
+    bookingStore.clearBookingForSchedule();
     Promise.all([
       bookingStore.loadCourtPrice(courtClusterId),
       loadCourtOfCluster(courtClusterId, toast),
       bookingStore.loadBookingForSchedule(toast),
     ]).then(() => setLoadingInitialBookingPage(false));
-  }, [courtClusterId, bookingStore, loadCourtOfCluster, setLoadingInitialBookingPage, toast]);
+  }, [courtClusterId, bookingStore, loadCourtOfCluster, setLoadingInitialBookingPage, toast,clearBookingForSchedule]);
 
   const group = { resources: ['courts'] };
   const schedule = useRef<ScheduleComponent>(null);
   L10n.load({
     'en-US': {
       schedule: {
-        cancelButton: 'Close',
-        deleteButton: 'Cancel Booking',
-        newEvent: 'Create New Booking',
+        cancelButton: 'Đóng',
+        deleteButton: 'Huỷ lịch',
+        newEvent: 'Đặt lịch chơi',
+        saveButton:'Lưu'
       },
     },
   });
@@ -69,7 +72,6 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
       args.data &&
       ((Array.isArray(args.data) && args.data.length > 0) || !isNullOrUndefined(args.data))
     ) {
-      console.log(args.data);
 
       if (schedule.current) {
         const eventData = Array.isArray(args.data) ? args.data[0] : args.data;
@@ -202,11 +204,9 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
   };
 
   const handleNavigation = async (args: any) => {
-    console.log(args);
     if (args.action === 'date') {
       // Lấy ngày hiện tại trên lịch
       const selectedDate = args.currentDate;
-      console.log('Ngày được chọn:', selectedDate);
       await bookingStore.loadBookingForSchedule(toast, selectedDate);
     }
   };
@@ -216,9 +216,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         Lịch đặt
       </Heading>
 
-      {
-        !loadingCourtPrice
-        &&
+      {!loadingInitialBookingPage && (
         <ScheduleComponent
           ref={schedule}
           group={group}
@@ -265,7 +263,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
           </ResourcesDirective>
           <Inject services={[Week]} />
         </ScheduleComponent>
-      }
+      )}
       <BookingListComponent />
     </Skeleton>
   );

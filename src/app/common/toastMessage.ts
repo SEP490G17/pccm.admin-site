@@ -39,13 +39,15 @@ export const PaymentMessage = {
 
 //#endregion
 
-
 // #region Booking message
 export const DefaultBookingText = {
   title: {
     loading: 'Tải danh sách booking',
     details: 'Tải chi tiết booking',
     accept: 'Xác thực đặt lịch ',
+    cancel: 'Huỷ lịch đặt sân',
+    deny: 'Từ chối lịch đặt',
+    complete: 'Xác nhận lịch hoàn thành',
   },
   description: {
     failure: {
@@ -53,14 +55,17 @@ export const DefaultBookingText = {
       loadingPending: 'Tải danh sách booking chờ duyệt thất bại',
       loadingCancel: 'Tải danh sách booking đã huỷ thất bại',
       getDetails: 'Tải chi tiết booking thất bại',
+      cancel: 'Huỷ lịch thất bại',
+      deny: 'Từ chối lịch thất bại'
     },
     success: {
       accept: 'Xác thực đặt lịch thành công',
+      cancel: 'Huỷ lịch thành công',
+      deny: 'Từ chối lịch thành công',
+      complete: 'Xác nhận lịch hoàn thành thành công',
     },
   },
 };
-
-
 
 export const BookingMessage = {
   loadFailure: (
@@ -139,27 +144,96 @@ export const BookingMessage = {
     duration,
     isClosable,
   }),
+  cancelSuccess: (
+    title: string = DefaultBookingText.title.accept,
+    description: string = DefaultBookingText.description.success.cancel,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'success',
+    duration,
+    isClosable,
+  }),
+  cancelFailure: (
+    title: string = DefaultBookingText.title.accept,
+    description: string = DefaultBookingText.description.success.cancel,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  }),
+  completeSuccess: (
+    title: string = DefaultBookingText.title.complete,
+    description: string = DefaultBookingText.description.success.complete,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  }),
+  completeFailure: (
+    title: string = DefaultBookingText.title.complete,
+    description: string,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  }),
+  denySuccess: (
+    title: string = DefaultBookingText.title.deny,
+    description: string = DefaultBookingText.description.success.deny,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  }),
+  denyFailure: (
+    title: string = DefaultBookingText.title.deny,
+    description: string = DefaultBookingText.description.failure.deny,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  }),
 };
-
-
 
 //#endregion
 
 export const DefaultOrderText = {
   title: {
-    create:'Tạo Order'
+    create: 'Tạo Order',
   },
 
   description: {
-    success:{
+    success: {
       create: 'Tạo đơn hàng thành công',
     },
     failure: {
       create: 'Tạo đơn hàng thất bại',
     },
-
-  }
-}
+  },
+};
 
 export const OrderMessage = {
   createSuccess: (
@@ -186,7 +260,6 @@ export const OrderMessage = {
     duration,
     isClosable,
   }),
-  
 };
 
 export const CourtClusterMessage: Record<string, UseToastOptions> = {

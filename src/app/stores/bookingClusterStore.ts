@@ -7,6 +7,7 @@ import {
   BookingModel,
   BookingStatus,
   CourtPriceBooking,
+  mapBookingResponseToBookingModel,
   mapBookingToBookingForList,
 } from '../models/booking.model';
 import { BookingMessage, CommonMessage, DefaultBookingText } from '../common/toastMessage';
@@ -23,7 +24,7 @@ dayjs.extend(timezone);
 export default class BookingClusterStore {
   courtClusterId?: number;
   loadingSlot: boolean = false;
-  courtPrice: CourtPriceBooking[] | null = [];
+  courtPrice: CourtPriceBooking[]= [];
   // #region loading
   loadingBookingForSchedule: boolean = false;
   loadingInitial: boolean = false;
@@ -187,11 +188,12 @@ export default class BookingClusterStore {
       if (res) {
         toast(BookingMessage.acceptSuccess());
         this.bookingPendingRegistry.delete(id);
-        console.log(res);
         this.setBookingAll(res);
         this.setBookingToday(this.convertBookingStartAndEndUTCToG7(res));
+        this.setBooking(mapBookingResponseToBookingModel(res));
       }
     });
+    return {err,res}
   };
 
   completeBooking = async (id: number, toast: CreateToastFnReturn) => {
@@ -200,14 +202,15 @@ export default class BookingClusterStore {
     runInAction(() => {
       toast.close(pendingToast);
       if (err) {
-        toast(BookingMessage.acceptFailure(undefined, err.message));
+        toast(BookingMessage.completeFailure(undefined, err?.response.data));
       }
       if (res) {
-        toast(BookingMessage.acceptSuccess());
+        toast(BookingMessage.completeSuccess());
         this.setBookingAll(res);
         this.setBookingToday(this.convertBookingStartAndEndUTCToG7(res));
       }
     });
+    return {err, res}
   };
 
   denyBooking = async (id: number, toast: CreateToastFnReturn) => {
@@ -216,15 +219,17 @@ export default class BookingClusterStore {
     runInAction(() => {
       toast.close(pendingToast);
       if (err) {
-        toast(BookingMessage.acceptFailure(undefined, err.message));
+        toast(BookingMessage.denyFailure());
       }
       if (res) {
         this.bookingTodayRegistry.delete(res.id);
         this.bookingForScheduleRegistry.delete(res.id);
-        toast(BookingMessage.acceptSuccess());
+        toast(BookingMessage.denyFailure());
         this.setBookingAll(res);
       }
     });
+    return {err, res}
+
   };
 
   cancelBooking = async (id: number, toast: CreateToastFnReturn) => {
@@ -233,16 +238,18 @@ export default class BookingClusterStore {
     runInAction(() => {
       toast.close(pendingToast);
       if (err) {
-        toast(BookingMessage.acceptFailure(undefined, err.message));
+        toast(BookingMessage.cancelFailure(undefined, err.message));
       }
       if (res) {
         this.bookingTodayRegistry.delete(res.id);
-        toast(BookingMessage.acceptSuccess());
+        toast(BookingMessage.cancelSuccess());
         this.setBookingAll(res);
         this.bookingForScheduleRegistry.delete(res.id);
         this.setBookingCancel(res);
       }
     });
+    return {err, res}
+
   };
 
   createBooking = async (booking: BookingCreate) => {
@@ -250,9 +257,9 @@ export default class BookingClusterStore {
     runInAction(() => {
       if (res) {
         this.setBooking(res);
-        console.log('before convert',res);
         const convert = mapBookingToBookingForList(res);
         this.setBookingToday(convert);
+        this.bookingAllRegistry.set(convert.id,convert);
       }
     });
   };
@@ -276,7 +283,6 @@ export default class BookingClusterStore {
   }
 
   private setBookingToday = (booking: BookingForList) => {
-    console.log(booking);
     const today = dayjs().tz('Asia/Ho_Chi_Minh').startOf('day'); // Ngày hôm nay theo GMT+7
     const bookingStartTime = dayjs(booking.startDay, 'DD/MM/YYYY')
       .tz('Asia/Ho_Chi_Minh')
@@ -284,10 +290,6 @@ export default class BookingClusterStore {
     const bookingEndTime = dayjs(booking.endDay, 'DD/MM/YYYY')
       .tz('Asia/Ho_Chi_Minh')
       .startOf('day');
-    console.log('check start time', bookingStartTime.isSame(today, 'day'));
-    console.log('check tody', today);
-    console.log('check start time', bookingStartTime);
-
     if (
       booking.status === BookingStatus.Confirmed &&
       (bookingStartTime.isSame(today, 'day') ||
@@ -351,5 +353,13 @@ export default class BookingClusterStore {
   }
   get bookingAllArray() {
     return Array.from(this.bookingAllRegistry.values());
+  }
+
+  clearBookingForSchedule(){
+    this.bookingForScheduleRegistry.clear();
+    this.bookingTodayRegistry.clear();
+    this.bookingCancelRegistry.clear();
+    this.bookingAllRegistry.clear();
+    this.bookingForScheduleRegistry.clear();
   }
 }

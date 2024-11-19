@@ -3,6 +3,7 @@ import { User, UserFormValues } from '../models/user.model';
 import agent from '../api/agent';
 import { store } from './store';
 import { router } from '../router/Routes';
+import { catchErrorHandle } from '../helper/utils';
 
 export default class AuthStore {
   userApp: User | null = null;
@@ -17,25 +18,23 @@ export default class AuthStore {
 
   setRememberMe = () => {
     this.rememberMe = !this.rememberMe;
-    console.log(this.rememberMe);
   };
 
   login = async (creds: UserFormValues) => {
-    try {
-      const user = await agent.Account.login(creds);
-      if (this.rememberMe) {
-        store.commonStore.setToken(user.token);
-      } else {
-        store.commonStore.setTokenSession(user.token);
-      }
-      runInAction(() => {
-        this.userApp = user;
+    const [err, res] = await catchErrorHandle(agent.Account.login(creds));
+
+    runInAction(() => {
+      if (res) {
+        if (this.rememberMe) {
+          store.commonStore.setToken(res.token);
+        } else {
+          store.commonStore.setTokenSession(res.token);
+        }
+
+        this.userApp = res;
         router.navigate('/');
-      });
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+      }
+    });
   };
 
   logout = () => {
@@ -47,11 +46,7 @@ export default class AuthStore {
   };
 
   getUser = async () => {
-    try {
       const user = await agent.Account.current();
       runInAction(() => (this.userApp = user));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  }
 }

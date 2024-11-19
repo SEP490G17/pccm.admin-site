@@ -29,7 +29,6 @@ export default class BookingStore {
   bookingRegistry = new Map<number, BookingForList>();
   bookingPageParams = new BookingPageParams();
   constructor() {
-    console.log('user store initialized');
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanUserCache, 30000);
   }
@@ -114,9 +113,7 @@ export default class BookingStore {
   };
 
   pushOrderForBooking = (order: OrderOfBooking) => {
-    console.log('begin push');
     if (this.selectedBooking) {
-      console.log('pushing order');
       this.selectedBooking.ordersOfBooking.push(order);
       this.orderOfBooking.push(order);
     }

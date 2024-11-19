@@ -47,10 +47,11 @@ axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
 axios.interceptors.request.use((config) => {
   const token = store.commonStore.token;
-  if (token && config.headers) config.headers.Authorization = `Bearer ${token}`;
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
-
 axios.interceptors.response.use(
   async (response) => {
     await sleep(500);
@@ -72,20 +73,16 @@ axios.interceptors.response.use(
               modalStateErrors.push(data.errors[key]);
             }
           }
-          console.log(modalStateErrors);
           throw modalStateErrors.flat();
-        } else {
-          toast.error(data);
-        }
+        } 
         break;
       case 401:
-        toast.error('unauthorized');
+        router.navigate('/login');
         break;
       case 403:
         toast.error('forbidden');
         break;
       case 404:
-        console.log('error 404');
         router.navigate('/not-found');
         break;
       case 500:

@@ -19,7 +19,6 @@ const BookingProductTab = observer(({ courtClusterId }: IProps) => {
   useEffect(() => {
     if (productOfClusterRegistry.size == 0) {
       loadProductsOfCourtCluster(courtClusterId);
-      console.log(courtClusterId);
     }
   }, []);
 

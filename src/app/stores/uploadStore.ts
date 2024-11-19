@@ -6,7 +6,6 @@ export default class UploadStore {
   loading: boolean = false;
   imageRegistry = new Map<string, ImageUpload>();
   constructor() {
-    console.log('user store initialized');
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanUserCache, 30000);
   }

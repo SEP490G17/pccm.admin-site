@@ -52,9 +52,9 @@ export const store: Store = {
   categoryStore: new CategoryStore(), // add more stores as needed
   statisticStore: new StatisticStore(),
   revenueStore: new revenueStore(),
+  bookingStore: new BookingStore(), // add more stores as needed
   bookingClusterStore: new BookingClusterStore(),
   paymentStore: new PaymentStore(), // add more stores as needed
-  bookingStore: new BookingStore(), // add more stores as needed
 };
 
 export const StoreContext = createContext(store);

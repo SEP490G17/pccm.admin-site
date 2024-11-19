@@ -10,7 +10,6 @@ interface BookingGridItemAtomProps {
 }
 
 const BookingGridItemAtom: FC<BookingGridItemAtomProps> = ({ bookingToday, index }) => {
-  console.log(bookingToday.recurrenceRule)
   return (
     <>
       <Grid

@@ -10,7 +10,6 @@ export default class CategoryStore {
   loadingInitial: boolean = false;
 
   constructor() {
-    console.log('user store initialized');
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanUserCache, 30000);
   }

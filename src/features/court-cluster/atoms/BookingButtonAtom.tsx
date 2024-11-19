@@ -6,32 +6,48 @@ import PaymentButtonAtom from './PaymentButtonAtom';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
+import { convertBookingStartAndEndUTCToG7 } from '@/app/helper/utils';
 
 interface BookingButtonAtomProps {
   booking: BookingForList;
 }
 
 const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => {
-  const { bookingClusterStore } = useStore();
+  const { bookingClusterStore, bookingStore } = useStore();
   const { acceptedBooking, completeBooking, denyBooking, cancelBooking } = bookingClusterStore;
   const toast = useToast();
+
   const handleAccepted = async () => {
-    await acceptedBooking(booking.id, toast);
+    await acceptedBooking(booking.id, toast).then((data) => {
+      if (data.res) {
+        bookingStore.bookingRegistry.set(data.res.id, convertBookingStartAndEndUTCToG7(data.res));
+      }
+    });
   };
 
   const handleCompleted = async () => {
-    await completeBooking(booking.id, toast);
-  }
+    await completeBooking(booking.id, toast).then((data) => {
+      if (data.res) {
+        bookingStore.bookingRegistry.set(data.res.id, convertBookingStartAndEndUTCToG7(data.res));
+      }
+    });
+  };
 
   const handleDenyBooking = async () => {
-    await denyBooking(booking.id, toast);
-  }
+    await denyBooking(booking.id, toast).then((data) => {
+      if (data.res) {
+        bookingStore.bookingRegistry.set(data.res.id, convertBookingStartAndEndUTCToG7(data.res));
+      }
+    });
+  };
 
   const handleCancelBooking = async () => {
-    await cancelBooking(booking.id, toast);
-  }
-
-
+    await cancelBooking(booking.id, toast).then((data) => {
+      if (data.res) {
+        bookingStore.bookingRegistry.set(data.res.id, convertBookingStartAndEndUTCToG7(data.res));
+      }
+    });
+  };
 
   if (booking.status === BookingStatus.Confirmed) {
     return (
@@ -42,10 +58,7 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => 
           </Button>
         )}
         {!booking.isSuccess && booking.paymentStatus == PaymentStatus.Pending && (
-          <PaymentButtonAtom
-            bookingId={booking.id}
-            paymentUrl={booking.paymentUrl}
-          />
+          <PaymentButtonAtom bookingId={booking.id} paymentUrl={booking.paymentUrl} />
         )}
         {!booking.isSuccess && (
           <Button colorScheme="red" className="w-28" onClick={handleCancelBooking}>
@@ -67,12 +80,11 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => 
       </Flex>
     );
   }
+
   if (booking.status === BookingStatus.Pending) {
     return (
       <Flex className="justify-start gap-2">
-        <Button colorScheme="blue" className="w-28"
-         onClick={handleAccepted}
-        >
+        <Button colorScheme="blue" className="w-28" onClick={handleAccepted}>
           Xác thực
         </Button>
         <Button colorScheme="red" className="w-28" onClick={handleDenyBooking}>
@@ -91,6 +103,20 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => 
         gap={2}
       >
         <TagLabel>Đã bị huỷ</TagLabel>
+        <TagLeftIcon boxSize="12px" as={CloseIcon} color={'red.800'} />
+      </Tag>
+    );
+  }
+  if (booking.status === BookingStatus.Declined) {
+    return (
+      <Tag
+        size={'lg'}
+        className="w-full h-10 items-center flex justify-center"
+        variant="subtle"
+        colorScheme="red"
+        gap={2}
+      >
+        <TagLabel>Đã từ chối</TagLabel>
         <TagLeftIcon boxSize="12px" as={CloseIcon} color={'red.800'} />
       </Tag>
     );

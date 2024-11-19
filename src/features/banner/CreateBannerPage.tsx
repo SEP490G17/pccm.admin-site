@@ -42,7 +42,6 @@ const CreateBannerPage = ({ isOpen, onClose }: IProp) => {
           name: "is-after-start-time",
           message: "Giờ kết thúc phải sau giờ bắt đầu",
           test: function (value) {
-            console.log(startDate)
             if (typeof startDate[0] === 'string' && typeof value === 'string') {
               return new Date(value) > new Date(startDate[0]);
             }

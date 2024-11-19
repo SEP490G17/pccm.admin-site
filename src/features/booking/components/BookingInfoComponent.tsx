@@ -90,7 +90,7 @@ const BookingInfoComponent = observer(() => {
 
         <GridItem colSpan={21} className="text-start">
           <Text fontSize={'xl'} fontWeight={'thin'}>
-            Ngày {dayjs(bookingDetails.endDay).add(7, 'hour').format('DD/MM/YYYY')}
+            {bookingDetails.address}
           </Text>
         </GridItem>
         {bookingDetails.status === BookingStatus.Confirmed && (

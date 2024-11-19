@@ -12,7 +12,7 @@ const BookingAllComponent = observer(() => {
     loadBookingAll(toast);
   }, []);
   return (
-    <Skeleton isLoaded={!loadingBookingAll}>
+    <Skeleton isLoaded={!loadingBookingAll} h={'30rem'}>
       <BookingGridTableComponent bookingArray={bookingAllArray} />
     </Skeleton>
   );

@@ -4,7 +4,6 @@ interface Props {
   errors: string[];
 }
 function ValidationError({ errors }: Props) {
-  console.log(errors);
 
   return (
     <>
