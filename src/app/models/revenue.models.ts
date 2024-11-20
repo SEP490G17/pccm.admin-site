@@ -35,6 +35,21 @@ export interface CourtClusterStatisticDetails {
   expenseDetails: ExpenseDetails[];
 }
 
+export class RevenueDetails {
+  orderProductDetails: orderProductDetails[] = [];
+  bookingDetails: BookingDetails[] = [];
+  orderServiceDetails: orderServiceDetails[] = [];
+  expenseDetails: ExpenseDetails[] = [];
+  date: string = '';
+  courtClusterId: number = 0;
+
+  constructor(data?: Partial<RevenueDetails>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
+}
+
 export class FilterCourtClusterStatisticDetailsDTO {
   date: string = '';
   courtClusterId: number = 0;

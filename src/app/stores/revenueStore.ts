@@ -3,13 +3,15 @@ import {
   CourtClusterStatisticDetails,
   ExpenseDetailsDTO,
   FilterCourtClusterStatisticDetailsDTO,
+  RevenueDetails,
 } from '../models/revenue.models';
 import agent from '../api/agent';
 
 export default class revenueStore {
   loading: boolean = false;
   cleanupInterval: number | undefined = undefined;
-  loadingStatistic: boolean = true;
+  loadingStatistic: boolean = false;
+  loadingSaveRevenue: boolean = false;
   dataDetail: CourtClusterStatisticDetails | undefined = undefined;
 
   constructor() {
@@ -35,9 +37,22 @@ export default class revenueStore {
       try {
         await agent.Revenue.saveExpense(data);
       } catch (error) {
-        console.error('Failed to load years:', error);
+        console.error('Failed to save:', error);
       } finally {
         this.loadingStatistic = false;
+      }
+    });
+  };
+
+  saveRevenue = (data: RevenueDetails) => {
+    this.loadingSaveRevenue = true;
+    runInAction(async () => {
+      try {
+        await agent.Revenue.saveRevenue(data);
+      } catch (error) {
+        console.error('Failed to save:', error);
+      } finally {
+        this.loadingSaveRevenue = false;
       }
     });
   };
