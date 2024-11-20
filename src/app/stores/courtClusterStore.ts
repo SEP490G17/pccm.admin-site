@@ -1,4 +1,4 @@
-import { Court, CourtCluster as CourtCluster, CourtClusterListAll } from './../models/court.model';
+import { Court,  CourtCluster, CourtClusterListAll } from './../models/court.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleCourtData } from '../mock/court.mock';
 import { PageParams, ProductPageParams } from '../models/pageParams.model';
@@ -60,7 +60,7 @@ export default class CourtClusterStore {
     }
   };
 
-  private setCourt = (court: Court) => {
+  setCourt = (court: Court) => {
     this.courtOfClusterRegistry.set(court.courtId, court);
   };
 
@@ -230,31 +230,31 @@ export default class CourtClusterStore {
   setSelectedTab = (index: number) => {
     this.selectedTabs = index;
   };
-  private setCourtCluster = (court: CourtCluster) => {
+  setCourtCluster = (court: CourtCluster) => {
     court.openTime = customFormatTime(court.openTime);
     court.closeTime = customFormatTime(court.closeTime);
     this.courtClusterRegistry.set(court.id, court);
   };
 
-  private setProductCourtCluster = (product: Product) => {
+  setProductCourtCluster = (product: Product) => {
     this.productOfClusterRegistry.set(product.id, product);
   };
 
-  private setServiceCourtCluster = (service: Service) => {
+  setServiceCourtCluster = (service: Service) => {
     this.servicesOfClusterRegistry.set(service.id, service);
   };
 
-  private setCourtClusterListAll = (courtClusterListAll: CourtClusterListAll[]) => {
+  setCourtClusterListAll = (courtClusterListAll: CourtClusterListAll[]) => {
     courtClusterListAll.forEach((c) => {
       this.courtClusterListAllRegistry.set(c.id, c);
     });
   };
 
-  private cleanCourtCache = () => {
+  cleanCourtCache = () => {
     this.courtClusterRegistry.clear();
   };
 
-  private clearProductCache = () => {
+  clearProductCache = () => {
     this.productOfClusterRegistry.clear();
   };
 

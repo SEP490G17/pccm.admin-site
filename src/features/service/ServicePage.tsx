@@ -37,8 +37,8 @@ const ServicePage = observer(() => {
   const { courtClusterListAllOptions } = courtClusterStore;
 
   useEffect(() => {
-    setLoadingInitial(true);
     if (serviceRegistry.size <= 1) {
+      setLoadingInitial(true);
       loadServicesLog();
       loadServices().finally(() => setLoadingInitial(false));
     }
@@ -145,6 +145,14 @@ const ServicePage = observer(() => {
                 }
               }}
               isSearchable={true}
+              defaultValue={{
+                value: Number(servicePageParams.filter ?? 0),
+
+                label:
+                  courtClusterStore.courtClusterListAllRegistry.get(
+                    Number(servicePageParams.filter),
+                  )?.courtClusterName ?? 'Tất cả',
+              }}
             ></Select>
           ) : (
             <Flex gap={3}>

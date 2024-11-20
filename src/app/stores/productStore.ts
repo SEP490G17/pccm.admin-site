@@ -224,20 +224,20 @@ export default class ProductStore {
   }
 
   filterByCategory = async (category: number) => {
-    this.loadingInitial = true;
+    this.loading = true;
     this.productPageParams.clearLazyPage();
     this.productPageParams.category = category;
     this.cleanProductCache();
     await this.loadProducts();
-    runInAction(() => (this.loadingInitial = false));
+    runInAction(() => (this.loading = false));
   };
   filterByCourtCluster = async (courtCluster: number) => {
-    this.loadingInitial = true;
+    this.loading = true;
     this.productPageParams.clearLazyPage();
     this.productPageParams.courtCluster = courtCluster;
     this.cleanProductCache();
     await this.loadProducts();
-    runInAction(() => (this.loadingInitial = false));
+    runInAction(() => (this.loading = false));
   };
 
   filterLogByCourtCluster = async (courtCluster: number) => {

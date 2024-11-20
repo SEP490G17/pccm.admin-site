@@ -49,14 +49,16 @@ const ProductPage = observer(() => {
   } = useDisclosure();
 
   useEffect(() => {
-    setLoadingInitial(true);
-    Promise.all([
-      loadProducts(),
-      loadProductsLog(),
-      loadCategories(),
-      courtClusterStore.loadCourtClusterListAll(),
-    ]).finally(() => setLoadingInitial(false));
-  }, [courtClusterStore, loadCategories, loadProducts, setLoadingInitial, loadProductsLog]);
+    if (productRegistry.size <= 1) {
+      setLoadingInitial(true);
+      Promise.all([
+        loadProducts(),
+        loadProductsLog(),
+        loadCategories(),
+        courtClusterStore.loadCourtClusterListAll(),
+      ]).finally(() => setLoadingInitial(false));
+    }
+  }, [courtClusterStore, loadCategories, loadProducts, setLoadingInitial, loadProductsLog, productRegistry]);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -219,6 +221,12 @@ const ProductPage = observer(() => {
                 }
               }}
               isSearchable={true}
+              defaultValue={{
+                value: productPageParams.category?? 0,
+                label:
+                  categoryStore.categoryRegistry.get(Number(productPageParams.category))?.categoryName??
+                  'Tất cả',
+              }}
             ></Select>
           )}
         </Flex>
