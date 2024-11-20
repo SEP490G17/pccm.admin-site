@@ -13,8 +13,8 @@ function PageHeadingAtoms({ breadCrumb }: IProp) {
   return (
     <Box>
       <Breadcrumb separator={<Image src={arrowRight} w={4} h={4}/>} fontSize={'1rem'} pb={1} pt={1}>
-        {breadCrumb.map(({ title, to }, index) => (
-          <BreadcrumbItem key={index}>
+        {breadCrumb.map(({ title, to }) => (
+          <BreadcrumbItem key={title}>
             <BreadcrumbLink
               as={Link}
               style={{ textDecoration: 'none' }}

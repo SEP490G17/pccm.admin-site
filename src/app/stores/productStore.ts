@@ -1,7 +1,7 @@
-import { Product, ProductInput } from './../models/product.model';
+import { Product, ProductInput, ProductLog } from './../models/product.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleProductData } from '../mock/product.mock';
-import { ProductPageParams } from '../models/pageParams.model';
+import { ProductLogPageParams, ProductPageParams } from '../models/pageParams.model';
 import { catchErrorHandle, sleep } from '../helper/utils';
 import { toast } from 'react-toastify';
 import agent from '../api/agent';
@@ -10,11 +10,14 @@ import { PaginationModel } from '@/app/models/pagination.model.ts';
 
 export default class ProductStore {
   productRegistry = new Map<number, Product>();
+  productLogRegistry = new Map<number, ProductLog>();
   selectedProduct: ProductInput = new ProductInput();
   selectedIdProduct: number | undefined = undefined;
   loading: boolean = false;
+  loadingLog: boolean = false;
   loadingCreate: boolean = false;
   productPageParams = new ProductPageParams();
+  productLogPageParams = new ProductLogPageParams();
   cleanupInterval: number | undefined = undefined;
   loadingInitial: boolean = false;
   loadingEdit: boolean = false;
@@ -58,6 +61,44 @@ export default class ProductStore {
     });
   };
 
+  loadProductsLog = async () => {
+    this.loadingLog = true;
+    const queryParams = new URLSearchParams();
+    queryParams.append('skip', `${this.productLogPageParams.skip}`);
+    queryParams.append('pageSize', `${this.productLogPageParams.pageSize}`);
+    if (this.productLogPageParams.searchTerm) {
+      queryParams.append('search', this.productLogPageParams.searchTerm);
+    }
+    if (this.productLogPageParams.courtCluster) {
+      queryParams.append('courtCluster', `${this.productLogPageParams.courtCluster}`);
+    }
+    if (this.productLogPageParams.LogType) {
+      queryParams.append('LogType', `${this.productLogPageParams.LogType}`);
+    }
+    if (this.productLogPageParams.fromDate != null) {
+      queryParams.append('fromDate', this.productLogPageParams.fromDate);
+    }
+    if (this.productLogPageParams.toDate != null) {
+      queryParams.append('toDate', this.productLogPageParams.toDate);
+    }
+
+    const [error, res] = await catchErrorHandle<PaginationModel<ProductLog>>(
+      agent.Products.listlogs(`?${queryParams.toString()}`),
+    );
+    runInAction(() => {
+      if (error) {
+        console.error('Error loading products:', error);
+        toast.error('Lấy danh sách sản phẩm thất bại');
+      }
+      if (res) {
+        const { data, count } = res;
+        data.forEach(this.setProductLog);
+        this.productLogPageParams.totalElement = count;
+      }
+      this.loadingLog = false;
+    });
+  };
+
   detailProduct = async (id: number) => {
     this.setLoadingEdit(true);
     await runInAction(async () => {
@@ -73,7 +114,10 @@ export default class ProductStore {
     this.loadingCreate = true;
     await runInAction(async () => {
       await agent.Products.create(product)
-        .then(this.setProduct)
+        .then((res) => {
+          this.setProduct(res);
+          this.loadProductsLog();
+        })
         .catch((error) => {
           console.error('Error creating product:', error);
           toast.error('Tạo product thất bại');
@@ -110,6 +154,7 @@ export default class ProductStore {
     const [error, res] = await catchErrorHandle(agent.Products.delete(id));
     runInAction(() => {
       if (!error && res) {
+        this.loadProductsLog();
         this.productRegistry.delete(id);
       }
       this.loading = false;
@@ -149,35 +194,78 @@ export default class ProductStore {
   };
 
   setSearchTerm = async (term: string) => {
-    this.loading = true;
-    this.cleanProductCache();
-    this.productPageParams.clearLazyPage();
-    this.productPageParams.searchTerm = term;
-    await this.loadProducts();
-    runInAction(() => {
-      this.loading = false;
+    this.loadingInitial = true;
+    await runInAction(async () => {
+      this.cleanProductCache();
+      this.productPageParams.clearLazyPage();
+      this.productPageParams.searchTerm = term;
+      await this.loadProducts();
     });
+    this.loadingInitial = false;
+  };
+
+  setSearchTermProductLog = async (term: string) => {
+    this.loadingInitial = true;
+    await runInAction(async () => {
+      this.cleanProductLogCache();
+      this.productLogPageParams.clearLazyPage();
+      this.productLogPageParams.searchTerm = term;
+      await this.loadProductsLog();
+    });
+    this.loadingInitial = false;
   };
 
   get productArray() {
     return _.orderBy(Array.from(this.productRegistry.values()), ['id'], ['desc']);
   }
 
+  get productLogArray() {
+    return _.orderBy(Array.from(this.productLogRegistry.values()), ['id'], ['desc']);
+  }
+
   filterByCategory = async (category: number) => {
-    this.loading = true;
+    this.loadingInitial = true;
     this.productPageParams.clearLazyPage();
     this.productPageParams.category = category;
     this.cleanProductCache();
     await this.loadProducts();
-    runInAction(() => (this.loading = false));
+    runInAction(() => (this.loadingInitial = false));
   };
   filterByCourtCluster = async (courtCluster: number) => {
-    this.loading = true;
+    this.loadingInitial = true;
     this.productPageParams.clearLazyPage();
     this.productPageParams.courtCluster = courtCluster;
     this.cleanProductCache();
     await this.loadProducts();
-    runInAction(() => (this.loading = false));
+    runInAction(() => (this.loadingInitial = false));
+  };
+
+  filterLogByCourtCluster = async (courtCluster: number) => {
+    this.loadingInitial = true;
+    this.productLogPageParams.clearLazyPage();
+    this.productLogPageParams.courtCluster = courtCluster;
+    this.cleanProductLogCache();
+    await this.loadProductsLog();
+    runInAction(() => (this.loadingInitial = false));
+  };
+
+  filterLogByLogType = async (logTypeId: number) => {
+    this.loadingInitial = true;
+    this.productLogPageParams.clearLazyPage();
+    this.productLogPageParams.LogType = logTypeId;
+    this.cleanProductLogCache();
+    await this.loadProductsLog();
+    runInAction(() => (this.loadingInitial = false));
+  };
+
+  filterLogByDate = async (date1: string | null, date2: string | null) => {
+    this.loadingInitial = true;
+    this.productLogPageParams.clearLazyPage();
+    this.productLogPageParams.fromDate = date1 ?? null;
+    this.productLogPageParams.toDate = date2 ?? null;
+    this.cleanProductLogCache();
+    await this.loadProductsLog();
+    runInAction(() => (this.loadingInitial = false));
   };
   //#region private methods
 
@@ -185,8 +273,16 @@ export default class ProductStore {
     this.productRegistry.set(product.id, product);
   };
 
+  setProductLog = (productLog: ProductLog) => {
+    this.productLogRegistry.set(productLog.id, productLog);
+  };
+
   cleanProductCache = () => {
     this.productRegistry.clear();
+  };
+
+  cleanProductLogCache = () => {
+    this.productLogRegistry.clear();
   };
 
   dispose() {

@@ -26,3 +26,17 @@ export class ProductInput {
     }
   }
 }
+
+export interface ProductLog {
+  id: number;
+  productName: string;
+  thumbnailUrl: string;
+  categoryName: string;
+  courtClusterName: string;
+  quantity: number;
+  price: number;
+  logType: string;
+  createAt: string;
+  createBy: string;
+  description: string;
+}

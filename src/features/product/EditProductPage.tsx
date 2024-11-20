@@ -35,11 +35,11 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
     price: Yup.number()
       .typeError('Giá nhập phải là một số')
       .required('Giá nhập không được bỏ trống')
-      .positive('Giá nhập phải là số dương'),
+      .min(0, 'Giá nhập phải lớn hơn 0'),
     importFee: Yup.number()
       .typeError('Giá bán phải là một số')
       .required('Giá bán không được bỏ trống')
-      .positive('Giá bán phải là số dương'),
+      .min(0, 'Giá nhập phải lớn hơn 0'),
     thumbnailUrl: Yup.string().required('Ảnh không được bỏ trống'),
     description: Yup.string().required('Mô tả không được bỏ trống'),
     categoryId: Yup.number().required('Thể loại không được bỏ trống'),
@@ -61,7 +61,7 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
       <ModalOverlay />
       <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
         <ModalHeader bg="#00423D" color="white" borderRadius="20px 20px 0 0">
-          {selectedProduct ? 'Chỉnh sửa hàng hoá': 'Thêm mới hàng hoá'}
+          {selectedProduct ? 'Chỉnh sửa hàng hoá' : 'Thêm mới hàng hoá'}
         </ModalHeader>
         <ModalCloseButton color="#FFF" />
         <ModalBody>
@@ -133,26 +133,23 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                     <Flex className="items-start gap-4">
                       <NumberFieldAtom
                         isDisabled={true}
-                        isRequired={true}
                         label="Số lượng"
                         className="input_text"
                         name="quantity"
                         placeholder="xxxxxxx"
                       />
                       <NumberFieldAtom
-                        isDisabled={true}
                         isRequired={true}
                         label="Giá bán"
                         className="input_text"
-                        name="importFee"
+                        name="price"
                         placeholder="xxxxxxx"
                       />
                       <NumberFieldAtom
                         isDisabled={true}
-                        isRequired={true}
                         label="Giá nhập"
                         className="input_text"
-                        name="price"
+                        name="importFee"
                         placeholder="xxxxxxx"
                       />
                     </Flex>

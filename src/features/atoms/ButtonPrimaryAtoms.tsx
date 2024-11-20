@@ -2,7 +2,6 @@ import React from 'react';
 import { Spinner } from "@chakra-ui/react"
 
 interface IProp extends React.PropsWithChildren {
-  colorLevel?: string;
   handleOnClick?: () => void;
   loading?: boolean;
   className?: string;

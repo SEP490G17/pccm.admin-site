@@ -40,7 +40,7 @@ const ServiceTableComponent = observer(() => {
               <Th w={'15rem'}>Tên dịch vụ</Th>
               <Th w={'15rem'}>Mô tả</Th>
               <Th w={'10rem'}>Giá</Th>
-              <Th w={'10rem'}>Khu vực</Th>
+              <Th w={'10rem'}>Cụm sân</Th>
               <Th w={'10'}>Tùy chọn</Th>
             </Tr>
           </Thead>

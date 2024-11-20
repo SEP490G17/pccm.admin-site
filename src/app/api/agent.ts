@@ -15,8 +15,8 @@ import {
   CourtPriceResponse,
 } from '../models/court.model';
 import { sleep } from '../helper/utils';
-import { Service, ServiceDTO, ServiceEditDTO } from '../models/service.model';
-import { Product, ProductInput } from '../models/product.model';
+import { Service, ServiceDTO, ServiceEditDTO, ServiceLog } from '../models/service.model';
+import { Product, ProductInput, ProductLog } from '../models/product.model';
 import { StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
@@ -128,6 +128,8 @@ const Banners = {
 const Services = {
   list: (queryParams: string = ''): Promise<PaginationModel<Service>> =>
     requests.get(`/service${queryParams}`),
+  listlogs: (queryParams: string = ''): Promise<PaginationModel<ServiceLog>> =>
+    requests.get(`/service/log/${queryParams}`),
   details: (id: number): Promise<Service> => requests.get(`/service/${id}`),
   create: (service: ServiceDTO): Promise<Service> => requests.post(`/service`, service),
   update: (service: ServiceEditDTO): Promise<Service> =>
@@ -184,7 +186,9 @@ const Categories = {
 
 const Products = {
   list: (queryParams: string = ''): Promise<PaginationModel<Product>> =>
-    requests.get(`/product${queryParams}`),
+    requests.get(`/product/${queryParams}`),
+  listlogs: (queryParams: string = ''): Promise<PaginationModel<ProductLog>> =>
+    requests.get(`/product/log/${queryParams}`),
   details: (id: number): Promise<ProductInput> => requests.get(`/product/${id}`),
   create: (product: ProductInput): Promise<Product> => requests.post(`/product`, product),
   delete: (id: number): Promise<void> => requests.del(`/product/${id}`),
