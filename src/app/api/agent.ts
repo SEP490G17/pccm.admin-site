@@ -11,6 +11,8 @@ import {
   CourtCluster,
   CourtClusterDetailsCreate,
   CourtClusterListAll,
+  CourtManagerResponse,
+  CourtPriceResponse,
 } from '../models/court.model';
 import { sleep } from '../helper/utils';
 import { Service, ServiceDTO, ServiceEditDTO, ServiceLog } from '../models/service.model';
@@ -208,6 +210,12 @@ const CourtClusterAgent = {
 };
 const CourtAgent = {
   list: (id: number): Promise<Court[]> => requests.get(`/court/list?filter=${id}`),
+  listByCluster: (courtClusterId: number): Promise<CourtManagerResponse> =>
+    requests.get(`/court/cluster/${courtClusterId}`),
+  updateCourtPrice: (id: number, courtPrices: CourtPriceResponse[]) =>
+    requests.put(`/courtPrice/${id}/update`, courtPrices),
+  removeCourt: (id: number): Promise<void> => requests.del(`/court/${id}`),
+  toggle:(id:number, status:number):Promise<void> => requests.put(`/court/toggle/${id}?status=${status}`,{})
 };
 const UploadAgent = {
   post: (file: FormData): Promise<ImageUpload> => requests.post(`/upload`, file),

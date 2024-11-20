@@ -21,7 +21,7 @@ export default class AuthStore {
   };
 
   login = async (creds: UserFormValues) => {
-    const [err, res] = await catchErrorHandle(agent.Account.login(creds));
+    const [, res] = await catchErrorHandle(agent.Account.login(creds));
 
     runInAction(() => {
       if (res) {
@@ -38,15 +38,17 @@ export default class AuthStore {
   };
 
   logout = () => {
-    store.commonStore.setToken(null);
-    localStorage.removeItem('jwt');
-    sessionStorage.removeItem('jwt');
+    localStorage.clear();
+    sessionStorage.clear();
     this.userApp = null;
     router.navigate('/login');
   };
 
   getUser = async () => {
-      const user = await agent.Account.current();
-      runInAction(() => (this.userApp = user));
-  }
+    const user = await agent.Account.current();
+    runInAction(() => {
+      this.userApp = user;
+      store.commonStore.setUserApp(user);
+    });
+  };
 }

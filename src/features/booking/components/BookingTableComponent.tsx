@@ -9,7 +9,6 @@ const BookingTableComponent = observer(() => {
   const { bookingStore } = useStore();
   const { bookingArray, loadingInitial, bookingPageParams } = bookingStore;
   return (
-    <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
         <Table className="app-table" variant="simple" padding={0}>
           <Thead>
@@ -63,7 +62,6 @@ const BookingTableComponent = observer(() => {
           </Tbody>
         </Table>
       </TableContainer>
-    </>
   );
 });
 

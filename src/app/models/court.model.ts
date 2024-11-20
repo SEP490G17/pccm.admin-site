@@ -8,6 +8,8 @@ export interface CourtCluster {
   numbOfCourts: number;
   description: string;
   location?: string;
+  minPrice: number;
+  maxPrice: number;
 }
 
 export interface ICourtCluster {
@@ -31,10 +33,15 @@ export interface CourtPrice {
   toTime: string;
 }
 
+export interface CourtPriceResponse {
+  price: number;
+  fromTime: string;
+  toTime: string;
+}
 export interface CourtDetails {
   id: number;
   courtName: string;
-  courtPrice: CourtPrice[];
+  courtPrice: CourtPriceResponse[];
   status: number;
   actions: CourtAction;
 }
@@ -51,16 +58,7 @@ export interface CourtClusterDetails {
   courtDetails: CourtDetails[];
 }
 
-export enum CourtAction {
-  NONE = 'NONE',
-  ADD = 'ADD',
-  UPDATE = 'UPDATE',
-  DELETE = 'DELETE',
-}
-
-
-
-export interface CourtClusterDetailsCreate{
+export interface CourtClusterDetailsCreate {
   title: string;
   description: string;
   openTime: string;
@@ -70,9 +68,8 @@ export interface CourtClusterDetailsCreate{
   ward: string;
   address: string;
   courtDetails: CourtDetailsCreate[];
-  images:string[];
+  images: string[];
 }
-
 
 export interface CourtDetailsCreate {
   id: number;
@@ -84,4 +81,29 @@ export interface CourtDetailsCreate {
 export interface Court {
   courtId: number;
   courtName: string;
+}
+
+export interface CourtForTable {
+  courtId: number;
+  courtName: string;
+  minPrice: number;
+  maxPrice: number;
+  status: CourtStatus;
+  courtPrices: CourtPriceResponse[];
+}
+
+export interface CourtManagerResponse {
+  courtClusterName: string;
+  courtForTable: CourtForTable[];
+}
+
+export enum CourtStatus {
+  Available,
+  Closed,
+}
+
+export enum CourtAction {
+  NONE = 'NONE',
+  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
 }

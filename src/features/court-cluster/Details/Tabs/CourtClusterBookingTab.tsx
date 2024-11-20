@@ -10,14 +10,14 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import { useEffect, useRef } from 'react';
 import { isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
-import { Heading, Skeleton, useToast } from '@chakra-ui/react';
+import { createToastFn, Heading, Skeleton, useToast } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
 import { BookingCreate } from '@/app/models/booking.model';
 import { PaymentStatus } from '@/app/models/payment.model';
-import BookingEditorTemplateComponent from '../components/BookingTabs/BookingEditorTemplateComponent';
-import BookingListComponent from '../components/BookingTabs/BookingListComponent';
+import BookingEditorTemplateComponent from '../components/BookingTab/BookingEditorTemplateComponent';
+import BookingListComponent from '../components/BookingTab/BookingListComponent';
 interface IProps {
   courtClusterId: number;
 }
@@ -40,9 +40,13 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     loadCourtOfCluster,
     loadingInitialBookingPage,
     setLoadingInitialBookingPage,
-    
   } = courtClusterStore;
-  const { bookingScheduleArray: bookingArray, createBooking, courtPrice, clearBookingForSchedule } = bookingStore;
+  const {
+    bookingScheduleArray: bookingArray,
+    createBooking,
+    courtPrice,
+    clearBookingForSchedule,
+  } = bookingStore;
   useEffect(() => {
     setLoadingInitialBookingPage(true);
     bookingStore.clearBookingForSchedule();
@@ -51,7 +55,14 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
       loadCourtOfCluster(courtClusterId, toast),
       bookingStore.loadBookingForSchedule(toast),
     ]).then(() => setLoadingInitialBookingPage(false));
-  }, [courtClusterId, bookingStore, loadCourtOfCluster, setLoadingInitialBookingPage, toast,clearBookingForSchedule]);
+  }, [
+    courtClusterId,
+    bookingStore,
+    loadCourtOfCluster,
+    setLoadingInitialBookingPage,
+    toast,
+    clearBookingForSchedule,
+  ]);
 
   const group = { resources: ['courts'] };
   const schedule = useRef<ScheduleComponent>(null);
@@ -61,7 +72,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         cancelButton: 'Đóng',
         deleteButton: 'Huỷ lịch',
         newEvent: 'Đặt lịch chơi',
-        saveButton:'Lưu'
+        saveButton: 'Lưu',
       },
     },
   });
@@ -72,7 +83,6 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
       args.data &&
       ((Array.isArray(args.data) && args.data.length > 0) || !isNullOrUndefined(args.data))
     ) {
-
       if (schedule.current) {
         const eventData = Array.isArray(args.data) ? args.data[0] : args.data;
         const eventField: EventFieldsMapping = schedule.current.eventFields!;
@@ -148,32 +158,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
 
         args.cancel = true;
 
-        const pendingToast = toast({
-          title: 'Đang sư lý',
-          description: 'Đợi một chút',
-          status: 'loading',
-        });
-        await createBooking(bookingPost)
-          .then(() => {
-            toast.close(pendingToast);
-            toast({
-              title: 'Đặt lịch thành công',
-              description: 'Lịch đã được đặt thành công',
-              status: 'success',
-              duration: 5000,
-              isClosable: true,
-            });
-          })
-          .catch(() => {
-            toast({
-              title: 'Đặt lịch thất bại',
-              description: 'Đã xảy ra l��i khi đặt lịch',
-              status: 'error',
-              duration: 5000,
-              isClosable: true,
-            });
-            args.cancel = true;
-          });
+        await createBooking(bookingPost, toast);
       }
     }
   };

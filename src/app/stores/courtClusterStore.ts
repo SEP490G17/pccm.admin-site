@@ -1,4 +1,4 @@
-import { Court, CourtCluster as CourtCluster, CourtClusterListAll } from './../models/court.model';
+import { Court,  CourtCluster, CourtClusterListAll } from './../models/court.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleCourtData } from '../mock/court.mock';
 import { PageParams, ProductPageParams } from '../models/pageParams.model';
@@ -9,7 +9,8 @@ import { toast } from 'react-toastify';
 import { PaginationModel } from '@/app/models/pagination.model.ts';
 import { Product } from '@/app/models/product.model.ts';
 import { Service } from '@/app/models/service.model.ts';
-import { CourtClusterMessage, CourtMessage } from '../common/toastMessage';
+import { CourtClusterMessage } from '../common/toastMessage/courtClusterMessage';
+import { CourtMessage } from '../common/toastMessage/courtMessage';
 
 export default class CourtClusterStore {
   //registry
@@ -19,7 +20,7 @@ export default class CourtClusterStore {
   servicesOfClusterRegistry = new Map<number, Service>();
   courtOfClusterRegistry = new Map<number, Court>();
   // selected
-  selectedCourt: CourtCluster | undefined = undefined; //cụm sân đang được chọn (trang details, hoặc khi update)
+  selectedCourtCluster: CourtCluster | undefined = undefined; //cụm sân đang được chọn (trang details, hoặc khi update)
   selectedTabs: number = 0;
   // page param
   courtPageParams = new PageParams(); // page param cho trang cụm sân
@@ -48,7 +49,7 @@ export default class CourtClusterStore {
       const [error, res] = await catchErrorHandle(agent.CourtAgent.list(id));
       runInAction(() => {
         if (error) {
-          chakraToast(CourtMessage.loadCourtOfCourtClusterFail);
+          chakraToast(CourtMessage.loadCourtClusterFailure());
         }
         if (res) {
           this.courtOfClusterRegistry.clear();
@@ -59,7 +60,7 @@ export default class CourtClusterStore {
     }
   };
 
-  private setCourt = (court: Court) => {
+  setCourt = (court: Court) => {
     this.courtOfClusterRegistry.set(court.courtId, court);
   };
 
@@ -115,7 +116,7 @@ export default class CourtClusterStore {
       );
       runInAction(() => {
         if (error) {
-          toast.error(`Lấy danh sách sản phẩm của cụm sân ${this.selectedCourt?.title} thất bại`);
+          toast.error(`Lấy danh sách sản phẩm của cụm sân ${this.selectedCourtCluster?.title} thất bại`);
           this.productCourtClusterPageParams.totalElement = 0;
         }
         if (res) {
@@ -158,7 +159,7 @@ export default class CourtClusterStore {
       if (error) {
         chakraToast(CourtClusterMessage.loadDetailsFail);
       } else {
-        this.selectedCourt = response;
+        this.selectedCourtCluster = response;
       }
       this.loadingInitialDetailsPage = false;
     });
@@ -229,31 +230,31 @@ export default class CourtClusterStore {
   setSelectedTab = (index: number) => {
     this.selectedTabs = index;
   };
-  private setCourtCluster = (court: CourtCluster) => {
+  setCourtCluster = (court: CourtCluster) => {
     court.openTime = customFormatTime(court.openTime);
     court.closeTime = customFormatTime(court.closeTime);
     this.courtClusterRegistry.set(court.id, court);
   };
 
-  private setProductCourtCluster = (product: Product) => {
+  setProductCourtCluster = (product: Product) => {
     this.productOfClusterRegistry.set(product.id, product);
   };
 
-  private setServiceCourtCluster = (service: Service) => {
+  setServiceCourtCluster = (service: Service) => {
     this.servicesOfClusterRegistry.set(service.id, service);
   };
 
-  private setCourtClusterListAll = (courtClusterListAll: CourtClusterListAll[]) => {
+  setCourtClusterListAll = (courtClusterListAll: CourtClusterListAll[]) => {
     courtClusterListAll.forEach((c) => {
       this.courtClusterListAllRegistry.set(c.id, c);
     });
   };
 
-  private cleanCourtCache = () => {
+  cleanCourtCache = () => {
     this.courtClusterRegistry.clear();
   };
 
-  private clearProductCache = () => {
+  clearProductCache = () => {
     this.productOfClusterRegistry.clear();
   };
 

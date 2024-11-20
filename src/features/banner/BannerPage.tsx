@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Flex, useDisclosure, Center, Heading } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
@@ -20,11 +20,12 @@ const BannerPage = observer(() => {
   const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
-    setLoadingInitial(true);
-    bannerPageParams.clearLazyPage();
-    bannerPageParams.searchTerm = '';
-    loadBanners().finally(() => setLoadingInitial(false));
-  }, []);
+    if (bannerRegistry.size <= 1) {
+      setLoadingInitial(true);
+      loadBanners().finally(() => setLoadingInitial(false));
+    }
+  }, [bannerRegistry, setLoadingInitial, loadBanners]);
+
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
@@ -36,7 +37,7 @@ const BannerPage = observer(() => {
         loadBanners();
       }
     }
-  }, []);
+  }, [loadBanners, bannerPageParams, bannerRegistry]);
 
   // Gắn sự kiện cuộn
   useEffect(() => {
@@ -47,18 +48,21 @@ const BannerPage = observer(() => {
     };
   }, [handleScroll]);
 
-  const handleSearch = useCallback(
-    debounce(async (e) => {
-      setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
+  const handleSearchDebounced = useMemo(() => {
+    return debounce(async (e) => {
+      setIsPending(false); // Tắt loading
       await bannerStore.setSearchTerm(e.target.value);
-    }, 500), // Debounce với thời gian 1 giây
-    [],
+    }, 500);
+  }, [setIsPending, bannerStore]);
+
+  const onSearchChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsPending(true);
+      handleSearchDebounced(e);
+    },
+    [handleSearchDebounced, setIsPending],
   );
 
-  const onSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
-    await handleSearch(e); // Gọi hàm debounce
-  };
   return (
     <>
       <PageHeadingAtoms breadCrumb={[{ title: 'Banner', to: '/banner' }]} />
@@ -98,17 +102,17 @@ const BannerPage = observer(() => {
         </Flex>
 
         <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
-          <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
-          <ButtonPrimaryAtoms
-            className="bg-primary-900"
-            handleOnClick={onOpen}
-            children={
-              <Center gap={1}>
-                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
-                Thêm mới
-              </Center>
-            }
+          <InputSearchBoxAtoms
+            value={bannerPageParams.searchTerm}
+            handleChange={onSearchChange}
+            isPending={isPending}
           />
+          <ButtonPrimaryAtoms className="bg-primary-900" handleOnClick={onOpen}>
+            <Center gap={1}>
+              <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+              Thêm mới
+            </Center>
+          </ButtonPrimaryAtoms>
         </Flex>
       </Flex>
 

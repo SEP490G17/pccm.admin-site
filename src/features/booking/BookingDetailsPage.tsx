@@ -11,6 +11,7 @@ const BookingDetailsPage = observer(() => {
   const { bookingStore } = useStore();
   const toast = useToast();
   const { loadingInitial, getDetailsBooking, exportBill } = bookingStore;
+  window.scrollTo(0, 0);
   useEffect(() => {
     if (id && !isNaN(Number(id))) {
       getDetailsBooking(Number(id), toast);

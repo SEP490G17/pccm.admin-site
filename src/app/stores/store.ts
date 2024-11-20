@@ -16,6 +16,7 @@ import revenueStore from './revenueStore';
 import BookingClusterStore from './bookingClusterStore.ts';
 import PaymentStore from './paymentStore.ts';
 import BookingStore from './bookingStore.ts';
+import CourtManagerStore from '@/features/court-cluster/CourtsManager/CourtManagerStore.ts';
 
 interface Store {
   commonStore: CommonStore;
@@ -33,8 +34,9 @@ interface Store {
   statisticStore: StatisticStore;
   revenueStore: revenueStore;
   bookingClusterStore: BookingClusterStore;
-  paymentStore:PaymentStore;
-  bookingStore:BookingStore;
+  paymentStore: PaymentStore;
+  bookingStore: BookingStore;
+  courtManagerStore: CourtManagerStore;
 }
 
 export const store: Store = {
@@ -55,6 +57,7 @@ export const store: Store = {
   bookingStore: new BookingStore(), // add more stores as needed
   bookingClusterStore: new BookingClusterStore(),
   paymentStore: new PaymentStore(), // add more stores as needed
+  courtManagerStore: new CourtManagerStore(), // add more stores as needed
 };
 
 export const StoreContext = createContext(store);

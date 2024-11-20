@@ -1,7 +1,7 @@
 import {Box, Grid, GridItem, Heading, Skeleton} from "@chakra-ui/react";
 import {observer} from "mobx-react";
 
-import ProductCardItemComponent from "@/features/court-cluster/components/ProductCardItemComponent.tsx";
+import ProductCardItemComponent from "@/features/court-cluster/Details/components/ProductTab/ProductCardItemComponent";
 import {useStore} from "@/app/stores/store.ts";
 import {useEffect} from "react";
 interface IProps{

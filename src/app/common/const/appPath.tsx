@@ -67,11 +67,7 @@ export const menuList: AppPath[] = [
   {
     key: 5,
     icon: (isSelected: boolean) => (
-      <BookingMenuIcon
-        width="1.5rem"
-        height="1.5rem"
-        color={isSelected ? '#00423D' : '#63748A'}
-      />
+      <BookingMenuIcon width="1.5rem" height="1.5rem" color={isSelected ? '#00423D' : '#63748A'} />
     ),
     label: 'Booking',
     path: '/booking',
@@ -79,11 +75,7 @@ export const menuList: AppPath[] = [
   {
     key: 6,
     icon: (isSelected: boolean) => (
-      <StaffMenuIcon
-        width="1.5rem"
-        height="1.5rem"
-        color={isSelected ? '#00423D' : '#63748A'}
-      />
+      <StaffMenuIcon width="1.5rem" height="1.5rem" color={isSelected ? '#00423D' : '#63748A'} />
     ),
     label: 'Nhân viên',
     path: '/nhan-vien',
@@ -91,11 +83,7 @@ export const menuList: AppPath[] = [
   {
     key: 7,
     icon: (isSelected: boolean) => (
-      <ProductMenuIcon
-        width="1.5rem"
-        height="1.5rem"
-        color={isSelected ? '#00423D' : '#63748A'}
-      />
+      <ProductMenuIcon width="1.5rem" height="1.5rem" color={isSelected ? '#00423D' : '#63748A'} />
     ),
     label: 'Hàng hóa',
     path: '/hang-hoa',
@@ -103,11 +91,7 @@ export const menuList: AppPath[] = [
   {
     key: 8,
     icon: (isSelected: boolean) => (
-      <ServiceMenuIcon
-        width="1.5rem"
-        height="1.5rem"
-        color={isSelected ? '#00423D' : '#63748A'}
-      />
+      <ServiceMenuIcon width="1.5rem" height="1.5rem" color={isSelected ? '#00423D' : '#63748A'} />
     ),
     label: 'Dịch vụ',
     path: '/dich-vu',
@@ -115,11 +99,7 @@ export const menuList: AppPath[] = [
   {
     key: 9,
     icon: (isSelected: boolean) => (
-      <BannerMenuIcon
-        width="1.5rem"
-        height="1.5rem"
-        color={isSelected ? '#00423D' : '#63748A'}
-      />
+      <BannerMenuIcon width="1.5rem" height="1.5rem" color={isSelected ? '#00423D' : '#63748A'} />
     ),
     label: 'Banner',
     path: '/banner',
@@ -127,25 +107,84 @@ export const menuList: AppPath[] = [
   {
     key: 10,
     icon: (isSelected: boolean) => (
-      <NewsMenuIcon
+      <NewsMenuIcon width="1.5rem" height="1.5rem" color={isSelected ? '#00423D' : '#63748A'} />
+    ),
+    label: 'Tin tức',
+    path: '/tin-tuc',
+  },
+];
+
+export const menuListAdmin: AppPath[] = [
+  {
+    key: 1,
+    icon: (isSelected: boolean) => (
+      <CourtClusterMenuIcon
         width="1.5rem"
         height="1.5rem"
         color={isSelected ? '#00423D' : '#63748A'}
       />
     ),
+    label: 'Cụm sân',
+    path: '/',
+  },
+
+  {
+    key: 2,
+    icon: (isSelected: boolean) => (
+      <UsersManagerMenuIcon
+        width="1.5rem"
+        height="1.5rem"
+        color={isSelected ? '#00423D' : '#63748A'}
+      />
+    ),
+    label: 'Quản lý Users',
+    path: '/users',
+  },
+  {
+    key: 3,
+    icon: (isSelected: boolean) => (
+      <StaffMenuIcon width="1.5rem" height="1.5rem" color={isSelected ? '#00423D' : '#63748A'} />
+    ),
+    label: 'Nhân viên',
+    path: '/nhan-vien',
+  },
+  {
+    key: 4,
+    icon: (isSelected: boolean) => (
+      <ProductMenuIcon width="1.5rem" height="1.5rem" color={isSelected ? '#00423D' : '#63748A'} />
+    ),
+    label: 'Hàng hóa',
+    path: '/hang-hoa',
+  },
+  {
+    key: 5,
+    icon: (isSelected: boolean) => (
+      <ServiceMenuIcon width="1.5rem" height="1.5rem" color={isSelected ? '#00423D' : '#63748A'} />
+    ),
+    label: 'Dịch vụ',
+    path: '/dich-vu',
+  },
+  {
+    key: 6,
+    icon: (isSelected: boolean) => (
+      <BannerMenuIcon width="1.5rem" height="1.5rem" color={isSelected ? '#00423D' : '#63748A'} />
+    ),
+    label: 'Banner',
+    path: '/banner',
+  },
+  {
+    key: 7,
+    icon: (isSelected: boolean) => (
+      <NewsMenuIcon width="1.5rem" height="1.5rem" color={isSelected ? '#00423D' : '#63748A'} />
+    ),
     label: 'Tin tức',
     path: '/tin-tuc',
   },
-  // {
-  //   key: 10,
-  //   icon: (isSelected: boolean) => (
-  //     <SettingMenuIcon
-  //       width="1.5rem"
-  //       height="1.5rem"
-  //       color={isSelected ? '#00423D' : '#63748A'}
-  //     />
-  //   ),
-  //   label: 'Cài đặt',
-  //   path: '/cai-dat',
-  // },
 ];
+
+export const getMenuList = (roles: string[]): AppPath[] => {
+  if (roles.includes('Admin')) {
+    return menuListAdmin;
+  }
+  return menuList;
+};

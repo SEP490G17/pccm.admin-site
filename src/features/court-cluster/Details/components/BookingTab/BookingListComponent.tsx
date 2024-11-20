@@ -8,7 +8,6 @@ import BookingAllComponent from './BookingAllComponent';
 const BookingListComponent = () => {
   const [tabIndex, setTabIndex] = useState(0);
   return (
-    <>
       <Tabs
         isFitted
         variant={'line'}
@@ -36,7 +35,6 @@ const BookingListComponent = () => {
           <TabPanel>{tabIndex === 3 && <BookingAllComponent />}</TabPanel>
         </TabPanels>
       </Tabs>
-    </>
   );
 };
 

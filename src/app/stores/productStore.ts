@@ -224,20 +224,20 @@ export default class ProductStore {
   }
 
   filterByCategory = async (category: number) => {
-    this.loadingInitial = true;
+    this.loading = true;
     this.productPageParams.clearLazyPage();
     this.productPageParams.category = category;
     this.cleanProductCache();
     await this.loadProducts();
-    runInAction(() => (this.loadingInitial = false));
+    runInAction(() => (this.loading = false));
   };
   filterByCourtCluster = async (courtCluster: number) => {
-    this.loadingInitial = true;
+    this.loading = true;
     this.productPageParams.clearLazyPage();
     this.productPageParams.courtCluster = courtCluster;
     this.cleanProductCache();
     await this.loadProducts();
-    runInAction(() => (this.loadingInitial = false));
+    runInAction(() => (this.loading = false));
   };
 
   filterLogByCourtCluster = async (courtCluster: number) => {
@@ -269,19 +269,19 @@ export default class ProductStore {
   };
   //#region private methods
 
-  private setProduct = (product: Product) => {
+  setProduct = (product: Product) => {
     this.productRegistry.set(product.id, product);
   };
 
-  private setProductLog = (productLog: ProductLog) => {
+  setProductLog = (productLog: ProductLog) => {
     this.productLogRegistry.set(productLog.id, productLog);
   };
 
-  private cleanProductCache = () => {
+  cleanProductCache = () => {
     this.productRegistry.clear();
   };
 
-  private cleanProductLogCache = () => {
+  cleanProductLogCache = () => {
     this.productLogRegistry.clear();
   };
 

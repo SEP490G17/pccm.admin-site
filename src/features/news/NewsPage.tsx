@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Flex, useDisclosure, Center, Heading } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
@@ -13,7 +13,7 @@ import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
 import PlusIcon from '../atoms/PlusIcon';
 import Select from 'react-select';
 
-const NewsPage = () => {
+const NewsPage = observer(() => {
   const { newsStore } = useStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { loadNews, newsPageParams, setLoadingInitial, newsRegistry, loading, setSearchTerm } =
@@ -21,11 +21,11 @@ const NewsPage = () => {
   const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
-    setLoadingInitial(true);
-    newsPageParams.clearLazyPage();
-    newsPageParams.searchTerm = '';
-    loadNews().finally(() => setLoadingInitial(false));
-  }, []);
+    if (newsRegistry.size <= 1) {
+      setLoadingInitial(true);
+      loadNews().finally(() => setLoadingInitial(false));
+    }
+  }, [loadNews, setLoadingInitial, newsRegistry]);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -38,18 +38,21 @@ const NewsPage = () => {
         loadNews();
       }
     }
-  }, []);
-  const handleSearch = useCallback(
-    debounce(async (e) => {
-      setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
+  }, [loadNews, newsPageParams, newsRegistry]);
+  const handleSearchDebounced = useMemo(() => {
+    return debounce(async (e) => {
+      setIsPending(false); // Tắt loading
       await setSearchTerm(e.target.value);
-    }, 500), // Debounce với thời gian 1 giây
-    [],
+    }, 500);
+  }, [setIsPending, setSearchTerm]);
+
+  const onSearchChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsPending(true);
+      handleSearchDebounced(e);
+    },
+    [handleSearchDebounced, setIsPending],
   );
-  const onSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
-    await handleSearch(e); // Gọi hàm debounce
-  };
   // Gắn sự kiện cuộn
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -84,17 +87,17 @@ const NewsPage = () => {
         </Flex>
 
         <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
-          <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
-          <ButtonPrimaryAtoms
-            className="bg-primary-900"
-            handleOnClick={onOpen}
-            children={
-              <Center gap={1}>
-                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
-                Thêm mới
-              </Center>
-            }
+          <InputSearchBoxAtoms
+            value={newsPageParams.searchTerm}
+            handleChange={onSearchChange}
+            isPending={isPending}
           />
+          <ButtonPrimaryAtoms className="bg-primary-900" handleOnClick={onOpen}>
+            <Center gap={1}>
+              <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+              Thêm mới
+            </Center>
+          </ButtonPrimaryAtoms>
         </Flex>
       </Flex>
       <NewsTableComponent />
@@ -106,26 +109,10 @@ const NewsPage = () => {
         hidden={newsRegistry.size >= newsPageParams.totalElement}
         loading={loading}
       />
-      {/* <Flex justifyContent="space-between" alignItems="center" mb="1rem">
-        <Box display="flex" alignItems="center">
-          Hiển thị
-          <Select
-            width="70px"
-            height="35px"
-            value={newsPageParams.pageSize}
-            marginLeft="10px"
-            marginRight="10px"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-          </Select>
-          tài liệu
-        </Box>
-      </Flex> */}
+
       <CreateNewsPage isOpen={isOpen} onClose={onClose} />
     </>
   );
-};
+});
 
-export default observer(NewsPage);
+export default NewsPage;

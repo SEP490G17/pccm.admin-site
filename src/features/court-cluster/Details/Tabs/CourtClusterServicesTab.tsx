@@ -2,7 +2,7 @@ import {observer} from "mobx-react";
 import {Box, Grid, GridItem, Heading, Skeleton} from "@chakra-ui/react";
 import {useStore} from "@/app/stores/store.ts";
 import {useEffect} from "react";
-import ServiceCardItemComponent from "@/features/court-cluster/components/ServiceCardItemComponent.tsx";
+import ServiceCardItemComponent from "@/features/court-cluster/Details/components/ServiceTab/ServiceCardItemComponent";
 interface  IProps{
     courtClusterId:number;
 }
@@ -11,7 +11,7 @@ const CourtClusterServicesTab = observer(({courtClusterId}:IProps) => {
     const {loadingServicesPage, loadServicesOfCourtCluster,serviceOfCourtClusterArray} =courtClusterStore;
     useEffect(() => {
         loadServicesOfCourtCluster(courtClusterId).then();
-    }, [courtClusterId]);
+    }, [courtClusterId,loadServicesOfCourtCluster]);
     return (
         <Box>
             <Heading as={'h5'} size={'md'} className={'mb-5'}>Danh sách dịch vụ của cụm sân</Heading>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Flex, useDisclosure, Center, Heading, Button } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
@@ -35,7 +35,7 @@ const ProductPage = observer(() => {
     filterByCourtCluster,
     filterLogByCourtCluster,
     loadProductsLog,
-    filterLogByLogType
+    filterLogByLogType,
   } = productStore;
   const { loadCategories } = categoryStore;
   const [isPending, setIsPending] = useState(false);
@@ -49,14 +49,16 @@ const ProductPage = observer(() => {
   } = useDisclosure();
 
   useEffect(() => {
-    setLoadingInitial(true);
-    Promise.all([
-      loadProducts(),
-      loadProductsLog(),
-      loadCategories(),
-      courtClusterStore.loadCourtClusterListAll(),
-    ]).finally(() => setLoadingInitial(false));
-  }, [courtClusterStore, loadCategories, loadProducts, setLoadingInitial, loadProductsLog]);
+    if (productRegistry.size <= 1) {
+      setLoadingInitial(true);
+      Promise.all([
+        loadProducts(),
+        loadProductsLog(),
+        loadCategories(),
+        courtClusterStore.loadCourtClusterListAll(),
+      ]).finally(() => setLoadingInitial(false));
+    }
+  }, [courtClusterStore, loadCategories, loadProducts, setLoadingInitial, loadProductsLog, productRegistry]);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -68,41 +70,54 @@ const ProductPage = observer(() => {
         if (productPageParams.totalElement > productRegistry.size) {
           loadProducts();
         }
-      }
-      else if (openProductLog) {
+      } else if (openProductLog) {
         productLogPageParams.skip = productLogRegistry.size;
         if (productLogPageParams.totalElement > productLogRegistry.size) {
           loadProductsLog();
         }
       }
     }
-  }, [openProductList, openProductLog, loadProducts, loadProductsLog, productPageParams, productRegistry.size]);
+  }, [
+    openProductList,
+    openProductLog,
+    loadProducts,
+    loadProductsLog,
+    productPageParams,
+    productRegistry.size,
+    productLogPageParams,
+    productLogRegistry,
+  ]);
 
-  const handleSearch = useCallback(
-    debounce(async (e) => {
-      setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
+  const handleSearchDebounced = useMemo(() => {
+    return debounce(async (e) => {
+      setIsPending(false); // Tắt loading
       await setSearchTerm(e.target.value);
-    }, 500), // Debounce với thời gian 1 giây
-    [],
+    }, 500);
+  }, [setIsPending, setSearchTerm]);
+
+  const onSearchChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsPending(true);
+      handleSearchDebounced(e);
+    },
+    [handleSearchDebounced, setIsPending],
   );
 
-  const handleSearchProductLog = useCallback(
-    debounce(async (e) => {
-      setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
+  const handleSearchProductLog = useMemo(() => {
+    return debounce(async (e) => {
+      setIsPending(false); // Tắt loading
       await setSearchTermProductLog(e.target.value);
-    }, 500), // Debounce với thời gian 1 giây
-    [],
+    }, 500);
+  }, [setIsPending, setSearchTermProductLog]);
+
+  const onSearchChangeProductLog = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsPending(true);
+      handleSearchProductLog(e);
+    },
+    [handleSearchProductLog, setIsPending],
   );
 
-  const onSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
-    await handleSearch(e); // Gọi hàm debounce
-  };
-
-  const onSearchChangeProductLog = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
-    await handleSearchProductLog(e); // Gọi hàm debounce
-  };
   // Gắn sự kiện cuộn
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -128,11 +143,12 @@ const ProductPage = observer(() => {
 
   const handleDateRangeChange = async (value1: Dayjs | null, value2: Dayjs | null) => {
     if (value1 && value2) {
-      await productStore.filterLogByDate(value1.startOf('day').format('DD/MM/YYYY HH:mm:ss'), value2.endOf('day').format('DD/MM/YYYY HH:mm:ss'))
-    }
-    else{
-      await productStore.filterLogByDate(null, null)
-      
+      await productStore.filterLogByDate(
+        value1.startOf('day').format('DD/MM/YYYY HH:mm:ss'),
+        value2.endOf('day').format('DD/MM/YYYY HH:mm:ss'),
+      );
+    } else {
+      await productStore.filterLogByDate(null, null);
     }
   };
 
@@ -160,16 +176,21 @@ const ProductPage = observer(() => {
               if (e) {
                 if (openProductList && !openProductLog) {
                   await handleChangeCourtCluster({ value: e.value, label: e.label });
-                }
-                else {
+                } else {
                   await handleChangeCourtClusterLog({ value: e.value, label: e.label });
                 }
               }
             }}
             isSearchable={true}
+            defaultValue={{
+              value: productPageParams.courtCluster ?? 0,
+              label:
+                courtClusterStore.courtClusterListAllRegistry.get(
+                  Number(productPageParams.courtCluster),
+                )?.courtClusterName ?? 'Tất cả',
+            }}
           ></Select>
-          {
-            openProductLog &&
+          {openProductLog && (
             <Select
               options={[
                 { value: 0, label: 'Tất cả' },
@@ -187,10 +208,9 @@ const ProductPage = observer(() => {
               }}
               isSearchable={true}
             ></Select>
-          }
+          )}
 
-          {
-            openProductList &&
+          {openProductList && (
             <Select
               options={[{ value: 0, label: 'Tất cả' }, ...categoryStore.categoryOption]}
               placeholder="Thể loại"
@@ -201,37 +221,38 @@ const ProductPage = observer(() => {
                 }
               }}
               isSearchable={true}
+              defaultValue={{
+                value: productPageParams.category?? 0,
+                label:
+                  categoryStore.categoryRegistry.get(Number(productPageParams.category))?.categoryName??
+                  'Tất cả',
+              }}
             ></Select>
-          }
+          )}
         </Flex>
-        {
-          openProductList &&
+        {openProductList && (
           <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
             <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
             <ButtonPrimaryAtoms
               className="bg-primary-900"
               handleOnClick={onOpen}
               loading={loadingCreate}
-              children={
-                <Center gap={1}>
-                  <PlusIcon color="white" height="1.5rem" width="1.5rem" />
-                  Thêm mới
-                </Center>
-              }
-            />
-            <ButtonPrimaryAtoms
-              className="bg-primary-900"
-              handleOnClick={onCategoryOpen}
-              children={<Center gap={1}>Danh sách thể loại</Center>}
-            />
+            >
+              <Center gap={1}>
+                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+                Thêm mới
+              </Center>
+            </ButtonPrimaryAtoms>
+            <ButtonPrimaryAtoms className="bg-primary-900" handleOnClick={onCategoryOpen}>
+              <Center gap={1}>Danh sách thể loại</Center>
+            </ButtonPrimaryAtoms>
           </Flex>
-        }
-        {
-          openProductLog &&
+        )}
+        {openProductLog && (
           <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
             <DatePicker.RangePicker
               format={'DD/MM/YYYY'}
-              placeholder={["Ngày bắt đầu", "Ngày kết thúc"]}
+              placeholder={['Ngày bắt đầu', 'Ngày kết thúc']}
               style={{ border: '0.5px solid #ADADAD' }}
               onChange={(value) => {
                 if (value && value.length === 2) {
@@ -243,7 +264,7 @@ const ProductPage = observer(() => {
             />
             <InputSearchBoxAtoms handleChange={onSearchChangeProductLog} isPending={isPending} />
           </Flex>
-        }
+        )}
       </Flex>
       <Flex
         width="100%"
@@ -254,30 +275,33 @@ const ProductPage = observer(() => {
         flexWrap="wrap"
       >
         <Button
-          style={openProductList ? { backgroundColor: '#115363', color: 'white' } : { backgroundColor: '#b7b7b7', color: 'white' }}
+          style={
+            openProductList
+              ? { backgroundColor: '#115363', color: 'white' }
+              : { backgroundColor: '#b7b7b7', color: 'white' }
+          }
           onClick={() => {
             setOpenProductList(true);
             setOpenProductLog(false);
           }}
         >
-          <Center gap={1}>
-            Danh sách hàng hóa
-          </Center>
+          <Center gap={1}>Danh sách hàng hóa</Center>
         </Button>
         <Button
-          style={openProductLog ? { backgroundColor: '#115363', color: 'white' } : { backgroundColor: '#b7b7b7', color: 'white' }}
+          style={
+            openProductLog
+              ? { backgroundColor: '#115363', color: 'white' }
+              : { backgroundColor: '#b7b7b7', color: 'white' }
+          }
           onClick={() => {
             setOpenProductList(false);
             setOpenProductLog(true);
           }}
         >
-          <Center gap={1}>
-            Danh sách log
-          </Center>
+          <Center gap={1}>Danh sách log</Center>
         </Button>
       </Flex>
-      {
-        openProductList &&
+      {openProductList && (
         <>
           <ProductTableComponent />
 
@@ -290,10 +314,9 @@ const ProductPage = observer(() => {
             loading={loading}
           />
         </>
-      }
+      )}
 
-      {
-        openProductLog &&
+      {openProductLog && (
         <>
           <ProductLogTableComponent />
 
@@ -306,7 +329,7 @@ const ProductPage = observer(() => {
             loading={loadingLog}
           />
         </>
-      }
+      )}
 
       <CreateProductPage isOpen={isOpen} onClose={onClose} />
       <CategoryPopUp isOpen={isCategoryOpen} onClose={onCategoryClose} />

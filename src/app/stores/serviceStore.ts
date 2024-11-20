@@ -258,21 +258,21 @@ export default class ServiceStore {
   }
 
   //#region private methods
-  private setService = (service: Service) => {
+  setService = (service: Service) => {
     this.serviceRegistry.set(service.id, service);
   };
 
-  private setServiceLog = (service: ServiceLog) => {
+  setServiceLog = (service: ServiceLog) => {
     this.serviceLogRegistry.set(service.id, service);
   };
 
-  private cleanServiceCache = () => {
+  cleanServiceCache = () => {
     runInAction(() => {
       this.serviceRegistry.clear();
     });
   };
 
-  private cleanServiceLogCache = () => {
+  cleanServiceLogCache = () => {
     runInAction(() => {
       this.serviceLogRegistry.clear();
     });
