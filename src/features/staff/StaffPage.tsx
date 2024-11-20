@@ -85,7 +85,7 @@ const StaffPage = observer(() => {
         </Flex>
 
         <Box textAlign="right">
-          <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
+          <InputSearchBoxAtoms value={staffPageParams.searchTerm} handleChange={onSearchChange} isPending={isPending} />
         </Box>
       </Flex>
       <StaffTableComponent />

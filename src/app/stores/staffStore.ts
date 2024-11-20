@@ -2,9 +2,10 @@ import { Staff } from './../models/staff.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleStaffData } from '../mock/staff.mock';
 import { PageParams } from '../models/pageParams.model';
-import { sleep } from '../helper/utils';
+import { catchErrorHandle, sleep } from '../helper/utils';
 // import _ from 'lodash';
 import agent from '../api/agent';
+import { toast } from 'react-toastify';
 export default class StaffStore {
   staffRegistry = new Map<number, Staff>();
   staffArray: Staff[] = [];
@@ -22,8 +23,27 @@ export default class StaffStore {
   loadStaffs = async () => {
     this.loadingInitial = true;
     await runInAction(async () => {
-      await agent.Staffs.list().then((staffs) => staffs.data.forEach(this.setStaff));
-      this.loadingInitial = false;
+      const queryParams = new URLSearchParams();
+      queryParams.append('skip', `${this.staffPageParams.skip ?? 0}`);
+      queryParams.append('pageSize', `${this.staffPageParams.pageSize}`);
+      if (this.staffPageParams.searchTerm) {
+        queryParams.append('search', this.staffPageParams.searchTerm);
+      }
+      if (this.staffPageParams.filter) {
+        queryParams.append('filter', this.staffPageParams.filter);
+      }
+      const [error, res] = await catchErrorHandle(agent.Staffs.list(`?${queryParams.toString()}`));
+      runInAction(() => {
+        if (error) {
+          toast.error('Lấy danh sách nhân thất bại');
+        }
+        if (res) {
+          const { count, data } = res;
+          data.forEach(this.setStaff);
+          this.staffPageParams.totalElement = count;
+        }
+        this.loading = false;
+      });
     });
   };
   //#region mock-up
@@ -49,11 +69,12 @@ export default class StaffStore {
   //#endregion
 
   //#region common
-  setSearchTerm = (term: string) => {
-    runInAction(() => {
-      this.staffPageParams.searchTerm = term;
-      this.cleanStaffCache();
-    });
+  setSearchTerm = async (term: string) => {
+    this.loadingInitial = true;
+    this.staffPageParams.searchTerm = term;
+    this.cleanStaffCache();
+    await this.loadStaffs();
+    runInAction(() => (this.loadingInitial = false));
   };
 
   get StaffArray() {
