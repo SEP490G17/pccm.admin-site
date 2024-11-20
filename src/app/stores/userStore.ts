@@ -1,8 +1,6 @@
 import { UserManager } from './../models/user.model';
 import { makeAutoObservable, runInAction } from 'mobx';
-import { sampleUserData } from '../mock/user.mock';
 import { PageParams } from '../models/pageParams.model';
-import { sleep } from '../helper/utils';
 import agent from '../api/agent';
 
 export default class UserStore {

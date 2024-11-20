@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Flex, useDisclosure, Center, Heading } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
@@ -20,14 +20,14 @@ const ServicePage = observer(() => {
   const { loadServices, servicePageParams, serviceRegistry, setLoadingInitial, loading } =
     serviceStore;
   const [isPending, setIsPending] = useState(false);
-  const { courtClusterListAllOptions } = courtClusterStore;
+  const { courtClusterListAllOptions, courtClusterListAllRegistry } = courtClusterStore;
 
   useEffect(() => {
-    setLoadingInitial(true);
-    servicePageParams.clearLazyPage();
-    servicePageParams.searchTerm = '';
-    loadServices().finally(() => setLoadingInitial(false));
-  }, []);
+    if (serviceRegistry.size <= 1) {
+      setLoadingInitial(true);
+      loadServices().finally(() => setLoadingInitial(false));
+    }
+  }, [setLoadingInitial, servicePageParams, loadServices,serviceRegistry]);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -40,7 +40,7 @@ const ServicePage = observer(() => {
         loadServices();
       }
     }
-  }, []);
+  }, [loadServices, servicePageParams, serviceRegistry]);
 
   // Gắn sự kiện cuộn
   useEffect(() => {
@@ -51,18 +51,20 @@ const ServicePage = observer(() => {
     };
   }, [handleScroll]);
 
-  const handleSearch = useCallback(
-    debounce(async (e) => {
-      setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
+  const handleSearchDebounced = useMemo(() => {
+    return debounce(async (e) => {
+      setIsPending(false); // Tắt loading
       await serviceStore.setSearchTerm(e.target.value);
-    }, 500), // Debounce với thời gian 1 giây
-    [],
-  );
+    }, 500);
+  }, [setIsPending, serviceStore]);
 
-  const onSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
-    await handleSearch(e); // Gọi hàm debounce
-  };
+  const onSearchChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsPending(true);
+      handleSearchDebounced(e);
+    },
+    [handleSearchDebounced, setIsPending],
+  );
 
   return (
     <>
@@ -80,22 +82,26 @@ const ServicePage = observer(() => {
                 await serviceStore.setFilterTerm(e.value.toString());
               }
             }}
+            defaultValue={{
+              value: Number(servicePageParams.filter??0),
+              label: courtClusterListAllRegistry.get(Number(servicePageParams.filter))?.courtClusterName??"Tất cả",
+            }}
             isSearchable={true}
           ></Select>
         </Flex>
 
         <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
-          <InputSearchBoxAtoms isPending={isPending} handleChange={onSearchChange} />
-          <ButtonPrimaryAtoms
-            className="bg-primary-900"
-            handleOnClick={onOpen}
-            children={
-              <Center gap={1}>
-                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
-                Thêm mới
-              </Center>
-            }
+          <InputSearchBoxAtoms
+            value={servicePageParams.searchTerm}
+            isPending={isPending}
+            handleChange={onSearchChange}
           />
+          <ButtonPrimaryAtoms className="bg-primary-900" handleOnClick={onOpen}>
+            <Center gap={1}>
+              <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+              Thêm mới
+            </Center>
+          </ButtonPrimaryAtoms>
         </Flex>
       </Flex>
       <ServiceTableComponent />

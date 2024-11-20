@@ -45,10 +45,10 @@ const Header = observer(() => {
           <Avatar src={defaultUserIcon} size={'md'} />
           <Flex flexDirection={'column'}>
             <Text color={'#333'} fontSize={'1rem'} fontWeight={500}>
-              {authStore.userApp?.displayName}
+              {commonStore.getUserFullName()}
             </Text>
             <Text color={'#777'} fontSize={'1rem'} fontWeight={400}>
-              0865859202
+              {commonStore.getUserPhoneNumber()}
             </Text>
           </Flex>
         </Flex>

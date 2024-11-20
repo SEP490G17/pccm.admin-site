@@ -1,11 +1,23 @@
 import { observer } from 'mobx-react';
-import {Box, Flex, IconButton, Table, TableContainer, Tbody, Td, Th, Thead, Tooltip, Tr} from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  IconButton,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tooltip,
+  Tr,
+} from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms.tsx';
 import { useStore } from '@/app/stores/store.ts';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
-import DeleteButtonAtom from "@/app/common/form/DeleteButtonAtom.tsx";
-import {CgFileDocument} from "react-icons/cg";
-import {Link} from "react-router-dom";
+import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom.tsx';
+import { CgFileDocument } from 'react-icons/cg';
+import { Link } from 'react-router-dom';
 
 const CourtClusterTableComponent = observer(() => {
   const { courtClusterStore } = useStore();
@@ -48,17 +60,29 @@ const CourtClusterTableComponent = observer(() => {
                 <Td>{court.numbOfCourts}</Td>
                 <Td>
                   <Flex className={'items-center gap-2.5 flex-row'}>
-                      <Tooltip hasArrow placement='top' label="Xem chi tiết" bg="gray.300" color="black">
-                        <IconButton
-                            as={Link}
-                            to={`/cum-san/chi-tiet/${court.id}`}
-                            icon={<CgFileDocument className="text-white text-lg" />}
-                            size={'sm'}
-                            colorScheme="blue"
-                            aria-label={'Details'}
-                        />
-                      </Tooltip>
-                      <DeleteButtonAtom buttonSize='md' name={court.title} header={"Cụm sân"}  loading={loading} onDelete={ async () =>{}} />
+                    <Tooltip
+                      hasArrow
+                      placement="top"
+                      label="Xem chi tiết"
+                      bg="gray.300"
+                      color="black"
+                    >
+                      <IconButton
+                        as={Link}
+                        to={`/cum-san/${court.id}/chi-tiet`}
+                        icon={<CgFileDocument className="text-white text-lg" />}
+                        size={'sm'}
+                        colorScheme="blue"
+                        aria-label={'Details'}
+                      />
+                    </Tooltip>
+                    <DeleteButtonAtom
+                      buttonSize="md"
+                      name={court.title}
+                      header={'Cụm sân'}
+                      loading={loading}
+                      onDelete={async () => {}}
+                    />
                   </Flex>
                 </Td>
               </Tr>

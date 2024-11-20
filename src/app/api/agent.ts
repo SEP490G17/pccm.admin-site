@@ -11,6 +11,8 @@ import {
   CourtCluster,
   CourtClusterDetailsCreate,
   CourtClusterListAll,
+  CourtManagerResponse,
+  CourtPriceResponse,
 } from '../models/court.model';
 import { sleep } from '../helper/utils';
 import { Service, ServiceDTO, ServiceEditDTO } from '../models/service.model';
@@ -74,7 +76,7 @@ axios.interceptors.response.use(
             }
           }
           throw modalStateErrors.flat();
-        } 
+        }
         break;
       case 401:
         router.navigate('/login');
@@ -173,8 +175,10 @@ const Roles = {
 
 const Categories = {
   list: (): Promise<ICategory[]> => requests.get(`/category`),
-  create: (category: { categoryName: string }): Promise<ICategory> => requests.post(`/category`, category),
-  update: (category: ICategory): Promise<ICategory> => requests.put(`/category/${category.id}`, category),
+  create: (category: { categoryName: string }): Promise<ICategory> =>
+    requests.post(`/category`, category),
+  update: (category: ICategory): Promise<ICategory> =>
+    requests.put(`/category/${category.id}`, category),
   delete: (id: number): Promise<void> => requests.del(`/category/${id}`),
 };
 
@@ -199,6 +203,12 @@ const CourtClusterAgent = {
 };
 const CourtAgent = {
   list: (id: number): Promise<Court[]> => requests.get(`/court/list?filter=${id}`),
+  listByCluster: (courtClusterId: number): Promise<CourtManagerResponse> =>
+    requests.get(`/court/cluster/${courtClusterId}`),
+  updateCourtPrice: (id: number, courtPrices: CourtPriceResponse[]) =>
+    requests.put(`/courtPrice/${id}/update`, courtPrices),
+  removeCourt: (id: number): Promise<void> => requests.del(`/court/${id}`),
+  toggle:(id:number, status:number):Promise<void> => requests.put(`/court/toggle/${id}?status=${status}`,{})
 };
 const UploadAgent = {
   post: (file: FormData): Promise<ImageUpload> => requests.post(`/upload`, file),
@@ -212,7 +222,7 @@ const Account = {
 const Users = {
   list: (queryParams: string = ''): Promise<PaginationModel<UserManager>> =>
     requests.get(`/user${queryParams}`),
-  details: (userId: string): Promise<UserManager> => requests.get(`/user/details/${userId}`), 
+  details: (userId: string): Promise<UserManager> => requests.get(`/user/details/${userId}`),
 };
 const Staffs = {
   list: (): Promise<PaginationModel<Staff>> => requests.get('/staff'),
@@ -220,8 +230,7 @@ const Staffs = {
 
 const BookingAgent = {
   create: (booking: BookingCreate) => requests.post<BookingModel>('/booking/v2', booking),
-  getListForSchedule: (body:object): Promise<BookingModel[]> =>
-    requests.post('/booking/v1' ,body),
+  getListForSchedule: (body: object): Promise<BookingModel[]> => requests.post('/booking/v1', body),
   getListV2: (queryParam: string = ''): Promise<PaginationModel<BookingForList>> =>
     requests.get(`/booking/v2${queryParam}`),
   getDetailsV1: (id: number): Promise<BookingDetails> => requests.get(`/booking/v1/${id}`),
@@ -235,8 +244,7 @@ const BookingAgent = {
   denyBooking: (id: number): Promise<BookingForList> => requests.put(`/booking/deny/${id}`, {}),
   exportBill: (courtClusterId: number): Promise<any> =>
     requests.get(`/bill/billbooking/${courtClusterId}`),
-  exportBillOrder: (orderId: number): Promise<any> =>
-    requests.get(`/bill/billorder/${orderId}`),
+  exportBillOrder: (orderId: number): Promise<any> => requests.get(`/bill/billorder/${orderId}`),
 };
 
 const PaymentAgent = {

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Flex, Box, Center, Heading } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store.ts';
-import './style.scss';
+import '../style.scss';
 import { router } from '@/app/router/Routes';
-import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
-import CourtClusterTableComponent from '@/features/court-cluster/components/CourtClusterTableComponent.tsx';
-import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
-import PlusIcon from '../atoms/PlusIcon';
-import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
+import CourtClusterTableComponent from '@/features/court-cluster/List/components/CourtClusterTableComponent';
+import PageHeadingAtoms from '@/features/atoms/PageHeadingAtoms';
+import InputSearchBoxAtoms from '@/features/atoms/InputSearchBoxAtoms';
+import ButtonPrimaryAtoms from '@/features/atoms/ButtonPrimaryAtoms';
+import PlusIcon from '@/features/atoms/PlusIcon';
 
 const CourtClusterPage = observer(() => {
   const { courtClusterStore } = useStore();
@@ -37,13 +37,12 @@ const CourtClusterPage = observer(() => {
             <ButtonPrimaryAtoms
               className="bg-primary-900"
               handleOnClick={() => router.navigate('/cum-san/tao')}
-              children={
-                <Center gap={1}>
-                  <PlusIcon color="white" height="1.5rem" width="1.5rem" />
-                  Thêm mới
-                </Center>
-              }
-            />
+            >
+              <Center gap={1}>
+                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+                Thêm mới
+              </Center>
+            </ButtonPrimaryAtoms>
           </Flex>
         </Box>
       </Flex>

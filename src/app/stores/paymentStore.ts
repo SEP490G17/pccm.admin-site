@@ -2,11 +2,11 @@ import { PaymentType } from './../models/payment.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
 import { catchErrorHandle } from '@/app/helper/utils.ts';
-import { PaymentMessage } from '../common/toastMessage';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { CreateToastFnReturn } from '@chakra-ui/react';
+import { PaymentMessage } from '../common/toastMessage/commonMessage';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);

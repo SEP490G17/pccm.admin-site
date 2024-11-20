@@ -9,7 +9,8 @@ import { toast } from 'react-toastify';
 import { PaginationModel } from '@/app/models/pagination.model.ts';
 import { Product } from '@/app/models/product.model.ts';
 import { Service } from '@/app/models/service.model.ts';
-import { CourtClusterMessage, CourtMessage } from '../common/toastMessage';
+import { CourtClusterMessage } from '../common/toastMessage/courtClusterMessage';
+import { CourtMessage } from '../common/toastMessage/courtMessage';
 
 export default class CourtClusterStore {
   //registry
@@ -19,7 +20,7 @@ export default class CourtClusterStore {
   servicesOfClusterRegistry = new Map<number, Service>();
   courtOfClusterRegistry = new Map<number, Court>();
   // selected
-  selectedCourt: CourtCluster | undefined = undefined; //cụm sân đang được chọn (trang details, hoặc khi update)
+  selectedCourtCluster: CourtCluster | undefined = undefined; //cụm sân đang được chọn (trang details, hoặc khi update)
   selectedTabs: number = 0;
   // page param
   courtPageParams = new PageParams(); // page param cho trang cụm sân
@@ -48,7 +49,7 @@ export default class CourtClusterStore {
       const [error, res] = await catchErrorHandle(agent.CourtAgent.list(id));
       runInAction(() => {
         if (error) {
-          chakraToast(CourtMessage.loadCourtOfCourtClusterFail);
+          chakraToast(CourtMessage.loadCourtClusterFailure());
         }
         if (res) {
           this.courtOfClusterRegistry.clear();
@@ -115,7 +116,7 @@ export default class CourtClusterStore {
       );
       runInAction(() => {
         if (error) {
-          toast.error(`Lấy danh sách sản phẩm của cụm sân ${this.selectedCourt?.title} thất bại`);
+          toast.error(`Lấy danh sách sản phẩm của cụm sân ${this.selectedCourtCluster?.title} thất bại`);
           this.productCourtClusterPageParams.totalElement = 0;
         }
         if (res) {
@@ -158,7 +159,7 @@ export default class CourtClusterStore {
       if (error) {
         chakraToast(CourtClusterMessage.loadDetailsFail);
       } else {
-        this.selectedCourt = response;
+        this.selectedCourtCluster = response;
       }
       this.loadingInitialDetailsPage = false;
     });

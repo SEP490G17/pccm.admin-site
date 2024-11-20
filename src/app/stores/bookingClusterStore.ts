@@ -10,13 +10,14 @@ import {
   mapBookingResponseToBookingModel,
   mapBookingToBookingForList,
 } from '../models/booking.model';
-import { BookingMessage, CommonMessage, DefaultBookingText } from '../common/toastMessage';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { PaginationModel } from '../models/pagination.model';
 import { PageParams } from '../models/pageParams.model';
 import { CreateToastFnReturn } from '@chakra-ui/react';
+import { BookingMessage, DefaultBookingText } from '../common/toastMessage/bookingMessage';
+import { CommonMessage } from '../common/toastMessage/commonMessage';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -178,7 +179,7 @@ export default class BookingClusterStore {
   // #endregion
 
   acceptedBooking = async (id: number, toast: CreateToastFnReturn) => {
-    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.title.accept));
+    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.accept.title));
     const [err, res] = await catchErrorHandle(agent.BookingAgent.acceptedBooking(id));
     runInAction(() => {
       toast.close(pendingToast);
@@ -197,7 +198,7 @@ export default class BookingClusterStore {
   };
 
   completeBooking = async (id: number, toast: CreateToastFnReturn) => {
-    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.title.accept));
+    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.complete.title));
     const [err, res] = await catchErrorHandle(agent.BookingAgent.completeBooking(id));
     runInAction(() => {
       toast.close(pendingToast);
@@ -214,7 +215,7 @@ export default class BookingClusterStore {
   };
 
   denyBooking = async (id: number, toast: CreateToastFnReturn) => {
-    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.title.accept));
+    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.deny.title));
     const [err, res] = await catchErrorHandle(agent.BookingAgent.denyBooking(id));
     runInAction(() => {
       toast.close(pendingToast);
@@ -233,7 +234,7 @@ export default class BookingClusterStore {
   };
 
   cancelBooking = async (id: number, toast: CreateToastFnReturn) => {
-    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.title.accept));
+    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.cancel.title));
     const [err, res] = await catchErrorHandle(agent.BookingAgent.cancelBooking(id));
     runInAction(() => {
       toast.close(pendingToast);

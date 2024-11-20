@@ -5,7 +5,7 @@ interface IProps {
   images: string[];
 }
 
-const ListImageComponent = ({ images }: IProps) => {
+const CourtClusterImagesComponent = ({ images }: IProps) => {
   return (
     <>
       <Grid
@@ -99,4 +99,4 @@ const ListImageComponent = ({ images }: IProps) => {
   );
 };
 
-export default ListImageComponent;
+export default CourtClusterImagesComponent;

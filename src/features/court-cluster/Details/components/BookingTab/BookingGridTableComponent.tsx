@@ -1,7 +1,7 @@
 import { BookingForList } from '@/app/models/booking.model';
 import { Center, Grid, GridItem } from '@chakra-ui/react';
 import { FC } from 'react';
-import BookingGridItemAtom from '../../atoms/BookingGridItemAtom';
+import BookingGridItemAtom from '../../../atoms/BookingGridItemAtom';
 
 interface BookingGridTableComponentProps {
     bookingArray:BookingForList[]

@@ -16,8 +16,8 @@ import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
 import { BookingCreate } from '@/app/models/booking.model';
 import { PaymentStatus } from '@/app/models/payment.model';
-import BookingEditorTemplateComponent from '../components/BookingTabs/BookingEditorTemplateComponent';
-import BookingListComponent from '../components/BookingTabs/BookingListComponent';
+import BookingEditorTemplateComponent from '../components/BookingTab/BookingEditorTemplateComponent';
+import BookingListComponent from '../components/BookingTab/BookingListComponent';
 interface IProps {
   courtClusterId: number;
 }
@@ -40,9 +40,13 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     loadCourtOfCluster,
     loadingInitialBookingPage,
     setLoadingInitialBookingPage,
-    
   } = courtClusterStore;
-  const { bookingScheduleArray: bookingArray, createBooking, courtPrice, clearBookingForSchedule } = bookingStore;
+  const {
+    bookingScheduleArray: bookingArray,
+    createBooking,
+    courtPrice,
+    clearBookingForSchedule,
+  } = bookingStore;
   useEffect(() => {
     setLoadingInitialBookingPage(true);
     bookingStore.clearBookingForSchedule();
@@ -51,7 +55,14 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
       loadCourtOfCluster(courtClusterId, toast),
       bookingStore.loadBookingForSchedule(toast),
     ]).then(() => setLoadingInitialBookingPage(false));
-  }, [courtClusterId, bookingStore, loadCourtOfCluster, setLoadingInitialBookingPage, toast,clearBookingForSchedule]);
+  }, [
+    courtClusterId,
+    bookingStore,
+    loadCourtOfCluster,
+    setLoadingInitialBookingPage,
+    toast,
+    clearBookingForSchedule,
+  ]);
 
   const group = { resources: ['courts'] };
   const schedule = useRef<ScheduleComponent>(null);
@@ -61,7 +72,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         cancelButton: 'Đóng',
         deleteButton: 'Huỷ lịch',
         newEvent: 'Đặt lịch chơi',
-        saveButton:'Lưu'
+        saveButton: 'Lưu',
       },
     },
   });
@@ -72,7 +83,6 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
       args.data &&
       ((Array.isArray(args.data) && args.data.length > 0) || !isNullOrUndefined(args.data))
     ) {
-
       if (schedule.current) {
         const eventData = Array.isArray(args.data) ? args.data[0] : args.data;
         const eventField: EventFieldsMapping = schedule.current.eventFields!;

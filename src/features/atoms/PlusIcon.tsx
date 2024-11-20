@@ -1,12 +1,11 @@
 import { Icon } from '@chakra-ui/react';
-import React from 'react';
 interface IProps {
   color: string;
   width: string;
   height: string;
 }
 
-function PlusIcon({ color, width, height }: IProps) {
+function PlusIcon({ color, width, height }: Readonly<IProps>) {
   return (
     <Icon width={width} height={height} viewBox="0 0 24 24" color={color}>
      

@@ -82,112 +82,110 @@ export default class ProductStore {
     });
   };
 
-    editProduct = async (product: ProductInput) => {
-        this.loading = true;
+  editProduct = async (product: ProductInput) => {
+    this.loading = true;
 
-        if (this.selectedIdProduct) {
-            const [error, res] = await catchErrorHandle<Product>(agent.Products.update(product, this.selectedIdProduct));
-            runInAction(() => {
-                    if (!error && res) {
-                        this.setProduct(res);
-                        toast.success('Cập nhật hàng hóa thành công');
-                    }
-                    if (error) {
-                        console.error('Error updating product:', error);
-                        toast.error('Cập nhật hàng hóa thất bại');
-                    }
-                    this.loading = false;
-                }
-            );
+    if (this.selectedIdProduct) {
+      const [error, res] = await catchErrorHandle<Product>(
+        agent.Products.update(product, this.selectedIdProduct),
+      );
+      runInAction(() => {
+        if (!error && res) {
+          this.setProduct(res);
+          toast.success('Cập nhật hàng hóa thành công');
         }
-
+        if (error) {
+          console.error('Error updating product:', error);
+          toast.error('Cập nhật hàng hóa thất bại');
+        }
+        this.loading = false;
+      });
     }
+  };
 
-//#endregion
+  //#endregion
 
-    deleteProduct = async (id: number) => {
-        this.loading = true;
-        const [error, res] = await catchErrorHandle(agent.Products.delete(id));
-        runInAction(() => {
-            if (!error && res) {
-                this.productRegistry.delete(id);
-            }
-            this.loading = false;
+  deleteProduct = async (id: number) => {
+    this.loading = true;
+    const [error, res] = await catchErrorHandle(agent.Products.delete(id));
+    runInAction(() => {
+      if (!error && res) {
+        this.productRegistry.delete(id);
+      }
+      this.loading = false;
+    });
+  };
 
-        });
-    };
+  //#region mock-up
+  mockLoadProducts = async () => {
+    this.loading = true;
+    try {
+      sampleProductData.forEach(this.setProduct);
+      await sleep(1000);
+      runInAction(() => {
+        this.productPageParams.totalPages = Math.ceil(
+          this.productRegistry.size / this.productPageParams.pageSize,
+        );
+        this.productPageParams.totalElement = this.productRegistry.size;
+      });
+    } catch (error) {
+      runInAction(() => {
+        console.error('Error loading products:', error);
+      });
+    } finally {
+      this.loading = false;
+    }
+  };
+  //#endregion
 
-//#region mock-up
-    mockLoadProducts = async () => {
-        this.loading = true;
-        try {
-            sampleProductData.forEach(this.setProduct);
-            await sleep(1000);
-            runInAction(() => {
-                this.productPageParams.totalPages = Math.ceil(
-                    this.productRegistry.size / this.productPageParams.pageSize,
-                );
-                this.productPageParams.totalElement = this.productRegistry.size;
-            });
-        } catch (error) {
-            runInAction(() => {
-                console.error('Error loading products:', error);
-            });
-        } finally {
-            this.loading = false;
-        }
-    };
-//#endregion
+  //#region common
+  setLoadingEdit = (load: boolean) => {
+    runInAction(() => {
+      this.loadingEdit = load;
+    });
+  };
+  setLoadingInitial = (loading: boolean) => {
+    this.loadingInitial = loading;
+  };
 
-//#region common
-    setLoadingEdit = (load: boolean) => {
-        runInAction(() => {
-            this.loadingEdit = load;
-        });
-    };
-    setLoadingInitial = (loading: boolean) => {
-        this.loadingInitial = loading;
-    };
-
-    setSearchTerm = async (term: string) => {
-        this.loadingInitial = true;
-        await runInAction(async () => {
-            this.cleanProductCache();
-            this.productPageParams.clearLazyPage();
-            this.productPageParams.searchTerm = term;
-            await this.loadProducts();
-        });
-        this.loadingInitial = false;
-    };
+  setSearchTerm = async (term: string) => {
+    this.loading = true;
+    this.cleanProductCache();
+    this.productPageParams.clearLazyPage();
+    this.productPageParams.searchTerm = term;
+    await this.loadProducts();
+    runInAction(() => {
+      this.loading = false;
+    });
+  };
 
   get productArray() {
     return _.orderBy(Array.from(this.productRegistry.values()), ['id'], ['desc']);
   }
 
-    filterByCategory = async (category: number) => {
-        this.loadingInitial = true;
-        this.productPageParams.clearLazyPage();
-        this.productPageParams.category = category;
-        this.cleanProductCache();
-        await this.loadProducts();
-        runInAction(() => this.loadingInitial = false);
-    }
-    filterByCourtCluster = async (courtCluster: number) => {
-        this.loadingInitial = true;
-        this.productPageParams.clearLazyPage();
-        this.productPageParams.courtCluster = courtCluster;
-        this.cleanProductCache();
-        await this.loadProducts();
-        runInAction(() => this.loadingInitial = false);
+  filterByCategory = async (category: number) => {
+    this.loading = true;
+    this.productPageParams.clearLazyPage();
+    this.productPageParams.category = category;
+    this.cleanProductCache();
+    await this.loadProducts();
+    runInAction(() => (this.loading = false));
+  };
+  filterByCourtCluster = async (courtCluster: number) => {
+    this.loading = true;
+    this.productPageParams.clearLazyPage();
+    this.productPageParams.courtCluster = courtCluster;
+    this.cleanProductCache();
+    await this.loadProducts();
+    runInAction(() => (this.loading = false));
+  };
+  //#region private methods
 
-    }
-//#region private methods
+  setProduct = (product: Product) => {
+    this.productRegistry.set(product.id, product);
+  };
 
-    private setProduct = (product: Product) => {
-        this.productRegistry.set(product.id, product);
-    };
-
-  private cleanProductCache = () => {
+  cleanProductCache = () => {
     this.productRegistry.clear();
   };
 
@@ -197,5 +195,5 @@ export default class ProductStore {
     }
   }
 
-//#endregion
+  //#endregion
 }

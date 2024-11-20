@@ -4,7 +4,7 @@ import { Card, CardBody, CardHeader, Center, Heading, Skeleton } from '@chakra-u
 
 const CourtClusterDescriptionTab = observer(() => {
   const { courtClusterStore } = useStore();
-  const { selectedCourt } = courtClusterStore;
+  const { selectedCourtCluster: selectedCourt } = courtClusterStore;
   return (
     <>
       <Skeleton minHeight={'300rem'} isLoaded={!courtClusterStore.loadingInitialDetailsPage}>

@@ -54,7 +54,7 @@ const ProductTableComponent = observer(() => {
             </Tr>
           </Thead>
           <Tbody>
-            {loadingInitial && (
+            {loadingInitial || loading && (
               <SkeletonTableAtoms numOfColumn={8} pageSize={productPageParams.pageSize} />
             )}
 

@@ -3,12 +3,13 @@ import {useStore} from "@/app/stores/store.ts";
 import {useEffect} from "react";
 
 import {useParams} from "react-router-dom";
-import CourtPageHeader from "@/features/court-cluster/components/CourtPageHeader.tsx";
+import CourtClusterDetailsHeaderComponent from "@/features/court-cluster/Details/components/Details/CourtClusterDetailsHeaderComponent";
 import { Tabs, TabList, TabPanels, Tab, TabPanel, useToast } from '@chakra-ui/react'
-import CourtClusterDescriptionTab from "@/features/court-cluster/tabs/CourtClusterDescriptionTab";
-import CourtClusterProductsTab from "@/features/court-cluster/tabs/CourtClusterProductsTab";
-import CourtClusterServicesTab from "@/features/court-cluster/tabs/CourtClusterServicesTab";
-import CourtClusterBookingTab from "./tabs/CourtClusterBookingTab";
+import CourtClusterDescriptionTab from "./Tabs/CourtClusterDescriptionTab";
+import CourtClusterProductsTab from "./Tabs/CourtClusterProductsTab";
+import CourtClusterServicesTab from "./Tabs/CourtClusterServicesTab";
+import CourtClusterBookingTab from "./Tabs/CourtClusterBookingTab";
+
 
 const CourtClusterDetailsPage = observer(() => {
     const {courtClusterStore, bookingClusterStore} = useStore();
@@ -24,7 +25,7 @@ const CourtClusterDetailsPage = observer(() => {
 
     return (
         <div className={'mt-6 pb-8'}>
-            <CourtPageHeader />
+            <CourtClusterDetailsHeaderComponent />
             <Tabs mt={4} colorScheme={'green'} index={selectedTabs} onChange={(index) => setSelectedTab(index)}>
                 <TabList border={'none'}>
                     <Tab >Chi tiết</Tab>

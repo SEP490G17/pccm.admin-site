@@ -4,46 +4,48 @@ import NotFound from '@/features/errors/NotFound';
 import ServerError from '@/features/errors/ServerError';
 import MainLayout from '@/app/layout/MainLayout';
 import LoginPage from '@/features/auth/login/LoginPage';
-import CourtsPage from '@/features/court-cluster/CourtsClusterPage.tsx';
 import BannerPage from '@/features/banner/BannerPage';
 import NewsPage from '@/features/news/NewsPage';
 import ProductPage from '@/features/product/ProductPage';
 import ServicePage from '@/features/service/ServicePage';
 import StaffPage from '@/features/staff/StaffPage';
 import UserManagerPage from '@/features/user/UserManagerPage';
-import CourtClusterDetailsPage from "@/features/court-cluster/CourtClusterDetailsPage.tsx";
 import StatisticPage from '@/features/statistic/StatisticPage';
 import RevenuePage from '@/features/revenue/RevenuePage';
-import CourtClusterCreatePage from "@/features/court-cluster/CourtClusterCreatePage.tsx";
-import CourtClusterEditPage from "@/features/court-cluster/CourtClusterEditPage.tsx";
+import CourtClusterCreatePage from '@/features/court-cluster/Create/CourtClusterCreatePage';
 import BookingsPage from '@/features/booking/BookingsPage';
 import BookingDetailsPage from '@/features/booking/BookingDetailsPage';
+import CourtClusterPage from '@/features/court-cluster/List/CourtsClusterPage';
+import CourtClusterDetailsPage from '@/features/court-cluster/Details/CourtClusterDetailsPage';
+import CourtsManagerPage from '@/features/court-cluster/CourtsManager/CourtManagerPage';
+import { RoleBasedRedirect } from './HomeRouterConfigPage';
+
+
 
 export const routes: RouteObject[] = [
- 
   {
     path: '/',
     element: <MainLayout />,
     children: [
       {
         path: '',
-        element: <StatisticPage />,
+        element: <RoleBasedRedirect />,
       },
       {
         path: 'cum-san',
-        element: <CourtsPage />,
+        element: <CourtClusterPage />,
       },
       {
-        path: 'cum-san/chi-tiet/:id',
+        path: 'cum-san/:id/chi-tiet',
         element: <CourtClusterDetailsPage />,
-      },
-      {
-        path: 'cum-san/chinh-sua/:id',
-        element: <CourtClusterEditPage />,
       },
       {
         path: 'cum-san/tao',
         element: <CourtClusterCreatePage />,
+      },
+      {
+        path: 'cum-san/:id/quan-ly-san',
+        element: <CourtsManagerPage />,
       },
       {
         path: 'tin-tuc',

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Flex, useDisclosure, Center, Heading } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
@@ -38,13 +38,15 @@ const ProductPage = observer(() => {
   } = useDisclosure();
 
   useEffect(() => {
-    setLoadingInitial(true);
-    Promise.all([
-      loadProducts(),
-      loadCategories(),
-      courtClusterStore.loadCourtClusterListAll(),
-    ]).finally(() => setLoadingInitial(false));
-  }, [courtClusterStore, loadCategories, loadProducts, setLoadingInitial]);
+    if (productRegistry.size <= 1) {
+      setLoadingInitial(true);
+      Promise.all([
+        loadProducts(),
+        loadCategories(),
+        courtClusterStore.loadCourtClusterListAll(),
+      ]).finally(() => setLoadingInitial(false));
+    }
+  }, [courtClusterStore, loadCategories, loadProducts, setLoadingInitial,productRegistry]);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -59,17 +61,20 @@ const ProductPage = observer(() => {
     }
   }, [loadProducts, productPageParams, productRegistry.size]);
 
-  const handleSearch = useCallback(
-    debounce(async (e) => {
-      setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
+  const handleSearchDebounced = useMemo(() => {
+    return debounce(async (e) => {
+      setIsPending(false); // Tắt loading
       await setSearchTerm(e.target.value);
-    }, 500), // Debounce với thời gian 1 giây
-    [],
+    }, 500);
+  }, [setIsPending, setSearchTerm]);
+
+  const onSearchChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsPending(true);
+      handleSearchDebounced(e);
+    },
+    [handleSearchDebounced, setIsPending],
   );
-  const onSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
-    await handleSearch(e); // Gọi hàm debounce
-  };
   // Gắn sự kiện cuộn
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -110,6 +115,13 @@ const ProductPage = observer(() => {
               }
             }}
             isSearchable={true}
+            defaultValue={{
+              value: productPageParams.courtCluster ?? 0,
+              label:
+                courtClusterStore.courtClusterListAllRegistry.get(
+                  Number(productPageParams.courtCluster),
+                )?.courtClusterName ?? 'Tất cả',
+            }}
           ></Select>
           <Select
             options={[{ value: 0, label: 'Tất cả' }, ...categoryStore.categoryOption]}
@@ -120,28 +132,35 @@ const ProductPage = observer(() => {
                 await handleChangeCategory({ value: e.value, label: e.label });
               }
             }}
+            defaultValue={{
+              value: productPageParams.category ?? 0,
+              label:
+                categoryStore.categoryRegistry.get(Number(productPageParams.category))
+                  ?.categoryName ?? 'Tất cả',
+            }}
             isSearchable={true}
           ></Select>
         </Flex>
 
         <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
-          <InputSearchBoxAtoms handleChange={onSearchChange} isPending={isPending} />
+          <InputSearchBoxAtoms
+            value={productPageParams.searchTerm}
+            handleChange={onSearchChange}
+            isPending={isPending}
+          />
           <ButtonPrimaryAtoms
             className="bg-primary-900"
             handleOnClick={onOpen}
             loading={loadingCreate || loadingInitial}
-            children={
-              <Center gap={1}>
-                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
-                Thêm mới
-              </Center>
-            }
-          />
-          <ButtonPrimaryAtoms
-            className="bg-primary-900"
-            handleOnClick={onCategoryOpen}
-            children={<Center gap={1}>Danh sách thể loại</Center>}
-          />
+          >
+            <Center gap={1}>
+              <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+              Thêm mới
+            </Center>
+          </ButtonPrimaryAtoms>
+          <ButtonPrimaryAtoms className="bg-primary-900" handleOnClick={onCategoryOpen}>
+            <Center gap={1}>Danh sách thể loại</Center>
+          </ButtonPrimaryAtoms>
         </Flex>
       </Flex>
       <ProductTableComponent />

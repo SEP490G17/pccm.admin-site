@@ -26,7 +26,7 @@ const InputSearchBoxAtoms = ({ handleChange, isPending = false, value  }: IProp)
           outline="none"
           borderRadius="4px"
           onChange={handleChange}
-          value={value}
+          defaultValue={value}
         />
         <InputRightElement width="4.5rem">
           {isPending ? <Spinner size={'sm'} /> : <FaSearch />}

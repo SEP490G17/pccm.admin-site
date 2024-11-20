@@ -6,13 +6,15 @@ import {
   catchErrorHandle,
   convertBookingStartAndEndUTCToG7,
 } from '../helper/utils';
-import { BookingMessage, CommonMessage, OrderMessage } from '../common/toastMessage';
 import { OrderModel, OrderForProducts, OrderOfBooking } from '../models/order.model';
 import { CreateToastFnReturn } from '@chakra-ui/react';
 import { Product } from '../models/product.model';
 import { Service } from '../models/service.model';
 import { BookingPageParams } from '../models/pageParams.model';
 import { PaginationModel } from '../models/pagination.model';
+import { BookingMessage } from '../common/toastMessage/bookingMessage';
+import { OrderMessage } from '../common/toastMessage/orderMessage';
+import { CommonMessage } from '../common/toastMessage/commonMessage';
 
 export default class BookingStore {
   loadingInitial: boolean = false;
