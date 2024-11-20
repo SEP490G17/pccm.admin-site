@@ -105,10 +105,10 @@ export default class BookingStore {
       }
       if (res) {
         this.selectedOrder = res;
-        res.orderForProducts.map((product) =>
+        res.orderForProducts.forEach((product) =>
           this.selectedProductItems.set(product.productId, product.quantity),
         );
-        res.orderForServices.map((service) => this.selectedServiceItems.set(service.serviceId, 1));
+        res.orderForServices.forEach((service) => this.selectedServiceItems.set(service.serviceId, 1));
       }
       this.loadingOrder = false;
     });
@@ -116,8 +116,10 @@ export default class BookingStore {
 
   pushOrderForBooking = (order: OrderOfBooking) => {
     if (this.selectedBooking) {
-      this.selectedBooking.ordersOfBooking.push(order);
       this.orderOfBooking.push(order);
+      const booking = { ...this.selectedBooking };
+      booking.ordersOfBooking = this.orderOfBooking;
+      this.selectedBooking = booking;
     }
   };
 

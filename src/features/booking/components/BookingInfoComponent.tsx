@@ -20,7 +20,6 @@ const BookingInfoComponent = observer(() => {
   }
   const { bookingDetails } = booking;
   return (
-    <>
       <Grid templateColumns={'repeat(24, 1fr)'} className="min-h-[30rem]" gap={2}>
         <GridItem colSpan={3}>
           <Text fontSize={'xl'}>Họ và tên:</Text>
@@ -131,7 +130,6 @@ const BookingInfoComponent = observer(() => {
           </Flex>
         </GridItem>
       </Grid>
-    </>
   );
 });
 

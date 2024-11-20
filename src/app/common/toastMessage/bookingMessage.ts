@@ -46,6 +46,13 @@ export const DefaultBookingText = {
     title: 'Xác nhận lịch hoàn thành',
     description: { success: 'Xác nhận lịch hoàn thành thành công' },
   },
+
+  booking: {
+    title: 'Đặt lịch',
+    description: {
+      success: 'Đặt lịch thành công',
+    },
+  },
 };
 
 export const BookingMessage = {
@@ -102,8 +109,8 @@ export const BookingMessage = {
   }),
 
   acceptFailure: (
-    title: string = DefaultBookingText.accept.title,
     description: string,
+    title: string = DefaultBookingText.accept.title,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,
   ): UseToastOptions => ({
@@ -162,8 +169,8 @@ export const BookingMessage = {
     isClosable,
   }),
   completeFailure: (
-    title: string = DefaultBookingText.complete.title,
     description: string,
+    title: string = DefaultBookingText.complete.title,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,
   ): UseToastOptions => ({
@@ -194,6 +201,32 @@ export const BookingMessage = {
     title,
     description,
     status: 'error',
+    duration,
+    isClosable,
+  }),
+
+  bookingSuccess: (
+    title: string = DefaultBookingText.booking.title,
+    description: string = DefaultBookingText.booking.description.success,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'success',
+    duration,
+    isClosable,
+  }),
+
+  bookingFailure: (
+    description: string,
+    title: string = DefaultBookingText.booking.title,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'success',
     duration,
     isClosable,
   }),

@@ -10,7 +10,7 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import { useEffect, useRef } from 'react';
 import { isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
-import { Heading, Skeleton, useToast } from '@chakra-ui/react';
+import { createToastFn, Heading, Skeleton, useToast } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
@@ -158,32 +158,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
 
         args.cancel = true;
 
-        const pendingToast = toast({
-          title: 'Đang sư lý',
-          description: 'Đợi một chút',
-          status: 'loading',
-        });
-        await createBooking(bookingPost)
-          .then(() => {
-            toast.close(pendingToast);
-            toast({
-              title: 'Đặt lịch thành công',
-              description: 'Lịch đã được đặt thành công',
-              status: 'success',
-              duration: 5000,
-              isClosable: true,
-            });
-          })
-          .catch(() => {
-            toast({
-              title: 'Đặt lịch thất bại',
-              description: 'Đã xảy ra l��i khi đặt lịch',
-              status: 'error',
-              duration: 5000,
-              isClosable: true,
-            });
-            args.cancel = true;
-          });
+        await createBooking(bookingPost, toast);
       }
     }
   };

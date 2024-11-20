@@ -25,7 +25,7 @@ dayjs.extend(timezone);
 export default class BookingClusterStore {
   courtClusterId?: number;
   loadingSlot: boolean = false;
-  courtPrice: CourtPriceBooking[]= [];
+  courtPrice: CourtPriceBooking[] = [];
   // #region loading
   loadingBookingForSchedule: boolean = false;
   loadingInitial: boolean = false;
@@ -62,7 +62,7 @@ export default class BookingClusterStore {
   loadBookingForSchedule = async (toast: CreateToastFnReturn, selectedDate?: string) => {
     if (this.courtClusterId) {
       this.loadingBookingForSchedule = true;
-     
+
       const [error, res] = await catchErrorHandle<BookingModel[]>(
         agent.BookingAgent.getListForSchedule({
           courtClusterId: this.courtClusterId,
@@ -194,7 +194,7 @@ export default class BookingClusterStore {
         this.setBooking(mapBookingResponseToBookingModel(res));
       }
     });
-    return {err,res}
+    return { err, res };
   };
 
   completeBooking = async (id: number, toast: CreateToastFnReturn) => {
@@ -211,7 +211,7 @@ export default class BookingClusterStore {
         this.setBookingToday(this.convertBookingStartAndEndUTCToG7(res));
       }
     });
-    return {err, res}
+    return { err, res };
   };
 
   denyBooking = async (id: number, toast: CreateToastFnReturn) => {
@@ -229,8 +229,7 @@ export default class BookingClusterStore {
         this.setBookingAll(res);
       }
     });
-    return {err, res}
-
+    return { err, res };
   };
 
   cancelBooking = async (id: number, toast: CreateToastFnReturn) => {
@@ -249,20 +248,27 @@ export default class BookingClusterStore {
         this.setBookingCancel(res);
       }
     });
-    return {err, res}
-
+    return { err, res };
   };
 
-  createBooking = async (booking: BookingCreate) => {
-    const [, res] = await catchErrorHandle(agent.BookingAgent.create(booking));
+  createBooking = async (booking: BookingCreate, toast: CreateToastFnReturn) => {
+    const pendingToast = toast(CommonMessage.loadingMessage('Đặt lịch'));
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.create(booking));
     runInAction(() => {
+      toast.close(pendingToast);
+      if (err) {
+        toast(BookingMessage.bookingFailure(err?.response?.data));
+      }
+
       if (res) {
+        toast(BookingMessage.bookingSuccess());
         this.setBooking(res);
         const convert = mapBookingToBookingForList(res);
         this.setBookingToday(convert);
-        this.bookingAllRegistry.set(convert.id,convert);
+        this.bookingAllRegistry.set(convert.id, convert);
       }
     });
+    return { err, res };
   };
 
   updateTodayUrlBooking = (url: string, bookingId: number) => {
@@ -356,7 +362,7 @@ export default class BookingClusterStore {
     return Array.from(this.bookingAllRegistry.values());
   }
 
-  clearBookingForSchedule(){
+  clearBookingForSchedule() {
     this.bookingForScheduleRegistry.clear();
     this.bookingTodayRegistry.clear();
     this.bookingCancelRegistry.clear();
