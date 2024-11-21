@@ -21,12 +21,39 @@ import UserDetailPopUp from '@/features/user/UserDetailPopUp';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import { ResetPasswordDTO } from '@/app/models/user.model';
 import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 
 function UserTableComponents() {
   const { userStore, authStore } = useStore();
-  const { userArray, userPageParams,loadingInitial } = userStore;
+  const { userArray, userPageParams, loadingInitial } = userStore;
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [localStatuses, setLocalStatuses] = useState<LocalStatuses>({});
+  interface LocalStatuses {
+    [key: string]: boolean;
+  }
 
+  useEffect(() => {
+    setLocalStatuses(prevStatuses => {
+      const userStatuses = { ...prevStatuses };
+      for (const user of userArray) {
+        if (!(user.username in prevStatuses)) {
+          userStatuses[user.username] = user.lockoutEnabled;
+        }
+      }
+      return userStatuses;
+    });
+  }, [userArray]);
+
+  const handleChangeStatus = async (id: string, currentStatus: boolean) => {
+    const userStatus = currentStatus === true ? false : true;
+    setLocalStatuses(prevStatuses => ({ ...prevStatuses, [id]: userStatus }));
+
+    try {
+      await userStore.changeStatus(id, userStatus);
+    } catch {
+      setLocalStatuses(prevStatuses => ({ ...prevStatuses, [id]: currentStatus }));
+    }
+  };
 
   // const renderStatus = (status: string) => {
   //   let color = '';
@@ -69,7 +96,7 @@ function UserTableComponents() {
               <Th w={'10rem'}>Số điện thoại</Th>
               <Th w={'10rem'}>Ngày mở khóa</Th>
               <Th w={'10rem'}>Trạng thái</Th>
-              <Th w={'10rem'}>Kích hoạt</Th>
+              <Th w={'10rem'}>Khóa người dùng</Th>
               <Th w={'10rem'}>Tùy chọn</Th>
             </Tr>
           </Thead>
@@ -85,12 +112,26 @@ function UserTableComponents() {
                   <Td>{user.phoneNumber}</Td>
                   <Td>{user.lockoutEnd ? dayjs(user.lockoutEnd).format('DD/MM/YYYY') : ''}</Td>
                   <Td>
-                    <Box color={user.lockoutEnabled ? 'red' : 'var(--primary-color-600)'}>
-                      {user.lockoutEnabled ? 'Không hoạt động' : 'Hoạt động'}
+                    <Box color={user.isDisabled ? 'red' : 'var(--primary-color-600)'}>
+                      {user.isDisabled ? 'Không hoạt động' : 'Hoạt động'}
                     </Box>
                   </Td>
                   <Td>
-                    <Switch isChecked={!user.isDisabled} colorScheme={'blue'} />
+                    <Switch
+                      isChecked={localStatuses[user.username] === true}
+                      isDisabled={userStore.isLoading(user.username)}
+                      onChange={() => {
+                        const previousStatus = localStatuses[user.username];
+                        handleChangeStatus(user.username, localStatuses[user.username])
+                          .catch(() => {
+                            setLocalStatuses((prevStatuses) => {
+                              const updatedStatuses = { ...prevStatuses };
+                              updatedStatuses[user.username] = previousStatus;
+                              return updatedStatuses;
+                            });
+                          });
+                      }}
+                    />
                   </Td>
                   <Td>
                     <Flex direction={'row'} gap={'3'}>

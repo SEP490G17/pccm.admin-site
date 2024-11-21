@@ -242,6 +242,8 @@ const Users = {
   list: (queryParams: string = ''): Promise<PaginationModel<UserManager>> =>
     requests.get(`/user/${queryParams}`),
   details: (username: string): Promise<UserManager> => requests.get(`/user/${username}`),
+  changestatus: (username: string, status: boolean): Promise<UserManager> =>
+    requests.put(`/user/changestatus/${username}/${status}`, {}),
 };
 const Staffs = {
   list: (queryParams: string = ''): Promise<PaginationModel<Staff>> =>

@@ -4,6 +4,7 @@ import { PageParams } from '../models/pageParams.model';
 import agent from '../api/agent';
 import { catchErrorHandle } from '../helper/utils';
 import { toast } from 'react-toastify';
+import _ from 'lodash';
 
 export default class UserStore {
   userRegistry = new Map<string, UserManager>();
@@ -14,6 +15,7 @@ export default class UserStore {
   loadingCreateUserByStaff: boolean = false;
   userPageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
+  loadingStatusMap = new Map<string, boolean>();
 
   constructor() {
     makeAutoObservable(this);
@@ -67,10 +69,12 @@ export default class UserStore {
     this.loadingCreateUserByStaff = true;
     try {
       runInAction(() => {
-        agent.Account.createUserByStaff(data).then((s) => {
-          this.setUser(s);
-          toast.success('Tạo người dùng thành công');
-        });
+        agent.Account.createUserByStaff(data)
+          .then((s) => {
+            this.setUser(s);
+            toast.success('Tạo người dùng thành công');
+          })
+          .catch((error: any) => toast.error(error[0]));
       });
     } catch (error) {
       runInAction(() => {
@@ -79,6 +83,23 @@ export default class UserStore {
     } finally {
       this.loadingCreateUserByStaff = false;
     }
+  };
+
+  changeStatus = async (username: string, status: boolean) => {
+    this.setLoadingStatus(username, true);
+    await runInAction(async () => {
+      await agent.Users.changestatus(username, status)
+        .then((s) => {
+          this.setUser(s);
+          toast.success('Cập nhật người dùng thành công');
+        })
+        .catch((error) => {
+          console.error('Error creating product:', error);
+          toast.error('Cập nhật người dùng thất bại');
+          throw error;
+        })
+        .finally(() => this.setLoadingStatus(username, false));
+    });
   };
 
   setLoadingInitial = (load: boolean) => {
@@ -132,8 +153,16 @@ export default class UserStore {
     });
   };
 
+  setLoadingStatus(username: string, isLoading: boolean) {
+    this.loadingStatusMap.set(username, isLoading);
+  }
+
+  isLoading(username: string) {
+    return this.loadingStatusMap.get(username);
+  }
+
   get userArray() {
-    return Array.from(this.userRegistry.values());
+    return _.orderBy(Array.from(this.userRegistry.values()), ['id'], ['desc']);
   }
 
   //#region toggle user activation
