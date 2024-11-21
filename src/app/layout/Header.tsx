@@ -4,14 +4,8 @@ import defaultUserIcon from '@/assets/defaultUser.png';
 import { useStore } from '../stores/store';
 import { observer } from 'mobx-react-lite';
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from 'react-icons/ai';
-import { useEffect } from 'react';
 const Header = observer(() => {
-  const { commonStore, authStore } = useStore();
-  useEffect(() => {
-    if (!authStore.userApp) {
-      authStore.getUser();
-    }
-  }, [authStore]);
+  const { commonStore} = useStore();
   return (
     <>
       <Button

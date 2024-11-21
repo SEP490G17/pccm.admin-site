@@ -7,6 +7,7 @@ import {
   BookingModel,
   BookingStatus,
   CourtPriceBooking,
+  IBookingWithCombo,
   mapBookingResponseToBookingModel,
   mapBookingToBookingForList,
 } from '../models/booking.model';
@@ -84,14 +85,14 @@ export default class BookingClusterStore {
       });
     }
   };
-  loadBookingCancel = async (toast: CreateToastFnReturn) => {
+  loadBookingDeny = async (toast: CreateToastFnReturn) => {
     if (this.courtClusterId) {
       this.loadingBookingCancel = true;
       const queryParams = new URLSearchParams();
       queryParams.append('skip', `${this.bookingCancelPageParam.skip}`);
       queryParams.append('pageSize', `${this.bookingCancelPageParam.pageSize}`);
       queryParams.append('courtClusterId', `${this.courtClusterId}`);
-      queryParams.append('status', `${BookingStatus.Cancelled}`);
+      queryParams.append('status', `${BookingStatus.Declined}`);
       if (this.bookingCancelPageParam.searchTerm) {
         queryParams.append('search', this.bookingCancelPageParam.searchTerm);
       }
@@ -280,7 +281,7 @@ export default class BookingClusterStore {
     }
   };
 
-  private setBooking(booking: BookingModel) {
+  setBooking(booking: BookingModel) {
     booking.startTime = dayjs(booking.startTime).format('YYYY-MM-DDTHH:mm:ss[Z]');
     booking.endTime = dayjs(booking.endTime).format('YYYY-MM-DDTHH:mm:ss[Z]');
     if (booking.recurrenceRule) {
@@ -289,7 +290,7 @@ export default class BookingClusterStore {
     this.bookingForScheduleRegistry.set(booking.id, booking);
   }
 
-  private setBookingToday = (booking: BookingForList) => {
+  setBookingToday = (booking: BookingForList) => {
     const today = dayjs().tz('Asia/Ho_Chi_Minh').startOf('day'); // Ngày hôm nay theo GMT+7
     const bookingStartTime = dayjs(booking.startDay, 'DD/MM/YYYY')
       .tz('Asia/Ho_Chi_Minh')
@@ -308,14 +309,14 @@ export default class BookingClusterStore {
     }
   };
 
-  private setBookingPending = (booking: BookingForList) => {
+  setBookingPending = (booking: BookingForList) => {
     this.bookingPendingRegistry.set(booking.id, this.convertBookingStartAndEndUTCToG7(booking));
   };
-  private setBookingCancel = (booking: BookingForList) => {
+  setBookingCancel = (booking: BookingForList) => {
     this.bookingCancelRegistry.set(booking.id, this.convertBookingStartAndEndUTCToG7(booking));
   };
 
-  private setBookingAll = (booking: BookingForList) => {
+  setBookingAll = (booking: BookingForList) => {
     this.bookingAllRegistry.set(booking.id, this.convertBookingStartAndEndUTCToG7(booking));
   };
 
@@ -369,4 +370,21 @@ export default class BookingClusterStore {
     this.bookingAllRegistry.clear();
     this.bookingForScheduleRegistry.clear();
   }
+
+  bookingWithCombo = async (booking: IBookingWithCombo) => {
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.bookingWithCombo(booking));
+    runInAction(() => {
+      if (err) {
+        alert(err);
+      }
+
+      if (res) {
+        alert("success")
+        this.setBooking(res);
+        const convert = mapBookingToBookingForList(res);
+        this.setBookingToday(convert);
+        this.bookingAllRegistry.set(convert.id, convert);
+      }
+    });
+  };
 }

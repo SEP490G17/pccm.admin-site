@@ -6,10 +6,9 @@ const CourtClusterDescriptionTab = observer(() => {
   const { courtClusterStore } = useStore();
   const { selectedCourtCluster: selectedCourt } = courtClusterStore;
   return (
-    <>
-      <Skeleton minHeight={'300rem'} isLoaded={!courtClusterStore.loadingInitialDetailsPage}>
+      <Skeleton width={'100%'} minHeight={'300rem'} isLoaded={!courtClusterStore.loadingInitialDetailsPage}>
         {selectedCourt && (
-          <Card size={'md'}>
+          <Card size={'lg'}>
             <CardHeader>
               <Center>
                 <Heading size="xl">Thông tin về {selectedCourt.title}</Heading>
@@ -27,7 +26,6 @@ const CourtClusterDescriptionTab = observer(() => {
           </Card>
         )}
       </Skeleton>
-    </>
   );
 });
 

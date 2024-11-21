@@ -80,11 +80,12 @@ export default class CourtManagerStore {
     courtCombos: CourtCombo[],
     toast: CreateToastFnReturn,
   ) => {
-    toast(CommonMessage.loadingMessage(DefaultCourtText.updateCourtPrice.title));
+    const pending = toast(CommonMessage.loadingMessage(DefaultCourtText.updateCourtPrice.title));
     const [err, res] = await catchErrorHandle(
       agent.CourtAgent.updateCourtCombo(courtId, courtCombos),
     );
     runInAction(() => {
+      toast.close(pending);
       if (err) {
         toast(CourtMessage.updateCourtCombosFailure());
       }

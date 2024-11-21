@@ -109,16 +109,21 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => 
   }
   if (booking.status === BookingStatus.Declined) {
     return (
-      <Tag
-        size={'lg'}
-        className="w-full h-10 items-center flex justify-center"
-        variant="subtle"
-        colorScheme="red"
-        gap={2}
-      >
-        <TagLabel>Đã từ chối</TagLabel>
-        <TagLeftIcon boxSize="12px" as={CloseIcon} color={'red.800'} />
-      </Tag>
+      <>
+        <Button colorScheme="blue" className="w-28" onClick={handleAccepted}>
+          Xác thực lại
+        </Button>
+        <Tag
+          size={'lg'}
+          className="w-28 h-10 items-center flex justify-center"
+          variant="subtle"
+          colorScheme="red"
+          gap={2}
+        >
+          <TagLabel>Đã từ chối</TagLabel>
+          <TagLeftIcon boxSize="12px" as={CloseIcon} color={'red.800'} />
+        </Tag>
+      </>
     );
   }
 });

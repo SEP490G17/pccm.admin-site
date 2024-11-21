@@ -15,7 +15,6 @@ import {
   CourtManagerResponse,
   CourtPriceResponse,
 } from '../models/court.model';
-import { sleep } from '../helper/utils';
 import { Service, ServiceDTO, ServiceEditDTO, ServiceLog } from '../models/service.model';
 import { Product, ProductInput, ProductLog } from '../models/product.model';
 import { StaffInputDTO, StaffPosition } from '../models/role.model';
@@ -43,6 +42,7 @@ import {
   BookingModel,
   BookingRecent,
   CourtPriceBooking,
+  IBookingWithCombo,
 } from '../models/booking.model';
 import { PaymentType } from '../models/payment.model';
 import { OrderModel, OrderOfBooking } from '../models/order.model';
@@ -58,7 +58,6 @@ axios.interceptors.request.use((config) => {
 });
 axios.interceptors.response.use(
   async (response) => {
-    await sleep(500);
     return response;
   },
   (error: AxiosError) => {
@@ -209,10 +208,13 @@ const CourtClusterAgent = {
     requests.post(`/courtCluster`, court),
   update: (court: CourtCluster): Promise<void> => requests.put(`/courtCluster/${court.id}`, court),
   delete: (id: number): Promise<void> => requests.del(`/courtCluster/${id}`),
-  list: (query:string): Promise<PaginationModel<CourtCluster>> => requests.get(`/courtCluster${query}`),
-
+  list: (query: string): Promise<PaginationModel<CourtCluster>> =>
+    requests.get(`/courtCluster${query}`),
   edit: (id: number, courtCluster: CourtCluster) =>
     requests.put(`/courtCluster/${id}`, courtCluster),
+
+  visible: (id: number, visible: boolean) =>
+    requests.put(`/courtCluster/visible/${id}?isVisible=${visible}`, {}),
 };
 const CourtAgent = {
   list: (id: number): Promise<Court[]> => requests.get(`/court/list?filter=${id}`),
@@ -267,6 +269,9 @@ const BookingAgent = {
   exportBill: (courtClusterId: number): Promise<any> =>
     requests.get(`/bill/billbooking/${courtClusterId}`),
   exportBillOrder: (orderId: number): Promise<any> => requests.get(`/bill/billorder/${orderId}`),
+
+  bookingWithCombo: (bookingWithCombo: IBookingWithCombo): Promise<any> =>
+    requests.post(`/booking/combo`, bookingWithCombo),
 };
 
 const PaymentAgent = {

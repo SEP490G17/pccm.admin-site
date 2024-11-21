@@ -11,7 +11,6 @@ interface BookingGridItemAtomProps {
 
 const BookingGridItemAtom: FC<BookingGridItemAtomProps> = ({ bookingToday, index }) => {
   return (
-    <>
       <Grid
         templateColumns={'repeat(24,1fr)'}
         className="p-4 rounded-lg cursor-pointer"
@@ -48,7 +47,6 @@ const BookingGridItemAtom: FC<BookingGridItemAtomProps> = ({ bookingToday, index
           <BookingButtonAtom booking={bookingToday} />
         </GridItem>
       </Grid>
-    </>
   );
 };
 

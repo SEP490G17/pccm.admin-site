@@ -164,18 +164,52 @@ export default class CourtClusterStore {
   };
   // 2. Get Details court cluster for admin
 
-  getDetailsCourtCluster = async (id: string, chakraToast: any) => {
+  getDetailsCourtCluster = async (id: string, chakraToast: CreateToastFnReturn) => {
     this.loadingInitialDetailsPage = true;
     const [error, response] = await catchErrorHandle<CourtCluster>(
       agent.CourtClusterAgent.details(id),
     );
     runInAction(() => {
       if (error) {
-        chakraToast(CourtClusterMessage.loadDetailsFail);
+        chakraToast(CourtClusterMessage.loadDetailsFail());
       } else {
         this.selectedCourtCluster = response;
       }
       this.loadingInitialDetailsPage = false;
+    });
+  };
+
+  deleteCourtCluster = async (id: number, toast: CreateToastFnReturn) => {
+    const pending = toast(CommonMessage.loadingMessage(DefaultCourtClusterText.delete.title));
+    const [err, res] = await catchErrorHandle(agent.CourtClusterAgent.delete(id));
+    runInAction(() => {
+      toast.close(pending);
+      if (err) {
+        toast(CourtClusterMessage.deleteFailure());
+      }
+      if (res) {
+        toast(CourtClusterMessage.deleteSuccess());
+        this.courtClusterRegistry.delete(id);
+      }
+    });
+  };
+
+  visibleToggle = async (id: number, isVisible: boolean, toast: CreateToastFnReturn) => {
+    const pending = toast(CommonMessage.loadingMessage(DefaultCourtClusterText.visible.title));
+    const [err, res] = await catchErrorHandle(agent.CourtClusterAgent.visible(id, !isVisible));
+    runInAction(() => {
+      toast.close(pending);
+      if (err) {
+        toast(CourtClusterMessage.visibleFailure());
+      }
+      if (res) {
+        toast(CourtClusterMessage.visibleSuccess());
+        const courtCluster = this.courtClusterRegistry.get(id);
+        if (courtCluster) {
+          courtCluster.isVisible = !isVisible;
+          this.courtClusterRegistry.set(id, courtCluster);
+        }
+      }
     });
   };
   //#endregion

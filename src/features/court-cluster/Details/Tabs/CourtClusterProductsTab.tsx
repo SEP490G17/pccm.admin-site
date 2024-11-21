@@ -9,13 +9,16 @@ interface IProps{
 }
 const CourtClusterProductsTab = observer(({courtClusterId}:IProps) => {
     const {courtClusterStore, categoryStore} = useStore();
+
     const {
         loadProductsOfCourtCluster,
         productOfCourtClusterArray,
         productOfClusterRegistry,
         loadingProductsPage
     } = courtClusterStore;
+
     const {loadCategories} = categoryStore; 
+    
     useEffect(() => {
         loadCategories();
         if (productOfClusterRegistry.size <=1) {

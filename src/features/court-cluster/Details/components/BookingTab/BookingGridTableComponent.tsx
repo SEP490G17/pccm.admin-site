@@ -32,8 +32,8 @@ const BookingGridTableComponent: FC<BookingGridTableComponentProps> = ({bookingA
         </GridItem>
         <GridItem colSpan={4}>Hành động</GridItem>
       </Grid>
-      {bookingArray &&
-        bookingArray.map((bookingToday, index) => {
+      {
+        bookingArray?.map((bookingToday, index) => {
           return (
             <BookingGridItemAtom
               bookingToday={bookingToday}

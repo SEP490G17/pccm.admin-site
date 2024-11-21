@@ -48,8 +48,8 @@ const CategoryTableComponent: React.FC<CategoryTableProps> = ({
                 {loadingInitial ? (
                     <SkeletonTableAtoms numOfColumn={3} pageSize={5} />
                 ) : categoryArray.length > 0 ? (
-                    categoryArray.map((category) => (
-                        <Tr key={category.id}>
+                    categoryArray.map((category, index) => (
+                        <Tr key={index}>
                             <Td>{category.id}</Td>
                             <Td>
                                 {editId === category.id ? (
@@ -82,20 +82,6 @@ const CategoryTableComponent: React.FC<CategoryTableProps> = ({
                                         <FaEdit />
                                     </Button>
                                 )}
-                                <DeleteButtonAtom
-                                    buttonSize={'sm'}
-                                    name={category.categoryName}
-                                    header="Xóa thể loại"
-                                    loading={false} 
-                                    buttonClassName={'gap-2'}
-                                    onDelete={async () => {
-                                        try {
-                                            await onDelete(category.id);  
-                                        } catch {
-                                            toast.error("Xóa thất bại");
-                                        }
-                                    }}
-                                />
                             </Td>
                         </Tr>
                     ))

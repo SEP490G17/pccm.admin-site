@@ -7,12 +7,18 @@ import { useStore } from '../stores/store';
 import { observer } from 'mobx-react-lite';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { registerLicense } from "@syncfusion/ej2-base";
+import { useEffect } from 'react';
 registerLicense(
  "ORg4AjUWIQA/Gnt2UlhhQlVMfV5DQmFAYVF2R2dJflx6dl1MY15BNQtUQF1hTX9TdUVjWn9XcHVRQ2lc"
 );
 const App = observer(() => {
   const { authStore, commonStore } = useStore();
-
+  useEffect(() => {
+    if (!authStore.userApp) {
+      authStore.getUser();
+    }
+  }, [authStore]);
+  if(!authStore.userApp) return;
   return (
     <>
       <ToastContainer position="bottom-center" hideProgressBar theme="colored" transition={Slide}/>

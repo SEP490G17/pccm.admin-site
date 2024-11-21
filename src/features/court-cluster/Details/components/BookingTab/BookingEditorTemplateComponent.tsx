@@ -14,9 +14,8 @@ import { DateTimePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
-import { CourtPriceBooking } from '@/app/models/booking.model';
 import { useState } from 'react';
-
+import { CourtPrice } from '@/app/models/court.model';
 const BookingEditorTemplateComponent = observer((props: any) => {
   const { courtClusterStore } = useStore();
 
@@ -29,28 +28,8 @@ const BookingEditorTemplateComponent = observer((props: any) => {
 
   const [selectedCourtId, setSelectedCourtId] = useState(court[0].courtId);
 
-  const filteredPrices = props.prices.filter(
-    (price: CourtPriceBooking) => price.courtId === selectedCourtId,
-  );
-
-  const recurrence = [
-    {
-      value: 0,
-      label: 'Không',
-    },
-    {
-      value: 1,
-      label: 'Gói 1 tháng',
-    },
-    {
-      value: 2,
-      label: 'Gói 1 quý',
-    },
-    {
-      value: 3,
-      label: 'Gói 1 năm',
-    },
-  ];
+  const filteredPrices =
+    courtClusterStore.courtOfClusterRegistry.get(selectedCourtId)?.courtPrices ?? [];
   return (
     <>
       <Grid templateColumns={'repeat(8,1fr)'} columnGap={5} rowGap={8} className="mt-4">
@@ -77,6 +56,21 @@ const BookingEditorTemplateComponent = observer((props: any) => {
             required
           />
         </GridItem>
+        {props.courtId && (
+          <GridItem colSpan={8}>
+            <label>Chọn sân</label>
+            <DropDownListComponent
+              id="courtId"
+              name="courtId"
+              value={props.courtId}
+              dataSource={court}
+              fields={{ text: 'courtName', value: 'courtId' }}
+              placeholder="Chọn Sân"
+              className="e-field"
+              onChange={(e: any) => setSelectedCourtId(e.value)}
+            />
+          </GridItem>
+        )}
 
         <GridItem colSpan={4}>
           <label id="label_StartTime" htmlFor="StartTime">
@@ -105,33 +99,6 @@ const BookingEditorTemplateComponent = observer((props: any) => {
             step={30}
           ></DateTimePickerComponent>
         </GridItem>
-        {props.courtId && (
-          <GridItem colSpan={4}>
-            <label>Chọn sân</label>
-            <DropDownListComponent
-              id="courtId"
-              name="courtId"
-              value={props.courtId}
-              dataSource={court}
-              fields={{ text: 'courtName', value: 'courtId' }}
-              placeholder="Chọn Sân"
-              className="e-field"
-              onChange={(e: any) => setSelectedCourtId(e.value)}
-            />
-          </GridItem>
-        )}
-        <GridItem colSpan={4}>
-          <label>Gói combo: </label>
-          <DropDownListComponent
-            id="recurrence"
-            name="recurrence"
-            value={0}
-            dataSource={recurrence}
-            fields={{ text: 'label', value: 'value' }}
-            placeholder="Chọn gói combo"
-            className="e-field"
-          />
-        </GridItem>
       </Grid>
       <Box mt={4}>
         <Box mt={4}>
@@ -145,18 +112,19 @@ const BookingEditorTemplateComponent = observer((props: any) => {
                 </Tr>
               </Thead>
               <Tbody>
-                {filteredPrices &&
-                  filteredPrices.map((price: CourtPriceBooking) => (
-                    <Tr key={`${price.courtId}-${price.time}`}>
-                      <Td>{price.time}</Td>
-                      <Td>
-                        {price.price.toLocaleString('vi-VN', {
-                          style: 'currency',
-                          currency: 'VND',
-                        })}
-                      </Td>
-                    </Tr>
-                  ))}
+                {filteredPrices?.map((price: CourtPrice) => (
+                  <Tr key={`${price.toTime}`}>
+                    <Td>
+                      {price.fromTime.slice(0, 5)} - {price.toTime.slice(0, 5)}
+                    </Td>
+                    <Td>
+                      {price.price.toLocaleString('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND',
+                      })}
+                    </Td>
+                  </Tr>
+                ))}
               </Tbody>
             </Table>
           </TableContainer>

@@ -30,7 +30,7 @@ export default class AuthStore {
         } else {
           store.commonStore.setTokenSession(res.token);
         }
-
+        store.commonStore.setUserApp(res);
         this.userApp = res;
         router.navigate('/');
       }

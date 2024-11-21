@@ -35,17 +35,17 @@ const CourtClusterDetailsPage = observer(() => {
                     <Tab >Dịch vụ</Tab>
                 </TabList>
 
-                <TabPanels  minHeight={'50rem'}>
-                    <TabPanel>
+                <TabPanels className="mt-8" minHeight={'50rem'}>
+                    <TabPanel p={0}>
                         {selectedTabs === 0 && <CourtClusterDescriptionTab />}
                     </TabPanel>
-                    <TabPanel>
+                    <TabPanel >
                         {selectedTabs === 1 && <CourtClusterBookingTab courtClusterId={Number(id)}/>}
                     </TabPanel>
-                    <TabPanel>
+                    <TabPanel p={0}>
                         {selectedTabs === 2 && id &&<CourtClusterProductsTab courtClusterId={Number(id)} />}
                     </TabPanel>
-                    <TabPanel>
+                    <TabPanel p={0}>
                         {selectedTabs === 3 && id &&<CourtClusterServicesTab courtClusterId={Number(id)} />}
                     </TabPanel>
                 </TabPanels>

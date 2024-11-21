@@ -13,7 +13,6 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { MdPriceChange } from 'react-icons/md';
 import { Form, Formik, FormikProps } from 'formik';
 import * as Yup from 'yup';
 import { observer } from 'mobx-react';

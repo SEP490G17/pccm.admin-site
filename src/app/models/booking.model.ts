@@ -176,3 +176,26 @@ export const getBookingStatusColor = (status: number): ThemeTypings['colorScheme
       return 'blackAlpha';
   }
 };
+
+
+export interface IBookingWithCombo
+{
+  fullName: string,
+  phoneNumber: string,
+  courtId: number,
+  fromDate: Date,
+  comboId: number,
+  fromTime: string,
+  toTime: string,
+}
+
+export class BookingWithCombo implements IBookingWithCombo{
+  fullName: string = '';
+  phoneNumber: string = '';
+  courtId: number = 0;
+  fromDate = new Date();
+  comboId: number = 0;
+  fromTime: string = '';
+  toTime: string = '';
+
+}
