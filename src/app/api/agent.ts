@@ -3,7 +3,13 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { router } from '../router/Routes';
 import { store } from '../stores/store';
 import { toast } from 'react-toastify';
-import { User, UserFormValues, UserManager } from '../models/user.model';
+import {
+  CreateUserDTO,
+  ResetPasswordDTO,
+  User,
+  UserFormValues,
+  UserManager,
+} from '../models/user.model';
 import { News, NewsDTO } from '../models/news.models';
 import { Banner, BannerDTO } from '../models/banner.model';
 import {
@@ -240,16 +246,22 @@ const Account = {
   current: () => requests.get<User>('/account'),
   login: (user: UserFormValues) => requests.post<User>('/account/login', user),
   register: (user: UserFormValues) => requests.post<User>('/account/register', user),
+  resetPassword: (email: ResetPasswordDTO) => requests.post<any>('/account/reset-password', email),
+  createUserByStaff: (data: CreateUserDTO) =>
+    requests.post<UserManager>('/account/registerByStaff', data),
 };
 
 const Users = {
   list: (queryParams: string = ''): Promise<PaginationModel<UserManager>> =>
-    requests.get(`/user${queryParams}`),
-  details: (userId: string): Promise<UserManager> => requests.get(`/user/details/${userId}`),
+    requests.get(`/user/${queryParams}`),
+  details: (username: string): Promise<UserManager> => requests.get(`/user/${username}`),
+  changestatus: (username: string, status: boolean): Promise<UserManager> =>
+    requests.put(`/user/changestatus/${username}/${status}`, {}),
 };
 const Staffs = {
   list: (queryParams: string = ''): Promise<PaginationModel<Staff>> =>
     requests.get(`/staff/${queryParams}`),
+  details: (staffId: number): Promise<Staff> => requests.get(`/staff/${staffId}`),
 };
 
 const BookingAgent = {

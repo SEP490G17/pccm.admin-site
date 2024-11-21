@@ -46,6 +46,24 @@ export default class StaffStore {
       });
     });
   };
+
+  detailStaff = async (staffId: number) => {
+    this.loading = true;
+    try {
+      const data = await agent.Staffs.details(staffId);
+      runInAction(() => {
+        this.selectedStaff = data;
+        this.loading = false;
+      });
+      return data;
+    } catch (error) {
+      runInAction(() => {
+        this.loading = false;
+        console.error('Error creating news:', error);
+      });
+    }
+  };
+
   //#region mock-up
   mockLoadStaffs = async () => {
     this.loading = true;
