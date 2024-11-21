@@ -1,7 +1,7 @@
 import { Banner, BannerDTO } from './../models/banner.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
-import { PageParams } from '../models/pageParams.model';
+import { BannerPageParams } from '../models/pageParams.model';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
 import { catchErrorHandle, customFormatDate } from '../helper/utils';
@@ -10,7 +10,7 @@ export default class BannerStore {
   selectedBanner: Banner | undefined = undefined;
   loading: boolean = false;
   loadingInitial: boolean = false;
-  bannerPageParams = new PageParams();
+  bannerPageParams = new BannerPageParams();
   cleanupInterval: number | undefined = undefined;
   isOrigin: boolean = true;
   loadingEdit: boolean = false;
@@ -28,6 +28,12 @@ export default class BannerStore {
     queryParams.append('pageSize', `${this.bannerPageParams.pageSize}`);
     if (this.bannerPageParams.searchTerm) {
       queryParams.append('search', this.bannerPageParams.searchTerm);
+    }
+    if (this.bannerPageParams.category) {
+      queryParams.append('category', `${this.bannerPageParams.category}`);
+    }
+    if (this.bannerPageParams.status) {
+      queryParams.append('status', `${this.bannerPageParams.status}`);
     }
     const [err, res] = await catchErrorHandle(agent.Banners.list(`?${queryParams.toString()}`));
     runInAction(() => {
@@ -50,7 +56,6 @@ export default class BannerStore {
     await runInAction(async () => {
       await agent.Banners.create(banner)
         .then((s) => {
-          this.loading = false;
           this.setBanner(s);
           toast.success('Tạo banner thành công');
         })
@@ -210,6 +215,28 @@ export default class BannerStore {
     banner.startDate = customFormatDate(new Date(banner.startDate));
     banner.endDate = customFormatDate(new Date(banner.endDate));
     this.bannerRegistry.set(banner.id, banner);
+  };
+
+  setStatusTerm = async (term: string) => {
+    await runInAction(async () => {
+      this.loadingInitial = true;
+      this.bannerRegistry.clear();
+      this.bannerPageParams.clearLazyPage();
+      this.bannerPageParams.status = term;
+      await this.loadBanners();
+      this.loadingInitial = false;
+    });
+  };
+
+  setCategoryTerm = async (term: string) => {
+    await runInAction(async () => {
+      this.loadingInitial = true;
+      this.bannerRegistry.clear();
+      this.bannerPageParams.clearLazyPage();
+      this.bannerPageParams.category = term;
+      await this.loadBanners();
+      this.loadingInitial = false;
+    });
   };
 
   get bannersArray() {

@@ -18,7 +18,7 @@ import {
 import { sleep } from '../helper/utils';
 import { Service, ServiceDTO, ServiceEditDTO, ServiceLog } from '../models/service.model';
 import { Product, ProductInput, ProductLog } from '../models/product.model';
-import { StaffPosition } from '../models/role.model';
+import { StaffInputDTO, StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
 import { Staff } from '../models/staff.model';
@@ -34,6 +34,7 @@ import {
   ExpenseDetailsDTO,
   ExpenseDto,
   FilterCourtClusterStatisticDetailsDTO,
+  RevenueDetails,
 } from '../models/revenue.models';
 import {
   BookingCreate,
@@ -162,6 +163,8 @@ const Revenue = {
   years: (): Promise<number[]> => requests.get(`/statistic/years`),
   count: (): Promise<DataTotal> => requests.get(`/statistic/count`),
   saveExpense: (data: ExpenseDetailsDTO): Promise<ExpenseDto> => requests.post(`/statistic`, data),
+  saveRevenue: (data: RevenueDetails): Promise<any> =>
+    requests.post(`/statistic/SaveRevenue`, data),
   exportExcel: (filterData: FilterCourtClusterStatisticDetailsDTO): Promise<any> =>
     requests.get(
       `/statistic/ExportExcel?date=${filterData.date}&clusterId=${filterData.courtClusterId}`,
@@ -170,6 +173,8 @@ const Revenue = {
 
 const StaffPositions = {
   list: (): Promise<StaffPosition[]> => requests.get(`/staffPosition`),
+  update: (data: StaffInputDTO[]): Promise<string[]> => requests.post(`/staffPosition`, data),
+  applyAll: (): Promise<StaffPosition[]> => requests.get(`/staffPosition/applyToAll`),
 };
 
 const Roles = {
@@ -241,7 +246,8 @@ const Users = {
   details: (userId: string): Promise<UserManager> => requests.get(`/user/details/${userId}`),
 };
 const Staffs = {
-  list: (): Promise<PaginationModel<Staff>> => requests.get('/staff'),
+  list: (queryParams: string = ''): Promise<PaginationModel<Staff>> =>
+    requests.get(`/staff/${queryParams}`),
 };
 
 const BookingAgent = {

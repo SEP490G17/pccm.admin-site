@@ -31,6 +31,9 @@ export default class NewsStore {
     if (this.newsPageParams.searchTerm) {
       queryParams.append('search', this.newsPageParams.searchTerm);
     }
+    if (this.newsPageParams.filter) {
+      queryParams.append('filter', this.newsPageParams.filter);
+    }
     const [err, res] = await catchErrorHandle(agent.NewsAgent.list(`?${queryParams.toString()}`));
 
     runInAction(() => {
@@ -163,6 +166,18 @@ export default class NewsStore {
       this.newsRegistry.clear();
       this.newsPageParams.clearLazyPage();
       this.newsPageParams.searchTerm = term;
+      await this.loadNews();
+      this.loadingInitial = false;
+    });
+    console.groupEnd();
+  };
+
+  setFilterTerm = async (term: string) => {
+    await runInAction(async () => {
+      this.loadingInitial = true;
+      this.newsRegistry.clear();
+      this.newsPageParams.clearLazyPage();
+      this.newsPageParams.filter = term;
       await this.loadNews();
       this.loadingInitial = false;
     });

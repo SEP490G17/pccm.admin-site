@@ -19,7 +19,11 @@ const NewsPage = observer(() => {
   const { loadNews, newsPageParams, setLoadingInitial, newsRegistry, loading, setSearchTerm } =
     newsStore;
   const [isPending, setIsPending] = useState(false);
-
+  const optionType = [
+    { value: -1, label: 'Tất cả' },
+    { value: 1, label: 'Hiển thị' },
+    { value: 0, label: 'Không hiển thị' },
+  ]
   useEffect(() => {
     if (newsRegistry.size <= 1) {
       setLoadingInitial(true);
@@ -71,13 +75,19 @@ const NewsPage = observer(() => {
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex gap="30px" alignItems="center">
           <Select
-            options={[
-              { value: 0, label: 'Tất cả' },
-              { value: 1, label: 'Hiển thị' },
-              { value: 2, label: 'Không hiển thị' },
-            ]}
+            options={optionType}
             placeholder="Trạng thái"
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+            onChange={async (e) => {
+              if (e) {
+                await newsStore.setFilterTerm(e.value.toString());
+              }
+            }}
+            defaultValue={{
+              value: newsPageParams.filter ?? -1,
+              label:
+              optionType.find(option => option.value.toString() === newsPageParams.filter)?.label ?? 'Tất cả',
+          }}
           ></Select>
         </Flex>
 

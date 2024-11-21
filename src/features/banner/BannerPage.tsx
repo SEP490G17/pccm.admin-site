@@ -18,7 +18,16 @@ const BannerPage = observer(() => {
   const { loadBanners, bannerPageParams, bannerRegistry, loading, setLoadingInitial } = bannerStore;
 
   const [isPending, setIsPending] = useState(false);
-
+  const optionStatus = [
+    { value: -1, label: 'Tất cả' },
+    { value: 1, label: 'Hiển thị' },
+    { value: 0, label: 'Không hiển thị' },
+  ]
+  const optionType = [
+    { value: -1, label: 'Tất cả' },
+    { value: 0, label: 'Banner' },
+    { value: 1, label: 'Sự kiện' },
+  ]
   useEffect(() => {
     if (bannerRegistry.size <= 1) {
       setLoadingInitial(true);
@@ -72,22 +81,34 @@ const BannerPage = observer(() => {
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
         <Flex alignItems="center" gap={30}>
           <Select
-            options={[
-              { value: 0, label: 'Tất cả' },
-              { value: 1, label: 'Banner' },
-              { value: 2, label: 'Sự kiện' },
-            ]}
+            options={optionType}
             placeholder="Thể loại"
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+            onChange={async (e) => {
+              if (e) {
+                await bannerStore.setCategoryTerm(e.value.toString());
+              }
+            }}
+            defaultValue={{
+              value: bannerPageParams.category ?? -1,
+              label:
+                optionType.find(option => option.value.toString() === bannerPageParams.status)?.label ?? 'Tất cả',
+            }}
           ></Select>
           <Select
-            options={[
-              { value: 0, label: 'Tất cả' },
-              { value: 1, label: 'Hiển thị' },
-              { value: 2, label: 'Không hiển thị' },
-            ]}
+            options={optionStatus}
             placeholder="Trạng thái"
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+            onChange={async (e) => {
+              if (e) {
+                await bannerStore.setStatusTerm(e.value.toString());
+              }
+            }}
+            defaultValue={{
+              value: bannerPageParams.status ?? -1,
+              label:
+                optionStatus.find(option => option.value.toString() === bannerPageParams.status)?.label ?? 'Tất cả',
+            }}
           ></Select>
         </Flex>
 
