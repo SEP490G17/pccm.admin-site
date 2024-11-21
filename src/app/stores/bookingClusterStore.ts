@@ -371,15 +371,18 @@ export default class BookingClusterStore {
     this.bookingForScheduleRegistry.clear();
   }
 
-  bookingWithCombo = async (booking: IBookingWithCombo) => {
+  bookingWithCombo = async (booking: IBookingWithCombo, toast:CreateToastFnReturn) => {
+    const pending  =toast(CommonMessage.loadingMessage(DefaultBookingText.booking.title));
     const [err, res] = await catchErrorHandle(agent.BookingAgent.bookingWithCombo(booking));
     runInAction(() => {
+      toast.close(pending);
       if (err) {
-        alert(err);
+        toast(BookingMessage.bookingFailure(err?.response?.data));
+        return;
       }
 
       if (res) {
-        alert("success")
+        toast(BookingMessage.bookingSuccess());
         this.setBooking(res);
         const convert = mapBookingToBookingForList(res);
         this.setBookingToday(convert);
