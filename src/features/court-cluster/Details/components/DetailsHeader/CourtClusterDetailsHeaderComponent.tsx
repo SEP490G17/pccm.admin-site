@@ -31,18 +31,27 @@ const CourtClusterDetailsHeaderComponent = observer(() => {
           <PageHeadingAtoms
             breadCrumb={[
               { title: 'Cụm sân', to: '/cum-san' },
-              { title: `Chi tiết cụm ${selectedCourtCluster.title}`, to: `/cum-san/${selectedCourtCluster.id}/chi-tiet` },
+              {
+                title: `Chi tiết cụm ${selectedCourtCluster.title}`,
+                to: `/cum-san/${selectedCourtCluster.id}/chi-tiet`,
+              },
             ]}
           />
           <Flex justifyContent={'space-between'} className={'mb-2 mt-5'}>
             <Flex direction={'column'} gap={5}>
               <Heading>{selectedCourtCluster.title}</Heading>
               <Flex direction={'row'} gap={2}>
-                <FaMapLocation /> {selectedCourtCluster.address}
+                <FaMapLocation />{' '}
+                {[
+                  selectedCourtCluster.address,
+                  selectedCourtCluster.wardName,
+                  selectedCourtCluster.districtName,
+                  selectedCourtCluster.districtName,
+                ].join(', ')}
               </Flex>
             </Flex>
             <Flex direction="column" className="justify-end">
-              <Flex direction="row" gap={5} justifyContent="center" className='mb-2'>
+              <Flex direction="row" gap={5} justifyContent="center" className="mb-2">
                 <Button
                   as={Link}
                   to={`/cum-san/${selectedCourtCluster.id}/quan-ly-san`}
@@ -50,7 +59,13 @@ const CourtClusterDetailsHeaderComponent = observer(() => {
                 >
                   Quản lý sân
                 </Button>
-                <Button colorScheme="blue">Chỉnh sửa thông tin</Button>
+                <Button
+                  as={Link}
+                  to={`/cum-san/${selectedCourtCluster.id}/chinh-sua`}
+                  colorScheme="blue"
+                >
+                  Chỉnh sửa thông tin
+                </Button>
               </Flex>
             </Flex>
           </Flex>

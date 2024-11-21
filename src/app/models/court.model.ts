@@ -10,6 +10,12 @@ export interface CourtCluster {
   location?: string;
   minPrice: number;
   maxPrice: number;
+  province: string; //Tỉnh thành
+  provinceName: string;
+  district: string; // Thành phố, quận
+  districtName: string;
+  ward: string; // Phường
+  wardName: string;
 }
 
 export interface ICourtCluster {
@@ -90,11 +96,18 @@ export interface CourtForTable {
   maxPrice: number;
   status: CourtStatus;
   courtPrices: CourtPriceResponse[];
+  courtCombos: CourtCombo[];
 }
 
 export interface CourtManagerResponse {
   courtClusterName: string;
   courtForTable: CourtForTable[];
+}
+
+export interface CourtCombo {
+  totalPrice: number;
+  displayName: string;
+  duration: number;
 }
 
 export enum CourtStatus {
@@ -106,4 +119,16 @@ export enum CourtAction {
   NONE = 'NONE',
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
+}
+
+export interface CourtClusterDetailsEdit {
+  title: string;
+  description: string;
+  openTime: string;
+  closeTime: string;
+  province: string;
+  district: string;
+  ward: string;
+  address: string;
+  images: string[];
 }

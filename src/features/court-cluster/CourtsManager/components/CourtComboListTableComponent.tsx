@@ -1,10 +1,11 @@
-import { CourtPriceResponse } from '@/app/models/court.model';
+import { CourtCombo } from '@/app/models/court.model';
 import {
   Button,
   Center,
   Flex,
   FormControl,
   FormErrorMessage,
+  Input,
   InputGroup,
   InputRightElement,
   NumberInput,
@@ -18,18 +19,16 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { TimePicker } from 'antd';
 import { FC } from 'react';
-import dayjs from 'dayjs';
 import { FieldArray, FormikProps } from 'formik';
 
-interface CourtPriceListTableProps {
-  formikProps: FormikProps<CourtPricePopupProps>;
+interface CourtComboListTableProps {
+  formikProps: FormikProps<CourtComboPopupProps>;
 }
-interface CourtPricePopupProps {
-  courtPrices: CourtPriceResponse[];
+interface CourtComboPopupProps {
+  courtCombos: CourtCombo[];
 }
-const CourtPriceListTable: FC<CourtPriceListTableProps> = ({ formikProps }) => {
+const CourtComboListTable: FC<CourtComboListTableProps> = ({ formikProps }) => {
   const { values, setFieldValue, errors, touched } = formikProps;
   return (
     <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -39,88 +38,84 @@ const CourtPriceListTable: FC<CourtPriceListTableProps> = ({ formikProps }) => {
             <Th w={'5rem'} py={'1rem'}>
               STT
             </Th>
-            <Th w={'10rem'}>Từ </Th>
-            <Th w={'10rem'}>Đến</Th>
-            <Th w={'15rem'}>Giá</Th>
-            <Th w={'10rem'}></Th>
+            <Th w={'15rem'}>Tên hiển thị </Th>
+            <Th w={'10rem'}>Thời lượng (tháng)</Th>
+            <Th w={'15rem'}>Giá (theo số giờ thuê/tháng)</Th>
+            <Th w={'5rem'}></Th>
           </Tr>
         </Thead>
         <Tbody>
-          <FieldArray name="courtPrices">
+          <FieldArray name="courtCombos">
             {({ remove, push }) => (
               <>
-                {values.courtPrices.map((courtPrice, index) => (
-                  <Tr key={index}>
+                {values.courtCombos.map((courtCombo, index) => (
+                  <Tr key={`${index} `}>
                     <Td>{index + 1}</Td>
-
-                    {/* From Time */}
                     <Td>
                       <FormControl
                         isInvalid={
-                          errors.courtPrices?.[index]?.fromTime &&
-                          touched.courtPrices?.[index]?.fromTime
+                          errors.courtCombos?.[index]?.displayName &&
+                          touched.courtCombos?.[index]?.displayName
                         }
                       >
-                        <Flex direction={'column'}>
-                          <TimePicker
-                            placeholder="Select Time"
-                            format="HH:mm"
-                            className="h-10"
-                            popupStyle={{ zIndex: 999999 }}
-                            value={courtPrice.fromTime ? dayjs(courtPrice.fromTime, 'HH:mm') : null}
-                            onChange={(time) =>
-                              setFieldValue(
-                                `courtPrices[${index}].fromTime`,
-                                time ? time.format('HH:mm:ss') : '',
-                              )
-                            }
-                          />
-                          <FormErrorMessage>
-                            {errors.courtPrices?.[index]?.fromTime}
-                          </FormErrorMessage>
-                        </Flex>
+                        <Input
+                          value={values.courtCombos[index].displayName}
+                          onChange={(e) =>
+                            setFieldValue(`courtCombos[${index}].displayName`, e.target.value)
+                          }
+                          placeholder="Nhập tên hiển thị"
+                        />
+                        <FormErrorMessage>
+                          {errors.courtCombos?.[index]?.displayName}
+                        </FormErrorMessage>
                       </FormControl>
                     </Td>
-
                     <Td>
                       <FormControl
                         isInvalid={
-                          errors.courtPrices?.[index]?.toTime &&
-                          touched.courtPrices?.[index]?.toTime
-                        }
-                      >
-                        <Flex direction={'column'}>
-                          <TimePicker
-                            placeholder="Select Time"
-                            format="HH:mm"
-                            className="h-10"
-                            popupStyle={{ zIndex: 999999 }}
-                            value={courtPrice.toTime ? dayjs(courtPrice.toTime, 'HH:mm') : null}
-                            onChange={(time) =>
-                              setFieldValue(
-                                `courtPrices[${index}].toTime`,
-                                time ? time.format('HH:mm:ss') : '',
-                              )
-                            }
-                          />
-                          <FormErrorMessage>{errors.courtPrices?.[index]?.toTime}</FormErrorMessage>
-                        </Flex>
-                      </FormControl>
-                    </Td>
-
-                    <Td>
-                      <FormControl
-                        isInvalid={
-                          errors.courtPrices?.[index]?.price &&
-                          touched.courtPrices?.[index]?.price
+                          errors.courtCombos?.[index]?.duration &&
+                          touched.courtCombos?.[index]?.duration
                         }
                       >
                         <Flex direction={'column'}>
                           <NumberInput
-                            value={courtPrice.price.toLocaleString('vn')}
+                            value={courtCombo.duration}
                             onChange={(valueString) =>
                               setFieldValue(
-                                `courtPrices[${index}].price`,
+                                `courtCombos[${index}].duration`,
+                                valueString ? parseFloat(valueString) : '',
+                              )
+                            }
+                          >
+                            <InputGroup>
+                              <NumberInputField />
+                              <InputRightElement width="4.5rem">
+                                <Text fontSize="sm" color="gray.500">
+                                  Tháng
+                                </Text>
+                              </InputRightElement>
+                            </InputGroup>
+                          </NumberInput>
+                          <FormErrorMessage>
+                            {errors.courtCombos?.[index]?.duration}
+                          </FormErrorMessage>
+                        </Flex>
+                      </FormControl>
+                    </Td>
+                    <Td>
+                      <FormControl
+                        isInvalid={
+                          errors.courtCombos?.[index]?.totalPrice &&
+                          touched.courtCombos?.[index]?.totalPrice
+                        }
+                      >
+                        <Flex direction={'column'}>
+                          <NumberInput
+                        
+                            value={courtCombo.totalPrice}
+                            onChange={(valueString) =>
+                              setFieldValue(
+                                `courtCombos[${index}].totalPrice`,
                                 valueString ? parseFloat(valueString) : '',
                               )
                             }
@@ -134,10 +129,11 @@ const CourtPriceListTable: FC<CourtPriceListTableProps> = ({ formikProps }) => {
                               </InputRightElement>
                             </InputGroup>
                           </NumberInput>
-                          <FormErrorMessage>{errors.courtPrices?.[index]?.price}</FormErrorMessage>
+                          <FormErrorMessage>{errors.courtCombos?.[index]?.totalPrice}</FormErrorMessage>
                         </Flex>
                       </FormControl>
                     </Td>
+
 
                     {/* Delete Row */}
                     <Td>
@@ -148,7 +144,6 @@ const CourtPriceListTable: FC<CourtPriceListTableProps> = ({ formikProps }) => {
                       </Center>
                     </Td>
                   </Tr>
-                  
                 ))}
 
                 {/* Add New Price */}
@@ -156,13 +151,12 @@ const CourtPriceListTable: FC<CourtPriceListTableProps> = ({ formikProps }) => {
                   <Td colSpan={5} textAlign="center">
                     <Button
                       colorScheme="teal"
-                      onClick={() => push({ fromTime: '', toTime: '', price: '' })}
+                      onClick={() => push({ displayName: '', duration: 1, totalPrice: 0 })}
                     >
-                      Thêm giá mới
+                      Thêm combo
                     </Button>
                   </Td>
                 </Tr>
-               
               </>
             )}
           </FieldArray>
@@ -172,4 +166,4 @@ const CourtPriceListTable: FC<CourtPriceListTableProps> = ({ formikProps }) => {
   );
 };
 
-export default CourtPriceListTable;
+export default CourtComboListTable;

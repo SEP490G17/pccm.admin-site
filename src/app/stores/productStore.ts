@@ -7,6 +7,10 @@ import { toast } from 'react-toastify';
 import agent from '../api/agent';
 import _ from 'lodash';
 import { PaginationModel } from '@/app/models/pagination.model.ts';
+import { store } from './store';
+import { CreateToastFnReturn } from '@chakra-ui/react';
+import { CommonMessage } from '../common/toastMessage/commonMessage';
+import { DefaultProductMessageText, ProductMessage } from '../common/toastMessage/productMessage';
 
 export default class ProductStore {
   productRegistry = new Map<number, Product>();
@@ -136,6 +140,7 @@ export default class ProductStore {
       runInAction(() => {
         if (!error && res) {
           this.setProduct(res);
+          store.courtClusterStore.productOfClusterRegistry.set(res.id, res);
           toast.success('Cập nhật hàng hóa thành công');
         }
         if (error) {
@@ -149,15 +154,21 @@ export default class ProductStore {
 
   //#endregion
 
-  deleteProduct = async (id: number) => {
-    this.loading = true;
+  deleteProduct = async (id: number, toast:CreateToastFnReturn) => {
+    const pending = toast(CommonMessage.loadingMessage(DefaultProductMessageText.delete.title));
     const [error, res] = await catchErrorHandle(agent.Products.delete(id));
     runInAction(() => {
+      toast.close(pending);
+
       if (!error && res) {
+        toast(ProductMessage.deleteSuccess());
         this.loadProductsLog();
         this.productRegistry.delete(id);
+        store.courtClusterStore.productOfClusterRegistry.delete(id);
       }
-      this.loading = false;
+      if (error) {
+        toast(ProductMessage.deleteFailure());
+      }
     });
   };
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Flex, Box, Center, Heading } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store.ts';
@@ -9,21 +9,33 @@ import PageHeadingAtoms from '@/features/atoms/PageHeadingAtoms';
 import InputSearchBoxAtoms from '@/features/atoms/InputSearchBoxAtoms';
 import ButtonPrimaryAtoms from '@/features/atoms/ButtonPrimaryAtoms';
 import PlusIcon from '@/features/atoms/PlusIcon';
+import { debounce } from 'lodash';
 
 const CourtClusterPage = observer(() => {
   const { courtClusterStore } = useStore();
-  const { loadCourtsCluster } = courtClusterStore;
+  const { loadCourtsCluster, courtPageParams } = courtClusterStore;
 
   useEffect(() => {
     if (courtClusterStore.courtClusterRegistry.size == 0) {
       loadCourtsCluster();
     }
   }, [courtClusterStore.courtClusterRegistry.size, loadCourtsCluster]);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    courtClusterStore.setSearchTerm(e.target.value);
-  };
   const [isPending, setIsPending] = useState(false);
+
+  const handleSearchDebounced = useMemo(() => {
+    return debounce((e) => {
+      setIsPending(false); // Tắt loading
+      courtClusterStore.setSearchTerm(e.target.value);
+    }, 500);
+  }, [setIsPending, courtClusterStore]);
+
+  const onSearchChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsPending(true);
+      handleSearchDebounced(e);
+    },
+    [handleSearchDebounced, setIsPending],
+  );
 
   return (
     <>
@@ -33,7 +45,11 @@ const CourtClusterPage = observer(() => {
       <Flex width="100%" justifyContent="end" alignItems="flex-end" mb="1.5rem">
         <Box textAlign="right">
           <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
-            <InputSearchBoxAtoms handleChange={handleSearch} isPending={isPending} />
+            <InputSearchBoxAtoms
+              value={courtPageParams.searchTerm}
+              handleChange={onSearchChange}
+              isPending={isPending}
+            />
             <ButtonPrimaryAtoms
               className="bg-primary-900"
               handleOnClick={() => router.navigate('/cum-san/tao')}

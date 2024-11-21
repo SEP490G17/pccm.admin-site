@@ -43,14 +43,36 @@ const AddressSelectAtom: React.FC<AddressSelectAtomProps> = ({
   const [wards, setWards] = useState<Ward[]>([]);
 
   useEffect(() => {
-    fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error === 0) {
-          setProvinces(data.data);
-        }
-      });
-  }, []);
+    const fetchProvincesData = async () => {
+      const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
+      const data = await response.json();
+      if (data.error === 0) {
+        setProvinces(data.data);
+      }
+    };
+
+    const fetchDistrictsData = async (provinceId: string) => {
+      const response = await fetch(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
+      const data = await response.json();
+      if (data.error === 0) {
+        setDistricts(data.data);
+      }
+    };
+
+    const fetchWardsData = async (districtId: string) => {
+      const response = await fetch(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
+      const data = await response.json();
+      if (data.error === 0) {
+        setWards(data.data);
+      }
+    };
+
+    Promise.all([
+      fetchProvincesData(),
+      fetchDistrictsData(values.province),
+      fetchWardsData(values.district),
+    ]);
+  }, [values]);
 
   const handleProvinceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const idtinh = event.target.value;

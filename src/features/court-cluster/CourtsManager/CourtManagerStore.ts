@@ -2,7 +2,12 @@ import agent from '@/app/api/agent';
 import { CommonMessage } from '@/app/common/toastMessage/commonMessage';
 import { CourtMessage, DefaultCourtText } from '@/app/common/toastMessage/courtMessage';
 import { catchErrorHandle, sleep } from '@/app/helper/utils';
-import { CourtForTable, CourtPriceResponse, CourtStatus } from '@/app/models/court.model';
+import {
+  CourtCombo,
+  CourtForTable,
+  CourtPriceResponse,
+  CourtStatus,
+} from '@/app/models/court.model';
 import { CreateToastFnReturn } from '@chakra-ui/react';
 import { makeAutoObservable, runInAction } from 'mobx';
 
@@ -68,6 +73,30 @@ export default class CourtManagerStore {
     });
 
     return { res, err };
+  };
+
+  updateCourtCombos = async (
+    courtId: number,
+    courtCombos: CourtCombo[],
+    toast: CreateToastFnReturn,
+  ) => {
+    toast(CommonMessage.loadingMessage(DefaultCourtText.updateCourtPrice.title));
+    const [err, res] = await catchErrorHandle(
+      agent.CourtAgent.updateCourtCombo(courtId, courtCombos),
+    );
+    runInAction(() => {
+      if (err) {
+        toast(CourtMessage.updateCourtCombosFailure());
+      }
+      if (res) {
+        toast(CourtMessage.updateCourtCombosSuccess());
+        const courts = this.courtRegistry.get(courtId);
+        if (courts) {
+          courts.courtCombos = [];
+          courts.courtCombos = courtCombos;
+        }
+      }
+    });
   };
 
   removeCourt = async (id: number, toast: CreateToastFnReturn) => {

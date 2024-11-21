@@ -16,10 +16,10 @@ import {
 } from '@chakra-ui/react';
 import { FC } from 'react';
 import { MdDelete } from 'react-icons/md';
-import { AiOutlineCalendar } from 'react-icons/ai';
 import CourtPricePopup from '../popup/CourtPricePopup';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
+import CourtComboPopup from '../popup/CourtComboPopup';
 
 interface CourtListTableComponentProps {
   courtList: CourtForTable[];
@@ -81,14 +81,7 @@ const CourtListTableComponent: FC<CourtListTableComponentProps> = observer(
                   <Td>
                     <Flex gap={2}>
                       <CourtPricePopup courtId={court.courtId} courtPrices={court.courtPrices} />
-                      <Tooltip label="Quản lý gói dài hạn" hasArrow placeSelf={'auto'}>
-                        <IconButton
-                          colorScheme="blue"
-                          icon={<AiOutlineCalendar className="text-xl" />}
-                          aria-label="Quản lý giá lẻ"
-                          size={'sm'}
-                        />
-                      </Tooltip>
+                      <CourtComboPopup courtId={court.courtId} courtCombos={court.courtCombos} />
 
                       <Tooltip label="Xoá sân" hasArrow placeSelf={'auto'}>
                         <IconButton

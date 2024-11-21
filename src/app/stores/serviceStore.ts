@@ -6,6 +6,10 @@ import { catchErrorHandle, sleep } from '../helper/utils';
 import agent from '../api/agent';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
+import { CreateToastFnReturn } from '@chakra-ui/react';
+import { DefaultServiceText, ServiceMessage } from '../common/toastMessage/serviceMessage';
+import { CommonMessage } from '../common/toastMessage/commonMessage';
+import { store } from './store';
 export default class ServiceStore {
   serviceRegistry = new Map<number, Service>();
   serviceLogRegistry = new Map<number, ServiceLog>();
@@ -122,24 +126,22 @@ export default class ServiceStore {
     }
   };
 
-  updateService = async (service: ServiceEditDTO) => {
+  updateService = async (service: ServiceEditDTO, toast: CreateToastFnReturn) => {
     this.loading = true;
-    try {
-      if (this.selectedService?.id) {
-        const newService = await agent.Services.update(service);
-        this.serviceRegistry.delete(this.selectedService?.id);
-        this.setService(newService);
-        this.loadServicesLog();
-        this.loading = false;
-        toast.success('Cập nhật dịch vụ thành công');
+    const pending = toast(CommonMessage.loadingMessage(DefaultServiceText.update.title));
+    const [err, res] = await catchErrorHandle(agent.Services.update(service));
+    runInAction(() => {
+      toast.close(pending);
+      if (err) {
+        toast(ServiceMessage.updateFailure());
       }
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.error('Error updating banner:', error);
-        toast.error('Cập nhật dịch vụ thất bại');
-      });
-    }
+      if (res) {
+        toast(ServiceMessage.updateSuccess());
+        store.courtClusterStore.servicesOfClusterRegistry.set(res.id, res);
+        this.setService(res);
+      }
+      this.loading = false;
+    });
   };
 
   deleteService = async (id: number) => {

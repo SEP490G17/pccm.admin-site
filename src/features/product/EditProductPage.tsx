@@ -20,7 +20,6 @@ import NumberFieldAtom from '@/app/common/form/NumberFieldAtoms';
 import FileUploadFieldAtoms from '@/app/common/form/FileUploadFieldAtoms';
 import { useStore } from '@/app/stores/store';
 import { ProductInput } from '@/app/models/product.model';
-import SelectFieldAtoms from '@/app/common/form/SelectFieldAtoms';
 import { observer } from 'mobx-react-lite';
 
 interface IProp {
@@ -28,7 +27,7 @@ interface IProp {
   onClose: () => void;
 }
 
-const EditProductPage = ({ isOpen, onClose }: IProp) => {
+const EditProductPage = observer(({ isOpen, onClose }: IProp) => {
   const validationSchema = Yup.object().shape({
     productName: Yup.string().required('Tên sản phẩm không được bỏ trống'),
     quantity: Yup.number().required('Số lượng không được bỏ trống'),
@@ -45,9 +44,7 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
     categoryId: Yup.number().required('Thể loại không được bỏ trống'),
     courtClusterId: Yup.number().required('Khu không được bỏ trống'),
   });
-  const { categoryStore, courtClusterStore, productStore, uploadStore } = useStore();
-  const { categoryOption } = categoryStore;
-  const { courtClusterListAllOptions } = courtClusterStore;
+  const { productStore, uploadStore } = useStore();
   const { selectedProduct } = productStore;
   return (
     <Modal
@@ -77,6 +74,7 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                   thumbnailUrl: selectedProduct.thumbnailUrl,
                   productName: selectedProduct.productName,
                   courtClusterId: selectedProduct.courtClusterId,
+                  courtClusterName: selectedProduct.courtClusterName,
                 }}
                 onSubmit={async (values) => {
                   const product = new ProductInput({
@@ -89,9 +87,7 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                     courtClusterId: Number(values.courtClusterId),
                     thumbnailUrl: values.thumbnailUrl,
                   });
-                  await productStore.editProduct(product)
-                    .finally(onClose);
-
+                  await productStore.editProduct(product).finally(onClose);
                 }}
                 validationSchema={validationSchema}
               >
@@ -106,27 +102,14 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                       placeholder="Nhập"
                     />
                     <Flex className="items-start gap-4">
-                      <SelectFieldAtoms
-                        size="lg"
-                        name="categoryId"
-                        backgroundColor="#FFF"
-                        border="1px solid "
-                        borderRadius="md"
-                        borderColor="gray.300"
-                        label="Thể loại"
-                        options={categoryOption}
+                      <TextFieldAtoms
                         isRequired={true}
-                      />
-                      <SelectFieldAtoms
-                        size="lg"
-                        name="courtClusterId"
-                        backgroundColor="#FFF"
-                        border="1px solid "
-                        borderRadius="md"
-                        borderColor="gray.300"
-                        label="Cum san"
-                        options={courtClusterListAllOptions}
-                        isRequired={true}
+                        label="Cụm sân"
+                        className="input_text"
+                        type="text"
+                        name="courtClusterName"
+                        placeholder="Nhập"
+                        isReadOnly={true}
                       />
                     </Flex>
 
@@ -169,11 +152,7 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
                       placeholder="Mô tả"
                     />
                     <Stack direction="row" justifyContent="flex-end" mt={9}>
-                      <Button
-                        className="save"
-                        isLoading={isSubmitting}
-                        type="submit"
-                      >
+                      <Button className="save" isLoading={isSubmitting} type="submit">
                         Lưu
                       </Button>
                     </Stack>
@@ -188,6 +167,6 @@ const EditProductPage = ({ isOpen, onClose }: IProp) => {
       </ModalContent>
     </Modal>
   );
-};
+});
 
-export default observer(EditProductPage);
+export default EditProductPage;

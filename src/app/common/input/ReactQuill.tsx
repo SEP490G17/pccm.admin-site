@@ -6,9 +6,10 @@ import React from 'react';
 interface ContentsProps{
     content?: string;
     onChange: (value: string) => void;
+    className?: string;
 }
 
-const ReactQuillComponent: React.FC<ContentsProps> = ({ content, onChange }) => {
+const ReactQuillComponent: React.FC<ContentsProps> = ({ content, onChange, className='' }) => {
     const toolbarOptions = [
         [{ 'font': [] }],
         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
@@ -33,7 +34,7 @@ const ReactQuillComponent: React.FC<ContentsProps> = ({ content, onChange }) => 
         <ReactQuill
             theme="snow"
             modules={modules}
-            className='quill'
+            className={`quill ${className}`}
             value={content}
             onChange={onChange}
         />

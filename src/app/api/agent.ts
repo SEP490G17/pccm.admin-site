@@ -11,6 +11,7 @@ import {
   CourtCluster,
   CourtClusterDetailsCreate,
   CourtClusterListAll,
+  CourtCombo,
   CourtManagerResponse,
   CourtPriceResponse,
 } from '../models/court.model';
@@ -203,16 +204,27 @@ const CourtClusterAgent = {
     requests.post(`/courtCluster`, court),
   update: (court: CourtCluster): Promise<void> => requests.put(`/courtCluster/${court.id}`, court),
   delete: (id: number): Promise<void> => requests.del(`/courtCluster/${id}`),
-  list: (): Promise<PaginationModel<CourtCluster>> => requests.get(`/courtCluster`),
+  list: (query:string): Promise<PaginationModel<CourtCluster>> => requests.get(`/courtCluster${query}`),
+
+  edit: (id: number, courtCluster: CourtCluster) =>
+    requests.put(`/courtCluster/${id}`, courtCluster),
 };
 const CourtAgent = {
   list: (id: number): Promise<Court[]> => requests.get(`/court/list?filter=${id}`),
+
   listByCluster: (courtClusterId: number): Promise<CourtManagerResponse> =>
     requests.get(`/court/cluster/${courtClusterId}`),
+
   updateCourtPrice: (id: number, courtPrices: CourtPriceResponse[]) =>
     requests.put(`/courtPrice/${id}/update`, courtPrices),
+
   removeCourt: (id: number): Promise<void> => requests.del(`/court/${id}`),
-  toggle:(id:number, status:number):Promise<void> => requests.put(`/court/toggle/${id}?status=${status}`,{})
+
+  toggle: (id: number, status: number): Promise<void> =>
+    requests.put(`/court/toggle/${id}?status=${status}`, {}),
+
+  updateCourtCombo: (id: number, courtCombos: CourtCombo[]) =>
+    requests.put(`/courtCombo/${id}/update`, courtCombos),
 };
 const UploadAgent = {
   post: (file: FormData): Promise<ImageUpload> => requests.post(`/upload`, file),
@@ -259,7 +271,7 @@ const PaymentAgent = {
 const OrderAgent = {
   create: (model: OrderModel) => requests.post<OrderOfBooking>(`/order/v1`, model),
   details: (id: number) => requests.get<OrderModel>(`/order/v1/${id}`),
-  update: (model: OrderModel): Promise<OrderOfBooking> => requests.put(`/order/v1/edit`, model),
+  update: (model: OrderModel): Promise<OrderOfBooking> => requests.put(`/order/edit`, model),
 };
 const agent = {
   requests,

@@ -10,7 +10,7 @@ import {
 } from '@syncfusion/ej2-react-schedule';
 import { useEffect, useRef } from 'react';
 import { isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
-import { createToastFn, Heading, Skeleton, useToast } from '@chakra-ui/react';
+import { Heading, Skeleton, useToast } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
@@ -85,7 +85,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     ) {
       if (schedule.current) {
         const eventData = Array.isArray(args.data) ? args.data[0] : args.data;
-        const eventField: EventFieldsMapping = schedule.current.eventFields!;
+        const eventField: EventFieldsMapping = schedule.current.eventFields;
         const startDate = eventData[eventField.startTime!];
         const endDate = eventData[eventField.endTime!];
         if (startDate < currentTime) {

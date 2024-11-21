@@ -6,6 +6,7 @@ import {
   Spacer,
   Text,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom.tsx';
@@ -20,12 +21,16 @@ interface Iprops {
 }
 
 const ProductCardItemComponent = observer(({ product }: Iprops) => {
-  const { courtClusterStore, productStore } = useStore();
+  const { productStore } = useStore();
   const { detailProduct } = productStore;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleOpenEdit = async (id: number) => {
     onOpen();
     await detailProduct(id);
+  };
+  const toast = useToast();
+  const handleDelete = async (id: number) => {
+    await productStore.deleteProduct(id, toast);
   };
   return (
     <>
@@ -61,17 +66,14 @@ const ProductCardItemComponent = observer(({ product }: Iprops) => {
           </GridItem>
           <GridItem colSpan={4} className={'flex justify-end float-end'}>
             <Flex justifyContent="flex-end" className={'items-end gap-2'}>
-             
               <EditButtonAtom
-                onUpdate={ async() => await handleOpenEdit(product.id)}
+                onUpdate={async () => await handleOpenEdit(product.id)}
                 buttonSize={'md'}
                 buttonContent={'Sửa'}
                 name={'Hàng hoá'}
-                header='Chỉnh sửa'
-                buttonClassName='gap-2'
-              >
-
-              </EditButtonAtom>
+                header="Chỉnh sửa"
+                buttonClassName="gap-2"
+              ></EditButtonAtom>
               <DeleteButtonAtom
                 buttonSize={'md'}
                 name={'Hàng hóa'}
@@ -79,18 +81,13 @@ const ProductCardItemComponent = observer(({ product }: Iprops) => {
                 loading={false}
                 buttonContent={'Xóa'}
                 buttonClassName={'gap-2 '}
-                onDelete={async () => {
-                  await productStore.deleteProduct(product.id).then(() => {
-                    courtClusterStore.productOfClusterRegistry.delete(product.id);
-                  });
-                }}
+                onDelete={async () => await handleDelete(product.id)}
               />
             </Flex>
           </GridItem>
         </Grid>
       </GridItem>
       <EditProductPage isOpen={isOpen} onClose={onClose} />
-
     </>
   );
 });

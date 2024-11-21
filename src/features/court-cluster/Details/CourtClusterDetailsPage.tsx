@@ -3,12 +3,13 @@ import {useStore} from "@/app/stores/store.ts";
 import {useEffect} from "react";
 
 import {useParams} from "react-router-dom";
-import CourtClusterDetailsHeaderComponent from "@/features/court-cluster/Details/components/Details/CourtClusterDetailsHeaderComponent";
+
 import { Tabs, TabList, TabPanels, Tab, TabPanel, useToast } from '@chakra-ui/react'
 import CourtClusterDescriptionTab from "./Tabs/CourtClusterDescriptionTab";
 import CourtClusterProductsTab from "./Tabs/CourtClusterProductsTab";
 import CourtClusterServicesTab from "./Tabs/CourtClusterServicesTab";
 import CourtClusterBookingTab from "./Tabs/CourtClusterBookingTab";
+import CourtClusterDetailsHeaderComponent from "./components/DetailsHeader/CourtClusterDetailsHeaderComponent";
 
 
 const CourtClusterDetailsPage = observer(() => {

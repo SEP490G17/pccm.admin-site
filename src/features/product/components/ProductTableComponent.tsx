@@ -12,34 +12,36 @@ import {
   Box,
   Center,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { FaEdit } from 'react-icons/fa';
 import { observer } from 'mobx-react-lite';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import EditProductPage from '../EditProductPage';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
-import { toast } from 'react-toastify';
 
 const ProductTableComponent = observer(() => {
   const { productStore } = useStore();
-  const { productPageParams, loading, productArray, loadingInitial, deleteProduct, detailProduct } = productStore;
+  const { productPageParams, loading, productArray, loadingInitial, deleteProduct, detailProduct } =
+    productStore;
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
   const handleOpenEdit = async (id: number) => {
     onOpen();
     await detailProduct(id);
-  }
+  };
+  const handleDelete = async (id: number) => {
+    deleteProduct(id, toast);
+  };
   return (
     <>
-      <TableContainer
-        bg={'white'}
-        borderRadius={'md'}
-        padding={0}
-        mb="1.5rem"
-      >
-        <Table className='app-table' variant="simple" padding={0}>
+      <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
+        <Table className="app-table" variant="simple" padding={0}>
           <Thead>
             <Tr>
-              <Th w={'5rem'} py={'1rem'}>STT</Th>
+              <Th w={'5rem'} py={'1rem'}>
+                STT
+              </Th>
               <Th w={'15rem'}>Ảnh hàng hoá</Th>
               <Th w={'15rem'}>Tên hàng hoá</Th>
               <Th w={'15rem'}>Thể loại</Th>
@@ -54,9 +56,10 @@ const ProductTableComponent = observer(() => {
             </Tr>
           </Thead>
           <Tbody>
-            {loadingInitial || loading && (
-              <SkeletonTableAtoms numOfColumn={8} pageSize={productPageParams.pageSize} />
-            )}
+            {loadingInitial ||
+              (loading && (
+                <SkeletonTableAtoms numOfColumn={8} pageSize={productPageParams.pageSize} />
+              ))}
 
             {!loadingInitial &&
               productArray.map((product, index) => (
@@ -79,7 +82,10 @@ const ProductTableComponent = observer(() => {
                     {product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
                   </Td>
                   <Td>
-                    {product.importFee.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+                    {product.importFee.toLocaleString('vi-VN', {
+                      style: 'currency',
+                      currency: 'VND',
+                    })}
                   </Td>
                   <Td>
                     <Center>
@@ -96,15 +102,11 @@ const ProductTableComponent = observer(() => {
                       <DeleteButtonAtom
                         buttonSize={'sm'}
                         name={product.productName}
-                        header='Xóa sản phẩm'
+                        header="Xóa sản phẩm"
                         loading={loading}
                         buttonClassName={'gap-2'}
                         onDelete={async () => {
-                          try {
-                            await deleteProduct(product.id);
-                          } catch {
-                            toast.error("Xóa thất bại");
-                          }
+                          await handleDelete(product.id);
                         }}
                       />
                     </Center>

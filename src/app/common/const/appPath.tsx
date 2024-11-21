@@ -115,18 +115,7 @@ export const menuList: AppPath[] = [
 ];
 
 export const menuListAdmin: AppPath[] = [
-  {
-    key: 1,
-    icon: (isSelected: boolean) => (
-      <CourtClusterMenuIcon
-        width="1.5rem"
-        height="1.5rem"
-        color={isSelected ? '#00423D' : '#63748A'}
-      />
-    ),
-    label: 'Cụm sân',
-    path: '/',
-  },
+  
 
   {
     key: 2,
@@ -179,6 +168,18 @@ export const menuListAdmin: AppPath[] = [
     ),
     label: 'Tin tức',
     path: '/tin-tuc',
+  },
+  {
+    key: 1,
+    icon: (isSelected: boolean) => (
+      <CourtClusterMenuIcon
+        width="1.5rem"
+        height="1.5rem"
+        color={isSelected ? '#00423D' : '#63748A'}
+      />
+    ),
+    label: 'Cụm sân',
+    path: '/',
   },
 ];
 

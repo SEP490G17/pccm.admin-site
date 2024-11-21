@@ -22,7 +22,7 @@ const CourtClusterServicesTab = observer(({courtClusterId}:IProps) => {
                     {
                         serviceOfCourtClusterArray.map(
                             (service) => (
-                                <ServiceCardItemComponent service={service}/>
+                                <ServiceCardItemComponent key={service.id} service={service}/>
                             )
                         )
                     }

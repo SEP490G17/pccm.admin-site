@@ -107,9 +107,7 @@ const CourtPricePopup: FC<CourtPricePopupProps> = observer(({ courtPrices, court
                   <CourtPriceListTable formikProps={props} />
 
                   {props.errors.courtPrices && typeof props.errors.courtPrices === 'string' && (
-                    <p className='text-red-500'>
-                      *Lưu ý:  {props.errors.courtPrices}
-                    </p>
+                    <p className="text-red-500">*Lưu ý: {props.errors.courtPrices}</p>
                   )}
                 </ModalBody>
 

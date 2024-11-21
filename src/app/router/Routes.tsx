@@ -19,8 +19,7 @@ import CourtClusterPage from '@/features/court-cluster/List/CourtsClusterPage';
 import CourtClusterDetailsPage from '@/features/court-cluster/Details/CourtClusterDetailsPage';
 import CourtsManagerPage from '@/features/court-cluster/CourtsManager/CourtManagerPage';
 import { RoleBasedRedirect } from './HomeRouterConfigPage';
-
-
+import CourtClusterEditPage from '@/features/court-cluster/UpdateInfomation/CourtClusterEditPage';
 
 export const routes: RouteObject[] = [
   {
@@ -28,16 +27,16 @@ export const routes: RouteObject[] = [
     element: <MainLayout />,
     children: [
       {
-        path: '',
-        element: <RoleBasedRedirect />,
-      },
-      {
         path: 'cum-san',
         element: <CourtClusterPage />,
       },
       {
         path: 'cum-san/:id/chi-tiet',
         element: <CourtClusterDetailsPage />,
+      },
+      {
+        path: 'cum-san/:id/chinh-sua',
+        element: <CourtClusterEditPage />,
       },
       {
         path: 'cum-san/tao',
@@ -91,6 +90,10 @@ export const routes: RouteObject[] = [
       {
         path: 'doanh-thu',
         element: <RevenuePage />,
+      },
+      {
+        path: '',
+        element: <RoleBasedRedirect />,
       },
     ],
   },

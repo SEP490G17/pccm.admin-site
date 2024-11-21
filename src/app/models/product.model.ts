@@ -19,6 +19,7 @@ export class ProductInput {
   price: number | '' = '';
   importFee: number | '' = '';
   thumbnailUrl: string = '';
+  courtClusterName: string = '';
 
   constructor(data?: Partial<ProductInput>) {
     if (data) {

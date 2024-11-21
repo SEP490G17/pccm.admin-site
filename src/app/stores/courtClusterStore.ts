@@ -1,4 +1,4 @@
-import { Court,  CourtCluster, CourtClusterListAll } from './../models/court.model';
+import { Court, CourtCluster, CourtClusterListAll } from './../models/court.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleCourtData } from '../mock/court.mock';
 import { PageParams, ProductPageParams } from '../models/pageParams.model';
@@ -9,8 +9,13 @@ import { toast } from 'react-toastify';
 import { PaginationModel } from '@/app/models/pagination.model.ts';
 import { Product } from '@/app/models/product.model.ts';
 import { Service } from '@/app/models/service.model.ts';
-import { CourtClusterMessage } from '../common/toastMessage/courtClusterMessage';
+import {
+  CourtClusterMessage,
+  DefaultCourtClusterText,
+} from '../common/toastMessage/courtClusterMessage';
 import { CourtMessage } from '../common/toastMessage/courtMessage';
+import { CreateToastFnReturn } from '@chakra-ui/react';
+import { CommonMessage } from '../common/toastMessage/commonMessage';
 
 export default class CourtClusterStore {
   //registry
@@ -40,10 +45,10 @@ export default class CourtClusterStore {
     makeAutoObservable(this);
   }
 
-  setLoadingInitialBookingPage =(load:boolean) => this.loadingInitialBookingPage = load;
+  setLoadingInitialBookingPage = (load: boolean) => (this.loadingInitialBookingPage = load);
 
   //#region Court
-  loadCourtOfCluster = async (id: number, chakraToast:any) => {
+  loadCourtOfCluster = async (id: number, chakraToast: any) => {
     if (id) {
       this.loadingCourt = true;
       const [error, res] = await catchErrorHandle(agent.CourtAgent.list(id));
@@ -116,7 +121,9 @@ export default class CourtClusterStore {
       );
       runInAction(() => {
         if (error) {
-          toast.error(`Lấy danh sách sản phẩm của cụm sân ${this.selectedCourtCluster?.title} thất bại`);
+          toast.error(
+            `Lấy danh sách sản phẩm của cụm sân ${this.selectedCourtCluster?.title} thất bại`,
+          );
           this.productCourtClusterPageParams.totalElement = 0;
         }
         if (res) {
@@ -133,15 +140,22 @@ export default class CourtClusterStore {
   // 1. Load list court clusters for admin
   loadCourtsCluster = async () => {
     this.loadingInitial = true;
-    this.clearProductCache();
+    const queryParams = new URLSearchParams();
+    queryParams.append('skip', `${this.courtPageParams.skip}`);
+    queryParams.append('pageSize', `${this.courtPageParams.pageSize}`);
+    if (this.courtPageParams.searchTerm) {
+      queryParams.append('search', this.courtPageParams.searchTerm);
+    }
+
     const [error, response] = await catchErrorHandle<PaginationModel<CourtCluster>>(
-      agent.CourtClusterAgent.list(),
+      agent.CourtClusterAgent.list(`?${queryParams.toString()}`),
     );
 
     runInAction(() => {
       if (error) {
         toast.error('Tải danh sách cụm sân thất bại'); // Cải thiện thông báo lỗi nếu cần
-      } else {
+      }
+      if (response) {
         response.data.forEach(this.setCourtCluster);
         this.courtPageParams.totalElement = response.count;
       }
@@ -197,11 +211,10 @@ export default class CourtClusterStore {
     }
   };
 
-  setSearchTerm = (term: string) => {
-    runInAction(() => {
-      this.courtPageParams.searchTerm = term;
-      this.cleanCourtCache();
-    });
+  setSearchTerm = async (term: string) => {
+    this.courtPageParams.searchTerm = term;
+    this.cleanCourtCache();
+    await this.loadCourtsCluster();
   };
 
   get courtClusterArray() {
@@ -263,4 +276,22 @@ export default class CourtClusterStore {
   //         clearInterval(this.cleanupInterval);
   //     }
   // }
+
+  updateCourtCluster = async (
+    id: number,
+    courtCluster: CourtCluster,
+    toast: CreateToastFnReturn,
+  ) => {
+    const pending = toast(CommonMessage.loadingMessage(DefaultCourtClusterText.edit.title));
+    const [err, res] = await catchErrorHandle(agent.CourtClusterAgent.edit(id, courtCluster));
+    runInAction(() => {
+      toast.close(pending);
+      if (res) {
+        toast(CourtClusterMessage.editSuccess());
+      }
+      if (err) {
+        toast(CourtClusterMessage.editFailure());
+      }
+    });
+  };
 }
