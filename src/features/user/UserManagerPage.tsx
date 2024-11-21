@@ -1,67 +1,115 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-    Button,
     Flex,
-    Input,
-    Select,
+    Heading,
 } from '@chakra-ui/react';
+import Select from 'react-select';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
-import { FaEdit, FaSearch } from 'react-icons/fa';
 import './style/style.scss';
-import { router } from '@/app/router/Routes';
+import { debounce } from 'lodash';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import UserTableComponents from './components/UserTableComponents';
+import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
+import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
+import CreateUserComponent from './components/CreateUserComponent';
 
 const UserManagerPage = observer(() => {
     const { userStore } = useStore();
     const {
         loadUsers,
-     
+        userPageParams,
+        userRegistry
     } = userStore;
-
+    const [isPending, setIsPending] = useState(false);
+    const handleScroll = useCallback(() => {
+        const scrollPosition = window.scrollY + window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        // Kiểm tra nếu cuộn gần đến cuối (có thể điều chỉnh giá trị 100 theo nhu cầu)
+        if (scrollPosition >= documentHeight - 50) {
+            userPageParams.skip = userRegistry.size;
+            if (userPageParams.totalElement > userRegistry.size) {
+                loadUsers();
+            }
+        }
+    }, [
+        loadUsers,
+        userPageParams,
+        userRegistry.size,
+    ]);
     useEffect(() => {
         loadUsers();
-    }, []);
+    }, [loadUsers]);
 
-    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        userStore.setSearchTerm(e.target.value);
+    const handleSearch = useCallback(
+        debounce(async (e) => {
+            setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
+            await userStore.setSearchTerm(e.target.value);
+        }, 500), // Debounce với thời gian 1 giây
+        [],
+    );
+
+    const onSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
+        await handleSearch(e); // Gọi hàm debounce
     };
 
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        // Cleanup listener
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [handleScroll]);
+
+    const statusOption = [
+        { value: -1, label: 'Tất cả' },
+        { value: 0, label: 'Hoạt động' },
+        { value: 1, label: 'Không hoạt động' },
+    ]
 
     return (
         <>
-            <PageHeadingAtoms breadCrumb={[{title:'Danh sách người dùng',to:'/users'}]} />
-            <Flex width="100%" flexDirection="column" gap="1.5rem" mb="1.5rem">
-                <Flex justifyContent="space-between" alignItems="center" gap="30px">
-                    <Flex flex="1" padding="3px 10px" alignItems="center" gap="16px" borderRadius="4px" border="0.5px solid #ADADAD" background="#FFF" >
-                        <Input placeholder="Nhập từ khóa tìm kiếm" onChange={handleSearch} border="none" height="30px" outline="none" />
-                        <Button>
-                            <FaSearch />
-                        </Button>
-                    </Flex>
-                    <Select width="149px" height="38px" borderRadius="4px" border="1px solid #ADADAD" bg="#FFF" color="#03301F">
-                        <option value="all">Trạng thái</option>
-                        <option value="active">Hoạt động</option>
-                        <option value="inactive">Không hoạt động</option>
-                    </Select>
-                </Flex>
-
+            <PageHeadingAtoms breadCrumb={[{ title: 'Danh sách người dùng', to: '/users' }]} />
+            <Heading className="mb-4 mt-2">Danh sách người dùng</Heading>
+            <Flex width="100%" justifyContent={'space-between'} gap="1.5rem" mb="1.5rem">
                 <Flex gap="30px" alignItems="center">
-                    <Select width="149px" height="35px" borderRadius="4px" border="1px solid #ADADAD" bg="#FFF" color="#03301F">
-                        <option value="all">Tất cả</option>
-                    </Select>
+                    <Select
+                        options={statusOption}
+                        placeholder="Cụm sân"
+                        className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+                        onChange={async (e) => {
+                            if (e) {
+                                await userStore.setStatusTerm(e.value.toString());
+                            }
+                        }}
+                        defaultValue={{
+                            value: userPageParams.sort ?? 0,
+                            label:
+                                statusOption.find(option => option.value.toString() === userPageParams.sort)?.label ?? 'Tất cả',
+                        }}
+                        isSearchable={true}
+                    ></Select>
 
-                    <Button colorScheme="teal" size="md" leftIcon={<FaEdit />} width="149px" height="35px" background="#FFF" color="black" border="1px solid #ADADAD" onClick={() => router.navigate('/nhan-vien/tao')}>
-                        Thêm mới
-                    </Button>
+                    <CreateUserComponent></CreateUserComponent>
+
+
+                </Flex>
+                <Flex gap="30px" alignItems="center">
+                    <InputSearchBoxAtoms value={userStore.userPageParams.searchTerm} handleChange={onSearchChange} isPending={isPending} />
                 </Flex>
             </Flex>
 
 
             <UserTableComponents />
 
-           
+            <LoadMoreButtonAtoms
+                handleOnClick={() => {
+                    userStore.userPageParams.skip = userStore.userRegistry.size;
+                }}
+                hidden={userStore.userRegistry.size >= userStore.userPageParams.totalElement}
+                loading={userStore.loading}
+            />
         </>
     );
 });

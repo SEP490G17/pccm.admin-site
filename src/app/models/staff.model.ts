@@ -1,10 +1,9 @@
 export interface Staff {
-  id: number;    
-  fullName: string;         
-  cccd: string;   
-  phoneNumber: string;    
-  position: string;       
-  roles: string[];    
-  shift: string;
-  courtCluster: string[];              
+  id: number;
+  fullName: string;
+  email:string;
+  phoneNumber: string;
+  position: string;
+  roles: string[];
+  courtCluster: string[];
 }

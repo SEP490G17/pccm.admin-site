@@ -10,24 +10,23 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
 } from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { CgFileDocument } from "react-icons/cg";
 import StaffDetailPopUp from '@/features/staff/StaffDetailPopUp';
-import { useState } from 'react';
-import { Staff } from '@/app/models/staff.model'; 
-
 import { useStore } from '@/app/stores/store';
 
 function StaffTableComponent() {
   const { staffStore } = useStore();
-  const { loadingInitial, StaffArray, staffPageParams } = staffStore;
-  const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
+  const { loadingInitial, StaffArray, staffPageParams, detailStaff } = staffStore;
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleDetailsClick = (staff: Staff) => {
-    setSelectedStaff(staff);
-  };
+  const handleOpenDetail = async (id: number) => {
+    onOpen();
+    await detailStaff(id);
+  }
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -74,7 +73,7 @@ function StaffTableComponent() {
                       size={'sm'}
                       colorScheme="blue"
                       aria-label={'Details'}
-                      onClick={() => handleDetailsClick(staff)}
+                      onClick={() => handleOpenDetail(staff.id)}
                     />
                     <IconButton icon={<FaEdit />} aria-label="Edit" colorScheme="orange" size="sm" />
                     <IconButton
@@ -90,9 +89,7 @@ function StaffTableComponent() {
           </Tbody>
         </Table>
       </TableContainer>
-      {selectedStaff && (
-        <StaffDetailPopUp isOpen={!!selectedStaff} onClose={() => setSelectedStaff(null)} staff={selectedStaff} />
-      )}
+      <StaffDetailPopUp isOpen={isOpen} onClose={onClose} />
     </>
   );
 }

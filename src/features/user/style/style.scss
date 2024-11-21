@@ -59,6 +59,13 @@
     background: white;
 }
 
+.input_text {
+    height: 2.97675rem !important;
+    flex-shrink: 0 !important;
+    background: #fff !important;
+    align-self: stretch !important;
+  }
+
 .select-styles {
     display: flex;
     width: 201px;

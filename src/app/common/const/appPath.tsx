@@ -49,7 +49,7 @@ export const menuList: AppPath[] = [
         color={isSelected ? '#00423D' : '#63748A'}
       />
     ),
-    label: 'Quản lý Users',
+    label: 'Người dùng',
     path: '/users',
   },
   {
@@ -137,7 +137,7 @@ export const menuListAdmin: AppPath[] = [
         color={isSelected ? '#00423D' : '#63748A'}
       />
     ),
-    label: 'Quản lý Users',
+    label: 'Người dùng',
     path: '/users',
   },
   {
