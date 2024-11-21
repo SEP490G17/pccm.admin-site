@@ -1,12 +1,17 @@
-import { UserManager } from './../models/user.model';
+import { CreateUserDTO, UserManager } from './../models/user.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { PageParams } from '../models/pageParams.model';
 import agent from '../api/agent';
+import { catchErrorHandle } from '../helper/utils';
+import { toast } from 'react-toastify';
 
 export default class UserStore {
   userRegistry = new Map<string, UserManager>();
   selectedUser: UserManager | undefined = undefined;
   loading: boolean = false;
+  loadingInitial: boolean = false;
+  loadingDetail: boolean = false;
+  loadingCreateUserByStaff: boolean = false;
   userPageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
 
@@ -18,38 +23,66 @@ export default class UserStore {
   //#region CRUD
   loadUsers = async () => {
     this.loading = true;
-    try {
-      await runInAction(async () => {
-        await agent.Users.list().then((response) => {
-          response.data.forEach(this.setUser);
-          this.userPageParams.totalElement = response.count;
-          this.userPageParams.pageSize = response.pageSize;
-        });
-      });
-    } catch (error) {
-      runInAction(() => {
-        console.error('Error loading users:', error);
-      });
-    } finally {
-      this.loading = false;
+    const queryParams = new URLSearchParams();
+    queryParams.append('skip', `${this.userPageParams.skip ?? 0}`);
+    queryParams.append('pageSize', `${this.userPageParams.pageSize}`);
+    if (this.userPageParams.searchTerm) {
+      queryParams.append('search', this.userPageParams.searchTerm);
     }
+    if (this.userPageParams.filter) {
+      queryParams.append('filter', this.userPageParams.filter);
+    }
+    if (this.userPageParams.sort) {
+      queryParams.append('sort', this.userPageParams.sort);
+    }
+    const [error, res] = await catchErrorHandle(agent.Users.list(`?${queryParams.toString()}`));
+    if (error) {
+      toast.error('Lấy danh sách người dùng thất bại');
+    }
+    if (res) {
+      const { count, data } = res;
+      data.forEach(this.setUser);
+      this.userPageParams.totalElement = count;
+    }
+    this.loading = false;
   };
 
   loadUserDetails = async (userId: string) => {
-    this.loading = true;
+    this.loadingDetail = true;
     try {
       const userDetails = await agent.Users.details(userId);
       runInAction(() => {
-        this.selectedUser = userDetails; 
+        this.selectedUser = userDetails;
       });
     } catch (error) {
       runInAction(() => {
         console.error('Error loading user details:', error);
-        this.selectedUser = undefined;
       });
     } finally {
-      this.loading = false;
+      this.loadingDetail = false;
     }
+  };
+
+  createUserStaff = async (data: CreateUserDTO) => {
+    this.loadingCreateUserByStaff = true;
+    try {
+      runInAction(() => {
+        agent.Account.createUserByStaff(data).then((s) => {
+          this.setUser(s);
+          toast.success('Tạo người dùng thành công');
+        });
+      });
+    } catch (error) {
+      runInAction(() => {
+        console.error('Reset password fail:', error);
+      });
+    } finally {
+      this.loadingCreateUserByStaff = false;
+    }
+  };
+
+  setLoadingInitial = (load: boolean) => {
+    this.loadingInitial = load;
   };
   //#endregion
 
@@ -77,11 +110,25 @@ export default class UserStore {
   //#endregion
 
   //#region common
-  setSearchTerm = (term: string) => {
+  setSearchTerm = async (term: string) => {
+    this.loadingInitial = true;
+    this.cleanUserCache();
+    this.userPageParams.clearLazyPage();
+    this.userPageParams.searchTerm = term;
+    await this.loadUsers();
     runInAction(() => {
-      this.userPageParams.searchTerm = term;
-      this.cleanUserCache();
-      this.loadUsers();
+      this.loadingInitial = false;
+    });
+  };
+
+  setStatusTerm = async (term: string) => {
+    this.loadingInitial = true;
+    this.cleanUserCache();
+    this.userPageParams.clearLazyPage();
+    this.userPageParams.sort = term;
+    await this.loadUsers();
+    runInAction(() => {
+      this.loadingInitial = false;
     });
   };
 

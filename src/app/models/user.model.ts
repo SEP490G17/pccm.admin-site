@@ -4,7 +4,6 @@ export interface User {
   token: string;
   phoneNumber: string;
   roles: string[];
-
 }
 export interface UserFormValues {
   username: string;
@@ -16,9 +15,34 @@ export interface UserManager {
   username: string;
   email: string;
   phoneNumber: string;
-  citizenIdentification : string;
   imageUrl: string;
-  lockoutEnable: boolean;
-  lockoutEnd: boolean;
+  lockoutEnabled: boolean;
+  lockoutEnd: string;
   isDisabled: boolean;
+}
+
+export class ResetPasswordDTO {
+  email: string = '';
+
+  constructor(data?: Partial<ResetPasswordDTO>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
+}
+
+export class CreateUserDTO {
+  userName: string = '';
+  phoneNumber: string = '';
+  email: string = '';
+  firstName: string = '';
+  lastName: string = '';
+  password: string = '';
+  rePassword: string = '';
+
+  constructor(data?: Partial<CreateUserDTO>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
 }

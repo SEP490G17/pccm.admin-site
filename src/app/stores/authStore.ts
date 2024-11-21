@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { User, UserFormValues } from '../models/user.model';
+import { ResetPasswordDTO, User, UserFormValues } from '../models/user.model';
 import agent from '../api/agent';
 import { store } from './store';
 import { router } from '../router/Routes';
@@ -8,6 +8,8 @@ import { catchErrorHandle } from '../helper/utils';
 export default class AuthStore {
   userApp: User | null = null;
   rememberMe: boolean = false;
+  loadingReset: boolean = false;
+
   constructor() {
     makeAutoObservable(this);
   }
@@ -42,6 +44,21 @@ export default class AuthStore {
     sessionStorage.clear();
     this.userApp = null;
     router.navigate('/login');
+  };
+
+  resetPassword = async (data: ResetPasswordDTO) => {
+    this.loadingReset = true;
+    try {
+      runInAction(() => {
+        agent.Account.resetPassword(data);
+      });
+    } catch (error) {
+      runInAction(() => {
+        console.error('Reset password fail:', error);
+      });
+    } finally {
+      this.loadingReset = false;
+    }
   };
 
   getUser = async () => {

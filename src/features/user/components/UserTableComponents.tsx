@@ -16,39 +16,47 @@ import {
 } from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import { CgFileDocument } from 'react-icons/cg';
-import { MdLockReset } from 'react-icons/md';
 import { useDisclosure } from '@chakra-ui/react';
 import UserDetailPopUp from '@/features/user/UserDetailPopUp';
-import { useState } from 'react';
-import { UserManager } from '@/app/models/user.model';
+import ResetPasswordDialog from './ResetPasswordDialog';
+import { ResetPasswordDTO } from '@/app/models/user.model';
+import dayjs from 'dayjs';
 
 function UserTableComponents() {
-  const { userStore } = useStore();
-  const { userArray, loading, userPageParams } = userStore;
+  const { userStore, authStore } = useStore();
+  const { userArray, userPageParams,loadingInitial } = userStore;
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedUser, setSelectedUser] = useState<UserManager | null>(null);
 
-  const renderStatus = (status: string) => {
-    let color = '';
-    switch (status) {
-      case 'Hoạt động':
-        color = 'var(--primary-color-600)';
-        break;
-      case 'Không hoạt động':
-        color = 'red';
-        break;
-      case 'Tạm thời khóa':
-        color = 'gray';
-        break;
-      default:
-        color = 'black';
-    }
-    return <Box color={color}>{status}</Box>;
-  };
-  const handleViewDetails = (user: UserManager) => {
-    setSelectedUser(user);
+
+  // const renderStatus = (status: string) => {
+  //   let color = '';
+  //   switch (status) {
+  //     case 'Hoạt động':
+  //       color = 'var(--primary-color-600)';
+  //       break;
+  //     case 'Không hoạt động':
+  //       color = 'red';
+  //       break;
+  //     case 'Tạm thời khóa':
+  //       color = 'gray';
+  //       break;
+  //     default:
+  //       color = 'black';
+  //   }
+  //   return <Box color={color}>{status}</Box>;
+  // };
+  const handleViewDetails = (userId: string) => {
     onOpen();
+    userStore.loadUserDetails(userId);
   };
+
+  const handleResetPassword = (email: string) => {
+    const data = new ResetPasswordDTO({
+      email: email
+    });
+    authStore.resetPassword(data);
+  };
+
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -66,7 +74,7 @@ function UserTableComponents() {
             </Tr>
           </Thead>
           <Tbody>
-            {loading ? (
+            {loadingInitial ? (
               <SkeletonTableAtoms numOfColumn={7} pageSize={userPageParams.pageSize} />
             ) : (
               userArray.map((user, index) => (
@@ -75,8 +83,12 @@ function UserTableComponents() {
                   <Td>{user.fullName}</Td>
                   <Td>{user.email}</Td>
                   <Td>{user.phoneNumber}</Td>
-                  <Td>{user.lockoutEnd}</Td>
-                  <Td>{renderStatus(user.lockoutEnable ? 'Không hoạt động' : 'Hoạt động')}</Td>
+                  <Td>{user.lockoutEnd ? dayjs(user.lockoutEnd).format('DD/MM/YYYY') : ''}</Td>
+                  <Td>
+                    <Box color={user.lockoutEnabled ? 'red' : 'var(--primary-color-600)'}>
+                      {user.lockoutEnabled ? 'Không hoạt động' : 'Hoạt động'}
+                    </Box>
+                  </Td>
                   <Td>
                     <Switch isChecked={!user.isDisabled} colorScheme={'blue'} />
                   </Td>
@@ -88,17 +100,16 @@ function UserTableComponents() {
                           size={'sm'}
                           colorScheme="blue"
                           aria-label={'Details'}
-                          onClick={() => handleViewDetails(user)}
+                          onClick={() => handleViewDetails(user.username)}
                         />
                       </Tooltip>
-                      <Tooltip hasArrow placement='top' label="Reset mật khẩu" bg="gray.300" color="black">
-                        <IconButton
-                          icon={<MdLockReset className="text-lg" />}
-                          aria-label="Edit"
-                          colorScheme="red"
-                          size="sm"
-                        />
-                      </Tooltip>
+                      <ResetPasswordDialog
+                        email={user.email}
+                        name={user.fullName}
+                        onReset={async () => {
+                          await handleResetPassword(user.email);
+                        }}
+                      ></ResetPasswordDialog>
                     </Flex>
                   </Td>
                 </Tr>
@@ -107,9 +118,7 @@ function UserTableComponents() {
           </Tbody>
         </Table>
       </TableContainer>
-      {selectedUser && (
-        <UserDetailPopUp isOpen={isOpen} onClose={onClose} user={selectedUser} />
-      )}
+      <UserDetailPopUp isOpen={isOpen} onClose={onClose} />
     </>
   );
 }
