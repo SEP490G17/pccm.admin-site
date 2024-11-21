@@ -38,11 +38,11 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
         Lịch đặt
       </Heading>
       <Grid templateColumns={'repeat(24,1fr)'} gap={4}>
-        <GridItem colSpan={16}>
-          <ScheduleCustomComponent />
-        </GridItem>
-        <GridItem colSpan={8}>
+        <GridItem colSpan={7}>
           <ComboBookingComponent />
+        </GridItem>
+        <GridItem colSpan={17}>
+          <ScheduleCustomComponent />
         </GridItem>
       </Grid>
       <BookingListComponent />

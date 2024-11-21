@@ -61,7 +61,7 @@ const ComboBookingComponent = observer(() => {
   const { courtClusterStore, bookingClusterStore } = useStore();
   const [selectedCourt, setSelectedCourt] = useState(0);
   return (
-    <Card className="h-[640px]">
+    <Card className="h-[640px] w-full" >
       <CardBody>
         <Heading size={'lg'} className="mb-5">
           Đặt theo gói combo
