@@ -12,6 +12,7 @@ import {
   Input,
   Select,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 
@@ -57,7 +58,7 @@ const ComboBookingComponent = observer(() => {
         },
       ),
   });
-
+ const toast = useToast();
   const { courtClusterStore, bookingClusterStore } = useStore();
   const [selectedCourt, setSelectedCourt] = useState(0);
   return (
@@ -77,7 +78,7 @@ const ComboBookingComponent = observer(() => {
               fullName: value.fullName,
               phoneNumber: value.phoneNumber,
             };
-            await bookingClusterStore.bookingWithCombo(newCombo);
+            await bookingClusterStore.bookingWithCombo(newCombo, toast);
           }}
           initialValues={new BookingWithCombo()}
           validationSchema={validationSchema}
