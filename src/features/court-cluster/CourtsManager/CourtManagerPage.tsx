@@ -1,15 +1,17 @@
 import { useStore } from '@/app/stores/store';
-import { Heading, useToast } from '@chakra-ui/react';
+import { Flex, Heading, useToast } from '@chakra-ui/react';
 import { observer } from 'mobx-react';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import CourtListTableComponent from './components/CourtListTableComponent';
 import PageHeadingAtoms from '@/features/atoms/PageHeadingAtoms';
+import CourtCreatePopup from './popup/CourtCreatePopup';
 
 const CourtsManagerPage = observer(() => {
   // inject store
   const { courtManagerStore } = useStore();
-  const { courtArray, loadingInitial, loadCourts, courtClusterName } = courtManagerStore;
+  const { courtArray, loadingInitial, loadCourts, courtClusterName, openTime, closeTime } =
+    courtManagerStore;
 
   // get params
   const toast = useToast();
@@ -39,12 +41,19 @@ const CourtsManagerPage = observer(() => {
           ]}
         />
       )}
-      <Heading className='mt-4 mb-8' size={'lg'}>Quản lý sân thuộc cụm {id}</Heading>
+      <Heading className="mt-4 mb-8" size={'lg'}>
+        Quản lý sân thuộc cụm {id}
+      </Heading>
       <CourtListTableComponent
         courtList={courtArray}
         loadingInitial={loadingInitial}
+        openTime={openTime}
+        closeTime={closeTime}
         pageSize={4}
       />
+      <Flex className='float-end justify-end'>
+        <CourtCreatePopup courtClusterId={Number(id)} openTime={openTime} closeTime={closeTime}/>
+      </Flex>
     </>
   );
 });

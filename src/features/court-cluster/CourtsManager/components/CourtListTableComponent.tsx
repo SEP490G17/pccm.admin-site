@@ -20,17 +20,20 @@ import CourtPricePopup from '../popup/CourtPricePopup';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
 import CourtComboPopup from '../popup/CourtComboPopup';
+import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 
 interface CourtListTableComponentProps {
   courtList: CourtForTable[];
   loadingInitial: boolean;
   pageSize: number;
+  openTime: string;
+  closeTime: string;
 }
 
 const CourtListTableComponent: FC<CourtListTableComponentProps> = observer(
   ({ courtList, loadingInitial, pageSize }) => {
     const { courtManagerStore } = useStore();
-    const { removeCourt, toggleCourtStatus } = courtManagerStore;
+    const { removeCourt, toggleCourtStatus, closeTime, openTime } = courtManagerStore;
     const toast = useToast();
     const handleDeleteCourt = async (courtId: number) => {
       await removeCourt(courtId, toast);
@@ -80,18 +83,19 @@ const CourtListTableComponent: FC<CourtListTableComponentProps> = observer(
 
                   <Td>
                     <Flex gap={2}>
-                      <CourtPricePopup courtId={court.courtId} courtPrices={court.courtPrices} />
+                      <CourtPricePopup
+                        closeTime={closeTime}
+                        openTime={openTime}
+                        courtId={court.courtId}
+                        courtPrices={court.courtPrices}
+                      />
                       <CourtComboPopup courtId={court.courtId} courtCombos={court.courtCombos} />
 
-                      <Tooltip label="Xoá sân" hasArrow placeSelf={'auto'}>
-                        <IconButton
-                          colorScheme="red"
-                          icon={<MdDelete className="text-xl" />}
-                          aria-label="Quản lý giá lẻ"
-                          size={'sm'}
-                          onClick={async () => await handleDeleteCourt(court.courtId)}
-                        />
-                      </Tooltip>
+                      <DeleteButtonAtom
+                        buttonSize="sm"
+                        name={`${court.courtName}`}
+                        onDelete={async () => await handleDeleteCourt(court.courtId)}
+                      ></DeleteButtonAtom>
                     </Flex>
                   </Td>
                 </Tr>

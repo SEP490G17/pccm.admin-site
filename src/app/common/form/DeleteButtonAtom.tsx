@@ -16,12 +16,12 @@ import TooltipButtonAtoms from '@/features/atoms/TooltipButtonAtoms.tsx';
 
 interface DeleteProps extends InputProps {
   header?: string;
-  name: string;
+  name?: string;
   onDelete: () => Promise<void>;
-  loading: boolean;
+  loading?: boolean;
   buttonContent?: string;
   isIcon?: boolean;
-  buttonSize: string;
+  buttonSize?: string;
   buttonClassName?: string;
 }
 

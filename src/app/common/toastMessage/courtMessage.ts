@@ -31,13 +31,21 @@ export const DefaultCourtText = {
     },
   },
 
-  courtCombo:{
+  courtCombo: {
     title: 'Cập nhật combo sân',
-    description:{
-      success:'Cập nhật combo sân thành công',
-      failure:'Cập nhật combo sân thất bại'
-    }
-  }
+    description: {
+      success: 'Cập nhật combo sân thành công',
+      failure: 'Cập nhật combo sân thất bại',
+    },
+  },
+
+  createCourt: {
+    title: 'Thêm sân',
+    description: {
+      success: 'Thêm sân thành công',
+      failure: 'Thêm sân thất bại',
+    },
+  },
 };
 
 export const CourtMessage = {
@@ -141,6 +149,32 @@ export const CourtMessage = {
     title,
     description,
     status: 'error',
+    duration,
+    isClosable,
+  }),
+
+  createCourtFailure: (
+    title: string = DefaultCourtText.createCourt.title,
+    description: string = DefaultCourtText.createCourt.description.failure,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  }),
+
+  createCourtSuccess: (
+    title: string = DefaultCourtText.createCourt.title,
+    description: string = DefaultCourtText.createCourt.description.success,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'success',
     duration,
     isClosable,
   }),

@@ -18,6 +18,7 @@ import {
   CourtClusterDetailsCreate,
   CourtClusterListAll,
   CourtCombo,
+  CourtForTable,
   CourtManagerResponse,
   CourtPriceResponse,
 } from '../models/court.model';
@@ -238,6 +239,8 @@ const CourtAgent = {
 
   updateCourtCombo: (id: number, courtCombos: CourtCombo[]) =>
     requests.put(`/courtCombo/${id}/update`, courtCombos),
+
+  createCourt: (court: object): Promise<CourtForTable> => requests.post(`/court`, court),
 };
 const UploadAgent = {
   post: (file: FormData): Promise<ImageUpload> => requests.post(`/upload`, file),

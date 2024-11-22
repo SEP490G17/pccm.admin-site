@@ -105,6 +105,8 @@ export interface CourtForTable {
 export interface CourtManagerResponse {
   courtClusterName: string;
   courtForTable: CourtForTable[];
+  openTime:string;
+  closeTime:string;
 }
 
 export interface CourtCombo {

@@ -16,6 +16,8 @@ export default class CourtManagerStore {
   loadingUpdateCourtPrice: boolean = false;
   courtRegistry = new Map<number, CourtForTable>();
   courtClusterName = '';
+  openTime = '';
+  closeTime = '';
   constructor() {
     makeAutoObservable(this);
   }
@@ -33,6 +35,8 @@ export default class CourtManagerStore {
       if (res) {
         res.courtForTable.forEach(this.setCourt);
         this.courtClusterName = res.courtClusterName;
+        this.openTime = res.openTime;
+        this.closeTime = res.closeTime;
       }
       this.setLoadingInitial(false);
     });
@@ -139,6 +143,23 @@ export default class CourtManagerStore {
         }
       });
     }
+  };
+
+  createCourt = async (court: object, toast: CreateToastFnReturn) => {
+    const pending = toast(CommonMessage.loadingMessage(DefaultCourtText.createCourt.title));
+    const [err, res] = await catchErrorHandle(agent.CourtAgent.createCourt(court));
+    runInAction(() => {
+      toast.close(pending);
+      if (err) {
+        toast(CourtMessage.createCourtFailure());
+      }
+      if (res) {
+        toast(CourtMessage.createCourtSuccess());
+        this.courtRegistry.set(res.courtId, res);
+      }
+    });
+
+    return { res, err };
   };
 
   setCourt = (court: CourtForTable) => {
