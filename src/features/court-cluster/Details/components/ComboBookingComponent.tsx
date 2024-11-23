@@ -58,11 +58,11 @@ const ComboBookingComponent = observer(() => {
         },
       ),
   });
- const toast = useToast();
+  const toast = useToast();
   const { courtClusterStore, bookingClusterStore } = useStore();
   const [selectedCourt, setSelectedCourt] = useState(0);
   return (
-    <Card className="h-[640px] w-full" >
+    <Card className="h-[640px] w-full">
       <CardBody>
         <Heading size={'lg'} className="mb-5">
           Đặt theo gói combo
@@ -97,7 +97,17 @@ const ComboBookingComponent = observer(() => {
                 <FastField name="phoneNumber">
                   {({ field, form }: any) => (
                     <FormControl isInvalid={form.errors.phoneNumber && form.touched.phoneNumber}>
-                      <Input placeholder="Số điện thoại" type="text" {...field} />
+                      <Input
+                        placeholder="Số điện thoại"
+                        type="number"
+                        {...field}
+                        onChange={(e) => {
+                          // Lấy giá trị từ input, đảm bảo là chuỗi
+                          const parsedValue = e.target.value.toString();
+                          // Cập nhật giá trị vào form
+                          form.setFieldValue(field.name, parsedValue);
+                        }}
+                      />
                       <FormErrorMessage>{form.errors.phoneNumber}</FormErrorMessage>
                     </FormControl>
                   )}
