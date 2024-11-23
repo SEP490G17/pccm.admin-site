@@ -74,8 +74,9 @@ const CourtPricePopup: FC<CourtPricePopupProps> = observer(
           'match-open-close',
           'Thời gian bắt đầu phải trùng với giờ mở cửa và thời gian kết thúc phải trùng với giờ đóng cửa',
           function (courtPrices) {
-            const opentime = this.options.context?.openTime; // Nhận opentime từ context
-            const closetime = this.options.context?.closeTime; // Nhận closetime từ context
+            const opentime = openTime; // Nhận opentime từ context
+            const closetime = closeTime; // Nhận closetime từ context
+            console.log(this.options);
             if (!courtPrices || courtPrices.length === 0) return true;
             const firstFromTime = dayjs(courtPrices[0]?.fromTime, 'HH:mm');
             const lastToTime = dayjs(courtPrices[courtPrices.length - 1]?.toTime, 'HH:mm');
@@ -106,28 +107,13 @@ const CourtPricePopup: FC<CourtPricePopupProps> = observer(
         <Modal isOpen={isOpen} onClose={onClose} size={'6xl'}>
           <ModalOverlay />
           <Formik
-            initialValues={{ courtPrices }}
+            initialValues={{courtPrices }}
             onSubmit={async (values) => {
               console.log('Submitted Values:', values);
               await updateCourtPrices(courtId, values.courtPrices, toast);
               onClose();
             }}
-            validate={(values) => {
-              try {
-                CourtPriceSchema.validateSync(values, {
-                  context: { openTime, closeTime },
-                  abortEarly: false, // Để thu thập tất cả lỗi
-                });
-              } catch (err) {
-                if (err instanceof Yup.ValidationError) {
-                  const errors = err.inner.reduce((acc, cur) => {
-                    acc[cur.path || 'courtPrices'] = cur.message;
-                    return acc;
-                  }, {});
-                  return errors;
-                }
-              }
-            }}
+            validationSchema={CourtPriceSchema}
           >
             {(props: FormikProps<CourtPriceFormik>) => (
               <Form>
