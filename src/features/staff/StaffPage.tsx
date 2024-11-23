@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Flex, Box, Select, Heading, Divider } from '@chakra-ui/react';
+import { Flex, Box, Heading, Divider } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style/style.scss';
@@ -10,21 +10,21 @@ import { debounce } from 'lodash';
 import StaffTableComponent from './components/StaffTableComponent';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
 import StaffPositionTableComponent from './components/StaffPositionTableComponent';
+import Select from 'react-select';
 
 const StaffPage = observer(() => {
   const { staffStore, staffPositionStore } = useStore();
   const { loadStaffs, setSearchTerm, staffPageParams, staffRegistry, loading, setLoadingInitial } =
     staffStore;
 
-  const { loadRoles, loadStaffPosition } = staffPositionStore;
+  const { loadRoles, loadStaffPosition, StaffPositionArray } = staffPositionStore;
   const [isPending, setIsPending] = useState(false);
-
   useEffect(() => {
     setLoadingInitial(true);
     Promise.all([loadStaffs(), loadRoles(), loadStaffPosition()]).then(() => {
       setLoadingInitial(false);
     });
-  }, [loadStaffs,loadRoles, loadStaffPosition,setLoadingInitial]);
+  }, [loadStaffs, loadRoles, loadStaffPosition, setLoadingInitial]);
 
   const handleSearch = useCallback(
     debounce(async (e) => {
@@ -37,6 +37,14 @@ const StaffPage = observer(() => {
     setIsPending(true); // Bật loading khi người dùng bắt đầu nhập
     await handleSearch(e); // Gọi hàm debounce
   };
+
+  const positionOptions = [
+    { value: -1, label: "Tất cả" },
+    ...StaffPositionArray.map((position, index) => ({
+      value: index,
+      label: position.name
+    }))
+  ];
 
   return (
     <>
@@ -71,15 +79,20 @@ const StaffPage = observer(() => {
       >
         <Flex gap="30px" alignItems="center">
           <Select
-            width="149px"
-            height="35px"
-            borderRadius="4px"
-            border="1px solid #ADADAD"
-            bg="#FFF"
-            color="#03301F"
-          >
-            <option value="all">Tất cả</option>
-          </Select>
+            options={positionOptions}
+            placeholder="Thể loại"
+            className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+            onChange={async (e) => {
+              if (e) {
+                await staffStore.setCategoryTerm(e.value.toString());
+              }
+            }}
+            defaultValue={{
+              value: staffPageParams.filter ?? -1,
+              label:
+                positionOptions.find(option => option.value.toString() === staffPageParams.filter)?.label ?? 'Tất cả',
+            }}
+          ></Select>
 
           <CreateStaffPage />
         </Flex>
