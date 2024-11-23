@@ -1,8 +1,9 @@
 import FloatingInputAtom from '@/app/common/form/FloatingInputAtom.tsx';
 import { UserFormValues } from '@/app/models/user.model.ts';
 import { useStore } from '@/app/stores/store.ts';
-import { Box, Button, Checkbox, Flex, Link } from '@chakra-ui/react';
+import { Box, Button, Checkbox, Flex, Link, Text } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
+import { useState } from 'react';
 import * as Yup from 'yup';
 
 class Login {
@@ -16,9 +17,16 @@ function LoginFormComponent() {
     username: Yup.string().required('Username/SDT bắt buộc'),
     password: Yup.string().required('Password bắt buộc'),
   });
+  const [err, setErr] = useState('');
   const { authStore } = useStore();
   const handleSubmit = async (value: UserFormValues, { isSubmitting }: any) => {
-    await authStore.login(value).finally(() => (isSubmitting(false)));
+    await authStore.login(value)
+    .then((data)=>{
+      if(data.err){
+        setErr(data.err?.response?.data)
+      }
+    })
+    .finally(() => (isSubmitting(false)));
   };
   return (
     <>
@@ -29,6 +37,7 @@ function LoginFormComponent() {
       >
         {({ handleSubmit, isValid, isSubmitting }) => (
           <Box px={{ base: 0, lg: '7.188rem' }}>
+            {err && <Text className='text-red-500 mb-4'>{err}</Text>}
             <Form onSubmit={handleSubmit}>
               <Box mb={4}>
                 <FloatingInputAtom name="username" label="SDT/Username" height={'3.563rem'} />

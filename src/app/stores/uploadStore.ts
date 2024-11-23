@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
 import { ImageUpload } from '../models/upload.model';
+import { catchErrorHandle } from '../helper/utils';
 
 export default class UploadStore {
   loading: boolean = false;
@@ -12,12 +13,17 @@ export default class UploadStore {
 
   upImage = async (file: File, fileName: string) => {
     this.loading = true;
-    await runInAction(async () => {
-      const formData = new FormData();
-      formData.append('file', file);
-      await agent.UploadAgent.post(formData)
-        .then((image) => this.setImageRegistry(image, fileName))
-        .finally(() => (this.loading = false));
+    const formData = new FormData();
+    formData.append('file', file);
+    const [err, res] = await catchErrorHandle(agent.UploadAgent.post(formData));
+    runInAction(() => {
+      if (res) {
+        this.setImageRegistry(res, fileName);
+      }
+      if(err){
+        console.log(err);
+      }
+      this.loading = false;
     });
   };
 

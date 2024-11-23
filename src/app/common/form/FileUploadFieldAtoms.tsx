@@ -1,6 +1,6 @@
 import { FastField } from 'formik';
 import FileUpload from '../input/FileUpload';
-import { FormControl } from '@chakra-ui/react';
+import { FormControl, FormErrorMessage } from '@chakra-ui/react';
 
 interface IProp {
   limit?: number;
@@ -17,6 +17,7 @@ function FileUploadFieldAtoms({ limit = 1, label, name = 'image', isRequired = f
           isRequired={isRequired}
         >
           <FileUpload limit={limit} label={label} name={name} value={field.value}/>
+          <FormErrorMessage>{form.errors[field.name]}</FormErrorMessage>
         </FormControl>
       )}
     </FastField>

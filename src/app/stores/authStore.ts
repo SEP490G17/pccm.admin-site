@@ -23,7 +23,7 @@ export default class AuthStore {
   };
 
   login = async (creds: UserFormValues) => {
-    const [, res] = await catchErrorHandle(agent.Account.login(creds));
+    const [err, res] = await catchErrorHandle(agent.Account.login(creds));
 
     runInAction(() => {
       if (res) {
@@ -35,8 +35,10 @@ export default class AuthStore {
         store.commonStore.setUserApp(res);
         this.userApp = res;
         router.navigate('/');
+        return;
       }
     });
+    return{err,res}
   };
 
   logout = () => {

@@ -119,11 +119,9 @@ const BookingInfoComponent = observer(() => {
           && (booking.bookingDetails.status === BookingStatus.Confirmed)
           && <OrderCreatePopup booking={booking} />}
         </GridItem>
-        {booking.ordersOfBooking.length > 0 && (
           <GridItem colSpan={24}>
             <OrdersOfBookingComponent />
           </GridItem>
-        )}
         <GridItem colSpan={24} className="mt-10">
           <Flex className="float-end">
             <BookingButtonAtom booking={bookingDetails} />

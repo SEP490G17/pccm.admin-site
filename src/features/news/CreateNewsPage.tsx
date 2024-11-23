@@ -34,7 +34,9 @@ const CreateNewsPage = ({ isOpen, onClose }: IProp) => {
 
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Tiêu đề bài viết không được bỏ trống'),
-    tags: Yup.array().required('Tag không được bỏ trống'),
+    tags: Yup.array()
+    .min(1,'Tag không được bỏ trông')
+    .required('Tag không được bỏ trống'),
     description: Yup.string().required('Mô tả không được bỏ trống'),
     thumbnail: Yup.string().required('Ảnh tin tức không được bỏ trống'),
     location: Yup.string().required('Địa điểm không được bỏ trống'),
@@ -124,7 +126,7 @@ const CreateNewsPage = ({ isOpen, onClose }: IProp) => {
                           name="location"
                           placeholder="Nhập" />
 
-                        <TagFieldAtom name="tags" label="Tags bài viết" isRequired={false}></TagFieldAtom>
+                        <TagFieldAtom name="tags" label="Tags bài viết" isRequired={true}></TagFieldAtom>
                       </HStack>
 
                       <FileUploadFieldAtoms

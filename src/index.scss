@@ -28,6 +28,10 @@
     font-size: 0.83334vw; /* Mặc định cho kích thước lớn */
   }
 }
+body{
+    background-color: $mainBackgroundColor !important;
+
+}
 
 #root {
   background-color: $mainBackgroundColor !important;
@@ -52,7 +56,6 @@
     opacity 0.3s ease;
 }
 .main-layout {
-  background-color: $mainBackgroundColor !important;
   box-sizing: border-box !important;
   header {
     height: $headerHeight !important;

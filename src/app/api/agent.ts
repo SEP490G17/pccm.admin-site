@@ -69,7 +69,6 @@ axios.interceptors.response.use(
   },
   (error: AxiosError) => {
     const { data, status, config } = error.response as AxiosResponse;
-    console.group('check axios');
 
     switch (status) {
       case 400:
@@ -87,7 +86,9 @@ axios.interceptors.response.use(
         }
         break;
       case 401:
-        router.navigate('/login');
+        if (!config.url?.includes('/login')) {
+          router.navigate('/login');
+        }
         break;
       case 403:
         toast.error('forbidden');
@@ -100,7 +101,6 @@ axios.interceptors.response.use(
         router.navigate('/server-error');
         break;
     }
-    console.groupEnd();
     return Promise.reject(error);
   },
 );

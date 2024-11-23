@@ -34,7 +34,7 @@ const ProductCardItemComponent = observer(({ product }: Iprops) => {
   };
   return (
     <>
-      <GridItem>
+      <GridItem height={'12rem'}>
         <Grid
           templateColumns={'repeat(24,1fr)'}
           className={'h-44 bg-white px-3 py-3 rounded-md'}
@@ -43,7 +43,8 @@ const ProductCardItemComponent = observer(({ product }: Iprops) => {
           <GridItem colSpan={8} className={'h-full flex items-center'}>
             <LazyImageAtom
               width={'14.5rem'}
-              objectFit={'contain'}
+              maxHeight={'9rem'}
+              objectFit={'cover'}
               className={'rounded-md'}
               src={product.thumbnailUrl}
               alt={product.productName}
