@@ -95,6 +95,14 @@ export default class StaffStore {
     runInAction(() => (this.loadingInitial = false));
   };
 
+  setCategoryTerm = async (term: string) => {
+    this.loadingInitial = true;
+    this.staffPageParams.filter = term;
+    this.cleanStaffCache();
+    await this.loadStaffs();
+    runInAction(() => (this.loadingInitial = false));
+  };
+
   get StaffArray() {
     return Array.from(this.staffRegistry.values());
   }
