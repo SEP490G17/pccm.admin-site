@@ -62,7 +62,19 @@ const CourtClusterCreatePage = observer(() => {
     title: Yup.string().required('Tiêu đề là bắt buộc'),
     description: Yup.string().required(),
     openTime: Yup.string().required('Giờ mở cửa là bắt buộc'),
-    closeTime: Yup.string().required('Giờ đóng cửa là bắt buộc'),
+    closeTime: Yup.string().required('Giờ đóng cửa là bắt buộc')
+      .when("openTime", (startTime, schema) => {
+        return schema.test({
+          name: "is-after-start-time",
+          message: "Giờ đóng cửa phải sau giờ mở cửa",
+          test: function (value) {
+            if (typeof startTime[0] === 'string' && typeof value === 'string') {
+              return new Date(value) > new Date(startTime[0]);
+            }
+            return false;
+          },
+        });
+      }),
     province: Yup.string().required('Tỉnh là bắt buộc'),
     district: Yup.string().required('Quận là bắt buộc'),
     ward: Yup.string().required('Phường là bắt buộc'),
@@ -373,11 +385,11 @@ const CourtClusterCreatePage = observer(() => {
                                       `courtDetails[${index}].courtPrice.[0].fromTime`,
                                     ).value
                                       ? dayjs(
-                                          props.getFieldProps(
-                                            `courtDetails[${index}].courtPrice.[0].fromTime`,
-                                          ).value,
-                                          'HH:mm',
-                                        )
+                                        props.getFieldProps(
+                                          `courtDetails[${index}].courtPrice.[0].fromTime`,
+                                        ).value,
+                                        'HH:mm',
+                                      )
                                       : null
                                   }
                                   onChange={(date) => {
@@ -413,11 +425,11 @@ const CourtClusterCreatePage = observer(() => {
                                       `courtDetails[${index}].courtPrice.[0].toTime`,
                                     ).value
                                       ? dayjs(
-                                          props.getFieldProps(
-                                            `courtDetails[${index}].courtPrice.[0].toTime`,
-                                          ).value,
-                                          'HH:mm',
-                                        )
+                                        props.getFieldProps(
+                                          `courtDetails[${index}].courtPrice.[0].toTime`,
+                                        ).value,
+                                        'HH:mm',
+                                      )
                                       : null
                                   }
                                   onChange={(date) => {
@@ -527,11 +539,11 @@ const CourtClusterCreatePage = observer(() => {
                                           `courtDetails[${index}].courtPrice.[${no}].fromTime`,
                                         ).value
                                           ? dayjs(
-                                              props.getFieldProps(
-                                                `courtDetails[${index}].courtPrice.[${no}].fromTime`,
-                                              ).value,
-                                              'HH:mm',
-                                            )
+                                            props.getFieldProps(
+                                              `courtDetails[${index}].courtPrice.[${no}].fromTime`,
+                                            ).value,
+                                            'HH:mm',
+                                          )
                                           : null
                                       }
                                       onChange={(date) => {
@@ -560,11 +572,11 @@ const CourtClusterCreatePage = observer(() => {
                                           `courtDetails[${index}].courtPrice.[${no}].toTime`,
                                         ).value
                                           ? dayjs(
-                                              props.getFieldProps(
-                                                `courtDetails[${index}].courtPrice.[${no}].toTime`,
-                                              ).value,
-                                              'HH:mm',
-                                            )
+                                            props.getFieldProps(
+                                              `courtDetails[${index}].courtPrice.[${no}].toTime`,
+                                            ).value,
+                                            'HH:mm',
+                                          )
                                           : null
                                       }
                                       onChange={(date) => {
@@ -646,7 +658,7 @@ const CourtClusterCreatePage = observer(() => {
                     >
                       <FormLabel className="title_label_court">Mô tả sân</FormLabel>
                       <ReactQuillComponent
-                        content={form.values.description??''}
+                        content={form.values.description ?? ''}
                         onChange={(value: string) => form.setFieldValue('description', value)}
                       />
                       <FormErrorMessage>{form.errors.description}</FormErrorMessage>

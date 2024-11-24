@@ -118,7 +118,7 @@ function UserTableComponents() {
                   </Td>
                   <Td>
                     <Switch
-                      isChecked={localStatuses[user.username] === true}
+                      isChecked={localStatuses[user.username] === false}
                       isDisabled={userStore.isLoading(user.username)}
                       onChange={() => {
                         const previousStatus = localStatuses[user.username];
