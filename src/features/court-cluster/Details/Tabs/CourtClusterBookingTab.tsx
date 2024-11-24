@@ -12,8 +12,12 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
   const toast = useToast();
 
   const { courtClusterStore, bookingClusterStore: bookingStore } = useStore();
-  const { loadCourtOfCluster, loadingInitialBookingPage, setLoadingInitialBookingPage } =
-    courtClusterStore;
+  const {
+    loadCourtOfCluster,
+    loadingInitialBookingPage,
+    setLoadingInitialBookingPage,
+    selectedCourtCluster,
+  } = courtClusterStore;
   const { clearBookingForSchedule } = bookingStore;
   useEffect(() => {
     setLoadingInitialBookingPage(true);
@@ -31,7 +35,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     toast,
     clearBookingForSchedule,
   ]);
-
+  if(!selectedCourtCluster) return;
   return (
     <Skeleton isLoaded={!loadingInitialBookingPage} minHeight={'300rem'}>
       <Heading size={'lg'} className="my-4">
@@ -39,7 +43,10 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
       </Heading>
       <Grid templateColumns={'repeat(24,1fr)'} gap={4}>
         <GridItem colSpan={7}>
-          <ComboBookingComponent />
+          <ComboBookingComponent
+            openTime={selectedCourtCluster.openTime}
+            closeTime={selectedCourtCluster.closeTime}
+          />
         </GridItem>
         <GridItem colSpan={17}>
           <ScheduleCustomComponent />

@@ -104,8 +104,6 @@ const ScheduleCustomComponent = observer(() => {
           StartTime: eventData.startTime,
           EndTime: eventData.endTime,
           PhoneNumber: eventData.phoneNumber,
-          RecurrenceRule: eventData.RecurrenceRule ?? '',
-          UntilTime: eventData.untilTime ?? null,
         };
 
         args.cancel = true;

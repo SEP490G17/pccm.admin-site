@@ -8,6 +8,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Grid,
+  GridItem,
   Heading,
   Input,
   Select,
@@ -19,10 +20,15 @@ import dayjs from 'dayjs';
 import { TimePicker } from 'antd';
 import { FastField, Field, Form, Formik } from 'formik';
 import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
 import * as Yup from 'yup';
 import { BookingWithCombo, IBookingWithCombo } from '@/app/models/booking.model';
-const ComboBookingComponent = observer(() => {
+
+interface IComboBookingProps {
+  openTime: string;
+  closeTime: string;
+}
+
+const ComboBookingComponent = observer(({ openTime, closeTime }: IComboBookingProps) => {
   const validationSchema = Yup.object({
     fullName: Yup.string().required('Họ và tên là bắt buộc'),
     phoneNumber: Yup.string().required('Số điện thoại là bắt buộc'),
@@ -43,7 +49,13 @@ const ComboBookingComponent = observer(() => {
           const toTimeDate = new Date(`1970-01-01T${toTime}`);
           return toTimeDate.getTime() - fromTimeDate.getTime() >= 60 * 60 * 1000; // 1 giờ = 60 * 60 * 1000 milliseconds
         },
-      ),
+      )
+      .test('is-after-openTime', 'Giờ bắt đầu phải lớn hơn hoặc bằng giờ mở cửa', function (value) {
+        if (!value || !openTime) return true;
+        const fromTimeDate = new Date(`1970-01-01T${value}`);
+        const openTimeDate = new Date(`1970-01-01T${openTime}`);
+        return fromTimeDate.getTime() >= openTimeDate.getTime();
+      }),
     toTime: Yup.string()
       .required('Giờ kết thúc là bắt buộc')
       .test(
@@ -56,13 +68,22 @@ const ComboBookingComponent = observer(() => {
           const toTimeDate = new Date(`1970-01-01T${value}`);
           return toTimeDate.getTime() - fromTimeDate.getTime() >= 60 * 60 * 1000; // 1 giờ = 60 * 60 * 1000 milliseconds
         },
+      )
+      .test(
+        'is-before-closeTime',
+        'Giờ kết thúc phải nhỏ hơn hoặc bằng giờ đóng cửa',
+        function (value) {
+          if (!value || !closeTime) return true;
+          const toTimeDate = new Date(`1970-01-01T${value}`);
+          const closeTimeDate = new Date(`1970-01-01T${closeTime}`);
+          return toTimeDate.getTime() <= closeTimeDate.getTime();
+        },
       ),
   });
- const toast = useToast();
+  const toast = useToast();
   const { courtClusterStore, bookingClusterStore } = useStore();
-  const [selectedCourt, setSelectedCourt] = useState(0);
   return (
-    <Card className="h-[640px] w-full" >
+    <Card className="h-[640px] w-full">
       <CardBody>
         <Heading size={'lg'} className="mb-5">
           Đặt theo gói combo
@@ -83,7 +104,7 @@ const ComboBookingComponent = observer(() => {
           initialValues={new BookingWithCombo()}
           validationSchema={validationSchema}
         >
-          {({ setFieldValue }) => (
+          {({ setFieldValue, values }) => (
             <Form className="flex flex-col gap-3">
               <Grid gap={5}>
                 <FastField name="fullName">
@@ -97,7 +118,17 @@ const ComboBookingComponent = observer(() => {
                 <FastField name="phoneNumber">
                   {({ field, form }: any) => (
                     <FormControl isInvalid={form.errors.phoneNumber && form.touched.phoneNumber}>
-                      <Input placeholder="Số điện thoại" type="text" {...field} />
+                      <Input
+                        placeholder="Số điện thoại"
+                        type="number"
+                        {...field}
+                        onChange={(e) => {
+                          // Lấy giá trị từ input, đảm bảo là chuỗi
+                          const parsedValue = e.target.value.toString();
+                          // Cập nhật giá trị vào form
+                          form.setFieldValue(field.name, parsedValue);
+                        }}
+                      />
                       <FormErrorMessage>{form.errors.phoneNumber}</FormErrorMessage>
                     </FormControl>
                   )}
@@ -110,9 +141,7 @@ const ComboBookingComponent = observer(() => {
                         placeholder="Chọn sân"
                         {...field}
                         onChange={(e) => {
-                          const selectedId = e.target.value;
                           field.onChange(e); // Cập nhật Formik state
-                          setSelectedCourt(Number(selectedId)); // Cập nhật React state
                         }}
                       >
                         {courtClusterStore.courtOfClusterArray.map((combo) => (
@@ -127,7 +156,9 @@ const ComboBookingComponent = observer(() => {
                 </Field>
                 <Field name="comboId">
                   {({ field, form }: any) => {
-                    const selectCourt = courtClusterStore.courtOfClusterRegistry.get(selectedCourt);
+                    const selectCourt = courtClusterStore.courtOfClusterRegistry.get(
+                      Number(values.courtId),
+                    );
                     if (selectCourt) {
                       const courtCombo = selectCourt.courtCombos;
                       return (
@@ -150,7 +181,11 @@ const ComboBookingComponent = observer(() => {
                         </FormControl>
                       );
                     } else {
-                      return <Text className="pl-1">Sân không có combo để hiển thị</Text>;
+                      return (
+                        <Text className="pl-1">
+                          Sân không có combo để hiển thị {values.courtId}
+                        </Text>
+                      );
                     }
                   }}
                 </Field>
@@ -188,6 +223,10 @@ const ComboBookingComponent = observer(() => {
                           onChange={(time) => {
                             setFieldValue(field.name, time.format('HH:mm:ss'));
                           }}
+                          onBlur={() => {
+                            form.setFieldTouched(field.name, true, true);
+                            form.validateField(field.name);
+                          }}
                         />
                         <FormErrorMessage className="pr-8">{form.errors.fromTime}</FormErrorMessage>
                       </FormControl>
@@ -207,12 +246,54 @@ const ComboBookingComponent = observer(() => {
                           onChange={(time) => {
                             setFieldValue(field.name, time.format('HH:mm:ss'));
                           }}
+                          onBlur={() => {
+                            form.setFieldTouched(field.name, true, true);
+                            form.validateField(field.name);
+                          }}
                         />
                         <FormErrorMessage className="pl-8">{form.errors.toTime}</FormErrorMessage>
                       </FormControl>
                     )}
                   </Field>
                 </Flex>
+                <Grid templateColumns={'10rem  1fr'}>
+                  <GridItem>Giá trên 1h: </GridItem>
+                  <GridItem>
+                    {Number(values.comboId) !== 0 &&
+                      Number(values.courtId) !== 0 &&
+                      (() => {
+                        const price =
+                          courtClusterStore.courtOfClusterRegistry
+                            .get(Number(values.courtId))
+                            ?.courtCombos.find((x) => x.id == Number(values.comboId))
+                            ?.totalPrice.toLocaleString('vn') ?? 0;
+
+                        return price + ' VND';
+                      })()}
+                  </GridItem>
+                  <GridItem>Tổng phải trả: </GridItem>
+                  <GridItem>
+                    {Number(values.comboId) !== 0 &&
+                      Number(values.courtId) !== 0 &&
+                      values.fromTime &&
+                      values.toTime &&
+                      (() => {
+                        const from = dayjs(values.fromTime, 'HH:mm:ss');
+                        const to = dayjs(values.toTime, 'HH:mm:ss');
+                        const diffInMinutes = to.diff(from, 'minute');
+                        const hours = (diffInMinutes / 60).toFixed(2);
+
+                        const price =
+                          courtClusterStore.courtOfClusterRegistry
+                            .get(Number(values.courtId))
+                            ?.courtCombos.find((x) => x.id == Number(values.comboId))?.totalPrice ||
+                          0;
+
+                        const totalAmount = hours * price;
+                        return totalAmount.toLocaleString('vn') + ' VND';
+                      })()}
+                  </GridItem>
+                </Grid>
                 <Button type="submit" variant="solid" colorScheme="teal">
                   Đặt combo
                 </Button>

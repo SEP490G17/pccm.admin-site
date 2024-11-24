@@ -226,7 +226,7 @@ export const BookingMessage = {
   ): UseToastOptions => ({
     title,
     description,
-    status: 'success',
+    status: 'error',
     duration,
     isClosable,
   }),

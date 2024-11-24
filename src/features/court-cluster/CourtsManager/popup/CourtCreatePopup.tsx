@@ -28,8 +28,7 @@ export interface CourtCreateFormik {
 
 export interface CourtCreateModel {
   courtName: string;
-  openTime: string;
-  closeTime: string;
+  courtClusterId: number;
   courtPrice: CourtPriceModel[];
 }
 
@@ -41,12 +40,12 @@ export interface CourtPriceModel {
 interface CourtCreatePopUpProps {
   openTime: string;
   closeTime: string;
-  courtClusterId:number;
+  courtClusterId: number;
 }
 import dayjs from 'dayjs';
 import { useStore } from '@/app/stores/store';
 
-const CourtCreatePopup = ({ openTime, closeTime,courtClusterId }: CourtCreatePopUpProps) => {
+const CourtCreatePopup = ({ openTime, closeTime, courtClusterId }: CourtCreatePopUpProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const validationSchema = Yup.object().shape({
     courtDetails: Yup.object().shape({
@@ -62,7 +61,6 @@ const CourtCreatePopup = ({ openTime, closeTime,courtClusterId }: CourtCreatePop
         .min(1, 'Cần có ít nhất một giá trị trong danh sách giá')
         .required('Danh sách giá là bắt buộc')
         .test('validate-times', 'Thời gian không hợp lệ', function (courtPrice) {
-          const { openTime, closeTime } = this.options.context.courtDetails;
           if (!courtPrice || courtPrice.length === 0) return true;
           const firstFromTime = dayjs(courtPrice[0]?.fromTime, 'HH:mm');
           const lastToTime = dayjs(courtPrice[courtPrice.length - 1]?.toTime, 'HH:mm');
@@ -76,14 +74,7 @@ const CourtCreatePopup = ({ openTime, closeTime,courtClusterId }: CourtCreatePop
   const toast = useToast();
   const { courtManagerStore } = useStore();
   const handleSumbit = async (value: object) => {
-    await courtManagerStore.createCourt(
-      {
-        courtName: value.courtName,
-        courtPrice: value.courtPrice,
-        courtClusterId: courtClusterId
-      },
-      toast
-    );
+    await courtManagerStore.createCourt(value, toast);
   };
 
   return (
@@ -101,8 +92,7 @@ const CourtCreatePopup = ({ openTime, closeTime,courtClusterId }: CourtCreatePop
         <Formik
           initialValues={{
             courtDetails: {
-              openTime: openTime,
-              closeTime: closeTime,
+              courtClusterId: courtClusterId,
               courtName: '',
               courtPrice: [
                 {
@@ -115,8 +105,8 @@ const CourtCreatePopup = ({ openTime, closeTime,courtClusterId }: CourtCreatePop
           }}
           validationSchema={validationSchema}
           onSubmit={async (values) => {
-            console.log('Form Values:', values);
             await handleSumbit(values.courtDetails);
+            onClose();
           }}
           context={{ openTime: openTime, closeTime: closeTime }}
         >

@@ -8,8 +8,6 @@ export interface BookingCreate {
   CourtId: number;
   StartTime: string; // Thời gian bắt đầu đặt sân
   EndTime: string; // Thời gian kết thúc đặt sân
-  RecurrenceRule: string; // Thời lượng đặt sân
-  UntilTime?: string;
 }
 
 export interface BookingModel {
@@ -78,17 +76,12 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
   const startTime = dayjs(booking.startTime); // Convert to GMT+7
   const endTime = dayjs(booking.endTime); // Convert to GMT+7
   const untilTime = booking.untilTime ? dayjs(booking.untilTime) : null; // Convert to GMT+7
-  console.log('origin', booking.startTime);
-  console.log('+7h', startTime);
-
   // Format playTime in 24-hour format: HH:mm - HH:mm
   const playTime = `${startTime.format('HH:mm')} - ${endTime.format('HH:mm')}`;
-
   // Format startDay and endDay in 'YYYY-MM-DD' in GMT+7
   const startDay = startTime.format('DD/MM/YYYY');
   const endDay = untilTime ? untilTime.format('DD/MM/YYYY') : endTime.format('DD/MM/YYYY');
   const recu = booking.RecurrenceRule ? booking.RecurrenceRule : booking.recurrenceRule;
-  console.log('start Day>>> ',startDay);
   return {
     id: booking.id,
     phoneNumber: booking.phoneNumber,

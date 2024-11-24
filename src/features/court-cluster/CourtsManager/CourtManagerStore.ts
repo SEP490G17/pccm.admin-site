@@ -26,6 +26,7 @@ export default class CourtManagerStore {
 
   loadCourts = async (courtClusterId: number, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
+    this.courtRegistry.clear();
     const [err, res] = await catchErrorHandle(agent.CourtAgent.listByCluster(courtClusterId));
 
     runInAction(() => {
