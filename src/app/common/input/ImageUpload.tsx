@@ -42,6 +42,8 @@ const ImageUpload = ({ initialFileList = [], name, limit }: IProps) => {
   };
 
   return (
+    <>
+    
     <ImgCrop
       rotationSlider
       aspect={16 / 9}
@@ -55,7 +57,11 @@ const ImageUpload = ({ initialFileList = [], name, limit }: IProps) => {
       >
         {fileList.length < limit && '+ Upload'}
       </Upload>
+      
     </ImgCrop>
+    
+    </>
+    
   );
 };
 

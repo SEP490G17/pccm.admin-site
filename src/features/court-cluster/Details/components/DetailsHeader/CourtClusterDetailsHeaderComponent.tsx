@@ -42,12 +42,21 @@ const CourtClusterDetailsHeaderComponent = observer(() => {
               <Heading>{selectedCourtCluster.title}</Heading>
               <Flex direction={'row'} gap={2}>
                 <FaMapLocation />{' '}
-                {[
-                  selectedCourtCluster.address,
-                  selectedCourtCluster.wardName,
-                  selectedCourtCluster.districtName,
-                  selectedCourtCluster.districtName,
-                ].join(', ')}
+                <Text
+                  onClick={() =>
+                    window.open(
+                      `https://www.google.com/maps/search/?q=Pickleball Hoà Lạc, ${selectedCourtCluster?.address}, ${selectedCourtCluster.wardName}, ${selectedCourtCluster.districtName}, ${selectedCourtCluster.provinceName}`,
+                      '_blank',
+                    )
+                  }
+                >
+                  {[
+                    selectedCourtCluster.address,
+                    selectedCourtCluster.wardName,
+                    selectedCourtCluster.districtName,
+                    selectedCourtCluster.districtName,
+                  ].join(', ')}
+                </Text>
               </Flex>
             </Flex>
             <Flex direction="column" className="justify-end">

@@ -69,7 +69,6 @@ const CourtComboPopup = observer(({ courtCombos, courtId }: ICourtComboProps) =>
         <Formik
           initialValues={{ courtCombos }}
           onSubmit={async (values) => {
-            console.log('Submitted Values:', values);
             await handleSave(values.courtCombos);
             onClose();
           }}

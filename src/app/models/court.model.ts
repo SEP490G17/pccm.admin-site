@@ -79,7 +79,6 @@ export interface CourtClusterDetailsCreate {
 }
 
 export interface CourtDetailsCreate {
-  id: number;
   courtName: string;
   courtPrice: CourtPrice[];
   status: number;

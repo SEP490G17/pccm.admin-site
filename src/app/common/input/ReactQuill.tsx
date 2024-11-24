@@ -1,7 +1,7 @@
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import "./style.scss";
-import React from 'react';
+import React, { useRef } from 'react';
 
 interface ContentsProps{
     content?: string;
@@ -10,6 +10,7 @@ interface ContentsProps{
 }
 
 const ReactQuillComponent: React.FC<ContentsProps> = ({ content, onChange, className='' }) => {
+    const quillRef = useRef<ReactQuill>(null);
     const toolbarOptions = [
         [{ 'font': [] }],
         [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
@@ -37,6 +38,7 @@ const ReactQuillComponent: React.FC<ContentsProps> = ({ content, onChange, class
             className={`quill ${className}`}
             value={content}
             onChange={onChange}
+            ref={quillRef} 
         />
     );
 }

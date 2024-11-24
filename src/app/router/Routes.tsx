@@ -12,7 +12,6 @@ import StaffPage from '@/features/staff/StaffPage';
 import UserManagerPage from '@/features/user/UserManagerPage';
 import StatisticPage from '@/features/statistic/StatisticPage';
 import RevenuePage from '@/features/revenue/RevenuePage';
-import CourtClusterCreatePage from '@/features/court-cluster/Create/CourtClusterCreatePage';
 import BookingsPage from '@/features/booking/BookingsPage';
 import BookingDetailsPage from '@/features/booking/BookingDetailsPage';
 import CourtClusterPage from '@/features/court-cluster/List/CourtsClusterPage';
@@ -20,6 +19,7 @@ import CourtClusterDetailsPage from '@/features/court-cluster/Details/CourtClust
 import CourtsManagerPage from '@/features/court-cluster/CourtsManager/CourtManagerPage';
 import { RoleBasedRedirect } from './HomeRouterConfigPage';
 import CourtClusterEditPage from '@/features/court-cluster/UpdateInfomation/CourtClusterEditPage';
+import CourtClusterCreatePage from '@/features/court-cluster/Create/CourtClusterCreatePage';
 
 export const routes: RouteObject[] = [
   {

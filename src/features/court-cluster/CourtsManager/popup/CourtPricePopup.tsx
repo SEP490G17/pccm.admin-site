@@ -1,7 +1,6 @@
 import { CourtPriceResponse } from '@/app/models/court.model';
 import {
   Button,
-  Flex,
   Heading,
   IconButton,
   Modal,
@@ -76,7 +75,6 @@ const CourtPricePopup: FC<CourtPricePopupProps> = observer(
           function (courtPrices) {
             const opentime = openTime; // Nhận opentime từ context
             const closetime = closeTime; // Nhận closetime từ context
-            console.log(this.options);
             if (!courtPrices || courtPrices.length === 0) return true;
             const firstFromTime = dayjs(courtPrices[0]?.fromTime, 'HH:mm');
             const lastToTime = dayjs(courtPrices[courtPrices.length - 1]?.toTime, 'HH:mm');
@@ -109,7 +107,6 @@ const CourtPricePopup: FC<CourtPricePopupProps> = observer(
           <Formik
             initialValues={{courtPrices }}
             onSubmit={async (values) => {
-              console.log('Submitted Values:', values);
               await updateCourtPrices(courtId, values.courtPrices, toast);
               onClose();
             }}
