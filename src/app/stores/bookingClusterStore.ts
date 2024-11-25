@@ -185,7 +185,7 @@ export default class BookingClusterStore {
     runInAction(() => {
       toast.close(pendingToast);
       if (err) {
-        toast(BookingMessage.acceptFailure(undefined, err.message));
+        toast(BookingMessage.acceptFailure(undefined, "Trùng lịch của 1 booking đã được confirm trước đó"));
       }
       if (res) {
         toast(BookingMessage.acceptSuccess());
@@ -226,7 +226,7 @@ export default class BookingClusterStore {
       if (res) {
         this.bookingTodayRegistry.delete(res.id);
         this.bookingForScheduleRegistry.delete(res.id);
-        toast(BookingMessage.denyFailure());
+        toast(BookingMessage.denySuccess());
         this.setBookingAll(res);
       }
     });
