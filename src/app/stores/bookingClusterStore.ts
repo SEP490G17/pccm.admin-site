@@ -76,10 +76,14 @@ export default class BookingClusterStore {
           return;
         }
         if (res) {
+          console.group('Today');
           res.forEach((booking) => {
-            this.setBookingToday(mapBookingToBookingForList(booking));
             this.setBooking(booking);
+            const lichConvert = mapBookingToBookingForList(booking)
+            
+            this.setBookingToday(lichConvert);
           });
+          console.groupEnd();
         }
         this.loadingBookingForSchedule = false;
       });

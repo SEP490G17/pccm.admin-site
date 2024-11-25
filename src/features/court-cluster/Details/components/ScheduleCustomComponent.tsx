@@ -74,6 +74,7 @@ const ScheduleCustomComponent = observer(() => {
             duration: 5000,
             isClosable: true,
           });
+          return;
         }
         if (!schedule.current.isSlotAvailable(startDate, endDate)) {
           args.cancel = true; // Huỷ nếu slot không khả dụng
@@ -84,6 +85,7 @@ const ScheduleCustomComponent = observer(() => {
             duration: 5000,
             isClosable: true,
           });
+          return;
         }
         const minEndDate = dayjs(startDate).add(1, 'hour');
         if (dayjs(endDate).isBefore(minEndDate)) {

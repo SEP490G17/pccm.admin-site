@@ -100,6 +100,7 @@ const ComboBookingComponent = observer(({ openTime, closeTime }: IComboBookingPr
               phoneNumber: value.phoneNumber,
             };
             await bookingClusterStore.bookingWithCombo(newCombo, toast);
+            console.log('submit')
           }}
           initialValues={new BookingWithCombo()}
           validationSchema={validationSchema}
