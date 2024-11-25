@@ -76,10 +76,14 @@ export default class BookingClusterStore {
           return;
         }
         if (res) {
+          console.group('Today');
           res.forEach((booking) => {
-            this.setBookingToday(mapBookingToBookingForList(booking));
             this.setBooking(booking);
+            const lichConvert = mapBookingToBookingForList(booking)
+            
+            this.setBookingToday(lichConvert);
           });
+          console.groupEnd();
         }
         this.loadingBookingForSchedule = false;
       });
@@ -185,7 +189,7 @@ export default class BookingClusterStore {
     runInAction(() => {
       toast.close(pendingToast);
       if (err) {
-        toast(BookingMessage.acceptFailure(undefined, err.message));
+        toast(BookingMessage.acceptFailure(undefined, "Trùng lịch của 1 booking đã được confirm trước đó"));
       }
       if (res) {
         toast(BookingMessage.acceptSuccess());

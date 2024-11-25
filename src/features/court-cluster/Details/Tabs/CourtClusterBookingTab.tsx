@@ -34,21 +34,21 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     toast,
     clearBookingForSchedule,
   ]);
-  if(!selectedCourtCluster) return;
+  if (!selectedCourtCluster) return;
   return (
     <Skeleton isLoaded={!loadingInitialBookingPage} minHeight={'300rem'}>
       <Heading size={'lg'} className="my-4">
         Lịch đặt
       </Heading>
       <Grid templateColumns={'repeat(24,1fr)'} gap={4}>
-        <GridItem colSpan={7}>
+        <GridItem colSpan={{base:24, xl:17}}>
+          <ScheduleCustomComponent />
+        </GridItem>
+        <GridItem colSpan={{base:24, xl:7}}>
           <ComboBookingComponent
             openTime={selectedCourtCluster.openTime}
             closeTime={selectedCourtCluster.closeTime}
           />
-        </GridItem>
-        <GridItem colSpan={17}>
-          <ScheduleCustomComponent />
         </GridItem>
       </Grid>
       <BookingListComponent />
