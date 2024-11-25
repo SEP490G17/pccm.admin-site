@@ -1,24 +1,27 @@
 import { observer } from 'mobx-react';
 import BookingTableComponent from './components/BookingTableComponent';
 import { useStore } from '@/app/stores/store';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Flex, Heading, useToast } from '@chakra-ui/react';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import Select from 'react-select';
 import { DatePicker } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
+import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
+import { debounce } from 'lodash';
 
 const BookingsPage = observer(() => {
   const { bookingStore, courtClusterStore } = useStore();
   const toast = useToast();
   const { courtClusterListAllOptions, loadCourtClusterListAll } = courtClusterStore;
+  const [isPending, setIsPending] = useState(false);
   const { loadBookingAll, filterByCourtCluster, filterByStatus, bookingPageParams, bookingRegistry, loading } = bookingStore;
   const statusOption = [
     { value: -1, label: 'Tất cả' },
+    { value: 4, label: 'Đã hoàn thành' },
     { value: 0, label: 'Chờ xác thực' },
-    { value: 4, label: 'Đã xác thực' },
-    { value: 1, label: 'Đã hoàn thành' },
+    { value: 1, label: 'Đã xác thực' },
     { value: 2, label: 'Đã từ chối' },
     { value: 3, label: 'Đã bị hủy' },
   ]
@@ -30,7 +33,7 @@ const BookingsPage = observer(() => {
     if (courtClusterListAllOptions.length <= 1) {
       loadCourtClusterListAll();
     }
-  });
+  }, [loadBookingAll, loadCourtClusterListAll, bookingPageParams, bookingRegistry, toast]);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -75,6 +78,21 @@ const BookingsPage = observer(() => {
     await filterByCourtCluster(courtClusterId, toast);
   };
 
+  const handleSearchLog = useMemo(() => {
+    return debounce(async (e) => {
+      setIsPending(false); // Tắt loading
+      await bookingStore.setSearchTerm(e.target.value, toast);
+    }, 500);
+  }, [setIsPending, bookingStore, toast]);
+
+  const onSearchChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsPending(true);
+      handleSearchLog(e);
+    },
+    [handleSearchLog, setIsPending],
+  );
+
   return (
     <>
       <PageHeadingAtoms breadCrumb={[{ title: 'Booking', to: '/booking' }]} />
@@ -94,7 +112,7 @@ const BookingsPage = observer(() => {
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
             onChange={async (e) => {
               if (e) {
-                handleCourtClusterChange(e.value)
+                await handleCourtClusterChange(e.value)
               }
             }}
             isSearchable={true}
@@ -136,6 +154,7 @@ const BookingsPage = observer(() => {
               }
             }}
           />
+          <InputSearchBoxAtoms value={bookingPageParams.searchTerm} isPending={isPending} handleChange={onSearchChange} />
         </Flex>
       </Flex>
       <BookingTableComponent />

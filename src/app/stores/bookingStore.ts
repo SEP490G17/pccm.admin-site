@@ -47,9 +47,7 @@ export default class BookingStore {
       queryParams.append('courtClusterId', `${this.bookingPageParams.courtClusterId}`);
     }
     if (this.bookingPageParams.searchTerm) {
-      if (this.bookingPageParams.searchTerm) {
-        queryParams.append('search', this.bookingPageParams.searchTerm);
-      }
+      queryParams.append('search', this.bookingPageParams.searchTerm);
     }
     if (this.bookingPageParams.fromDate != null) {
       queryParams.append('fromDate', this.bookingPageParams.fromDate);
@@ -77,6 +75,17 @@ export default class BookingStore {
         this.bookingPageParams.totalElement = res.count;
       }
       this.loading = false;
+    });
+  };
+
+  setSearchTerm = async (term: string, toast: CreateToastFnReturn) => {
+    this.loadingInitial = true;
+    this.bookingPageParams.clearLazyPage();
+    this.bookingPageParams.searchTerm = term;
+    this.bookingRegistry.clear();
+    await this.loadBookingAll(toast);
+    runInAction(() => {
+      this.loadingInitial = false;
     });
   };
 
