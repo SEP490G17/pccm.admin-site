@@ -1,12 +1,14 @@
 import { BookingForList, BookingStatus } from '@/app/models/booking.model';
 import { PaymentStatus } from '@/app/models/payment.model';
 import { Button, Flex, Tag, TagLabel, TagLeftIcon, useToast } from '@chakra-ui/react';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import PaymentButtonAtom from './PaymentButtonAtom';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
 import { convertBookingStartAndEndUTCToG7 } from '@/app/helper/utils';
+import ModalAcceptButton from '@/features/booking/popups/accept-booking-conflict/ModalAcceptButton';
+import ModalDenyButton from '@/features/booking/popups/ModalDenyButton';
 
 interface BookingButtonAtomProps {
   booking: BookingForList;
@@ -14,8 +16,16 @@ interface BookingButtonAtomProps {
 
 const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => {
   const { bookingClusterStore, bookingStore } = useStore();
-  const { acceptedBooking, completeBooking, denyBooking, cancelBooking } = bookingClusterStore;
+  const { acceptedBooking, completeBooking, cancelBooking } = bookingClusterStore;
   const toast = useToast();
+  const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
+  const [isDenyModalOpen, setIsDenyModalOpen] = useState(false);
+
+  const onAcceptOpen = () => setIsAcceptModalOpen(true);
+  const onAcceptClose = () => setIsAcceptModalOpen(false);
+
+  const onDenyOpen = () => setIsDenyModalOpen(true);
+  const onDenyClose = () => setIsDenyModalOpen(false);
 
   const handleAccepted = async () => {
     await acceptedBooking(booking.id, toast).then((data) => {
@@ -27,14 +37,6 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => 
 
   const handleCompleted = async () => {
     await completeBooking(booking.id, toast).then((data) => {
-      if (data.res) {
-        bookingStore.bookingRegistry.set(data.res.id, convertBookingStartAndEndUTCToG7(data.res));
-      }
-    });
-  };
-
-  const handleDenyBooking = async () => {
-    await denyBooking(booking.id, toast).then((data) => {
       if (data.res) {
         bookingStore.bookingRegistry.set(data.res.id, convertBookingStartAndEndUTCToG7(data.res));
       }
@@ -84,12 +86,15 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => 
   if (booking.status === BookingStatus.Pending) {
     return (
       <Flex className="justify-start gap-2">
-        <Button colorScheme="blue" className="w-28" onClick={handleAccepted}>
+        <Button colorScheme="blue" className="w-28" onClick={onAcceptOpen}>
           Xác thực
         </Button>
-        <Button colorScheme="red" className="w-28" onClick={handleDenyBooking}>
+        <ModalAcceptButton booking={booking} isOpen={isAcceptModalOpen} onClose={onAcceptClose} />
+
+        <Button colorScheme="red" className="w-28" onClick={onDenyOpen}>
           Từ chối
         </Button>
+        <ModalDenyButton booking={booking} isOpen={isDenyModalOpen} onClose={onDenyClose} />
       </Flex>
     );
   }

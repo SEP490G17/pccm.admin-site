@@ -230,8 +230,32 @@ export default class BookingClusterStore {
       if (res) {
         this.bookingTodayRegistry.delete(res.id);
         this.bookingForScheduleRegistry.delete(res.id);
+        this.bookingPendingRegistry.delete(id);
         toast(BookingMessage.denySuccess());
         this.setBookingAll(res);
+      }
+    });
+    return { err, res };
+  };
+
+  denyConflictBooking = async (data: number[], toast: CreateToastFnReturn) => {
+    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.deny.title));
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.denyBookingConflict(data));
+    runInAction(() => {
+      toast.close(pendingToast);
+      if (err) {
+        toast(BookingMessage.acceptFailure());
+      }
+      if (res) {
+        res.forEach(
+          (data) => (
+            this.bookingTodayRegistry.delete(data.id),
+            this.bookingForScheduleRegistry.delete(data.id),
+            this.bookingPendingRegistry.delete(data.id),
+            this.setBookingAll(data)
+          ),
+        );
+        toast(BookingMessage.acceptSuccess());
       }
     });
     return { err, res };
@@ -375,8 +399,8 @@ export default class BookingClusterStore {
     this.bookingForScheduleRegistry.clear();
   }
 
-  bookingWithCombo = async (booking: IBookingWithCombo, toast:CreateToastFnReturn) => {
-    const pending  =toast(CommonMessage.loadingMessage(DefaultBookingText.booking.title));
+  bookingWithCombo = async (booking: IBookingWithCombo, toast: CreateToastFnReturn) => {
+    const pending = toast(CommonMessage.loadingMessage(DefaultBookingText.booking.title));
     const [err, res] = await catchErrorHandle(agent.BookingAgent.bookingWithCombo(booking));
     runInAction(() => {
       toast.close(pending);

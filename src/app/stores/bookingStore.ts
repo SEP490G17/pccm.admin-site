@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
-import { BookingDetails, BookingForList } from '../models/booking.model';
+import { BookingConflict, BookingDetails, BookingForList } from '../models/booking.model';
 import {
   calculateTimeDifferenceInHours,
   catchErrorHandle,
@@ -15,11 +15,14 @@ import { PaginationModel } from '../models/pagination.model';
 import { BookingMessage } from '../common/toastMessage/bookingMessage';
 import { OrderMessage } from '../common/toastMessage/orderMessage';
 import { CommonMessage } from '../common/toastMessage/commonMessage';
+import { toast } from 'react-toastify';
 
 export default class BookingStore {
   loadingInitial: boolean = false;
+  loading: boolean = false;
   loadingOrder: boolean = false;
-
+  loadingConflict: boolean = false;
+  bookingConflict: BookingForList[] = [];
   selectedBooking?: BookingDetails;
   orderOfBooking: OrderOfBooking[] = [];
   selectedProductItems = new Map<number, number>();
@@ -36,7 +39,7 @@ export default class BookingStore {
   }
 
   loadBookingAll = async (toast: CreateToastFnReturn) => {
-    this.loadingInitial = true;
+    this.loading = true;
     const queryParams = new URLSearchParams();
     queryParams.append('skip', `${this.bookingPageParams.skip}`);
     queryParams.append('pageSize', `${this.bookingPageParams.pageSize}`);
@@ -47,6 +50,15 @@ export default class BookingStore {
       if (this.bookingPageParams.searchTerm) {
         queryParams.append('search', this.bookingPageParams.searchTerm);
       }
+    }
+    if (this.bookingPageParams.fromDate != null) {
+      queryParams.append('fromDate', this.bookingPageParams.fromDate);
+    }
+    if (this.bookingPageParams.toDate != null) {
+      queryParams.append('toDate', this.bookingPageParams.toDate);
+    }
+    if (this.bookingPageParams.status != null) {
+      queryParams.append('status', `${this.bookingPageParams.status}`);
     }
     const [err, res] = await catchErrorHandle<PaginationModel<BookingForList>>(
       agent.BookingAgent.getListV2(`?${queryParams.toString()}`),
@@ -64,7 +76,7 @@ export default class BookingStore {
         this.bookingPageParams.skip = this.bookingRegistry.size;
         this.bookingPageParams.totalElement = res.count;
       }
-      this.loadingInitial = false;
+      this.loading = false;
     });
   };
 
@@ -76,6 +88,26 @@ export default class BookingStore {
     await this.loadBookingAll(toast);
     runInAction(() => (this.loadingInitial = false));
   };
+
+  filterByStatus = async (status: number, toast: CreateToastFnReturn) => {
+    this.loadingInitial = true;
+    this.bookingPageParams.clearLazyPage();
+    this.bookingPageParams.status = status;
+    this.bookingRegistry.clear();
+    await this.loadBookingAll(toast);
+    runInAction(() => (this.loadingInitial = false));
+  };
+
+  filterByDate = async (date1: string | null, date2: string | null, toast: CreateToastFnReturn) => {
+    this.loadingInitial = true;
+    this.bookingPageParams.clearLazyPage();
+    this.bookingPageParams.fromDate = date1;
+    this.bookingPageParams.toDate = date2;
+    this.bookingRegistry.clear();
+    await this.loadBookingAll(toast);
+    runInAction(() => (this.loadingInitial = false));
+  };
+
   get bookingArray() {
     return Array.from(this.bookingRegistry.values());
   }
@@ -108,7 +140,9 @@ export default class BookingStore {
         res.orderForProducts.forEach((product) =>
           this.selectedProductItems.set(product.productId, product.quantity),
         );
-        res.orderForServices.forEach((service) => this.selectedServiceItems.set(service.serviceId, 1));
+        res.orderForServices.forEach((service) =>
+          this.selectedServiceItems.set(service.serviceId, 1),
+        );
       }
       this.loadingOrder = false;
     });
@@ -354,6 +388,20 @@ export default class BookingStore {
       } catch (error) {
         console.error('Failed to export bill:', error);
       }
+    });
+  };
+
+  getBookingConflict = async (booking: BookingConflict) => {
+    this.loadingConflict = true;
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.getListConflict(booking));
+    runInAction(() => {
+      if (err) {
+        toast('Lấy danh sách lịch trùng lỗi');
+      }
+      if (res) {
+        this.bookingConflict = res;
+      }
+      this.loadingConflict = false;
     });
   };
 }

@@ -43,6 +43,7 @@ import {
   RevenueDetails,
 } from '../models/revenue.models';
 import {
+  BookingConflict,
   BookingCreate,
   BookingDetails,
   BookingForList,
@@ -272,6 +273,8 @@ const BookingAgent = {
   getListForSchedule: (body: object): Promise<BookingModel[]> => requests.post('/booking/v1', body),
   getListV2: (queryParam: string = ''): Promise<PaginationModel<BookingForList>> =>
     requests.get(`/booking/v2${queryParam}`),
+  getListConflict: (booking: BookingConflict): Promise<BookingForList[]> =>
+    requests.post(`/booking/bookingConflict`, booking),
   getDetailsV1: (id: number): Promise<BookingDetails> => requests.get(`/booking/v1/${id}`),
   priceCourt: (data: number): Promise<CourtPriceBooking[]> =>
     requests.get(`/Booking/priceCourt?courtClusterId=${data}`),
@@ -281,6 +284,8 @@ const BookingAgent = {
     requests.put(`/booking/completed/${id}`, {}),
   cancelBooking: (id: number): Promise<BookingForList> => requests.put(`/booking/cancel/${id}`, {}),
   denyBooking: (id: number): Promise<BookingForList> => requests.put(`/booking/deny/${id}`, {}),
+  denyBookingConflict: (ids: number[]): Promise<BookingForList[]> =>
+    requests.put(`/booking/denybookingConflict`, ids),
   exportBill: (courtClusterId: number): Promise<any> =>
     requests.get(`/bill/billbooking/${courtClusterId}`),
   exportBillOrder: (orderId: number): Promise<any> => requests.get(`/bill/billorder/${orderId}`),
