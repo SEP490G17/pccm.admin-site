@@ -109,7 +109,7 @@ export const BookingMessage = {
   }),
 
   acceptFailure: (
-    description: string,
+    description: string = DefaultBookingText.accept.description.success,
     title: string = DefaultBookingText.accept.title,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,

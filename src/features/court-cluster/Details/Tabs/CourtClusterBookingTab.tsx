@@ -23,7 +23,6 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     setLoadingInitialBookingPage(true);
     bookingStore.clearBookingForSchedule();
     Promise.all([
-      bookingStore.loadCourtPrice(courtClusterId),
       loadCourtOfCluster(courtClusterId, toast),
       bookingStore.loadBookingForSchedule(toast),
     ]).then(() => setLoadingInitialBookingPage(false));

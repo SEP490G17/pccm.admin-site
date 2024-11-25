@@ -10,6 +10,14 @@ export interface BookingCreate {
   EndTime: string; // Thời gian kết thúc đặt sân
 }
 
+export interface BookingConflict {
+  BookingId: number;
+  CourtId?: number;
+  FromDate: string;
+  FromTime: string; // Thời gian bắt đầu đặt sân
+  ToTime: string; // Thời gian kết thúc đặt sân
+}
+
 export interface BookingModel {
   id: number;
   phoneNumber: string;
@@ -170,19 +178,17 @@ export const getBookingStatusColor = (status: number): ThemeTypings['colorScheme
   }
 };
 
-
-export interface IBookingWithCombo
-{
-  fullName: string,
-  phoneNumber: string,
-  courtId: number,
-  fromDate: Date,
-  comboId: number,
-  fromTime: string,
-  toTime: string,
+export interface IBookingWithCombo {
+  fullName: string;
+  phoneNumber: string;
+  courtId: number;
+  fromDate: Date;
+  comboId: number;
+  fromTime: string;
+  toTime: string;
 }
 
-export class BookingWithCombo implements IBookingWithCombo{
+export class BookingWithCombo implements IBookingWithCombo {
   fullName: string = '';
   phoneNumber: string = '';
   courtId: number = 0;
@@ -190,5 +196,4 @@ export class BookingWithCombo implements IBookingWithCombo{
   comboId: number = 0;
   fromTime: string = '';
   toTime: string = '';
-
 }

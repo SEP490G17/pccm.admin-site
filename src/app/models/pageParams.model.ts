@@ -51,4 +51,7 @@ export class ServiceLogPageParams extends PageParams {
 
 export class BookingPageParams extends PageParams {
   courtClusterId?: number;
+  fromDate?: string | null;
+  toDate?: string | null;
+  status? : number;
 }
