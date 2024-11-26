@@ -18,6 +18,8 @@ export class PageParams implements IPageParams {
   searchTerm?: string;
   sort?: string;
   filter?: string;
+  fromDate?: string | null;
+  toDate?: string | null;
 
   clearLazyPage = () => {
     this.totalElement = 0;
@@ -38,20 +40,14 @@ export class BannerPageParams extends PageParams {
 export class ProductLogPageParams extends PageParams {
   courtCluster?: number;
   LogType?: number;
-  fromDate?: string | null;
-  toDate?: string | null;
 }
 
 export class ServiceLogPageParams extends PageParams {
   courtCluster?: number;
   LogType?: number;
-  fromDate?: string | null;
-  toDate?: string | null;
 }
 
 export class BookingPageParams extends PageParams {
   courtClusterId?: number;
-  fromDate?: string | null;
-  toDate?: string | null;
-  status? : number;
+  status?: number;
 }
