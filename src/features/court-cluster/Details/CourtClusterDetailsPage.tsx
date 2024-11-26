@@ -14,7 +14,7 @@ import CourtClusterDetailsHeaderComponent from "./components/DetailsHeader/Court
 
 const CourtClusterDetailsPage = observer(() => {
     const {courtClusterStore, bookingClusterStore} = useStore();
-    const {getDetailsCourtCluster, selectedTabs, setSelectedTab} = courtClusterStore;
+    const {getDetailsCourtCluster, selectedTabs, setSelectedTab, selectedCourtCluster} = courtClusterStore;
     const chakraToast = useToast();
     const {id} = useParams();
     useEffect(() => {
@@ -40,7 +40,7 @@ const CourtClusterDetailsPage = observer(() => {
                         {selectedTabs === 0 && <CourtClusterDescriptionTab />}
                     </TabPanel>
                     <TabPanel >
-                        {selectedTabs === 1 && <CourtClusterBookingTab courtClusterId={Number(id)}/>}
+                        {selectedTabs === 1 && <CourtClusterBookingTab selectedCourtCluster={selectedCourtCluster!} courtClusterId={Number(id)}/>}
                     </TabPanel>
                     <TabPanel p={0}>
                         {selectedTabs === 2 && id &&<CourtClusterProductsTab courtClusterId={Number(id)} />}

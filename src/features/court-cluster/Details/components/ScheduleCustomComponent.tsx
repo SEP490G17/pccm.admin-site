@@ -8,7 +8,7 @@ import {
   ResourceDirective,
   ResourcesDirective,
 } from '@syncfusion/ej2-react-schedule';
-import {  useRef } from 'react';
+import { useRef } from 'react';
 import { isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
 import { useToast } from '@chakra-ui/react';
 import dayjs from 'dayjs';
@@ -17,8 +17,12 @@ import { useStore } from '@/app/stores/store';
 import { BookingCreate } from '@/app/models/booking.model';
 import { PaymentStatus } from '@/app/models/payment.model';
 import BookingEditorTemplateComponent from '../components/BookingTab/BookingEditorTemplateComponent';
-
-const ScheduleCustomComponent = observer(() => {
+import { CourtCluster } from '@/app/models/court.model';
+interface IProps {
+  courtClusterId: number;
+  selectedCourtCluster: CourtCluster;
+}
+const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
   const toast = useToast();
   const fields = {
     phoneNumber: {
@@ -30,16 +34,9 @@ const ScheduleCustomComponent = observer(() => {
     courtId: { name: 'courtId', validation: { required: true } },
     fullName: { name: 'fullName', validation: { required: true } },
   };
-  const { courtClusterStore, bookingClusterStore: bookingStore } = useStore();
-  const {
-    courtOfClusterArray,
-    loadingInitialBookingPage,
-  } = courtClusterStore;
-  const {
-    bookingScheduleArray: bookingArray,
-    createBooking,
-  } = bookingStore;
- 
+  const { courtClusterStore, bookingClusterStore } = useStore();
+  const { loadingInitialBookingPage } = courtClusterStore;
+  const { bookingScheduleArray, createBooking } = bookingClusterStore;
 
   const group = { resources: ['courts'] };
   const schedule = useRef<ScheduleComponent>(null);
@@ -55,6 +52,7 @@ const ScheduleCustomComponent = observer(() => {
   });
   const handleActionBegin = async (args: any) => {
     const currentTime = new Date();
+    console.log('action begin', args);
     if (
       (args.requestType === 'eventCreate' || args.requestType === 'eventChange') &&
       args.data &&
@@ -113,6 +111,10 @@ const ScheduleCustomComponent = observer(() => {
         await createBooking(bookingPost, toast);
       }
     }
+    if (args.requestType === 'eventRemove') {
+      const elementId = args.data[0].id;
+      await bookingClusterStore.cancelBooking(elementId, toast);
+    }
   };
   const handleRenderCell = (args: any) => {
     const currentTime = new Date();
@@ -144,10 +146,35 @@ const ScheduleCustomComponent = observer(() => {
     if (args.action === 'date') {
       // Lấy ngày hiện tại trên lịch
       const selectedDate = args.currentDate;
-      await bookingStore.loadBookingForSchedule(toast, selectedDate);
+      await bookingClusterStore.loadBookingForSchedule(toast, selectedDate);
     }
   };
-
+  const onPopupOpen = (args: any) => {
+    console.log(args);
+    if (args.type === 'Editor') {
+      setTimeout(() => {
+        const saveButton = args.element.querySelector('.e-event-save');
+        const isEditing = args.data.id; // Sửa theo field id bạn dùng
+        if (isEditing) {
+          if (saveButton) saveButton.setAttribute('disabled', '');
+        } else {
+          if (saveButton) saveButton.removeAttribute('disabled');
+        }
+      }, 100);
+    }
+    if (args.type === 'DeleteAlert') {
+      const dialog = args.element;
+      const deleteHeader = dialog.querySelector('.e-dlg-header');
+      const deleteContent = dialog.querySelector('.e-dlg-content');
+      // Tìm tất cả các nút trong footer của popup
+      const deleteButton = dialog.querySelector('.e-quick-dialog-delete');
+      const cancelButton = dialog.querySelector('.e-quick-dialog-cancel');
+      deleteContent.innerText = 'Bạn có chắc muốn hủy lịch này';
+      deleteHeader.innerText = 'Hủy lịch';
+      deleteButton.innerText = 'Xác nhận';
+      cancelButton.innerText = 'Hủy';
+    }
+  };
   return (
     <>
       {!loadingInitialBookingPage && (
@@ -157,21 +184,21 @@ const ScheduleCustomComponent = observer(() => {
           timeFormat="HH:mm"
           timeScale={{ enable: true, interval: 60, slotCount: 1 }}
           workHours={{ highlight: true, start: '05:00', end: '22:00' }}
-          startHour="05:00"
-          endHour="23:00"
+          startHour={selectedCourtCluster.openTime.substring(0, 5)}
+          endHour={selectedCourtCluster.closeTime.substring(0, 5)}
           showQuickInfo={false}
           timezone="Asia/Bangkok"
           editorTemplate={(props: any) => (
             <BookingEditorTemplateComponent
               {...props}
-              courtOfClusterArray={courtOfClusterArray} // Truyền dataSource vào editor template
+              courtOfClusterArray={selectedCourtCluster.courts} // Truyền dataSource vào editor template
             />
           )}
           cssClass="schedule-cell-dimension"
           eventRendered={handleEventRendered}
           eventSettings={{
             fields: fields,
-            dataSource: bookingArray,
+            dataSource: bookingScheduleArray,
           }}
           rowAutoHeight={true}
           quickInfoOnSelectionEnd={true}
@@ -179,6 +206,7 @@ const ScheduleCustomComponent = observer(() => {
           renderCell={handleRenderCell}
           enableAdaptiveUI={true}
           navigating={async (args: any) => await handleNavigation(args)}
+          popupOpen={onPopupOpen}
         >
           <ViewsDirective>
             <ViewDirective option="Week" dateFormat="dd-MMM-yyyy" />
@@ -189,7 +217,7 @@ const ScheduleCustomComponent = observer(() => {
               title="Sân"
               name="courts"
               allowMultiple={true}
-              dataSource={courtClusterStore.courtOfClusterArray}
+              dataSource={selectedCourtCluster.courts}
               textField="courtName"
               idField="courtId"
             ></ResourceDirective>

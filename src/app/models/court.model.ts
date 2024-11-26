@@ -17,6 +17,7 @@ export interface CourtCluster {
   ward: string; // Phường
   wardName: string;
   isVisible: boolean;
+  courts: Court[];
 }
 
 export interface ICourtCluster {
@@ -104,12 +105,12 @@ export interface CourtForTable {
 export interface CourtManagerResponse {
   courtClusterName: string;
   courtForTable: CourtForTable[];
-  openTime:string;
-  closeTime:string;
+  openTime: string;
+  closeTime: string;
 }
 
 export interface CourtCombo {
-  id?:number;
+  id?: number;
   totalPrice: number;
   displayName: string;
   duration: number;

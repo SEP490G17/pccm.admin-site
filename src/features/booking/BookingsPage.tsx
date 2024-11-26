@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react';
-import BookingTableComponent from './components/BookingTableComponent';
+import BookingTableComponent from './components/Booking/BookingTableComponent';
 import { useStore } from '@/app/stores/store';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Flex, Heading, useToast } from '@chakra-ui/react';

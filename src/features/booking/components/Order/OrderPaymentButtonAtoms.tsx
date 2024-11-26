@@ -1,3 +1,5 @@
+import { PaymentType } from '@/app/models/payment.model';
+import { useStore } from '@/app/stores/store';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -15,20 +17,22 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
-import { useStore } from '@/app/stores/store';
-import { PaymentType } from '@/app/models/payment.model';
+import { observer } from 'mobx-react';
+import React from 'react';
 
-interface PaymentButtonAtomProps {
-  paymentUrl?: string;
-  bookingId: number;
+interface OrderPaymentProps {
+  orderId: number;
 }
 
-const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }) => {
+const OrderPaymentButtonAtoms = observer(({ orderId }: OrderPaymentProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef<HTMLButtonElement | null>(null);
-  const { paymentStore, bookingClusterStore } = useStore();
+  const { paymentStore, bookingStore } = useStore();
   const toast = useToast();
+  const handlePaymentSuccessOrder = async () => {
+    await bookingStore.orderPaymentSuccess(orderId, toast);
+  };
+
   return (
     <>
       <Button onClick={onOpen} colorScheme="blue" className="w-28">
@@ -56,13 +60,8 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
                 Nhấn{' '}
                 <Link
                   onClick={async () => {
-                    if (paymentUrl) {
-                      window.open(paymentUrl, '_blank');
-                    } else {
-                      await paymentStore.getPayment(PaymentType.Booking, bookingId, toast);
-                      window.open(paymentStore.paymentUrl, '_blank');
-                      bookingClusterStore.updateTodayUrlBooking(paymentStore.paymentUrl, bookingId);
-                    }
+                    await paymentStore.getPayment(PaymentType.Order, orderId, toast);
+                    window.open(paymentStore.paymentUrl, '_blank');
                   }}
                 >
                   vào đây
@@ -73,9 +72,8 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
                 Nhấn{' '}
                 <Link
                   onClick={async () => {
-                    await paymentStore.getPayment(PaymentType.Booking, bookingId, toast);
+                    await paymentStore.getPayment(PaymentType.Order, orderId, toast);
                     window.open(paymentStore.paymentUrl, '_blank');
-                    bookingClusterStore.updateTodayUrlBooking(paymentStore.paymentUrl, bookingId);
                   }}
                 >
                   vào đây
@@ -87,7 +85,7 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
               Xác thực đã thanh toán
             </Heading>
             <Text className="px-2 mt-2 text-red-500">
-              Chọn xác thực đã thanh toán sẽ chuyển đổi trạng thái của booking sang đã thanh toán
+              Chọn xác thực đã thanh toán sẽ chuyển đổi trạng thái của order sang đã thanh toán
               <br />
               Chỉ sử dụng khi:
             </Text>
@@ -102,14 +100,7 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
             <Button ref={cancelRef} onClick={onClose}>
               Thoát
             </Button>
-            <Button
-              colorScheme="red"
-              ml={3}
-              onClick={async () => {
-                onClose();
-                await bookingClusterStore.paymentSuccessBooking(bookingId, toast);
-              }}
-            >
+            <Button colorScheme="red" ml={3} onClick={handlePaymentSuccessOrder}>
               Xác thực đã thanh toán
             </Button>
           </AlertDialogFooter>
@@ -117,6 +108,6 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
       </AlertDialog>
     </>
   );
-};
+});
 
-export default PaymentButtonAtom;
+export default OrderPaymentButtonAtoms;

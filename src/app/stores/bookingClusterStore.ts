@@ -15,14 +15,13 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { PaginationModel } from '../models/pagination.model';
-import { PageParams } from '../models/pageParams.model';
-import { CreateToastFnReturn } from '@chakra-ui/react';
+import { BookingPageParams, BookingTodayPageParams } from '../models/pageParams.model';
+import { CreateToastFnReturn, useToast } from '@chakra-ui/react';
 import { BookingMessage, DefaultBookingText } from '../common/toastMessage/bookingMessage';
 import { CommonMessage } from '../common/toastMessage/commonMessage';
-
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
+import _ from 'lodash';
 export default class BookingClusterStore {
   courtClusterId?: number;
   loadingSlot: boolean = false;
@@ -31,16 +30,17 @@ export default class BookingClusterStore {
   loadingBookingForSchedule: boolean = false;
   loadingInitial: boolean = false;
   loadingBookingPending: boolean = false;
-  loadingBookingCancel: boolean = false;
+  loadingBookingDeny: boolean = false;
   loadingBookingAll: boolean = false;
   loadingCourtPrice: boolean = false;
 
   // #endregion
 
   // #region pageParams
-  bookingPendingPageParam = new PageParams();
-  bookingCancelPageParam = new PageParams();
-  bookingAllPageParam = new PageParams();
+  bookingPendingPageParam = new BookingPageParams();
+  bookingDenyPageParam = new BookingPageParams();
+  bookingAllPageParam = new BookingPageParams();
+  bookingTodayPageParam = new BookingTodayPageParams();
   // #endregion
 
   // #region registry
@@ -48,18 +48,21 @@ export default class BookingClusterStore {
   bookingTodayRegistry = new Map<number, BookingForList>();
   bookingPendingRegistry = new Map<number, BookingForList>();
   bookingAllRegistry = new Map<number, BookingForList>();
-  bookingCancelRegistry = new Map<number, BookingForList>();
+  bookingDenyRegistry = new Map<number, BookingForList>();
   // #endregion
+
+  bookingTodayArray: BookingForList[] = [];
 
   constructor() {
     makeAutoObservable(this);
     this.bookingPendingPageParam.pageSize = 10;
+    this.bookingTodayPageParam.filter = '';
   }
   public setCourtClusterId(id: number) {
     this.courtClusterId = id;
   }
 
-  // #region load danh sách booking
+  // #region load booking registry
   loadBookingForSchedule = async (toast: CreateToastFnReturn, selectedDate?: string) => {
     if (this.courtClusterId) {
       this.loadingBookingForSchedule = true;
@@ -79,8 +82,8 @@ export default class BookingClusterStore {
           console.group('Today');
           res.forEach((booking) => {
             this.setBooking(booking);
-            const lichConvert = mapBookingToBookingForList(booking)
-            
+            const lichConvert = mapBookingToBookingForList(booking);
+
             this.setBookingToday(lichConvert);
           });
           console.groupEnd();
@@ -91,31 +94,43 @@ export default class BookingClusterStore {
   };
   loadBookingDeny = async (toast: CreateToastFnReturn) => {
     if (this.courtClusterId) {
-      this.loadingBookingCancel = true;
+      this.loadingBookingDeny = true;
       const queryParams = new URLSearchParams();
-      queryParams.append('skip', `${this.bookingCancelPageParam.skip}`);
-      queryParams.append('pageSize', `${this.bookingCancelPageParam.pageSize}`);
+      queryParams.append('skip', `${this.bookingDenyPageParam.skip}`);
+      queryParams.append('pageSize', `${this.bookingDenyPageParam.pageSize}`);
       queryParams.append('courtClusterId', `${this.courtClusterId}`);
       queryParams.append('status', `${BookingStatus.Declined}`);
-      if (this.bookingCancelPageParam.searchTerm) {
-        queryParams.append('search', this.bookingCancelPageParam.searchTerm);
+      if (this.bookingDenyPageParam.courtId) {
+        queryParams.append('courtId', `${this.bookingDenyPageParam.courtId}`);
+      }
+      if (this.bookingDenyPageParam.fromDate != null) {
+        queryParams.append('fromDate', this.bookingDenyPageParam.fromDate);
+      }
+      if (this.bookingDenyPageParam.toDate != null) {
+        queryParams.append('toDate', this.bookingDenyPageParam.toDate);
+      }
+      if (this.bookingDenyPageParam.searchTerm) {
+        queryParams.append('search', this.bookingDenyPageParam.searchTerm);
+      }
+      if (this.bookingDenyPageParam.searchTerm) {
+        queryParams.append('search', this.bookingDenyPageParam.searchTerm);
       }
       const [err, res] = await catchErrorHandle<PaginationModel<BookingForList>>(
         agent.BookingAgent.getListV2(`?${queryParams.toString()}`),
       );
       runInAction(() => {
         if (err) {
-          toast(BookingMessage.loadCancelFailure());
+          toast(BookingMessage.loadDenyFailure());
         }
         if (res) {
           res.data.forEach((booking) => {
-            this.setBookingCancel(booking);
+            this.setBookingDeny(booking);
           });
-          this.bookingCancelPageParam.pageSize = res.pageSize;
-          this.bookingCancelPageParam.skip = this.bookingCancelRegistry.size;
-          this.bookingCancelPageParam.totalElement = res.count;
+          this.bookingDenyPageParam.pageSize = res.pageSize;
+          this.bookingDenyPageParam.skip = this.bookingDenyRegistry.size;
+          this.bookingDenyPageParam.totalElement = res.count;
         }
-        this.loadingBookingCancel = false;
+        this.loadingBookingDeny = false;
       });
     }
   };
@@ -127,6 +142,15 @@ export default class BookingClusterStore {
       queryParams.append('pageSize', `${this.bookingPendingPageParam.pageSize}`);
       queryParams.append('courtClusterId', `${this.courtClusterId}`);
       queryParams.append('status', `${BookingStatus.Pending}`);
+      if (this.bookingPendingPageParam.courtId) {
+        queryParams.append('courtId', `${this.bookingPendingPageParam.courtId}`);
+      }
+      if (this.bookingPendingPageParam.fromDate != null) {
+        queryParams.append('fromDate', this.bookingPendingPageParam.fromDate);
+      }
+      if (this.bookingPendingPageParam.toDate != null) {
+        queryParams.append('toDate', this.bookingPendingPageParam.toDate);
+      }
       if (this.bookingPendingPageParam.searchTerm) {
         queryParams.append('search', this.bookingPendingPageParam.searchTerm);
       }
@@ -150,7 +174,6 @@ export default class BookingClusterStore {
       });
     }
   };
-
   loadBookingAll = async (toast: CreateToastFnReturn) => {
     if (this.courtClusterId) {
       this.loadingBookingAll = true;
@@ -158,6 +181,18 @@ export default class BookingClusterStore {
       queryParams.append('skip', `${this.bookingAllPageParam.skip}`);
       queryParams.append('pageSize', `${this.bookingAllPageParam.pageSize}`);
       queryParams.append('courtClusterId', `${this.courtClusterId}`);
+      if (this.bookingAllPageParam.courtId) {
+        queryParams.append('courtId', `${this.bookingAllPageParam.courtId}`);
+      }
+      if (this.bookingAllPageParam.fromDate != null) {
+        queryParams.append('fromDate', this.bookingAllPageParam.fromDate);
+      }
+      if (this.bookingAllPageParam.toDate != null) {
+        queryParams.append('toDate', this.bookingAllPageParam.toDate);
+      }
+      if (this.bookingAllPageParam.status != null) {
+        queryParams.append('status', `${this.bookingAllPageParam.status}`);
+      }
       if (this.bookingAllPageParam.searchTerm) {
         queryParams.append('search', this.bookingAllPageParam.searchTerm);
       }
@@ -183,19 +218,26 @@ export default class BookingClusterStore {
   };
   // #endregion
 
+  //#region booking interact
   acceptedBooking = async (id: number, toast: CreateToastFnReturn) => {
     const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.accept.title));
     const [err, res] = await catchErrorHandle(agent.BookingAgent.acceptedBooking(id));
     runInAction(() => {
       toast.close(pendingToast);
       if (err) {
-        toast(BookingMessage.acceptFailure(undefined, "Trùng lịch của 1 booking đã được confirm trước đó"));
+        toast(
+          BookingMessage.acceptFailure(
+            undefined,
+            'Trùng lịch của 1 booking đã được confirm trước đó',
+          ),
+        );
       }
       if (res) {
         toast(BookingMessage.acceptSuccess());
         this.bookingPendingRegistry.delete(id);
         this.setBookingAll(res);
         this.setBookingToday(this.convertBookingStartAndEndUTCToG7(res));
+        this.loadBookingTodayArray();
         this.setBooking(mapBookingResponseToBookingModel(res));
       }
     });
@@ -214,6 +256,7 @@ export default class BookingClusterStore {
         toast(BookingMessage.completeSuccess());
         this.setBookingAll(res);
         this.setBookingToday(this.convertBookingStartAndEndUTCToG7(res));
+        this.loadBookingTodayArray();
       }
     });
     return { err, res };
@@ -229,6 +272,7 @@ export default class BookingClusterStore {
       }
       if (res) {
         this.bookingTodayRegistry.delete(res.id);
+        this.loadBookingTodayArray();
         this.bookingForScheduleRegistry.delete(res.id);
         this.bookingPendingRegistry.delete(id);
         toast(BookingMessage.denySuccess());
@@ -250,6 +294,7 @@ export default class BookingClusterStore {
         res.forEach(
           (data) => (
             this.bookingTodayRegistry.delete(data.id),
+            this.loadBookingTodayArray(),
             this.bookingForScheduleRegistry.delete(data.id),
             this.bookingPendingRegistry.delete(data.id),
             this.setBookingAll(data)
@@ -271,10 +316,11 @@ export default class BookingClusterStore {
       }
       if (res) {
         this.bookingTodayRegistry.delete(res.id);
+        this.loadBookingTodayArray();
         toast(BookingMessage.cancelSuccess());
         this.setBookingAll(res);
         this.bookingForScheduleRegistry.delete(res.id);
-        this.setBookingCancel(res);
+        this.setBookingDeny(res);
       }
     });
     return { err, res };
@@ -300,6 +346,49 @@ export default class BookingClusterStore {
     return { err, res };
   };
 
+  bookingWithCombo = async (booking: IBookingWithCombo, toast: CreateToastFnReturn) => {
+    const pending = toast(CommonMessage.loadingMessage(DefaultBookingText.booking.title));
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.bookingWithCombo(booking));
+    runInAction(() => {
+      toast.close(pending);
+      if (err) {
+        toast(BookingMessage.bookingFailure(err?.response?.data));
+        return;
+      }
+
+      if (res) {
+        toast(BookingMessage.bookingSuccess());
+        this.setBooking(res);
+        const convert = mapBookingToBookingForList(res);
+        this.setBookingToday(convert);
+        this.bookingAllRegistry.set(convert.id, convert);
+      }
+    });
+  };
+
+  paymentSuccessBooking = async (id: number, toast: CreateToastFnReturn) => {
+    const pending = toast(CommonMessage.loadingMessage('Xác thực thanh toán'));
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.paymentSuccess(id));
+    runInAction(() => {
+      if (res) {
+        toast.close(pending);
+        toast(BookingMessage.paymentSuccess());
+        console.log(res)
+        this.bookingTodayRegistry.set(res.id, this.convertBookingStartAndEndUTCToG7(res));
+        this.loadBookingTodayArray();
+        this.setBookingAll(res);
+      }
+      if (err) {
+        toast(BookingMessage.paymentFailure(err?.response?.data));
+      }
+    });
+
+    return { err, res };
+  };
+
+  //#endregion
+
+  //#region set booking
   updateTodayUrlBooking = (url: string, bookingId: number) => {
     const update = this.bookingTodayRegistry.get(bookingId);
 
@@ -340,14 +429,162 @@ export default class BookingClusterStore {
   setBookingPending = (booking: BookingForList) => {
     this.bookingPendingRegistry.set(booking.id, this.convertBookingStartAndEndUTCToG7(booking));
   };
-  setBookingCancel = (booking: BookingForList) => {
-    this.bookingCancelRegistry.set(booking.id, this.convertBookingStartAndEndUTCToG7(booking));
+  setBookingDeny = (booking: BookingForList) => {
+    this.bookingDenyRegistry.set(booking.id, this.convertBookingStartAndEndUTCToG7(booking));
   };
-
   setBookingAll = (booking: BookingForList) => {
     this.bookingAllRegistry.set(booking.id, this.convertBookingStartAndEndUTCToG7(booking));
   };
+  //#endregion
 
+  //#region get booking Array
+  get bookingScheduleArray() {
+    return Array.from(this.bookingForScheduleRegistry.values());
+  }
+  get bookingPendingArray() {
+    return Array.from(this.bookingPendingRegistry.values());
+  }
+  get bookingDenyArray() {
+    return Array.from(this.bookingDenyRegistry.values());
+  }
+  get bookingAllArray() {
+    return Array.from(this.bookingAllRegistry.values());
+  }
+  //#endregion
+
+  //#region booking tab business
+
+  //#region bookingToday business
+  loadBookingTodayArray() {
+    this.bookingTodayArray = _.orderBy(
+      Array.from(this.bookingTodayRegistry.values()).filter(
+        (c) =>
+          (!this.bookingTodayPageParam.searchTerm ||
+            _.includes(c.fullName, this.bookingTodayPageParam.searchTerm) ||
+            _.includes(c.courtName, this.bookingTodayPageParam.searchTerm) ||
+            _.includes(c.phoneNumber, this.bookingTodayPageParam.searchTerm)) &&
+          (!this.bookingTodayPageParam.filter ||
+            c.courtId === Number(this.bookingTodayPageParam.filter)) &&
+          (!this.bookingTodayPageParam.category ||
+            (this.bookingTodayPageParam.category == 1 &&
+              (!c.RecurrenceRule || !c.recurrenceRule)) ||
+            (this.bookingTodayPageParam.category == 2 && (c.RecurrenceRule || c.recurrenceRule))),
+      ),
+      ['id'],
+      'desc',
+    );
+  }
+  bookingTodaySetSearchTerm = (value: string) => {
+    this.bookingTodayPageParam.searchTerm = value;
+    this.loadBookingTodayArray();
+  };
+  bookingTodaySetFilterTerm = (value: string) => {
+    this.bookingTodayPageParam.filter = value;
+    this.loadBookingTodayArray();
+  };
+  bookingTodaySetCategoryTerm = (value: number) => {
+    this.bookingTodayPageParam.category = value;
+    this.loadBookingTodayArray();
+  };
+  //#endregion
+
+  //#region bookingAll business
+  filterBookingAllByCourt = async (courtId: number, toast: CreateToastFnReturn) => {
+    this.bookingAllRegistry.clear();
+    this.bookingAllPageParam.clearLazyPage();
+    this.bookingAllPageParam.courtId = courtId;
+    await this.loadBookingAll(toast);
+  };
+
+  filterBookingAllByDate = async (
+    date1: string | null,
+    date2: string | null,
+    toast: CreateToastFnReturn,
+  ) => {
+    this.bookingAllRegistry.clear();
+    this.bookingAllPageParam.clearLazyPage();
+    this.bookingAllPageParam.fromDate = date1;
+    this.bookingAllPageParam.toDate = date2;
+    await this.loadBookingAll(toast);
+  };
+
+  filterBookingAllByStatus = async (status: number, toast: CreateToastFnReturn) => {
+    this.bookingAllRegistry.clear();
+    this.bookingAllPageParam.clearLazyPage();
+    this.bookingAllPageParam.status = status;
+    await this.loadBookingAll(toast);
+  };
+
+  setBookingAllSearchTerm = async (searchTearm: string, toast: CreateToastFnReturn) => {
+    this.bookingAllRegistry.clear();
+    this.bookingAllPageParam.clearLazyPage();
+    this.bookingAllPageParam.searchTerm = searchTearm;
+    await this.loadBookingAll(toast);
+  };
+
+  //#endregion
+
+  //#region booking deny business
+  filterBookingDenyByCourt = async (courtId: number, toast: CreateToastFnReturn) => {
+    this.bookingDenyRegistry.clear();
+    this.bookingDenyPageParam.clearLazyPage();
+    this.bookingDenyPageParam.courtId = courtId;
+    await this.loadBookingDeny(toast);
+  };
+
+  filterBookingDenyByDate = async (
+    date1: string | null,
+    date2: string | null,
+    toast: CreateToastFnReturn,
+  ) => {
+    this.bookingDenyRegistry.clear();
+    this.bookingDenyPageParam.clearLazyPage();
+    this.bookingDenyPageParam.fromDate = date1;
+    this.bookingDenyPageParam.toDate = date2;
+    await this.loadBookingDeny(toast);
+  };
+
+  setBookingDenySearchTerm = async (searchTearm: string, toast: CreateToastFnReturn) => {
+    this.bookingDenyRegistry.clear();
+    this.bookingDenyPageParam.clearLazyPage();
+    this.bookingDenyPageParam.searchTerm = searchTearm;
+    await this.loadBookingDeny(toast);
+  };
+
+  //#endregion
+
+  //#region  booking pending business
+  filterBookingPendingByCourt = async (courtId: number, toast: CreateToastFnReturn) => {
+    this.bookingPendingRegistry.clear();
+    this.bookingPendingPageParam.clearLazyPage();
+    this.bookingPendingPageParam.courtId = courtId;
+    await this.loadBookingPending(toast);
+  };
+
+  filterBookingPendingByDate = async (
+    date1: string | null,
+    date2: string | null,
+    toast: CreateToastFnReturn,
+  ) => {
+    this.bookingPendingRegistry.clear();
+    this.bookingPendingPageParam.clearLazyPage();
+    this.bookingPendingPageParam.fromDate = date1;
+    this.bookingPendingPageParam.toDate = date2;
+    await this.loadBookingPending(toast);
+  };
+
+  setBookingPendingSearchTerm = async (searchTearm: string, toast: CreateToastFnReturn) => {
+    this.bookingPendingRegistry.clear();
+    this.bookingPendingPageParam.clearLazyPage();
+    this.bookingPendingPageParam.searchTerm = searchTearm;
+    await this.loadBookingPending(toast);
+  };
+
+  //#endregion
+
+  //#endregion
+
+  //#region  support function
   private convertBookingStartAndEndUTCToG7(booking: BookingForList) {
     const startTime = dayjs(booking.startDay).add(7, 'hour'); // Convert to GMT+7
     const endTime = dayjs(booking.endDay).add(7, 'hour'); // Convert to GMT+7
@@ -356,66 +593,12 @@ export default class BookingClusterStore {
     return { ...booking, startDay, endDay };
   }
 
-  loadCourtPrice = async (value: number) => {
-    this.loadingCourtPrice = true;
-    const [error, res] = await catchErrorHandle<CourtPriceBooking[]>(
-      agent.BookingAgent.priceCourt(value),
-    );
-    runInAction(() => {
-      if (error) {
-        return;
-      }
-      if (res) {
-        this.courtPrice = res;
-      }
-    });
-    this.loadingCourtPrice = false;
-  };
-
-  get bookingScheduleArray() {
-    return Array.from(this.bookingForScheduleRegistry.values());
-  }
-
-  get bookingTodayArray() {
-    return Array.from(this.bookingTodayRegistry.values());
-  }
-
-  get bookingPendingArray() {
-    return Array.from(this.bookingPendingRegistry.values());
-  }
-
-  get bookingCancelArray() {
-    return Array.from(this.bookingCancelRegistry.values());
-  }
-  get bookingAllArray() {
-    return Array.from(this.bookingAllRegistry.values());
-  }
-
   clearBookingForSchedule() {
     this.bookingForScheduleRegistry.clear();
     this.bookingTodayRegistry.clear();
-    this.bookingCancelRegistry.clear();
+    this.bookingDenyRegistry.clear();
     this.bookingAllRegistry.clear();
     this.bookingForScheduleRegistry.clear();
   }
-
-  bookingWithCombo = async (booking: IBookingWithCombo, toast: CreateToastFnReturn) => {
-    const pending = toast(CommonMessage.loadingMessage(DefaultBookingText.booking.title));
-    const [err, res] = await catchErrorHandle(agent.BookingAgent.bookingWithCombo(booking));
-    runInAction(() => {
-      toast.close(pending);
-      if (err) {
-        toast(BookingMessage.bookingFailure(err?.response?.data));
-        return;
-      }
-
-      if (res) {
-        toast(BookingMessage.bookingSuccess());
-        this.setBooking(res);
-        const convert = mapBookingToBookingForList(res);
-        this.setBookingToday(convert);
-        this.bookingAllRegistry.set(convert.id, convert);
-      }
-    });
-  };
+  //#endregion
 }

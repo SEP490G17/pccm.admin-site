@@ -1,8 +1,9 @@
 import { Flex, Heading, Spacer } from '@chakra-ui/react';
 import { observer } from 'mobx-react';
-import ProductOrderTableComponent from './ProductOrderTableComponent';
-import ServiceOrderTableComponent from './ServiceOrderTableComponent';
+
 import { useStore } from '@/app/stores/store';
+import ProductOrderTableComponent from '../Product/ProductOrderTableComponent';
+import ServiceOrderTableComponent from '../Service/ServiceOrderTableComponent';
 
 const OrderTotalInfoComponent = observer(() => {
   const {bookingStore, courtClusterStore} = useStore();

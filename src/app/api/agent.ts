@@ -58,7 +58,7 @@ import { OrderModel, OrderOfBooking } from '../models/order.model';
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
 axios.interceptors.request.use((config) => {
-  const token = store.commonStore.token;
+  const token = localStorage.getItem('jwt');
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -292,6 +292,9 @@ const BookingAgent = {
 
   bookingWithCombo: (bookingWithCombo: IBookingWithCombo): Promise<any> =>
     requests.post(`/booking/combo`, bookingWithCombo),
+
+  paymentSuccess: (id: number): Promise<BookingForList> =>
+    requests.put(`/booking/payment-success/${id}`, {}),
 };
 
 const PaymentAgent = {
@@ -303,6 +306,8 @@ const OrderAgent = {
   create: (model: OrderModel) => requests.post<OrderOfBooking>(`/order/v1`, model),
   details: (id: number) => requests.get<OrderModel>(`/order/v1/${id}`),
   update: (model: OrderModel): Promise<OrderOfBooking> => requests.put(`/order/edit`, model),
+  cancel: (id: number): Promise<any> => requests.put(`/order/cancel/${id}`, {}),
+  paymentSuccess: (id: number): Promise<any> => requests.put(`/order/complete/${id}`, {}),
 };
 const agent = {
   requests,

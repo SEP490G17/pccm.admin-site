@@ -5,7 +5,7 @@ import LoginFormComponent from './LoginFormComponent.tsx';
 import { observer } from 'mobx-react-lite';
 import { ToastContainer } from 'react-toastify';
 
-const LoginPage = observer(function Page() {
+const LoginPage = observer(()=> {
   return (
     <>
       <ToastContainer position="top-right" hideProgressBar theme="colored" />

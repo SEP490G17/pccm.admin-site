@@ -17,19 +17,17 @@ import { useStore } from '@/app/stores/store';
 import { useState } from 'react';
 import { CourtPrice } from '@/app/models/court.model';
 const BookingEditorTemplateComponent = observer((props: any) => {
-  const { courtClusterStore } = useStore();
-
-  const court = courtClusterStore.courtOfClusterArray.map((c) => {
+  const court = props.courtOfClusterArray.map((c) => {
     return {
       courtId: c.courtId,
       courtName: c.courtName,
     };
   });
 
-  const [selectedCourtId, setSelectedCourtId] = useState(court[0].courtId);
+  const [selectedCourtId, setSelectedCourtId] = useState(props.courtOfClusterArray[0].courtId || 0);
 
   const filteredPrices =
-    courtClusterStore.courtOfClusterRegistry.get(selectedCourtId)?.courtPrices ?? [];
+    props.courtOfClusterArray.find((c) => c.courtId == selectedCourtId)?.courtPrices ?? [];
   return (
     <>
       <Grid templateColumns={'repeat(8,1fr)'} columnGap={5} rowGap={8} className="mt-4">

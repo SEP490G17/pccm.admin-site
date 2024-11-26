@@ -28,7 +28,7 @@ const BookingListComponent = () => {
           </Tab>
         </TabList>
 
-        <TabPanels minHeight={'50rem'} className="">
+        <TabPanels minHeight={'50rem'} >
           <TabPanel>{tabIndex === 0 && <BookingTodayComponent />}</TabPanel>
           <TabPanel>{tabIndex === 1 && <BookingPendingComponent />}</TabPanel>
           <TabPanel>{tabIndex === 2 && <BookingDenyComponent />}</TabPanel>

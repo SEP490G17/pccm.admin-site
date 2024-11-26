@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 
 import { useStore } from '@/app/stores/store.ts';
 import { useEffect } from 'react';
-import ProductCardItemSellComponent from './ProductCardItemSellComponent';
+import ProductCardItemSellComponent from '../Product/ProductCardItemSellComponent';
 interface IProps {
   courtClusterId: number;
 }

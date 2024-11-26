@@ -1,6 +1,6 @@
 import { Button, Card, CardBody, CardHeader, Flex, Heading, Skeleton, useToast } from '@chakra-ui/react';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
-import BookingInfoComponent from './components/BookingInfoComponent';
+import BookingInfoComponent from './components/Booking/BookingInfoComponent';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { observer } from 'mobx-react';

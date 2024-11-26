@@ -184,8 +184,8 @@ export const menuListAdmin: AppPath[] = [
 ];
 
 export const getMenuList = (roles: string[]): AppPath[] => {
-  if (roles.includes('Admin')) {
-    return menuListAdmin;
-  }
+  // if (roles.includes('Admin')) {
+  //   return menuListAdmin;
+  // }
   return menuList;
 };

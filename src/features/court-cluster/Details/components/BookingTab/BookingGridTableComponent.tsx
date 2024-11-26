@@ -1,13 +1,19 @@
 import { BookingForList } from '@/app/models/booking.model';
-import { Center, Grid, GridItem } from '@chakra-ui/react';
+import { Box, Button, Center, Flex, Grid, GridItem, Link } from '@chakra-ui/react';
 import { FC } from 'react';
 import BookingGridItemAtom from '../../../atoms/BookingGridItemAtom';
 
 interface BookingGridTableComponentProps {
-    bookingArray:BookingForList[]
+  bookingArray: BookingForList[];
+  totalElement?: number;
+  loadMore?: () => Promise<void>;
 }
 
-const BookingGridTableComponent: FC<BookingGridTableComponentProps> = ({bookingArray}) => {
+const BookingGridTableComponent: FC<BookingGridTableComponentProps> = ({
+  bookingArray,
+  totalElement,
+  loadMore,
+}) => {
   return (
     <>
       <Grid
@@ -15,7 +21,7 @@ const BookingGridTableComponent: FC<BookingGridTableComponentProps> = ({bookingA
         className="px-4 py-2 bg-teal-400  rounded-t-lg cursor-pointer mb-2"
         style={{ boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}
       >
-        <GridItem colSpan={20} >
+        <GridItem colSpan={20}>
           <Center className="h-full">
             <Grid templateColumns={'repeat(23,1fr)'} className="w-full">
               <GridItem colSpan={1}>STT</GridItem>
@@ -32,8 +38,8 @@ const BookingGridTableComponent: FC<BookingGridTableComponentProps> = ({bookingA
         </GridItem>
         <GridItem colSpan={4}>Hành động</GridItem>
       </Grid>
-      {
-        bookingArray?.map((bookingToday, index) => {
+      <Box height={'50rem'} className="overflow-y-auto">
+        {bookingArray?.map((bookingToday, index) => {
           return (
             <BookingGridItemAtom
               bookingToday={bookingToday}
@@ -42,6 +48,20 @@ const BookingGridTableComponent: FC<BookingGridTableComponentProps> = ({bookingA
             />
           );
         })}
+        {totalElement && totalElement > bookingArray.length && (
+          <Flex className="float-end mt-4">
+            <Link
+              onClick={async () => {
+                if (loadMore) {
+                  await loadMore();
+                }
+              }}
+            >
+              Xem thêm...
+            </Link>
+          </Flex>
+        )}
+      </Box>
     </>
   );
 };

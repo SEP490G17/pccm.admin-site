@@ -2,7 +2,7 @@ import { observer } from 'mobx-react';
 import { Box, Grid, GridItem, Heading, Skeleton } from '@chakra-ui/react';
 import { useStore } from '@/app/stores/store.ts';
 import { useEffect } from 'react';
-import ServiceCardItemSellComponent from './ServiceCardItemSellComponent';
+import ServiceCardItemSellComponent from '../Service/ServiceCardItemSellComponent';
 interface IProps {
   courtClusterId: number;
 }

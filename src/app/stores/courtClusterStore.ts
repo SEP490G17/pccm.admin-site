@@ -25,7 +25,7 @@ export default class CourtClusterStore {
   servicesOfClusterRegistry = new Map<number, Service>();
   courtOfClusterRegistry = new Map<number, Court>();
   // selected
-  selectedCourtCluster: CourtCluster | undefined = undefined; //cụm sân đang được chọn (trang details, hoặc khi update)
+  selectedCourtCluster?: CourtCluster ; //cụm sân đang được chọn (trang details, hoặc khi update)
   selectedTabs: number = 0;
   // page param
   courtPageParams = new PageParams(); // page param cho trang cụm sân

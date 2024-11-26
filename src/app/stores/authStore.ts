@@ -27,18 +27,14 @@ export default class AuthStore {
 
     runInAction(() => {
       if (res) {
-        if (this.rememberMe) {
           store.commonStore.setToken(res.token);
-        } else {
-          store.commonStore.setTokenSession(res.token);
-        }
-        store.commonStore.setUserApp(res);
-        this.userApp = res;
-        router.navigate('/');
-        return;
+          store.commonStore.setUserApp(res);
+          this.userApp = res;
+          router.navigate('/');
+          return;
       }
     });
-    return{err,res}
+    return { err, res };
   };
 
   logout = () => {

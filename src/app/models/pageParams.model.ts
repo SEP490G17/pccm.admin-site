@@ -1,3 +1,5 @@
+import { BookingStatus } from './booking.model';
+
 export interface IPageParams {
   pageIndex?: number;
   skip?: number;
@@ -51,7 +53,13 @@ export class ServiceLogPageParams extends PageParams {
 
 export class BookingPageParams extends PageParams {
   courtClusterId?: number;
+  courtId?: number;
   fromDate?: string | null;
   toDate?: string | null;
-  status? : number;
+  status?: number;
+}
+
+export class BookingTodayPageParams extends PageParams {
+  category?: number;
+  status?: BookingStatus;
 }

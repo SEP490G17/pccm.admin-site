@@ -14,8 +14,10 @@ import { BookingPageParams } from '../models/pageParams.model';
 import { PaginationModel } from '../models/pagination.model';
 import { BookingMessage } from '../common/toastMessage/bookingMessage';
 import { OrderMessage } from '../common/toastMessage/orderMessage';
-import { CommonMessage } from '../common/toastMessage/commonMessage';
+import { CommonMessage, PaymentMessage } from '../common/toastMessage/commonMessage';
 import { toast } from 'react-toastify';
+import { store } from './store';
+import { PaymentStatus } from '../models/payment.model';
 
 export default class BookingStore {
   loadingInitial: boolean = false;
@@ -37,6 +39,8 @@ export default class BookingStore {
     makeAutoObservable(this);
     // this.cleanupInterval = window.setInterval(this.cleanUserCache, 30000);
   }
+
+  //#region  Booking handle function
 
   loadBookingAll = async (toast: CreateToastFnReturn) => {
     this.loading = true;
@@ -136,6 +140,9 @@ export default class BookingStore {
     });
   };
 
+  //#endregion
+
+  //#region  Order function handle
   getDetailsOrder = async (id: number, toast: CreateToastFnReturn) => {
     this.clearOrderList();
     this.loadingOrder = true;
@@ -186,10 +193,51 @@ export default class BookingStore {
         this.pushOrderForBooking(res);
       }
       if (err) {
-        toast(OrderMessage.createFailure(err.message));
+        toast(OrderMessage.createFailure(err?.response?.data));
       }
     });
     return { res, err };
+  };
+
+  cancelOrder = async (orderId: number, toast: CreateToastFnReturn) => {
+    const pending = toast(CommonMessage.loadingMessage('Hủy Order'));
+
+    const [err, res] = await catchErrorHandle<any>(agent.OrderAgent.cancel(orderId));
+    runInAction(() => {
+      toast.close(pending);
+      if (res) {
+        toast(OrderMessage.cancelSuccess());
+        const index = this.orderOfBooking.findIndex((o) => o.id === orderId);
+        if (index) {
+          const newOrder = { ...this.orderOfBooking[index] };
+          newOrder.paymentStatus = PaymentStatus.Cancel;
+          this.orderOfBooking[index] = newOrder;
+        }
+      }
+      if (err) {
+        toast(OrderMessage.cancelFailure());
+      }
+    });
+  };
+
+  orderPaymentSuccess = async (id: number, toast: CreateToastFnReturn) => {
+    const pending = toast(CommonMessage.loadingMessage('Xác thực thanh toán'));
+    const [err, res] = await catchErrorHandle(agent.OrderAgent.paymentSuccess(id));
+    runInAction(() => {
+      toast.close(pending);
+      if (res) {
+        toast(PaymentMessage.success());
+        const index = this.orderOfBooking.findIndex((o) => o.id === id);
+        if (index) {
+          const newOrder = { ...this.orderOfBooking[index] };
+          newOrder.paymentStatus = PaymentStatus.Success;
+          this.orderOfBooking[index] = newOrder;
+        }
+      }
+      if (err) {
+        toast(PaymentMessage.failure());
+      }
+    });
   };
 
   updateOrder = async (toast: CreateToastFnReturn) => {
@@ -223,9 +271,6 @@ export default class BookingStore {
       return { res, err };
     }
   };
-  private setBooking = (booking: BookingForList) => {
-    this.bookingRegistry.set(booking.id, convertBookingStartAndEndUTCToG7(booking));
-  };
   clearOrderList = () => {
     this.selectedProductItems.clear();
     this.selectedServiceItems.clear();
@@ -239,6 +284,11 @@ export default class BookingStore {
       this.selectedProductItems.set(productId, total + 1);
     } else {
       this.selectedProductItems.set(productId, 1);
+    }
+    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
+    if (product) {
+      product.quantity -= 1;
+      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
     }
   };
 
@@ -256,9 +306,20 @@ export default class BookingStore {
     } else {
       this.selectedProductItems.delete(productId);
     }
+    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
+    if (product) {
+      product.quantity += 1;
+      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
+    }
   };
 
   removeProductFromOrder = (productId: number) => {
+    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
+    const quantity = this.selectedProductItems.get(productId);
+    if (product && quantity) {
+      product.quantity += quantity;
+      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
+    }
     this.selectedProductItems.delete(productId);
   };
 
@@ -321,7 +382,9 @@ export default class BookingStore {
     }
     return 0;
   }
+  //#endregion
 
+  //#region  bill
   exportBill = (courtClusterId: number) => {
     runInAction(async () => {
       try {
@@ -400,6 +463,8 @@ export default class BookingStore {
     });
   };
 
+  //#endregion
+
   getBookingConflict = async (booking: BookingConflict) => {
     this.loadingConflict = true;
     const [err, res] = await catchErrorHandle(agent.BookingAgent.getListConflict(booking));
@@ -412,5 +477,9 @@ export default class BookingStore {
       }
       this.loadingConflict = false;
     });
+  };
+
+  private setBooking = (booking: BookingForList) => {
+    this.bookingRegistry.set(booking.id, convertBookingStartAndEndUTCToG7(booking));
   };
 }

@@ -20,12 +20,12 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { FC, useState } from 'react';
-import BookingProductTab from '../components/BookingProductsTab';
-import OrderTotalInfoComponent from '../components/OrderTotalInfoComponent';
-import BookingServicesTab from '../components/BookingServicesTab';
+import BookingServicesTab from '../components/Booking/BookingServicesTab';
 import { BookingDetails } from '@/app/models/booking.model';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
+import OrderTotalInfoComponent from '../components/Order/OrderTotalInfoComponent';
+import BookingProductTab from '../components/Booking/BookingProductsTab';
 
 interface OrderCreatePopupProps {
   booking: BookingDetails;

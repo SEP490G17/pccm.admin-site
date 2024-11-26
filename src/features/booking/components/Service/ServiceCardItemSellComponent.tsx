@@ -10,14 +10,14 @@ const ServiceCardItemSellComponent = observer(({ service }: IProps) => {
   const { addServiceToOrder, selectedServiceItems } = bookingStore;
   return (
     <>
-      <GridItem colSpan={{ base: 2, xl: 1 }}>
-      <Grid
+      <GridItem key={service.id} colSpan={{ base: 2, xl: 1 }}>
+        <Grid
           templateRows={'repeat(6,1fr)'}
           className={`h-44  px-3 pb-3 pt-4 rounded-md cursor-pointer 
                         ${selectedServiceItems.get(service.id) !== undefined && 'bg-green-200'} `}
           gap={4}
           onClick={() => addServiceToOrder(service.id)}
-          style={{boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px'}}
+          style={{ boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px' }}
         >
           <GridItem rowSpan={2} className={'h-full flex items-center'}>
             <Heading fontSize={'1.5rem'} mb={1} fontWeight={'bold'}>

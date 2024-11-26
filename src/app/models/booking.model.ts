@@ -98,6 +98,7 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
     playTime: playTime,
     startDay: startDay,
     endDay: endDay,
+    courtId: booking.courtId,
     paymentStatus: booking.paymentStatus,
     paymentUrl: booking.paymentUrl,
     status: booking.status,

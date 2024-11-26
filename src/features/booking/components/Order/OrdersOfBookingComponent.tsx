@@ -5,11 +5,25 @@ import {
   PaymentType,
 } from '@/app/models/payment.model';
 import { useStore } from '@/app/stores/store';
-import { Badge, Button, Flex, Grid, GridItem, useDisclosure, useToast } from '@chakra-ui/react';
+import {
+  Badge,
+  Button,
+  Flex,
+  Grid,
+  GridItem,
+  Tag,
+  TagLabel,
+  TagLeftIcon,
+  useDisclosure,
+  useToast,
+} from '@chakra-ui/react';
 import { observer } from 'mobx-react';
-import OrderDetailsPopUp from '../popups/OrderDetailsPopup';
+import OrderDetailsPopUp from '../../popups/OrderDetailsPopup';
 
 import dayjs from 'dayjs';
+import OrderCancelButtonComponent from './OrderCancelButtonAtoms';
+import { CloseIcon } from '@chakra-ui/icons';
+import OrderPaymentButtonAtoms from './OrderPaymentButtonAtoms';
 
 const OrdersOfBookingComponent = observer(() => {
   const { paymentStore, bookingStore } = useStore();
@@ -61,20 +75,10 @@ const OrdersOfBookingComponent = observer(() => {
           </GridItem>
           <GridItem colSpan={3}>
             <Flex gap={4}>
-              {(order.paymentStatus == PaymentStatus.Pending ||
-                order.paymentStatus == PaymentStatus.Cancel ||
-                order.paymentStatus == PaymentStatus.Failed) && (
+              {order.paymentStatus == PaymentStatus.Pending && (
                 <>
-                  <Button
-                    colorScheme="blue"
-                    className="w-28"
-                    onClick={async () => await handlePayment(order.id)}
-                  >
-                    Thanh toán
-                  </Button>
-                  <Button colorScheme="red" className="w-28">
-                    Hủy đơn
-                  </Button>
+                  <OrderPaymentButtonAtoms orderId={order.id}/>
+                  <OrderCancelButtonComponent id={order.id} />
                 </>
               )}
               {order.paymentStatus == PaymentStatus.Success && (
@@ -98,6 +102,18 @@ const OrdersOfBookingComponent = observer(() => {
                     In hoá đơn
                   </Button>
                 </>
+              )}
+              {order.paymentStatus === PaymentStatus.Cancel && (
+                <Tag
+                  size={'lg'}
+                  className="w-1/2 h-10 items-center flex justify-center"
+                  variant="subtle"
+                  colorScheme="red"
+                  gap={2}
+                >
+                  <TagLabel>Đã bị huỷ</TagLabel>
+                  <TagLeftIcon boxSize="12px" as={CloseIcon} color={'red.800'} />
+                </Tag>
               )}
             </Flex>
           </GridItem>

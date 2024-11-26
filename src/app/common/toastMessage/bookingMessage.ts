@@ -53,6 +53,13 @@ export const DefaultBookingText = {
       success: 'Đặt lịch thành công',
     },
   },
+
+  payment:{
+    title:'Xác thực thanh toán',
+    description:{
+      success:'Xác thực thanh toán thành công',
+    }
+  }
 };
 
 export const BookingMessage = {
@@ -82,7 +89,7 @@ export const BookingMessage = {
     isClosable,
   }),
 
-  loadCancelFailure: (
+  loadDenyFailure: (
     title: string = DefaultBookingText.loading.title,
     description: string = DefaultBookingText.loading.description.loadingCancelFailuer,
     duration: number = DefaultSettingToast.duration,
@@ -220,6 +227,32 @@ export const BookingMessage = {
 
   bookingFailure: (
     description: string,
+    title: string = DefaultBookingText.booking.title,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  }),
+
+  paymentSuccess: (
+    description: string = DefaultBookingText.payment.description.success,
+    title: string = DefaultBookingText.booking.title,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'success',
+    duration,
+    isClosable,
+  }),
+
+  paymentFailure: (
+    description: string ,
     title: string = DefaultBookingText.booking.title,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,

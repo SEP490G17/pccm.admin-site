@@ -19,12 +19,12 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { FC, useState } from 'react';
-import BookingProductTab from '../components/BookingProductsTab';
-import BookingServicesTab from '../components/BookingServicesTab';
-import OrderTotalInfoComponent from '../components/OrderTotalInfoComponent';
+import BookingServicesTab from '../components/Booking/BookingServicesTab';
 import { observer } from 'mobx-react';
 import { useStore } from '@/app/stores/store';
 import { PaymentStatus } from '@/app/models/payment.model';
+import BookingProductTab from '../components/Booking/BookingProductsTab';
+import OrderTotalInfoComponent from '../components/Order/OrderTotalInfoComponent';
 
 interface OrderDetailsProps {
   isOpen: boolean;
@@ -41,7 +41,8 @@ const OrderDetailsPopUp: FC<OrderDetailsProps> = observer(({ isOpen, onClose }) 
   const handleUpdateOrder = async () => {
     await updateOrder(toast);
   };
-
+  if(!selectedOrder) return;
+  console.log(selectedOrder);
   return (
     <>
       <Modal id="order-details" isOpen={isOpen} onClose={onClose} size={'full'}>
@@ -66,12 +67,12 @@ const OrderDetailsPopUp: FC<OrderDetailsProps> = observer(({ isOpen, onClose }) 
                   </TabList>
 
                   <TabPanels minHeight={'50rem'}>
-                    <TabPanel>
+                    <TabPanel key={12}>
                       {booking.bookingDetails.courtClusterId && (
                         <BookingProductTab courtClusterId={booking.bookingDetails.courtClusterId} />
                       )}
                     </TabPanel>
-                    <TabPanel>
+                    <TabPanel key={13}>
                       {booking.bookingDetails.courtClusterId && (
                         <BookingServicesTab
                           courtClusterId={booking.bookingDetails.courtClusterId}
@@ -91,7 +92,9 @@ const OrderDetailsPopUp: FC<OrderDetailsProps> = observer(({ isOpen, onClose }) 
             <Button colorScheme="blue" mr={3} onClick={onClose}>
               Đóng
             </Button>
-            {selectedOrder?.paymentStatus && selectedOrder.paymentStatus !== PaymentStatus.Success && (
+            {
+            selectedOrder.paymentStatus && selectedOrder.paymentStatus !== PaymentStatus.Success && 
+            (
               <Button variant="ghost" onClick={handleUpdateOrder}>
                 Lưu
               </Button>
