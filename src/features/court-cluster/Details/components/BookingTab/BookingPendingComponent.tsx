@@ -1,20 +1,141 @@
-import { Skeleton, useToast } from '@chakra-ui/react';
+import { Flex, Skeleton, useToast } from '@chakra-ui/react';
 import { observer } from 'mobx-react';
-import { useEffect } from 'react';
+import { debounce } from 'lodash';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useStore } from '@/app/stores/store';
 import BookingGridTableComponent from './BookingGridTableComponent';
+import dayjs, { Dayjs } from 'dayjs';
+import InputSearchBoxAtoms from '@/features/atoms/InputSearchBoxAtoms';
+import { DatePicker } from 'antd';
+import Select from 'react-select';
+import LoadMoreButtonAtoms from '@/features/atoms/LoadMoreButtonAtoms';
 
 const BookingPendingComponent = observer(() => {
-  const { bookingClusterStore } = useStore();
-  const { bookingPendingArray, loadBookingPending, loadingBookingPending } = bookingClusterStore;
+  const { bookingClusterStore, courtClusterStore } = useStore();
+  const { bookingPendingArray, loadBookingPending, loadingBookingPending, bookingPendingPageParam, bookingPendingRegistry } = bookingClusterStore;
+  const [isPending, setIsPending] = useState(false);
   const toast = useToast();
+
   useEffect(() => {
     loadBookingPending(toast);
-  }, []);
+  }, [loadBookingPending, toast]);
+
+  const courtOption = courtClusterStore.courtOfClusterArray.map((court) => {
+    return {
+      value: court.courtId,
+      label: court.courtName
+    }
+  })
+
+  const handleScroll = useCallback(() => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    // Kiểm tra nếu cuộn gần đến cuối (có thể điều chỉnh giá trị 100 theo nhu cầu)
+    if (scrollPosition >= documentHeight - 50) {
+      bookingPendingPageParam.skip = bookingPendingRegistry.size;
+      if (bookingPendingPageParam.totalElement > bookingPendingRegistry.size) {
+        loadBookingPending(toast);
+      }
+    }
+  }, [
+    loadBookingPending,
+    bookingPendingPageParam,
+    bookingPendingRegistry,
+    toast
+  ]);
+
+  // Gắn sự kiện cuộn
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [handleScroll]);
+
+  const handleSearch = useMemo(() => {
+    return debounce(async (e) => {
+      setIsPending(false); // Tắt loading
+      await bookingClusterStore.setSearchTermPending(e.target.value, toast);
+    }, 500);
+  }, [setIsPending, bookingClusterStore, toast]);
+
+  const onSearchChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsPending(true);
+      handleSearch(e);
+    },
+    [handleSearch, setIsPending],
+  );
+
+  const handleDateRangeChange = async (value1: Dayjs | null, value2: Dayjs | null) => {
+    if (value1 && value2) {
+      await bookingClusterStore.setDateTermPending(
+        value1.format('DD/MM/YYYY HH:mm:ss'),
+        value2.format('DD/MM/YYYY HH:mm:ss'),
+        toast
+      );
+    } else {
+      await bookingClusterStore.setDateTermPending(null, null, toast);
+    }
+  };
   return (
-    <Skeleton isLoaded={!loadingBookingPending} h={'30rem'}>
-      <BookingGridTableComponent bookingArray={bookingPendingArray} />
-    </Skeleton>
+    <>
+      <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
+        <Flex textAlign="left" flexWrap={'wrap'} gap={'1rem'}>
+          <Select
+            options={[{ value: 0, label: 'Tất cả' }, ...courtOption]}
+            placeholder="Sân"
+            className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
+            onChange={async (e) => {
+              if (e) {
+                await bookingClusterStore.setFilterTermPending(e.value.toString(), toast);
+              }
+            }}
+            defaultValue={{
+              value: bookingPendingPageParam.filter ?? 0,
+              label:
+                courtOption.find(option => option.value.toString() === bookingPendingPageParam.filter)?.label ?? 'Tất cả',
+            }}
+            isSearchable={true}
+          ></Select>
+        </Flex>
+        <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
+          <DatePicker.RangePicker
+            showTime={{ format: 'HH:mm' }}
+            format={'DD/MM/YYYY HH:mm'}
+            placeholder={['Ngày bắt đầu', 'Ngày kết thúc']}
+            style={{ border: '0.5px solid #ADADAD', height: '40px' }}
+            defaultValue={
+              bookingPendingPageParam.fromDate && bookingPendingPageParam.toDate
+                ? [dayjs(bookingPendingPageParam.fromDate, 'DD/MM/YYYY'), dayjs(bookingPendingPageParam.fromDate, 'DD/MM/YYYY')]
+                : undefined
+            }
+            onChange={(value) => {
+              if (value && value.length === 2) {
+                handleDateRangeChange(value[0], value[1]);
+              } else {
+                handleDateRangeChange(null, null);
+              }
+            }}
+          />
+          <InputSearchBoxAtoms value={bookingPendingPageParam.searchTerm} isPending={isPending} handleChange={onSearchChange} />
+
+        </Flex>
+      </Flex>
+      <Skeleton isLoaded={!loadingBookingPending} h={'30rem'}>
+        <BookingGridTableComponent bookingArray={bookingPendingArray} />
+        <LoadMoreButtonAtoms
+          handleOnClick={() => {
+            bookingPendingPageParam.skip = bookingPendingRegistry.size;
+            loadBookingPending(toast);
+          }}
+          hidden={bookingPendingRegistry.size >= bookingPendingPageParam.totalElement}
+          loading={loadingBookingPending}
+        />
+      </Skeleton>
+    </>
   );
 });
 

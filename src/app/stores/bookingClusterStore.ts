@@ -79,8 +79,8 @@ export default class BookingClusterStore {
           console.group('Today');
           res.forEach((booking) => {
             this.setBooking(booking);
-            const lichConvert = mapBookingToBookingForList(booking)
-            
+            const lichConvert = mapBookingToBookingForList(booking);
+
             this.setBookingToday(lichConvert);
           });
           console.groupEnd();
@@ -99,6 +99,15 @@ export default class BookingClusterStore {
       queryParams.append('status', `${BookingStatus.Declined}`);
       if (this.bookingCancelPageParam.searchTerm) {
         queryParams.append('search', this.bookingCancelPageParam.searchTerm);
+      }
+      if (this.bookingCancelPageParam.filter) {
+        queryParams.append('filter', this.bookingCancelPageParam.filter);
+      }
+      if (this.bookingCancelPageParam.fromDate) {
+        queryParams.append('fromDate', this.bookingCancelPageParam.fromDate);
+      }
+      if (this.bookingCancelPageParam.toDate) {
+        queryParams.append('toDate', this.bookingCancelPageParam.toDate);
       }
       const [err, res] = await catchErrorHandle<PaginationModel<BookingForList>>(
         agent.BookingAgent.getListV2(`?${queryParams.toString()}`),
@@ -129,6 +138,15 @@ export default class BookingClusterStore {
       queryParams.append('status', `${BookingStatus.Pending}`);
       if (this.bookingPendingPageParam.searchTerm) {
         queryParams.append('search', this.bookingPendingPageParam.searchTerm);
+      }
+      if (this.bookingPendingPageParam.filter) {
+        queryParams.append('filter', this.bookingPendingPageParam.filter);
+      }
+      if (this.bookingPendingPageParam.fromDate) {
+        queryParams.append('fromDate', this.bookingPendingPageParam.fromDate);
+      }
+      if (this.bookingPendingPageParam.toDate) {
+        queryParams.append('toDate', this.bookingPendingPageParam.toDate);
       }
       const [err, res] = await catchErrorHandle<PaginationModel<BookingForList>>(
         agent.BookingAgent.getListV2(`?${queryParams.toString()}`),
@@ -189,7 +207,12 @@ export default class BookingClusterStore {
     runInAction(() => {
       toast.close(pendingToast);
       if (err) {
-        toast(BookingMessage.acceptFailure(undefined, "Trùng lịch của 1 booking đã được confirm trước đó"));
+        toast(
+          BookingMessage.acceptFailure(
+            undefined,
+            'Trùng lịch của 1 booking đã được confirm trước đó',
+          ),
+        );
       }
       if (res) {
         toast(BookingMessage.acceptSuccess());
@@ -346,6 +369,114 @@ export default class BookingClusterStore {
 
   setBookingAll = (booking: BookingForList) => {
     this.bookingAllRegistry.set(booking.id, this.convertBookingStartAndEndUTCToG7(booking));
+  };
+
+  //Filter Pending
+
+  setSearchTermPending = async (term: string, toast: CreateToastFnReturn) => {
+    this.loadingInitial = true;
+    this.bookingPendingPageParam.clearLazyPage();
+    this.bookingPendingPageParam.searchTerm = term;
+    this.bookingPendingRegistry.clear();
+    await this.loadBookingPending(toast);
+    runInAction(() => {
+      this.loadingInitial = false;
+    });
+  };
+
+  setFilterTermPending = async (courtId: string, toast: CreateToastFnReturn) => {
+    this.loadingInitial = true;
+    this.bookingPendingPageParam.clearLazyPage();
+    this.bookingPendingPageParam.filter = courtId;
+    this.bookingPendingRegistry.clear();
+    await this.loadBookingPending(toast);
+    runInAction(() => (this.loadingInitial = false));
+  };
+
+  setDateTermPending = async (
+    date1: string | null,
+    date2: string | null,
+    toast: CreateToastFnReturn,
+  ) => {
+    this.loadingInitial = true;
+    this.bookingPendingPageParam.clearLazyPage();
+    this.bookingPendingPageParam.fromDate = date1;
+    this.bookingPendingPageParam.toDate = date2;
+    this.bookingCancelRegistry.clear();
+    await this.loadBookingPending(toast);
+    runInAction(() => (this.loadingInitial = false));
+  };
+
+  //Filter Cancel
+
+  setSearchTermCancel = async (term: string, toast: CreateToastFnReturn) => {
+    this.loadingInitial = true;
+    this.bookingCancelPageParam.clearLazyPage();
+    this.bookingCancelPageParam.searchTerm = term;
+    this.bookingCancelRegistry.clear();
+    await this.loadBookingDeny(toast);
+    runInAction(() => {
+      this.loadingInitial = false;
+    });
+  };
+
+  setFilterTermCancel = async (courtId: string, toast: CreateToastFnReturn) => {
+    this.loadingInitial = true;
+    this.bookingCancelPageParam.clearLazyPage();
+    this.bookingCancelPageParam.filter = courtId;
+    this.bookingCancelRegistry.clear();
+    await this.loadBookingDeny(toast);
+    runInAction(() => (this.loadingInitial = false));
+  };
+
+  setDateTermCancel = async (
+    date1: string | null,
+    date2: string | null,
+    toast: CreateToastFnReturn,
+  ) => {
+    this.loadingInitial = true;
+    this.bookingCancelPageParam.clearLazyPage();
+    this.bookingCancelPageParam.fromDate = date1;
+    this.bookingCancelPageParam.toDate = date2;
+    this.bookingCancelRegistry.clear();
+    await this.loadBookingDeny(toast);
+    runInAction(() => (this.loadingInitial = false));
+  };
+
+  //Filter All
+
+  setSearchTermAll = async (term: string, toast: CreateToastFnReturn) => {
+    this.loadingInitial = true;
+    this.bookingAllPageParam.clearLazyPage();
+    this.bookingAllPageParam.searchTerm = term;
+    this.bookingAllRegistry.clear();
+    await this.loadBookingAll(toast);
+    runInAction(() => {
+      this.loadingInitial = false;
+    });
+  };
+
+  setFilterTermAll = async (courtId: string, toast: CreateToastFnReturn) => {
+    this.loadingInitial = true;
+    this.bookingAllPageParam.clearLazyPage();
+    this.bookingAllPageParam.filter = courtId;
+    this.bookingAllRegistry.clear();
+    await this.loadBookingAll(toast);
+    runInAction(() => (this.loadingInitial = false));
+  };
+
+  setDateTermAll = async (
+    date1: string | null,
+    date2: string | null,
+    toast: CreateToastFnReturn,
+  ) => {
+    this.loadingInitial = true;
+    this.bookingAllPageParam.clearLazyPage();
+    this.bookingAllPageParam.fromDate = date1;
+    this.bookingAllPageParam.toDate = date2;
+    this.bookingAllRegistry.clear();
+    await this.loadBookingAll(toast);
+    runInAction(() => (this.loadingInitial = false));
   };
 
   private convertBookingStartAndEndUTCToG7(booking: BookingForList) {
