@@ -26,6 +26,7 @@ const BookingPendingComponent = observer(() => {
     bookingPendingRegistry,
   } = bookingClusterStore;
   const toast = useToast();
+
   useEffect(() => {
     bookingPendingPageParam.clearLazyPage();
     loadBookingPending(toast);

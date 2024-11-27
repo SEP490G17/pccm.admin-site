@@ -227,8 +227,7 @@ export default class BookingClusterStore {
       if (err) {
         toast(
           BookingMessage.acceptFailure(
-            undefined,
-            'Trùng lịch của 1 booking đã được confirm trước đó',
+            err?.response.data,
           ),
         );
       }
