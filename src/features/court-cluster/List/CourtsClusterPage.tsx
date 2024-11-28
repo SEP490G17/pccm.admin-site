@@ -14,20 +14,20 @@ import { debounce } from 'lodash';
 const CourtClusterPage = observer(() => {
   const { courtClusterStore } = useStore();
   const { loadCourtsCluster, courtPageParams } = courtClusterStore;
+  const toast= useToast();
 
   useEffect(() => {
     if (courtClusterStore.courtClusterRegistry.size == 0) {
       loadCourtsCluster(toast);
     }
-  }, [courtClusterStore.courtClusterRegistry.size, loadCourtsCluster]);
+  }, [courtClusterStore.courtClusterRegistry.size, loadCourtsCluster, toast]);
   const [isPending, setIsPending] = useState(false);
-  const toast= useToast();
   const handleSearchDebounced = useMemo(() => {
     return debounce((e) => {
       setIsPending(false); // Tắt loading
       courtClusterStore.setSearchTerm(e.target.value, toast);
     }, 500);
-  }, [setIsPending, courtClusterStore]);
+  }, [setIsPending, courtClusterStore, toast]);
 
   const onSearchChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {

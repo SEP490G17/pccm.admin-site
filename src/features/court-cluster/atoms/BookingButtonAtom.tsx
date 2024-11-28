@@ -27,13 +27,13 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => 
   const onDenyOpen = () => setIsDenyModalOpen(true);
   const onDenyClose = () => setIsDenyModalOpen(false);
 
-  const handleAccepted = async () => {
-    await acceptedBooking(booking.id, toast).then((data) => {
-      if (data.res) {
-        bookingStore.bookingRegistry.set(data.res.id, convertBookingStartAndEndUTCToG7(data.res));
-      }
-    });
-  };
+  // const handleAccepted = async () => {
+  //   await acceptedBooking(booking.id, toast).then((data) => {
+  //     if (data.res) {
+  //       bookingStore.bookingRegistry.set(data.res.id, convertBookingStartAndEndUTCToG7(data.res));
+  //     }
+  //   });
+  // };
 
   const handleCompleted = async () => {
     await completeBooking(booking.id, toast).then((data) => {

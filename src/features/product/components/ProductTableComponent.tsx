@@ -28,7 +28,7 @@ const ProductTableComponent = observer(() => {
   const toast = useToast();
   const handleOpenEdit = async (id: number) => {
     onOpen();
-    await detailProduct(id);
+    await detailProduct(id, toast);
   };
   const handleDelete = async (id: number) => {
     deleteProduct(id, toast);

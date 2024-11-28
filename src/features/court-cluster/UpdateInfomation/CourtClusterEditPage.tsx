@@ -64,7 +64,6 @@ const CourtClusterEditPage = observer(() => {
 
       return true;
     });
-
   const { courtClusterStore } = useStore();
   const { getDetailsCourtCluster, selectedCourtCluster, loadingInitialDetailsPage } =
     courtClusterStore;
@@ -215,11 +214,11 @@ const CourtClusterEditPage = observer(() => {
                           {/* <ImageUpload limit={4} name="images" /> */}
                           <GridItem>
                             <Field name="images">
-                              {({ field, form }: any) => (
+                              {({ form }: any) => (
                                 <ImageUpload
                                   name="images"
                                   limit={4}
-                                  initialFileList={form.values.images.map((x) => {
+                                  initialFileList={form.values.images.map((x: any) => {
                                     return {
                                       url: x,
                                     };
@@ -235,7 +234,6 @@ const CourtClusterEditPage = observer(() => {
                   </Grid>
                   <FastField name="description">
                     {({
-                      field,
                       form,
                     }: {
                       field: FieldInputProps<string>;

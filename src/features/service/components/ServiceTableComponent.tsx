@@ -11,23 +11,24 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import { useStore } from '@/app/stores/store';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import UpdateServicePage from '../UpdateServicePage';
-import { toast } from 'react-toastify';
 import EditButtonAtom from '@/app/common/form/EditButtonAtom';
 
 const ServiceTableComponent = observer(() => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { serviceStore } = useStore();
-  const { serviceArray, servicePageParams, loading, loadingInitial, deleteService, detailService } = serviceStore;
-
+  const { serviceArray, servicePageParams, loading, loadingInitial, deleteService, detailService } =
+    serviceStore;
+  const toast = useToast();
   const handleOpenEdit = async (id: number) => {
     onOpen();
-    await detailService(id);
-  }
+    await detailService(id, toast);
+  };
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -62,7 +63,7 @@ const ServiceTableComponent = observer(() => {
                     <Flex gap="3">
                       <EditButtonAtom
                         onUpdate={async () => {
-                          handleOpenEdit(service.id)
+                          handleOpenEdit(service.id);
                         }}
                       />
 
@@ -70,14 +71,10 @@ const ServiceTableComponent = observer(() => {
                         buttonSize="sm"
                         name={service.serviceName}
                         loading={loading}
-                        header='Xóa dịch vụ'
+                        header="Xóa dịch vụ"
                         buttonClassName="gap-2"
                         onDelete={async () => {
-                          try {
-                            await deleteService(service.id);
-                          } catch {
-                            toast.error("Xóa thất bại");
-                          }
+                          await deleteService(service.id, toast);
                         }}
                       />
                     </Flex>

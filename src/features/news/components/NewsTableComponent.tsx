@@ -14,11 +14,11 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import UpdateNewsPage from '../UpdateNewsPage';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
-import { toast } from "react-toastify";
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
 import EditButtonAtom from '@/app/common/form/EditButtonAtom';
 
@@ -40,7 +40,7 @@ const NewsTableComponent = observer(() => {
   }, [newsArray]);
 
   useEffect(() => {
-    setLocalStatuses(prevStatuses => {
+    setLocalStatuses((prevStatuses) => {
       const newStatuses = { ...prevStatuses };
       for (const news of newsArray) {
         if (!(news.id in prevStatuses)) {
@@ -50,23 +50,21 @@ const NewsTableComponent = observer(() => {
       return newStatuses;
     });
   }, [newsArray]);
-
+  const toast = useToast();
   const handleChangeStatus = async (id: number, currentStatus: number) => {
     const newStatus = currentStatus === 1 ? 0 : 1;
-    setLocalStatuses(prevStatuses => ({ ...prevStatuses, [id]: newStatus }));
+    setLocalStatuses((prevStatuses) => ({ ...prevStatuses, [id]: newStatus }));
 
     try {
-      await newsStore.changeStatus(id, newStatus);
-    } catch (error) {
-      setLocalStatuses(prevStatuses => ({ ...prevStatuses, [id]: currentStatus }));
-      toast.error("Cập nhật trạng thái thất bại");
-      console.error('Failed to update status:', error);
+      await newsStore.changeStatus(id, newStatus, toast);
+    } catch {
+      setLocalStatuses((prevStatuses) => ({ ...prevStatuses, [id]: currentStatus }));
     }
   };
 
   const handleOpenEdit = async (id: number) => {
     onOpen();
-    await detailNews(id);
+    await detailNews(id, toast);
   };
 
   return (
@@ -75,7 +73,9 @@ const NewsTableComponent = observer(() => {
         <Table className="app-table" variant="simple" cellPadding={'1rem'} padding={0}>
           <Thead>
             <Tr>
-              <Th w={'5rem'} py={'1rem'}>STT</Th>
+              <Th w={'5rem'} py={'1rem'}>
+                STT
+              </Th>
               <Th w={'10rem'}>Ảnh bài viết</Th>
               <Th w="20rem">Tiêu đề bài viết</Th>
               <Th w="15rem">Danh mục</Th>
@@ -120,11 +120,11 @@ const NewsTableComponent = observer(() => {
                       isChecked={localStatuses[news.id] === 1}
                       isDisabled={newsStore.isLoading(news.id)}
                       onChange={() => {
-                        handleChangeStatus(news.id, localStatuses[news.id])
+                        handleChangeStatus(news.id, localStatuses[news.id]);
                       }}
                     />
                   </Td>
-                  <Td>{new Date(news.createdAt).toLocaleDateString("vi-VN")}</Td>
+                  <Td>{new Date(news.createdAt).toLocaleDateString('vi-VN')}</Td>
                   <Td>
                     <Flex gap="3">
                       <EditButtonAtom
@@ -136,14 +136,10 @@ const NewsTableComponent = observer(() => {
                         buttonSize="sm"
                         name={news.title}
                         loading={loading}
-                        header='Xóa tin tức'
+                        header="Xóa tin tức"
                         buttonClassName="gap-2"
                         onDelete={async () => {
-                          try {
-                            await deleteNews(news.id);
-                          } catch {
-                            toast.error("Xóa thất bại");
-                          }
+                          await deleteNews(news.id, toast);
                         }}
                       />
                     </Flex>

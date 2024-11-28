@@ -11,20 +11,21 @@ import {
   ModalOverlay,
   Skeleton,
   Stack,
+  useToast,
   VStack,
-} from "@chakra-ui/react";
-import "./style.scss";
-import { Form, Formik } from "formik";
-import { useStore } from "@/app/stores/store";
-import { NewsDTO } from "@/app/models/news.models";
+} from '@chakra-ui/react';
+import './style.scss';
+import { Form, Formik } from 'formik';
+import { useStore } from '@/app/stores/store';
+import { NewsDTO } from '@/app/models/news.models';
 import * as Yup from 'yup';
-import TextFieldAtoms from "@/app/common/form/TextFieldAtoms";
-import TagFieldAtom from "@/app/common/form/TagFieldAtom";
-import FileUploadFieldAtoms from "@/app/common/form/FileUploadFieldAtoms";
-import TimeInputAtom from "@/app/common/form/TimeInputAtom";
-import ReactQuillAtom from "@/app/common/form/ReactQuillAtom";
-import { dateFormatOptions } from "@/app/helper/settings";
-import { observer } from "mobx-react-lite";
+import TextFieldAtoms from '@/app/common/form/TextFieldAtoms';
+import TagFieldAtom from '@/app/common/form/TagFieldAtom';
+import FileUploadFieldAtoms from '@/app/common/form/FileUploadFieldAtoms';
+import TimeInputAtom from '@/app/common/form/TimeInputAtom';
+import ReactQuillAtom from '@/app/common/form/ReactQuillAtom';
+import { dateFormatOptions } from '@/app/helper/settings';
+import { observer } from 'mobx-react-lite';
 
 interface IProp {
   isOpen: boolean;
@@ -42,10 +43,10 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
     startTime: Yup.string().required('Giờ bắt đầu không được bỏ trống'),
     endTime: Yup.string()
       .required('Giờ kết thúc không được bỏ trống')
-      .when("startTime", (startTime, schema) => {
+      .when('startTime', (startTime, schema) => {
         return schema.test({
-          name: "is-after-start-time",
-          message: "Giờ kết thúc phải sau giờ bắt đầu",
+          name: 'is-after-start-time',
+          message: 'Giờ kết thúc phải sau giờ bắt đầu',
           test: function (value) {
             if (typeof startTime[0] === 'string' && typeof value === 'string') {
               return new Date(value) > new Date(startTime[0]);
@@ -56,7 +57,7 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
       }),
     content: Yup.string().required('Chi tiết bài viết không được bỏ trống'),
   });
-
+  const toast = useToast();
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">
@@ -65,25 +66,25 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
           <ModalHeader bg="#00423D" color="white" borderRadius="20px 20px 0 0">
             Cập nhật bài viết
           </ModalHeader>
-          <ModalCloseButton color='#FFF' />
+          <ModalCloseButton color="#FFF" />
           <ModalBody>
             <VStack spacing="20px" align="stretch">
               <Skeleton isLoaded={!newsStore.isLoadingEdit}>
                 <Formik
                   initialValues={{
-                    thumbnail: selectedNews?.thumbnail || "",
-                    title: selectedNews?.title || "",
-                    description: selectedNews?.description || "",
-                    startTime: selectedNews?.startTime || "",
-                    endTime: selectedNews?.endTime || "",
-                    location: selectedNews?.location || "",
-                    status: selectedNews?.status || "",
+                    thumbnail: selectedNews?.thumbnail || '',
+                    title: selectedNews?.title || '',
+                    description: selectedNews?.description || '',
+                    startTime: selectedNews?.startTime || '',
+                    endTime: selectedNews?.endTime || '',
+                    location: selectedNews?.location || '',
+                    status: selectedNews?.status || '',
                     tags: selectedNews?.tags || [],
-                    createdAt: selectedNews?.createdAt || "",
-                    content: selectedNews?.content || "",
+                    createdAt: selectedNews?.createdAt || '',
+                    content: selectedNews?.content || '',
                   }}
                   onSubmit={async (values) => {
-                    console.error(values)
+                    console.error(values);
                     const News = new NewsDTO({
                       id: selectedNews?.id,
                       title: values.title,
@@ -97,8 +98,8 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
                       createAt: new Date().toLocaleString('vi-VN', dateFormatOptions).trim(),
                       status: selectedNews?.status,
                     });
-                    await newsStore.updateNews(News);
-                    onClose()
+                    await newsStore.updateNews(News, toast);
+                    onClose();
                   }}
                   validationSchema={validationSchema}
                 >
@@ -111,7 +112,8 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
                           className="input_text"
                           type="text"
                           name="title"
-                          placeholder="Nhập" />
+                          placeholder="Nhập"
+                        />
 
                         <TextFieldAtoms
                           isRequired={true}
@@ -119,7 +121,8 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
                           className="input_text"
                           type="text"
                           name="description"
-                          placeholder="Nhập" />
+                          placeholder="Nhập"
+                        />
 
                         <HStack>
                           <TextFieldAtoms
@@ -128,10 +131,14 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
                             className="input_text"
                             type="text"
                             name="location"
-                            placeholder="Nhập" />
+                            placeholder="Nhập"
+                          />
 
-                          <TagFieldAtom name="tags" label="Tags bài viết" isRequired={false}></TagFieldAtom>
-
+                          <TagFieldAtom
+                            name="tags"
+                            label="Tags bài viết"
+                            isRequired={false}
+                          ></TagFieldAtom>
                         </HStack>
 
                         <FileUploadFieldAtoms
@@ -144,14 +151,28 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
                         <FormControl>
                           <FormLabel className="title_label">Thời gian</FormLabel>
                           <HStack spacing="20px">
-                            <TimeInputAtom color='green' label='Giờ bắt đầu' type='datetime-local' name='startTime'></TimeInputAtom>
-                            <TimeInputAtom color='red' label='Giờ kết thúc' type='datetime-local' name='endTime'></TimeInputAtom>
+                            <TimeInputAtom
+                              color="green"
+                              label="Giờ bắt đầu"
+                              type="datetime-local"
+                              name="startTime"
+                            ></TimeInputAtom>
+                            <TimeInputAtom
+                              color="red"
+                              label="Giờ kết thúc"
+                              type="datetime-local"
+                              name="endTime"
+                            ></TimeInputAtom>
                           </HStack>
                         </FormControl>
 
-                        <ReactQuillAtom name="content" label="Chi tiết bài viết" isRequired={true}></ReactQuillAtom>
+                        <ReactQuillAtom
+                          name="content"
+                          label="Chi tiết bài viết"
+                          isRequired={true}
+                        ></ReactQuillAtom>
 
-                        <Stack direction='row' justifyContent='flex-end'>
+                        <Stack direction="row" justifyContent="flex-end">
                           <Button
                             // disabled={isSubmitting || !isValid}
                             className="save"
@@ -162,9 +183,8 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
                           </Button>
                         </Stack>
                       </Form>
-                    )
-                  }
-                  }
+                    );
+                  }}
                 </Formik>
               </Skeleton>
             </VStack>
