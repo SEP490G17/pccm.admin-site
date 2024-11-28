@@ -25,7 +25,7 @@ import { useEffect } from 'react';
 import * as Yup from 'yup';
 import NumberFieldAtom from '@/app/common/form/NumberFieldAtoms';
 import { CreateStaffDTO } from '@/app/models/user.model';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 
 const CreateStaffPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();

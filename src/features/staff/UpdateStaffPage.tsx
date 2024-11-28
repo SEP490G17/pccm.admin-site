@@ -22,7 +22,7 @@ import { useStore } from '@/app/stores/store';
 import { useEffect } from 'react';
 import * as Yup from 'yup';
 import { UpdateStaffDTO } from '@/app/models/user.model';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import NumberFieldAtom from '@/app/common/form/NumberFieldAtoms';
 
 interface IProp {
