@@ -4,12 +4,12 @@ import { sampleServiceData } from '../mock/service.mock';
 import { PageParams, ServiceLogPageParams } from '../models/pageParams.model';
 import { catchErrorHandle, sleep } from '../helper/utils';
 import agent from '../api/agent';
-import { toast } from 'react-toastify';
 import _ from 'lodash';
 import { CreateToastFnReturn } from '@chakra-ui/react';
 import { DefaultServiceText, ServiceMessage } from '../common/toastMessage/serviceMessage';
 import { CommonMessage } from '../common/toastMessage/commonMessage';
 import { store } from './store';
+import { ServiceLogsMessage } from '../common/toastMessage/serviceLogsMessage';
 export default class ServiceStore {
   serviceRegistry = new Map<number, Service>();
   serviceLogRegistry = new Map<number, ServiceLog>();
@@ -28,7 +28,7 @@ export default class ServiceStore {
   }
 
   //#region CRUD
-  loadServices = async () => {
+  loadServices = async (toast: CreateToastFnReturn) => {
     this.loading = true;
     const queryParams = new URLSearchParams();
     queryParams.append('skip', `${this.servicePageParams.skip ?? 0}`);
@@ -42,7 +42,7 @@ export default class ServiceStore {
     const [error, res] = await catchErrorHandle(agent.Services.list(`?${queryParams.toString()}`));
     runInAction(() => {
       if (error) {
-        toast.error('Lấy danh sách dịch vụ thất bại');
+        toast(ServiceMessage.loadFailure());
       }
       if (res) {
         const { count, data } = res;
@@ -53,7 +53,7 @@ export default class ServiceStore {
     });
   };
 
-  loadServicesLog = async () => {
+  loadServicesLog = async (toast: CreateToastFnReturn) => {
     this.loading = true;
     const queryParams = new URLSearchParams();
     queryParams.append('skip', `${this.serviceLogPageParams.skip ?? 0}`);
@@ -79,7 +79,7 @@ export default class ServiceStore {
     );
     runInAction(() => {
       if (error) {
-        toast.error('Lấy danh sách dịch vụ thất bại');
+        toast(ServiceLogsMessage.loadingFailure());
       }
       if (res) {
         const { count, data } = res;
@@ -92,38 +92,36 @@ export default class ServiceStore {
 
   //#endregion
 
-  createService = async (service: ServiceDTO) => {
+  createService = async (service: ServiceDTO, toast: CreateToastFnReturn) => {
     this.loading = true;
-    await runInAction(async () => {
-      await agent.Services.create(service)
-        .then(() => {
-          this.loadServices();
-          this.loadServicesLog();
-          toast.success('Tạo dịch vụ thành công');
-        })
-        .catch((error) => {
-          console.error('Error creating service:', error);
-          toast.error('Tạo dịch vụ thất bại');
-        })
-        .finally(() => (this.loading = false));
+    const pending = toast(CommonMessage.loadingMessage(DefaultServiceText.create.title));
+    const [err, res] = await catchErrorHandle(agent.Services.create(service));
+    runInAction(() => {
+      toast.close(pending);
+      if (res) {
+        this.loadServices(toast);
+        this.loadServicesLog(toast);
+        toast(ServiceMessage.createSuccess());
+      }
+      if (err) {
+        toast(ServiceMessage.createFailure());
+      }
+      this.loading = false;
     });
   };
 
-  detailService = async (serviceId: number) => {
+  detailService = async (serviceId: number, toast: CreateToastFnReturn) => {
     this.loadingEdit = true;
-    try {
-      const data = await agent.Services.details(serviceId);
-      runInAction(() => {
-        this.selectedService = data;
-        this.loadingEdit = false;
-      });
-      return data;
-    } catch (error) {
-      runInAction(() => {
-        this.loadingEdit = false;
-        console.error('Error creating news:', error);
-      });
-    }
+    const [err, res] = await catchErrorHandle(agent.Services.details(serviceId));
+    runInAction(() => {
+      if (res) {
+        this.selectedService = res;
+      }
+      if (err) {
+        toast(ServiceMessage.updateFailure());
+      }
+      this.loadingEdit = false;
+    });
   };
 
   updateService = async (service: ServiceEditDTO, toast: CreateToastFnReturn) => {
@@ -144,21 +142,23 @@ export default class ServiceStore {
     });
   };
 
-  deleteService = async (id: number) => {
+  deleteService = async (id: number, toast: CreateToastFnReturn) => {
     this.loading = true;
-    try {
-      await agent.Services.delete(id);
-      runInAction(() => {
-        this.loadServicesLog();
+    const pending = toast(CommonMessage.loadingMessage(DefaultServiceText.delete.title));
+    const [err, res] = await catchErrorHandle(agent.Services.delete(id));
+
+    runInAction(() => {
+      toast.close(pending);
+      if (err) {
+        toast(ServiceMessage.deleteFailure());
+      }
+      if (res) {
+        toast(ServiceMessage.deleteSuccess());
+        this.loadServicesLog(toast);
         this.serviceRegistry.delete(id);
-        this.loading = false;
-      });
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.error('Error deleting news:', error);
-      });
-    }
+      }
+      this.loading = false;
+    });
   };
 
   //#region mock-up
@@ -188,66 +188,70 @@ export default class ServiceStore {
     this.loadingInitial = load;
   };
 
-  setSearchTerm = async (term: string) => {
+  setSearchTerm = async (term: string, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     this.serviceRegistry.clear();
     this.servicePageParams.clearLazyPage();
     this.servicePageParams.searchTerm = term;
-    await this.loadServices();
+    await this.loadServices(toast);
     runInAction(() => {
       this.loadingInitial = false;
     });
   };
 
-  setSearchLogTerm = async (term: string) => {
+  setSearchLogTerm = async (term: string, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     this.cleanServiceLogCache();
     this.serviceLogPageParams.clearLazyPage();
     this.serviceLogPageParams.searchTerm = term;
-    await this.loadServicesLog();
+    await this.loadServicesLog(toast);
     runInAction(() => {
       this.loadingInitial = false;
     });
   };
 
-  setFilterTerm = async (term: string) => {
+  setFilterTerm = async (term: string, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     this.cleanServiceCache();
     this.servicePageParams.clearLazyPage();
     this.servicePageParams.filter = term;
-    await this.loadServices();
+    await this.loadServices(toast);
     runInAction(() => {
       this.loadingInitial = false;
     });
   };
 
-  setFilterTermLog = async (term: string) => {
+  setFilterTermLog = async (term: string, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     this.cleanServiceLogCache();
     this.serviceLogPageParams.clearLazyPage();
     this.serviceLogPageParams.filter = term;
-    await this.loadServicesLog();
+    await this.loadServicesLog(toast);
     runInAction(() => {
       this.loadingInitial = false;
     });
   };
 
-  filterLogByLogType = async (logTypeId: number) => {
+  filterLogByLogType = async (logTypeId: number, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     this.serviceLogPageParams.clearLazyPage();
     this.serviceLogPageParams.LogType = logTypeId;
     this.cleanServiceLogCache();
-    await this.loadServicesLog();
+    await this.loadServicesLog(toast);
     runInAction(() => (this.loadingInitial = false));
   };
 
-  filterLogByDate = async (date1: string | null, date2: string | null) => {
+  filterLogByDate = async (
+    date1: string | null,
+    date2: string | null,
+    toast: CreateToastFnReturn,
+  ) => {
     this.loadingInitial = true;
     this.serviceLogPageParams.clearLazyPage();
     this.serviceLogPageParams.fromDate = date1 ?? null;
     this.serviceLogPageParams.toDate = date2 ?? null;
     this.cleanServiceLogCache();
-    await this.loadServicesLog();
+    await this.loadServicesLog(toast);
     runInAction(() => (this.loadingInitial = false));
   };
 

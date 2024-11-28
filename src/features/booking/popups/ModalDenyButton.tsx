@@ -1,7 +1,7 @@
 import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalCloseButton, ModalBody, UnorderedList, ListItem, useToast } from '@chakra-ui/react';
 import { BookingForList } from '@/app/models/booking.model';
 import { useStore } from '@/app/stores/store';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { convertBookingStartAndEndUTCToG7 } from '@/app/helper/utils';
 
 interface ModalDenyButtonProps {

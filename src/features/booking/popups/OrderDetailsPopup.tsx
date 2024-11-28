@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react';
 import { FC, useState } from 'react';
 import BookingServicesTab from '../components/Booking/BookingServicesTab';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
 import { PaymentStatus } from '@/app/models/payment.model';
 import BookingProductTab from '../components/Booking/BookingProductsTab';
@@ -42,7 +42,6 @@ const OrderDetailsPopUp: FC<OrderDetailsProps> = observer(({ isOpen, onClose }) 
     await updateOrder(toast);
   };
   if(!selectedOrder) return;
-  console.log(selectedOrder);
   return (
     <>
       <Modal id="order-details" isOpen={isOpen} onClose={onClose} size={'full'}>

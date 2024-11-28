@@ -30,6 +30,13 @@ export const DefaultCourtClusterText = {
       success: 'Update hiển thị sân thành công',
     },
   },
+
+  loading: {
+    title: 'Lấy danh sách cụm san',
+    descriptions: {
+      failure: 'Lấy danh sách cụm sân thất bại',
+    },
+  },
 };
 
 export const CourtClusterMessage = {
@@ -104,7 +111,7 @@ export const CourtClusterMessage = {
   ): UseToastOptions => ({
     title,
     description,
-    status:'success',
+    status: 'success',
     duration,
     isClosable,
   }),
@@ -117,7 +124,20 @@ export const CourtClusterMessage = {
   ): UseToastOptions => ({
     title,
     description,
-    status:'error',
+    status: 'error',
+    duration,
+    isClosable,
+  }),
+
+  loadFailure: (
+    title: string = DefaultCourtClusterText.loading.title,
+    description: string = DefaultCourtClusterText.loading.descriptions.failure,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
     duration,
     isClosable,
   }),

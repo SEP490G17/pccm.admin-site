@@ -24,7 +24,7 @@ import FileUploadFieldAtoms from "@/app/common/form/FileUploadFieldAtoms";
 import TimeInputAtom from "@/app/common/form/TimeInputAtom";
 import ReactQuillAtom from "@/app/common/form/ReactQuillAtom";
 import { dateFormatOptions } from "@/app/helper/settings";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 
 interface IProp {
   isOpen: boolean;

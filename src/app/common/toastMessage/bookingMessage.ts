@@ -54,12 +54,19 @@ export const DefaultBookingText = {
     },
   },
 
-  payment:{
-    title:'Xác thực thanh toán',
-    description:{
-      success:'Xác thực thanh toán thành công',
-    }
-  }
+  payment: {
+    title: 'Xác thực thanh toán',
+    description: {
+      success: 'Xác thực thanh toán thành công',
+    },
+  },
+
+  getConflig: {
+    title: 'Lấy danh sách các lịch trùng',
+    description: {
+      failure: 'Lấy danh sách các lịch trùng thất bại',
+    },
+  },
 };
 
 export const BookingMessage = {
@@ -171,7 +178,7 @@ export const BookingMessage = {
   ): UseToastOptions => ({
     title,
     description,
-    status: 'error',
+    status: 'success',
     duration,
     isClosable,
   }),
@@ -252,8 +259,21 @@ export const BookingMessage = {
   }),
 
   paymentFailure: (
-    description: string ,
+    description: string,
     title: string = DefaultBookingText.booking.title,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  }),
+
+  getConfligFailure: (
+    description: string = DefaultBookingText.getConflig.description.failure,
+    title: string = DefaultBookingText.getConflig.title,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,
   ): UseToastOptions => ({

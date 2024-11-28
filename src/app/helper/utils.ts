@@ -29,7 +29,7 @@ export const customFormatTimeWithText = (time: string) => {
 };
 export const catchErrorHandle = async <T>(
   promise: Promise<T>,
-): Promise<[undefined, T] | [Error]> => {
+): Promise<[undefined, T] | [Error|any]> => {
   return promise
     .then((data) => {
       return [undefined, data] as [undefined, T];

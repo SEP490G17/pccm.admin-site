@@ -22,7 +22,7 @@ import {
 
 } from '@chakra-ui/react';
 import { Formik } from 'formik';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { Form } from 'react-router-dom';
 import * as Yup from 'yup';
 

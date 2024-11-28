@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Flex, Box, Center, Heading } from '@chakra-ui/react';
+import { Flex, Box, Center, Heading, useToast } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store.ts';
 import '../style.scss';
@@ -17,15 +17,15 @@ const CourtClusterPage = observer(() => {
 
   useEffect(() => {
     if (courtClusterStore.courtClusterRegistry.size == 0) {
-      loadCourtsCluster();
+      loadCourtsCluster(toast);
     }
   }, [courtClusterStore.courtClusterRegistry.size, loadCourtsCluster]);
   const [isPending, setIsPending] = useState(false);
-
+  const toast= useToast();
   const handleSearchDebounced = useMemo(() => {
     return debounce((e) => {
       setIsPending(false); // Tắt loading
-      courtClusterStore.setSearchTerm(e.target.value);
+      courtClusterStore.setSearchTerm(e.target.value, toast);
     }, 500);
   }, [setIsPending, courtClusterStore]);
 

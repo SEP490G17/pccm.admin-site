@@ -28,9 +28,8 @@
     font-size: 0.83334vw; /* Mặc định cho kích thước lớn */
   }
 }
-body{
-    background-color: $mainBackgroundColor !important;
-
+body {
+  background-color: $mainBackgroundColor !important;
 }
 
 #root {
@@ -201,7 +200,7 @@ button.primary.outlined {
 /* csslint ignore:start */
 
 .schedule-cell-dimension.e-schedule {
-  max-height: 40rem !important;
+  max-height: 45rem !important;
   overflow: auto;
   width: 100%;
 
@@ -212,26 +211,26 @@ button.primary.outlined {
     .e-date-header-wrap {
       table {
         col {
-          width: 100px;
+          width: 150px;
         }
       }
     }
     .e-content-wrap {
       table {
         col {
-          width: 100px;
+          width: 75px;
         }
       }
     }
     .e-time-cells-wrap {
       table {
         td {
-          height: 50px;
+          height: 75px;
         }
       }
     }
     .e-work-cells {
-      height: 50px;
+      height: 75px;
     }
   }
 }
@@ -243,6 +242,9 @@ button.primary.outlined {
   background-color: #4caf50 !important; /* Green for paid */
 }
 .pending-payment {
+  background-color: tomato !important; /* Yellow for pending */
+}
+.success-payment {
   background-color: $secondaryColor500 !important; /* Yellow for pending */
 }
 
@@ -275,4 +277,20 @@ button.primary.outlined {
 }
 #chakra-modal-order-details {
   width: 94% !important;
+}
+.highlight-item {
+  background-color: #fffae6;
+  animation: highlightAnimation 2s ease-in-out infinite;
+}
+
+@keyframes highlightAnimation {
+  0% {
+    background-color: #fffae6;
+  }
+  50% {
+    background-color: #fff4b8;
+  }
+  100% {
+    background-color: #fffae6;
+  }
 }

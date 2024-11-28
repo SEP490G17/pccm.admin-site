@@ -1,7 +1,7 @@
 import { useStore } from '@/app/stores/store';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import BookingGridTableComponent from './BookingGridTableComponent';
-import { Flex } from '@chakra-ui/react';
+import { Flex, useToast } from '@chakra-ui/react';
 import Select from 'react-select';
 import InputSearchBoxAtoms from '@/features/atoms/InputSearchBoxAtoms';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -48,6 +48,7 @@ const BookingTodayComponent = observer(() => {
     { value: 1, label: 'Đơn ngày' },
     { value: 2, label: 'Đơn tháng' },
   ];
+  const toast = useToast();
   return (
     <>
       <Flex direction={'row'} className="mb-8 justify-between">
@@ -58,9 +59,7 @@ const BookingTodayComponent = observer(() => {
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
             isSearchable={true}
             onChange={(e) => {
-              console.log(e);
               bookingTodaySetFilterTerm(e.value);
-              console.log('Filter after update:', bookingTodayPageParam.filter); // Kiểm tra
             }}
             defaultValue={
               bookingTodayPageParam.filter
@@ -78,9 +77,7 @@ const BookingTodayComponent = observer(() => {
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
             isSearchable={true}
             onChange={(e) => {
-              console.log(e);
               bookingTodaySetCategoryTerm(e.value);
-              console.log('Filter after update:', bookingTodayPageParam.filter); // Kiểm tra
             }}
             defaultValue={
               bookingTodayPageParam.category

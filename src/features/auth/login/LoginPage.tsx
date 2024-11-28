@@ -3,12 +3,10 @@ import pickerballIcon from '@/assets/pickerball-icon.png';
 import './style.scss';
 import LoginFormComponent from './LoginFormComponent.tsx';
 import { observer } from 'mobx-react-lite';
-import { ToastContainer } from 'react-toastify';
 
 const LoginPage = observer(()=> {
   return (
     <>
-      <ToastContainer position="top-right" hideProgressBar theme="colored" />
       <Flex
         align="center"
         justifyContent="flex-end"

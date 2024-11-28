@@ -17,18 +17,6 @@ export interface AppPath {
 }
 export const menuList: AppPath[] = [
   {
-    key: 1,
-    icon: (isSelected: boolean) => (
-      <StatisticMenuIcon
-        width="1.5rem"
-        height="1.5rem"
-        color={isSelected ? '#00423D' : '#63748A'}
-      />
-    ),
-    label: 'Thống kê',
-    path: '/thong-ke',
-  },
-  {
     key: 2,
     icon: (isSelected: boolean) => (
       <StatisticMenuIcon
@@ -112,11 +100,21 @@ export const menuList: AppPath[] = [
     label: 'Tin tức',
     path: '/tin-tuc',
   },
+  {
+    key: 1,
+    icon: (isSelected: boolean) => (
+      <StatisticMenuIcon
+        width="1.5rem"
+        height="1.5rem"
+        color={isSelected ? '#00423D' : '#63748A'}
+      />
+    ),
+    label: 'Thống kê',
+    path: '/',
+  },
 ];
 
 export const menuListAdmin: AppPath[] = [
-  
-
   {
     key: 2,
     icon: (isSelected: boolean) => (
@@ -184,8 +182,8 @@ export const menuListAdmin: AppPath[] = [
 ];
 
 export const getMenuList = (roles: string[]): AppPath[] => {
-  // if (roles.includes('Admin')) {
-  //   return menuListAdmin;
-  // }
+  if (roles.includes('Admin')) {
+    return menuListAdmin;
+  }
   return menuList;
 };

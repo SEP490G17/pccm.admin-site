@@ -1,5 +1,5 @@
 import { Flex, Heading, Spacer } from '@chakra-ui/react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 
 import { useStore } from '@/app/stores/store';
 import ProductOrderTableComponent from '../Product/ProductOrderTableComponent';

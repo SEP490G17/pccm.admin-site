@@ -20,7 +20,7 @@ import { Form, Formik, FormikProps } from 'formik';
 import dayjs from 'dayjs';
 import * as Yup from 'yup';
 import CourtPriceListTable from '../components/CourtPriceListTableComponent';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
 interface CourtPricePopupProps {
   courtPrices: CourtPriceResponse[];

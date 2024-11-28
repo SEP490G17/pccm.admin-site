@@ -11,21 +11,20 @@ import {
   Skeleton,
   useToast,
 } from '@chakra-ui/react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
 import BookingListComponent from '../components/BookingTab/BookingListComponent';
 import ScheduleCustomComponent from '../components/ScheduleCustomComponent';
 import ComboBookingComponent from '../components/ComboBookingComponent';
-import { CourtCluster } from '@/app/models/court.model';
 interface IProps {
   courtClusterId: number;
-  selectedCourtCluster: CourtCluster;
 }
-const CourtClusterBookingTab = observer(({ courtClusterId, selectedCourtCluster }: IProps) => {
+const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
   const toast = useToast();
 
   const { courtClusterStore, bookingClusterStore: bookingStore } = useStore();
-  const { loadingInitialBookingPage, setLoadingInitialBookingPage } = courtClusterStore;
+  const { loadingInitialBookingPage, setLoadingInitialBookingPage, selectedCourtCluster } =
+    courtClusterStore;
   const { clearBookingForSchedule } = bookingStore;
   useEffect(() => {
     setLoadingInitialBookingPage(true);
@@ -34,6 +33,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId, selectedCourtCluster 
       setLoadingInitialBookingPage(false),
     );
   }, [courtClusterId, bookingStore, setLoadingInitialBookingPage, toast, clearBookingForSchedule]);
+  if (!selectedCourtCluster) return;
   return (
     <Skeleton isLoaded={!loadingInitialBookingPage}>
       <Accordion allowToggle defaultIndex={0}>

@@ -22,7 +22,7 @@ import {
 import { FC, useState } from 'react';
 import BookingServicesTab from '../components/Booking/BookingServicesTab';
 import { BookingDetails } from '@/app/models/booking.model';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
 import OrderTotalInfoComponent from '../components/Order/OrderTotalInfoComponent';
 import BookingProductTab from '../components/Booking/BookingProductsTab';

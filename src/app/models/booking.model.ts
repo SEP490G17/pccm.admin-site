@@ -81,8 +81,8 @@ export interface CourtPriceBooking {
 }
 
 export const mapBookingToBookingForList = (booking: BookingModel): BookingForList => {
-  const startTime = dayjs(booking.startTime).utc().add(7,'hour'); // Convert to GMT+7
-  const endTime = dayjs(booking.endTime).utc().add(7,'hour'); // Convert to GMT+7
+  const startTime = dayjs(booking.startTime).utc().add(7, 'hour'); // Convert to GMT+7
+  const endTime = dayjs(booking.endTime).utc().add(7, 'hour'); // Convert to GMT+7
   const untilTime = booking.untilTime ? dayjs(booking.untilTime) : null; // Convert to GMT+7
   // Format playTime in 24-hour format: HH:mm - HH:mm
   const playTime = `${startTime.format('HH:mm')} - ${endTime.format('HH:mm')}`;
@@ -197,4 +197,12 @@ export class BookingWithCombo implements IBookingWithCombo {
   comboId: number = 0;
   fromTime: string = '';
   toTime: string = '';
+}
+export interface BookingByDay {
+  courtId: number;
+  fromDate: string;
+  fromTime: string;
+  toTime: string;
+  fullName: string;
+  phoneNumber: string;
 }

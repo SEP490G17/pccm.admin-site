@@ -15,7 +15,6 @@ import { PaginationModel } from '../models/pagination.model';
 import { BookingMessage } from '../common/toastMessage/bookingMessage';
 import { OrderMessage } from '../common/toastMessage/orderMessage';
 import { CommonMessage, PaymentMessage } from '../common/toastMessage/commonMessage';
-import { toast } from 'react-toastify';
 import { store } from './store';
 import { PaymentStatus } from '../models/payment.model';
 
@@ -138,6 +137,10 @@ export default class BookingStore {
       }
       this.loadingInitial = false;
     });
+  };
+
+  clearDetailsBooking = () => {
+    this.selectedBooking = undefined;
   };
 
   //#endregion
@@ -465,12 +468,12 @@ export default class BookingStore {
 
   //#endregion
 
-  getBookingConflict = async (booking: BookingConflict) => {
+  getBookingConflict = async (booking: BookingConflict, toast: CreateToastFnReturn) => {
     this.loadingConflict = true;
     const [err, res] = await catchErrorHandle(agent.BookingAgent.getListConflict(booking));
     runInAction(() => {
       if (err) {
-        toast('Lấy danh sách lịch trùng lỗi');
+        toast(BookingMessage.getConfligFailure());
       }
       if (res) {
         this.bookingConflict = res;

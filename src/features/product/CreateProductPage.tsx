@@ -20,7 +20,7 @@ import FileUploadFieldAtoms from '@/app/common/form/FileUploadFieldAtoms';
 import { useStore } from '@/app/stores/store';
 import { ProductInput } from '@/app/models/product.model';
 import SelectFieldAtoms from '@/app/common/form/SelectFieldAtoms';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 
 interface IProp {
   isOpen: boolean;

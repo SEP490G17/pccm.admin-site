@@ -1,29 +1,39 @@
-import { Box, Grid, GridItem, Heading, Skeleton } from '@chakra-ui/react';
-import { observer } from 'mobx-react';
+import { Box, Grid, GridItem, Heading, Skeleton, useToast } from '@chakra-ui/react';
+import { observer } from 'mobx-react-lite';
 
 import { useStore } from '@/app/stores/store.ts';
 import { useEffect } from 'react';
 import ProductCardItemSellComponent from '../Product/ProductCardItemSellComponent';
+import Select from 'react-select';
+
 interface IProps {
   courtClusterId: number;
 }
 const BookingProductTab = observer(({ courtClusterId }: IProps) => {
-  const { courtClusterStore } = useStore();
+  const { courtClusterStore, categoryStore } = useStore();
   const {
     loadProductsOfCourtCluster,
     productOfCourtClusterArray,
     productOfClusterRegistry,
     loadingProductsPage,
   } = courtClusterStore;
-
+  const toast = useToast();
   useEffect(() => {
-    if (productOfClusterRegistry.size == 0) {
-      loadProductsOfCourtCluster(courtClusterId);
+    if (productOfClusterRegistry.size <=1) {
+      loadProductsOfCourtCluster(courtClusterId,toast);
     }
-  }, []);
+  }, [loadProductsOfCourtCluster, productOfClusterRegistry, courtClusterId, toast]);
+
 
   return (
     <Box>
+      <Select
+        options={[{ value: 0, label: 'Tất cả' }, ...categoryStore.categoryOption]}
+        placeholder="Thể loại"
+        className="w-56 rounded border-[0.5px solid #ADADAD] shadow-none hover:border-[0.5px solid #ADADAD]"
+
+        isSearchable={true}
+      ></Select>
       <Heading as={'h5'} size={'md'} className={'mb-5'}>
         Danh sách hàng hóa thuộc cụm sân
       </Heading>

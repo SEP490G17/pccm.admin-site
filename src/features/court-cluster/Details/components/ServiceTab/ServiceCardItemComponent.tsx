@@ -1,7 +1,7 @@
 import { Service } from '@/app/models/service.model.ts';
 import { Flex, Grid, GridItem, Heading, Text, useDisclosure } from '@chakra-ui/react';
 import EditButtonAtom from '@/app/common/form/EditButtonAtom';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import UpdateServicePage from '@/features/service/UpdateServicePage';

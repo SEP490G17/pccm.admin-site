@@ -20,6 +20,7 @@ import CourtsManagerPage from '@/features/court-cluster/CourtsManager/CourtManag
 import { RoleBasedRedirect } from './HomeRouterConfigPage';
 import CourtClusterEditPage from '@/features/court-cluster/UpdateInfomation/CourtClusterEditPage';
 import CourtClusterCreatePage from '@/features/court-cluster/Create/CourtClusterCreatePage';
+import ForbiddenPage from '@/features/errors/Forbidden';
 
 export const routes: RouteObject[] = [
   {
@@ -104,6 +105,11 @@ export const routes: RouteObject[] = [
   {
     path: 'not-found',
     element: <NotFound key="not-found" />,
+  },
+
+  {
+    path: 'forbidden',
+    element: <ForbiddenPage key="forbidden" />,
   },
   {
     path: 'server-error',

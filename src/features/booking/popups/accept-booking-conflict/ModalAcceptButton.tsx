@@ -3,7 +3,7 @@ import { Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, Mo
 import { BookingConflict, BookingForList } from '@/app/models/booking.model';
 import { useStore } from '@/app/stores/store';
 import dayjs from 'dayjs';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import BookingConflictGridItem from './BookingConflictGridItem';
 import { convertBookingStartAndEndUTCToG7 } from '@/app/helper/utils';
 
@@ -40,9 +40,9 @@ const ModalAcceptButton = ({ booking, isOpen, onClose }: ModalAcceptButtonProps)
                 ToTime: dayjs(endTime, 'HH:mm').format('HH:mm:ss'),
             };
 
-            bookingStore.getBookingConflict(bookingConflict);
+            bookingStore.getBookingConflict(bookingConflict, toast);
         }
-    }, [isOpen, booking, bookingStore]);
+    }, [isOpen, booking, bookingStore, toast]);
 
     const handleAccepted = async () => {
         await acceptedBooking(booking.id, toast).then((data) => {

@@ -19,7 +19,7 @@ import MixedChart from "./components/MixChart"
 import HeaderStatistic from "./components/HeaderStatistic"
 import { useStore } from "@/app/stores/store";
 import { useEffect } from "react";
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { FilterDataDTO } from "@/app/models/statistic.model";
 import OrderActivity from "./components/OrderActivity";
 ChartJS.register(

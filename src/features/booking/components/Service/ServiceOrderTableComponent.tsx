@@ -13,7 +13,7 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 interface IProps{
     booking:BookingDetails;
 }

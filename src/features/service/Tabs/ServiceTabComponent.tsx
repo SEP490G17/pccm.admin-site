@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Flex, useDisclosure, Center, Heading, Button, InputProps } from '@chakra-ui/react';
+import { Flex, useDisclosure, Center, Heading, Button, InputProps, useToast } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import '../style.scss';
 import { debounce } from 'lodash';
@@ -33,14 +33,14 @@ const ServiceLogTab = observer((props: IProps) => {
     } = serviceStore;
     const [isPending, setIsPending] = useState(false);
     const { courtClusterListAllOptions } = courtClusterStore;
-
+    const toast = useToast();
     useEffect(() => {
         if (serviceRegistry.size <= 1) {
             setLoadingInitial(true);
-            loadServicesLog();
-            loadServices().finally(() => setLoadingInitial(false));
+            loadServicesLog(toast);
+            loadServices(toast).finally(() => setLoadingInitial(false));
         }
-    }, [serviceRegistry, loadServicesLog, loadServices, setLoadingInitial, serviceLogRegistry]);
+    }, [serviceRegistry, loadServicesLog, loadServices, setLoadingInitial, serviceLogRegistry, toast]);
 
     const handleScroll = useCallback(() => {
         const scrollPosition = window.scrollY + window.innerHeight;
@@ -50,13 +50,14 @@ const ServiceLogTab = observer((props: IProps) => {
         if (scrollPosition >= documentHeight - 50) {
             servicePageParams.skip = serviceRegistry.size;
             if (servicePageParams.totalElement > serviceRegistry.size) {
-                loadServices();
+                loadServices(toast);
             }
         }
     }, [
         loadServices,
         servicePageParams,
         serviceRegistry.size,
+        toast
     ]);
 
     // Gắn sự kiện cuộn
@@ -71,9 +72,9 @@ const ServiceLogTab = observer((props: IProps) => {
     const handleSearchDebounced = useMemo(() => {
         return debounce(async (e) => {
             setIsPending(false); // Tắt loading
-            await serviceStore.setSearchTerm(e.target.value);
+            await serviceStore.setSearchTerm(e.target.value,toast);
         }, 500);
-    }, [setIsPending, serviceStore]);
+    }, [setIsPending, serviceStore, toast]);
 
     const onSearchChange = useCallback(
         async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,7 +98,7 @@ const ServiceLogTab = observer((props: IProps) => {
                         className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
                         onChange={async (e) => {
                             if (e) {
-                                await serviceStore.setFilterTerm(e.value.toString());
+                                await serviceStore.setFilterTerm(e.value.toString(),toast);
                             }
                         }}
                         isSearchable={true}
@@ -163,7 +164,7 @@ const ServiceLogTab = observer((props: IProps) => {
             <LoadMoreButtonAtoms
                 handleOnClick={() => {
                     servicePageParams.skip = serviceRegistry.size;
-                    loadServices();
+                    loadServices(toast);
                 }}
                 hidden={serviceRegistry.size >= servicePageParams.totalElement}
                 loading={loading}

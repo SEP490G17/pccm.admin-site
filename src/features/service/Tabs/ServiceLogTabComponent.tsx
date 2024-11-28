@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Flex, Center, Heading, Button, InputProps } from '@chakra-ui/react';
+import { Flex, Center, Heading, Button, InputProps, useToast } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import '../style.scss';
 import { debounce } from 'lodash';
@@ -42,13 +42,15 @@ const ServiceTab = observer((props:IProps) => {
         { value: 4, label: 'Xóa dịch vụ' },
     ]
 
+    const toast = useToast();
+
     useEffect(() => {
         if (serviceRegistry.size <= 1) {
             setLoadingInitial(true);
-            loadServicesLog();
-            loadServices().finally(() => setLoadingInitial(false));
+            loadServicesLog(toast);
+            loadServices(toast).finally(() => setLoadingInitial(false));
         }
-    }, [serviceRegistry, loadServicesLog, loadServices, setLoadingInitial, serviceLogRegistry]);
+    }, [serviceRegistry, loadServicesLog, loadServices, setLoadingInitial, serviceLogRegistry,toast]);
 
     const handleScroll = useCallback(() => {
         const scrollPosition = window.scrollY + window.innerHeight;
@@ -58,13 +60,14 @@ const ServiceTab = observer((props:IProps) => {
         if (scrollPosition >= documentHeight - 50) {
             serviceLogPageParams.skip = serviceLogRegistry.size;
             if (serviceLogPageParams.totalElement > serviceLogRegistry.size) {
-                loadServicesLog();
+                loadServicesLog(toast);
             }
         }
     }, [
         loadServicesLog,
         serviceLogPageParams,
         serviceLogRegistry,
+        toast
     ]);
 
     // Gắn sự kiện cuộn
@@ -79,7 +82,7 @@ const ServiceTab = observer((props:IProps) => {
     const handleSearchLog = useMemo(() => {
         return debounce(async (e) => {
             setIsPending(false); // Tắt loading
-            await serviceStore.setSearchLogTerm(e.target.value);
+            await serviceStore.setSearchLogTerm(e.target.value,toast);
         }, 500);
     }, [setIsPending, serviceStore]);
 
@@ -93,7 +96,7 @@ const ServiceTab = observer((props:IProps) => {
 
 
     const handleChangeLogType = async ({ value }: { value: number; label: string }) => {
-        await filterLogByLogType(value);
+        await filterLogByLogType(value,toast);
     };
 
     const handleDateRangeChange = async (value1: Dayjs | null, value2: Dayjs | null) => {
@@ -101,9 +104,10 @@ const ServiceTab = observer((props:IProps) => {
             await serviceStore.filterLogByDate(
                 value1.startOf('day').format('DD/MM/YYYY HH:mm:ss'),
                 value2.endOf('day').format('DD/MM/YYYY HH:mm:ss'),
+                toast
             );
         } else {
-            await serviceStore.filterLogByDate(null, null);
+            await serviceStore.filterLogByDate(null, null,toast);
         }
     };
 
@@ -122,7 +126,7 @@ const ServiceTab = observer((props:IProps) => {
                             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
                             onChange={async (e) => {
                                 if (e) {
-                                    await serviceStore.setFilterTermLog(e.value.toString());
+                                    await serviceStore.setFilterTermLog(e.value.toString(),toast);
                                 }
                             }}
                             defaultValue={{
@@ -212,7 +216,7 @@ const ServiceTab = observer((props:IProps) => {
             <LoadMoreButtonAtoms
                 handleOnClick={() => {
                     servicePageParams.skip = serviceRegistry.size;
-                    loadServices();
+                    loadServices(toast);
                 }}
                 hidden={serviceRegistry.size >= servicePageParams.totalElement}
                 loading={loading}

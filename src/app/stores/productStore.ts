@@ -3,7 +3,6 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleProductData } from '../mock/product.mock';
 import { ProductLogPageParams, ProductPageParams } from '../models/pageParams.model';
 import { catchErrorHandle, sleep } from '../helper/utils';
-import { toast } from 'react-toastify';
 import agent from '../api/agent';
 import _ from 'lodash';
 import { PaginationModel } from '@/app/models/pagination.model.ts';
@@ -11,6 +10,7 @@ import { store } from './store';
 import { CreateToastFnReturn } from '@chakra-ui/react';
 import { CommonMessage } from '../common/toastMessage/commonMessage';
 import { DefaultProductMessageText, ProductMessage } from '../common/toastMessage/productMessage';
+import { ProductLogsMessage } from '../common/toastMessage/productLogMessage';
 
 export default class ProductStore {
   productRegistry = new Map<number, Product>();
@@ -33,7 +33,7 @@ export default class ProductStore {
   }
 
   //#region CRUD
-  loadProducts = async () => {
+  loadProducts = async (toast: CreateToastFnReturn) => {
     this.loading = true;
     const queryParams = new URLSearchParams();
     queryParams.append('skip', `${this.productPageParams.skip}`);
@@ -54,7 +54,7 @@ export default class ProductStore {
     runInAction(() => {
       if (error) {
         console.error('Error loading products:', error);
-        toast.error('Lấy danh sách sản phẩm thất bại');
+        toast(ProductMessage.loadingFailure());
       }
       if (res) {
         const { data, count } = res;
@@ -65,7 +65,7 @@ export default class ProductStore {
     });
   };
 
-  loadProductsLog = async () => {
+  loadProductsLog = async (toast: CreateToastFnReturn) => {
     this.loadingLog = true;
     const queryParams = new URLSearchParams();
     queryParams.append('skip', `${this.productLogPageParams.skip}`);
@@ -91,8 +91,7 @@ export default class ProductStore {
     );
     runInAction(() => {
       if (error) {
-        console.error('Error loading products:', error);
-        toast.error('Lấy danh sách sản phẩm thất bại');
+        toast(ProductLogsMessage.loadingFailure());
       }
       if (res) {
         const { data, count } = res;
@@ -103,36 +102,39 @@ export default class ProductStore {
     });
   };
 
-  detailProduct = async (id: number) => {
+  detailProduct = async (id: number, toast: CreateToastFnReturn) => {
     this.setLoadingEdit(true);
-    await runInAction(async () => {
-      this.selectedIdProduct = id;
-      await agent.Products.details(id)
-        .then((product) => (this.selectedProduct = product))
-        .catch(() => toast.error('Lấy chi tiết sản phẩm thất bại'))
-        .finally(() => this.setLoadingEdit(false));
+    const [err, res] = await catchErrorHandle(agent.Products.details(id));
+    runInAction(() => {
+      if (res) {
+        this.selectedIdProduct = id;
+        this.selectedProduct = res;
+      }
+      if (err) {
+        toast(ProductMessage.detailFailure());
+      }
+      this.setLoadingEdit(false);
     });
   };
 
-  createProduct = async (product: ProductInput) => {
+  createProduct = async (product: ProductInput, toast: CreateToastFnReturn) => {
     this.loadingCreate = true;
-    await runInAction(async () => {
-      await agent.Products.create(product)
-        .then((res) => {
-          this.setProduct(res);
-          this.loadProductsLog();
-        })
-        .catch((error) => {
-          console.error('Error creating product:', error);
-          toast.error('Tạo product thất bại');
-        })
-        .finally(() => (this.loadingCreate = false));
+    const [err, res] = await catchErrorHandle(agent.Products.create(product));
+    runInAction(() => {
+      if (err) {
+        toast(ProductMessage.createFailure());
+      }
+      if (res) {
+        toast(ProductMessage.createSuccess());
+        this.setProduct(res);
+        this.loadProductsLog(toast);
+      }
+      this.loadingCreate = false;
     });
   };
 
-  editProduct = async (product: ProductInput) => {
+  editProduct = async (product: ProductInput, toast: CreateToastFnReturn) => {
     this.loading = true;
-
     if (this.selectedIdProduct) {
       const [error, res] = await catchErrorHandle<Product>(
         agent.Products.update(product, this.selectedIdProduct),
@@ -141,11 +143,10 @@ export default class ProductStore {
         if (!error && res) {
           this.setProduct(res);
           store.courtClusterStore.productOfClusterRegistry.set(res.id, res);
-          toast.success('Cập nhật hàng hóa thành công');
+          toast(ProductMessage.updateSuccess());
         }
         if (error) {
-          console.error('Error updating product:', error);
-          toast.error('Cập nhật hàng hóa thất bại');
+          toast(ProductMessage.updateFailure());
         }
         this.loading = false;
       });
@@ -154,7 +155,7 @@ export default class ProductStore {
 
   //#endregion
 
-  deleteProduct = async (id: number, toast:CreateToastFnReturn) => {
+  deleteProduct = async (id: number, toast: CreateToastFnReturn) => {
     const pending = toast(CommonMessage.loadingMessage(DefaultProductMessageText.delete.title));
     const [error, res] = await catchErrorHandle(agent.Products.delete(id));
     runInAction(() => {
@@ -162,7 +163,7 @@ export default class ProductStore {
 
       if (!error && res) {
         toast(ProductMessage.deleteSuccess());
-        this.loadProductsLog();
+        this.loadProductsLog(toast);
         this.productRegistry.delete(id);
         store.courtClusterStore.productOfClusterRegistry.delete(id);
       }
@@ -204,24 +205,24 @@ export default class ProductStore {
     this.loadingInitial = loading;
   };
 
-  setSearchTerm = async (term: string) => {
+  setSearchTerm = async (term: string, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     await runInAction(async () => {
       this.cleanProductCache();
       this.productPageParams.clearLazyPage();
       this.productPageParams.searchTerm = term;
-      await this.loadProducts();
+      await this.loadProducts(toast);
     });
     this.loadingInitial = false;
   };
 
-  setSearchTermProductLog = async (term: string) => {
+  setSearchTermProductLog = async (term: string, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     await runInAction(async () => {
       this.cleanProductLogCache();
       this.productLogPageParams.clearLazyPage();
       this.productLogPageParams.searchTerm = term;
-      await this.loadProductsLog();
+      await this.loadProductsLog(toast);
     });
     this.loadingInitial = false;
   };
@@ -234,48 +235,48 @@ export default class ProductStore {
     return _.orderBy(Array.from(this.productLogRegistry.values()), ['id'], ['desc']);
   }
 
-  filterByCategory = async (category: number) => {
+  filterByCategory = async (category: number, toast: CreateToastFnReturn) => {
     this.loading = true;
     this.productPageParams.clearLazyPage();
     this.productPageParams.category = category;
     this.cleanProductCache();
-    await this.loadProducts();
+    await this.loadProducts(toast);
     runInAction(() => (this.loading = false));
   };
-  filterByCourtCluster = async (courtCluster: number) => {
+  filterByCourtCluster = async (courtCluster: number, toast: CreateToastFnReturn) => {
     this.loading = true;
     this.productPageParams.clearLazyPage();
     this.productPageParams.courtCluster = courtCluster;
     this.cleanProductCache();
-    await this.loadProducts();
+    await this.loadProducts(toast);
     runInAction(() => (this.loading = false));
   };
 
-  filterLogByCourtCluster = async (courtCluster: number) => {
+  filterLogByCourtCluster = async (courtCluster: number, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     this.productLogPageParams.clearLazyPage();
     this.productLogPageParams.courtCluster = courtCluster;
     this.cleanProductLogCache();
-    await this.loadProductsLog();
+    await this.loadProductsLog(toast);
     runInAction(() => (this.loadingInitial = false));
   };
 
-  filterLogByLogType = async (logTypeId: number) => {
+  filterLogByLogType = async (logTypeId: number, toast:CreateToastFnReturn) => {
     this.loadingInitial = true;
     this.productLogPageParams.clearLazyPage();
     this.productLogPageParams.LogType = logTypeId;
     this.cleanProductLogCache();
-    await this.loadProductsLog();
+    await this.loadProductsLog(toast);
     runInAction(() => (this.loadingInitial = false));
   };
 
-  filterLogByDate = async (date1: string | null, date2: string | null) => {
+  filterLogByDate = async (date1: string | null, date2: string | null, toast:CreateToastFnReturn) => {
     this.loadingInitial = true;
     this.productLogPageParams.clearLazyPage();
     this.productLogPageParams.fromDate = date1 ?? null;
     this.productLogPageParams.toDate = date2 ?? null;
     this.cleanProductLogCache();
-    await this.loadProductsLog();
+    await this.loadProductsLog(toast);
     runInAction(() => (this.loadingInitial = false));
   };
   //#region private methods

@@ -21,7 +21,7 @@ import {
 } from '@chakra-ui/react';
 import { TimePicker } from 'antd';
 import { FastField, Field, FieldInputProps, Form, Formik, FormikProps } from 'formik';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import dayjs from 'dayjs';

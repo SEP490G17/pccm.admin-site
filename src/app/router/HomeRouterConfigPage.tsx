@@ -1,4 +1,4 @@
-import { observer } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import { store } from "../stores/store";
 import StatisticPage from "@/features/statistic/StatisticPage";
 import CourtClusterPage from "@/features/court-cluster/List/CourtsClusterPage";

@@ -9,12 +9,13 @@ import {
   Input,
   InputProps,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
 import { useField } from 'formik';
-import { toast } from 'react-toastify';
 import { useStore } from '@/app/stores/store';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
+import { ImageMessage } from '../toastMessage/commonMessage';
 
 interface FileUploadProps extends InputProps {
   name?: string;
@@ -32,12 +33,14 @@ const FileUpload: React.FC<FileUploadProps> = observer(
     const [, , helpers] = useField(name);
     const { uploadStore } = useStore();
     const { loading, upImage, imageRegistry } = uploadStore;
-    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const toast = useToast();
+    const handleFileChange = async (
+      event: React.ChangeEvent<HTMLInputElement> ) => {
       const files = event.target.files;
       if (files) {
         if (limit == 1) {
           if (fileNames.length >= limit) {
-            toast.error(`Vượt quá số lượng ảnh: ${limit}`);
+            toast(ImageMessage.imageLimited(`Vượt quá số lượng ảnh ${limit}`));
             return;
           }
           const check = imageRegistry.get(files[0].name);
@@ -53,7 +56,7 @@ const FileUpload: React.FC<FileUploadProps> = observer(
           const totalFiles = fileNames.length + upFiles.length;
 
           if (totalFiles > limit) {
-            toast.error(`Vượt quá số lượng ảnh: ${limit}`);
+            toast(ImageMessage.imageLimited(`Vượt quá số lượng ảnh ${limit}`));
             upFiles.length = limit - fileNames.length;
           }
           await Promise.all(upFiles.map((file) => upImage(file, file.name)));
@@ -75,7 +78,7 @@ const FileUpload: React.FC<FileUploadProps> = observer(
       if (files) {
         if (limit == 1) {
           if (fileNames.length >= limit) {
-            toast.error(`Vượt quá số lượng ảnh: ${limit}`);
+            toast(ImageMessage.imageLimited(`Vượt quá số lượng ảnh ${limit}`));
             return;
           }
           const check = imageRegistry.get(files[0].name);
@@ -89,7 +92,7 @@ const FileUpload: React.FC<FileUploadProps> = observer(
           const totalFiles = fileNames.length + upFiles.length;
 
           if (totalFiles > limit) {
-            toast.error(`Vượt quá số lượng ảnh: ${limit}`);
+            toast(ImageMessage.imageLimited(`Vượt quá số lượng ảnh ${limit}`));
             upFiles.length = limit - fileNames.length;
           }
           await Promise.all(upFiles.map((file) => upImage(file, file.name)));

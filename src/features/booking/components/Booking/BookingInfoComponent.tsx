@@ -13,7 +13,7 @@ import {
 import OrdersOfBookingComponent from '../Order/OrdersOfBookingComponent';
 import BookingButtonAtom from '@/features/court-cluster/atoms/BookingButtonAtom';
 import OrderCreatePopup from '../../popups/OrderCreatePopup';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
 import _ from 'lodash';
 const BookingInfoComponent = observer(() => {

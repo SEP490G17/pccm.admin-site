@@ -7,6 +7,7 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
+  Checkbox,
   Heading,
   Link,
   ListItem,
@@ -15,7 +16,7 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { useStore } from '@/app/stores/store';
 import { PaymentType } from '@/app/models/payment.model';
 
@@ -28,6 +29,7 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef<HTMLButtonElement | null>(null);
   const { paymentStore, bookingClusterStore } = useStore();
+  const [includeOrder, setIncludeOrder] = useState(true);
   const toast = useToast();
   return (
     <>
@@ -97,6 +99,10 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
                 Khách hàng đã trả tiền qua VNPay, đã nhận được tiền, nhưng chưa chuyển trạng thái
               </ListItem>
             </UnorderedList>
+            <Text className='mt-10 text-red-400 text-base'>
+              Bao gồm cả order bên trong:{' '}
+              <Checkbox isChecked={includeOrder} onChange={() => setIncludeOrder(!includeOrder)} />{' '}
+            </Text>
           </AlertDialogBody>
           <AlertDialogFooter>
             <Button ref={cancelRef} onClick={onClose}>
@@ -107,7 +113,7 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
               ml={3}
               onClick={async () => {
                 onClose();
-                await bookingClusterStore.paymentSuccessBooking(bookingId, toast);
+                await bookingClusterStore.paymentSuccessBooking(bookingId,includeOrder ,toast);
               }}
             >
               Xác thực đã thanh toán

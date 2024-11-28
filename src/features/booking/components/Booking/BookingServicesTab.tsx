@@ -1,5 +1,5 @@
-import { observer } from 'mobx-react';
-import { Box, Grid, GridItem, Heading, Skeleton } from '@chakra-ui/react';
+import { observer } from 'mobx-react-lite';
+import { Box, Grid, GridItem, Heading, Skeleton, useToast } from '@chakra-ui/react';
 import { useStore } from '@/app/stores/store.ts';
 import { useEffect } from 'react';
 import ServiceCardItemSellComponent from '../Service/ServiceCardItemSellComponent';
@@ -10,9 +10,10 @@ const BookingServicesTab = observer(({ courtClusterId }: IProps) => {
   const { courtClusterStore } = useStore();
   const { loadingServicesPage, loadServicesOfCourtCluster, serviceOfCourtClusterArray } =
     courtClusterStore;
+  const toast = useToast();
   useEffect(() => {
-    loadServicesOfCourtCluster(courtClusterId).then();
-  }, [courtClusterId]);
+    loadServicesOfCourtCluster(courtClusterId, toast).then();
+  }, [courtClusterId, toast, loadServicesOfCourtCluster]);
   return (
     <Box>
       <Heading as={'h5'} size={'md'} className={'mb-5'}>

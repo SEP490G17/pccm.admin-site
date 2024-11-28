@@ -90,7 +90,7 @@ const ComboBookingComponent = observer(
     const toast = useToast();
     const { courtClusterStore, bookingClusterStore } = useStore();
     return (
-      <Card className="h-[640px] w-full">
+      <Card className="h-[45rem] w-full">
         <CardBody>
           <Heading size={'lg'} className="mb-5">
             Đặt theo gói combo
@@ -107,7 +107,6 @@ const ComboBookingComponent = observer(
                 phoneNumber: value.phoneNumber,
               };
               await bookingClusterStore.bookingWithCombo(newCombo, toast);
-              console.log('submit');
             }}
             initialValues={new BookingWithCombo()}
             validationSchema={validationSchema}
@@ -224,10 +223,10 @@ const ComboBookingComponent = observer(
                           isInvalid={form.errors.fromTime && form.touched.fromTime}
                         >
                           <TimePicker
-                            className="w-52 h-10"
+                            className="h-10 xl:w-48 lg:w-72"
                             placeholder="Từ"
                             format="HH:mm"
-                            size="large"
+                            size="middle"
                             onChange={(time) => {
                               setFieldValue(field.name, time.format('HH:mm:ss'));
                             }}
@@ -249,9 +248,9 @@ const ComboBookingComponent = observer(
                           isInvalid={form.errors.toTime && form.touched.toTime}
                         >
                           <TimePicker
-                            className="w-52 h-10"
+                            className="h-10 xl:w-48 lg:w-72"
                             placeholder="Đến: "
-                            size="large"
+                            size="middle"
                             format={'HH:mm'}
                             onChange={(time) => {
                               setFieldValue(field.name, time.format('HH:mm:ss'));

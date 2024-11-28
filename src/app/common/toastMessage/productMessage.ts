@@ -25,6 +25,20 @@ export const DefaultProductMessageText = {
       failure: 'Thêm hàng hoá thất bại',
     },
   },
+
+  loading: {
+    title: 'Tải danh sách hàng hóa',
+    description: {
+      failure: 'Tải danh sách hàng hóa thất bại',
+    },
+  },
+
+  detail: {
+    title: 'Tải chi tiết sản phẩm',
+    description: {
+      failure: 'Tải chi tiết sản phẩm thất bại',
+    },
+  },
 };
 
 export const ProductMessage = {
@@ -96,6 +110,32 @@ export const ProductMessage = {
   deleteFailure: (
     title: string = DefaultProductMessageText.delete.title,
     description: string = DefaultProductMessageText.delete.description.failure,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  }),
+
+  loadingFailure: (
+    title: string = DefaultProductMessageText.loading.title,
+    description: string = DefaultProductMessageText.loading.description.failure,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  }),
+
+  detailFailure: (
+    title: string = DefaultProductMessageText.detail.title,
+    description: string = DefaultProductMessageText.detail.description.failure,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,
   ): UseToastOptions => ({

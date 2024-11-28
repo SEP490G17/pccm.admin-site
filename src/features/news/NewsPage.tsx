@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Flex, useDisclosure, Center, Heading } from '@chakra-ui/react';
+import { Flex, useDisclosure, Center, Heading, useToast } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -24,12 +24,15 @@ const NewsPage = observer(() => {
     { value: 1, label: 'Hiển thị' },
     { value: 0, label: 'Không hiển thị' },
   ]
+
+  const toast = useToast();
+
   useEffect(() => {
     if (newsRegistry.size <= 1) {
       setLoadingInitial(true);
-      loadNews().finally(() => setLoadingInitial(false));
+      loadNews(toast).finally(() => setLoadingInitial(false));
     }
-  }, [loadNews, setLoadingInitial, newsRegistry]);
+  }, [loadNews, setLoadingInitial, newsRegistry, toast]);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -39,14 +42,14 @@ const NewsPage = observer(() => {
     if (scrollPosition >= documentHeight - 50) {
       newsPageParams.skip = newsRegistry.size;
       if (newsPageParams.totalElement > newsRegistry.size) {
-        loadNews();
+        loadNews(toast);
       }
     }
-  }, [loadNews, newsPageParams, newsRegistry]);
+  }, [loadNews, newsPageParams, newsRegistry,toast]);
   const handleSearchDebounced = useMemo(() => {
     return debounce(async (e) => {
       setIsPending(false); // Tắt loading
-      await setSearchTerm(e.target.value);
+      await setSearchTerm(e.target.value,toast);
     }, 500);
   }, [setIsPending, setSearchTerm]);
 
@@ -80,7 +83,7 @@ const NewsPage = observer(() => {
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
             onChange={async (e) => {
               if (e) {
-                await newsStore.setFilterTerm(e.value.toString());
+                await newsStore.setFilterTerm(e.value.toString(),toast);
               }
             }}
             defaultValue={{
@@ -109,7 +112,7 @@ const NewsPage = observer(() => {
       <LoadMoreButtonAtoms
         handleOnClick={() => {
           newsPageParams.skip = newsRegistry.size;
-          loadNews();
+          loadNews(toast);
         }}
         hidden={newsRegistry.size >= newsPageParams.totalElement}
         loading={loading}

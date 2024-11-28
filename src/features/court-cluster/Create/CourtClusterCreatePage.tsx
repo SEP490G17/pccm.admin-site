@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { TimePicker } from 'antd';
 import { FastField, FieldInputProps, Form, Formik, FormikProps } from 'formik';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import dayjs from 'dayjs';
 import { CourtPriceModel } from '../CourtsManager/popup/CourtCreatePopup';
 import CourtDetailsArrayField from './components/CourtDetailsArrayField';

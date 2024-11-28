@@ -2,7 +2,6 @@ import { PaginationModel } from './../models/pagination.model';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { router } from '../router/Routes';
 import { store } from '../stores/store';
-import { toast } from 'react-toastify';
 import {
   CreateUserDTO,
   ResetPasswordDTO,
@@ -43,8 +42,8 @@ import {
   RevenueDetails,
 } from '../models/revenue.models';
 import {
+  BookingByDay,
   BookingConflict,
-  BookingCreate,
   BookingDetails,
   BookingForList,
   BookingModel,
@@ -92,7 +91,7 @@ axios.interceptors.response.use(
         }
         break;
       case 403:
-        toast.error('forbidden');
+        router.navigate('/forbidden')
         break;
       case 404:
         router.navigate('/not-found');
@@ -269,7 +268,7 @@ const Staffs = {
 };
 
 const BookingAgent = {
-  create: (booking: BookingCreate) => requests.post<BookingModel>('/booking/v2', booking),
+  create: (booking: BookingByDay) => requests.post<BookingModel>('/booking/byDay', booking),
   getListForSchedule: (body: object): Promise<BookingModel[]> => requests.post('/booking/v1', body),
   getListV2: (queryParam: string = ''): Promise<PaginationModel<BookingForList>> =>
     requests.get(`/booking/v2${queryParam}`),
@@ -293,8 +292,8 @@ const BookingAgent = {
   bookingWithCombo: (bookingWithCombo: IBookingWithCombo): Promise<any> =>
     requests.post(`/booking/combo`, bookingWithCombo),
 
-  paymentSuccess: (id: number): Promise<BookingForList> =>
-    requests.put(`/booking/payment-success/${id}`, {}),
+  paymentSuccess: (id: number, includeOrder:boolean): Promise<BookingForList> =>
+    requests.put(`/booking/payment-success/${id}?includeOrder=${includeOrder}`, {}),
 };
 
 const PaymentAgent = {
