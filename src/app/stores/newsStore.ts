@@ -4,8 +4,10 @@ import { News, NewsDTO } from '../models/news.models';
 import { sampleNewsData } from '../mock/news.mock';
 import { PageParams } from '../models/pageParams.model';
 import { catchErrorHandle, sleep } from '../helper/utils';
-import { toast } from 'react-toastify';
 import _ from 'lodash';
+import { CreateToastFnReturn } from '@chakra-ui/react';
+import { NewsMessage } from '../common/toastMessage/newsMessage';
+import { CommonMessage } from '../common/toastMessage/commonMessage';
 
 export default class NewsStore {
   newsRegistry = new Map<number, News>();
@@ -23,7 +25,7 @@ export default class NewsStore {
   }
   //#region CRUD
 
-  loadNews = async () => {
+  loadNews = async (toast: CreateToastFnReturn) => {
     this.loading = true;
     const queryParams = new URLSearchParams();
     queryParams.append('skip', `${this.newsPageParams.skip ?? 0}`);
@@ -38,7 +40,7 @@ export default class NewsStore {
 
     runInAction(() => {
       if (err) {
-        toast.error('Lấy danh sách tin tức thất bại');
+        toast(NewsMessage.loadingFailure());
       }
       if (res) {
         const { count, data } = res;
@@ -49,84 +51,84 @@ export default class NewsStore {
     });
   };
 
-  createNews = async (news: NewsDTO) => {
+  createNews = async (news: NewsDTO, toast: CreateToastFnReturn) => {
     this.loading = true;
-    await runInAction(async () => {
-      await agent.NewsAgent.create(news)
-        .then((s) => {
-          this.setNews(s);
-          toast.success('Tạo tin tức thành công');
-        })
-        .catch((error) => {
-          console.error('Error creating product:', error);
-          toast.error('Tạo tin tức thất bại');
-        })
-        .finally(() => (this.loading = false));
+    const pending = toast(CommonMessage.loadingMessage('Tạo mới tin tức'));
+
+    const [err, res] = await catchErrorHandle(agent.NewsAgent.create(news));
+    runInAction(() => {
+      toast.close(pending);
+      if (res) {
+        this.setNews(res);
+        toast(NewsMessage.createSuccess());
+      }
+      if (err) {
+        toast(NewsMessage.createFailure());
+      }
+      this.loading = false;
     });
   };
 
-  detailNews = async (newsId: number) => {
+  detailNews = async (newsId: number, toast: CreateToastFnReturn) => {
     this.isLoadingEdit = true;
-    try {
-      const data = await agent.NewsAgent.details(newsId);
-      runInAction(() => {
-        this.selectedNews = data;
-        this.isLoadingEdit = false;
-      });
-      return data;
-    } catch (error) {
-      runInAction(() => {
-        this.isLoadingEdit = false;
-        console.error('Error creating news:', error);
-      });
-    }
-  };
-
-  updateNews = async (news: NewsDTO) => {
-    this.loading = true;
-    await runInAction(async () => {
-      await agent.NewsAgent.update(news)
-        .then((s) => {
-          this.setNews(s);
-          toast.success('Cập nhật tức thành công');
-        })
-        .catch((error) => {
-          console.error('Error creating product:', error);
-          toast.error('Cập nhật tin tức thất bại');
-        })
-        .finally(() => (this.loading = false));
+    const [err, res] = await catchErrorHandle(agent.NewsAgent.details(newsId));
+    runInAction(() => {
+      if (res) {
+        this.selectedNews = res;
+      }
+      if (err) {
+        toast(NewsMessage.detailFailure());
+      }
+      this.isLoadingEdit = false;
     });
   };
 
-  deleteNews = async (id: number) => {
+  updateNews = async (news: NewsDTO, toast: CreateToastFnReturn) => {
     this.loading = true;
-    try {
-      await agent.NewsAgent.delete(id);
-      runInAction(() => {
-        this.newsRegistry.delete(id);
-        this.loading = false;
-      });
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.error('Error deleting news:', error);
-      });
-    }
+    const pending = toast(CommonMessage.loadingMessage('Chỉnh sửa tin tức'));
+    const [err, res] = await catchErrorHandle(agent.NewsAgent.update(news));
+    runInAction(() => {
+      toast.close(pending);
+      if (err) {
+        toast(NewsMessage.updateFailure());
+      }
+      if (res) {
+        toast(NewsMessage.updateSuccess());
+        this.setNews(res);
+      }
+      this.loading = false;
+    });
   };
 
-  changeStatus = async (newsId: number, status: number) => {
+  deleteNews = async (id: number, toast: CreateToastFnReturn) => {
+    this.loading = true;
+    const pending = toast(CommonMessage.loadingMessage('Xóa tin tức'));
+    const [err, res] = await catchErrorHandle(agent.NewsAgent.delete(id));
+    runInAction(() => {
+      toast.close(pending);
+      if (res) {
+        toast(NewsMessage.deleteSuccess());
+        this.newsRegistry.delete(id);
+      }
+      if (err) {
+        toast(NewsMessage.deleteFailure());
+      }
+      this.loading = false;
+    });
+  };
+
+  changeStatus = async (newsId: number, status: number, toast: CreateToastFnReturn) => {
     this.setLoadingStatus(newsId, true);
-    await runInAction(async () => {
-      await agent.NewsAgent.changestatus(newsId, status)
-        .then((s) => {
-          this.setNews(s);
-          toast.success('Cập nhật tin tức thành công');
-        })
-        .catch((error) => {
-          console.error('Error creating product:', error);
-          toast.error('Cập nhật tin tức thất bại');
-        })
-        .finally(() => this.setLoadingStatus(newsId, false));
+    const [err, res] = await catchErrorHandle(agent.NewsAgent.changestatus(newsId, status));
+    runInAction(() => {
+      if (err) {
+        toast(NewsMessage.updateFailure());
+      }
+      if (res) {
+        toast(NewsMessage.updateSuccess());
+        this.setNews(res);
+      }
+      this.setLoadingStatus(newsId, false);
     });
   };
   //#endregion
@@ -160,25 +162,25 @@ export default class NewsStore {
     this.loadingInitial = isLoad;
   };
 
-  setSearchTerm = async (term: string) => {
+  setSearchTerm = async (term: string, toast:CreateToastFnReturn) => {
     await runInAction(async () => {
       this.loadingInitial = true;
       this.newsRegistry.clear();
       this.newsPageParams.clearLazyPage();
       this.newsPageParams.searchTerm = term;
-      await this.loadNews();
+      await this.loadNews(toast);
       this.loadingInitial = false;
     });
     console.groupEnd();
   };
 
-  setFilterTerm = async (term: string) => {
+  setFilterTerm = async (term: string, toast:CreateToastFnReturn) => {
     await runInAction(async () => {
       this.loadingInitial = true;
       this.newsRegistry.clear();
       this.newsPageParams.clearLazyPage();
       this.newsPageParams.filter = term;
-      await this.loadNews();
+      await this.loadNews(toast);
       this.loadingInitial = false;
     });
     console.groupEnd();

@@ -2,8 +2,7 @@ import { Table, Thead, Tbody, Tr, Th, Td, Button, Box, Input } from '@chakra-ui/
 import { FaEdit, FaSave } from 'react-icons/fa';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import { Category } from '../../../app/models/category.model';
-import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
-import { toast } from 'react-toastify';
+
 
 import React from 'react';
 
@@ -18,7 +17,6 @@ const CategoryTableComponent: React.FC<CategoryTableProps> = ({
     categoryArray,
     loadingInitial,
     onEdit,
-    onDelete,
 }) => {
     const [editId, setEditId] = React.useState<number | null>(null);
     const [editName, setEditName] = React.useState<string>('');

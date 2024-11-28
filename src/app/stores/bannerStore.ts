@@ -2,9 +2,10 @@ import { Banner, BannerDTO } from './../models/banner.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
 import { BannerPageParams } from '../models/pageParams.model';
-import { toast } from 'react-toastify';
 import _ from 'lodash';
 import { catchErrorHandle, customFormatDate } from '../helper/utils';
+import { CreateToastFnReturn } from '@chakra-ui/react';
+import { BannerMessage } from '../common/toastMessage/bannerMessage';
 export default class BannerStore {
   bannerRegistry = new Map<number, Banner>();
   selectedBanner: Banner | undefined = undefined;
@@ -21,7 +22,7 @@ export default class BannerStore {
   }
 
   //#region CRUD
-  loadBanners = async () => {
+  loadBanners = async (toast: CreateToastFnReturn) => {
     this.loading = true;
     const queryParams = new URLSearchParams();
     queryParams.append('skip', `${this.bannerPageParams.skip ?? 0}`);
@@ -38,84 +39,78 @@ export default class BannerStore {
     const [err, res] = await catchErrorHandle(agent.Banners.list(`?${queryParams.toString()}`));
     runInAction(() => {
       if (err) {
-        toast.error('Lấy danh sách banner thất bại');
+        toast(BannerMessage.loadingFailure());
       }
 
       if (res) {
-        const { data, count, pageSize } = res;
+        const { data, count } = res;
         data.forEach(this.setBanner);
         this.bannerPageParams.totalElement = count;
       }
+      this.loading = false;
+    });
+    return { err, res };
+  };
 
+  createBanner = async (banner: BannerDTO, toast: CreateToastFnReturn) => {
+    this.loading = true;
+    const [err, res] = await catchErrorHandle(agent.Banners.create(banner));
+    runInAction(async () => {
+      if (res) {
+        this.setBanner(res);
+        toast(BannerMessage.createSuccess());
+      }
+      if (err) {
+        toast(BannerMessage.createFailure());
+      }
+      this.loading = false;
+    });
+    return { err, res };
+  };
+
+  detailBanner = async (bannerId: number, toast: CreateToastFnReturn) => {
+    this.loadingEdit = true;
+    const [err, res] = await catchErrorHandle(agent.Banners.details(bannerId));
+    runInAction(() => {
+      if (res) {
+        this.selectedBanner = res;
+      }
+      if (err) {
+        toast(BannerMessage.detailFailure());
+      }
+      this.loadingEdit = false;
+    });
+
+    return { err, res };
+  };
+
+  updateBanner = async (banner: BannerDTO, toast: CreateToastFnReturn) => {
+    this.loading = true;
+    const [err, res] = await catchErrorHandle(agent.Banners.update(banner));
+    runInAction(() => {
+      if (res) {
+        this.setBanner(banner);
+        toast(BannerMessage.updateSuccess());
+      }
+      if (err) {
+        toast(BannerMessage.updateFailure());
+      }
       this.loading = false;
     });
   };
 
-  createBanner = async (banner: BannerDTO) => {
-    this.loading = true;
-    await runInAction(async () => {
-      await agent.Banners.create(banner)
-        .then((s) => {
-          this.setBanner(s);
-          toast.success('Tạo banner thành công');
-        })
-        .catch((error) => {
-          console.error('Error creating banner:', error);
-          toast.error('Tạo banner lỗi');
-        })
-        .finally(() => (this.loading = false));
-    });
-  };
-
-  detailBanner = async (bannerId: number) => {
-    this.loadingEdit = true;
-    try {
-      const data = await agent.Banners.details(bannerId);
-      runInAction(() => {
-        this.selectedBanner = data;
-        this.loadingEdit = false;
-      });
-      return data;
-    } catch (error) {
-      runInAction(() => {
-        this.loadingEdit = false;
-        console.error('Error creating news:', error);
-      });
-    }
-  };
-
-  updateBanner = async (banner: BannerDTO) => {
-    this.loading = true;
-    try {
-      await agent.Banners.update(banner);
-      runInAction(() => {
-        this.setBanner(banner);
-        this.selectedBanner = banner;
-        this.loading = false;
-        toast.success('Cập nhật thành công');
-      });
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.error('Error updating banner:', error);
-        toast.error('Cập nhật thất bại');
-      });
-    }
-  };
-
-  changeStatus = async (bannerId: number, status: number) => {
+  changeStatus = async (bannerId: number, status: number, toast: CreateToastFnReturn) => {
     this.setLoadingStatus(bannerId, true);
-    await runInAction(async () => {
-      await agent.Banners.changestatus(bannerId, status)
-        .then((s) => {
-          this.setBanner(s);
-          toast.success('Cập nhật banner thành công');
-        })
-        .catch((error) => {
-          console.error('Error creating product:', error);
-          toast.error('Cập nhật banner thất bại');
-        })
-        .finally(() => this.setLoadingStatus(bannerId, false));
+    const [err, res] = await catchErrorHandle(agent.Banners.changestatus(bannerId, status));
+    runInAction(() => {
+      if (err) {
+        toast(BannerMessage.updateFailure());
+      }
+      if (res) {
+        toast(BannerMessage.updateSuccess());
+        this.setBanner(res);
+      }
+      this.setLoadingStatus(bannerId, false);
     });
   };
 
@@ -159,10 +154,10 @@ export default class BannerStore {
     // }
   };
 
-  mockLoadBannerArray = async () => {
-    const { pageSize, skip = 0, totalElement } = this.bannerPageParams;
-    const endIndex = skip + pageSize;
-  };
+  // mockLoadBannerArray = async () => {
+  //   const { pageSize, skip = 0, totalElement } = this.bannerPageParams;
+  //   const endIndex = skip + pageSize;
+  // };
   //#endregion
 
   //#region common
@@ -195,12 +190,12 @@ export default class BannerStore {
   //   });
   // };
 
-  setSearchTerm = async (term: string) => {
+  setSearchTerm = async (term: string, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     this.bannerRegistry.clear();
     this.bannerPageParams.clearLazyPage();
     this.bannerPageParams.searchTerm = term;
-    await this.loadBanners();
+    await this.loadBanners(toast);
     runInAction(() => {
       this.loadingInitial = false;
     });
@@ -217,24 +212,24 @@ export default class BannerStore {
     this.bannerRegistry.set(banner.id, banner);
   };
 
-  setStatusTerm = async (term: string) => {
+  setStatusTerm = async (term: string, toast: CreateToastFnReturn) => {
     await runInAction(async () => {
       this.loadingInitial = true;
       this.bannerRegistry.clear();
       this.bannerPageParams.clearLazyPage();
       this.bannerPageParams.status = term;
-      await this.loadBanners();
+      await this.loadBanners(toast);
       this.loadingInitial = false;
     });
   };
 
-  setCategoryTerm = async (term: string) => {
+  setCategoryTerm = async (term: string, toast: CreateToastFnReturn) => {
     await runInAction(async () => {
       this.loadingInitial = true;
       this.bannerRegistry.clear();
       this.bannerPageParams.clearLazyPage();
       this.bannerPageParams.category = term;
-      await this.loadBanners();
+      await this.loadBanners(toast);
       this.loadingInitial = false;
     });
   };
@@ -242,7 +237,6 @@ export default class BannerStore {
   get bannersArray() {
     return _.orderBy(Array.from(this.bannerRegistry.values()), ['id'], ['desc']);
   }
-
 
   // Hủy interval khi component bị destroy (nếu cần)
   dispose() {

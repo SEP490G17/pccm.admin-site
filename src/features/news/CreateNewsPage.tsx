@@ -11,6 +11,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import "./style.scss";
@@ -57,6 +58,7 @@ const CreateNewsPage = ({ isOpen, onClose }: IProp) => {
       }),
     content: Yup.string().required('Chi tiết bài viết không được bỏ trống'),
   });
+  const toast = useToast();
 
   return (
     <>
@@ -93,7 +95,7 @@ const CreateNewsPage = ({ isOpen, onClose }: IProp) => {
                     createAt: new Date().toLocaleString('vi-VN', dateFormatOptions).trim(),
                     status: 1
                   });
-                  await newsStore.createNews(News);
+                  await newsStore.createNews(News, toast);
                   onClose()
                 }}
                 validationSchema={validationSchema}

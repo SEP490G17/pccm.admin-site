@@ -8,6 +8,7 @@ import {
     ModalHeader,
     ModalOverlay,
     Stack,
+    useToast,
     VStack,
 } from "@chakra-ui/react";
 import "./style.scss";
@@ -43,6 +44,8 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
         courtclusters: Yup.array().required('Thuộc cụm sân không được bỏ trống'),
     });
 
+    const toast = useToast();
+
     return (
         <>
             <Modal isOpen={isOpen} onClose={onClose} size="6xl">
@@ -68,7 +71,7 @@ const CreateServicePage = ({ isOpen, onClose }: IProp) => {
                                         description: values.description,
                                         price: values.price
                                     })
-                                    await serviceStore.createService(service)
+                                    await serviceStore.createService(service, toast)
                                     onClose()
                                 }}
                                 validationSchema={validationSchema}

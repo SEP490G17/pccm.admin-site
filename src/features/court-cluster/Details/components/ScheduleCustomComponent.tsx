@@ -8,16 +8,18 @@ import {
   ResourceDirective,
   ResourcesDirective,
 } from '@syncfusion/ej2-react-schedule';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
 import { useToast } from '@chakra-ui/react';
 import dayjs from 'dayjs';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
-import { BookingCreate } from '@/app/models/booking.model';
+import { BookingByDay, BookingCreate } from '@/app/models/booking.model';
 import { PaymentStatus } from '@/app/models/payment.model';
 import BookingEditorTemplateComponent from '../components/BookingTab/BookingEditorTemplateComponent';
 import { CourtCluster } from '@/app/models/court.model';
+import { router } from '@/app/router/Routes';
+
 interface IProps {
   courtClusterId: number;
   selectedCourtCluster: CourtCluster;
@@ -27,12 +29,14 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
   const fields = {
     phoneNumber: {
       name: 'phoneNumber',
-      validation: { required: true, minLength: 10, number: true },
     },
     startTime: { name: 'startTime', validation: { required: true } },
     endTime: { name: 'endTime', validation: { required: true } },
     courtId: { name: 'courtId', validation: { required: true } },
     fullName: { name: 'fullName', validation: { required: true } },
+    selectedDate: { name: 'selectedDate', validation: { required: true } },
+    playStart: { name: 'playStart', validation: { required: true } },
+    playEnd: { name: 'playEnd', validation: { required: true } },
   };
   const { courtClusterStore, bookingClusterStore } = useStore();
   const { loadingInitialBookingPage } = courtClusterStore;
@@ -50,9 +54,12 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
       },
     },
   });
+  const [selectedDate, setSelectedDate] = useState<any>(new Date());
+  const [playStart, setPlayStart] = useState<any>(null);
+  const [playEnd, setPlayEnd] = useState<any>(null);
+
   const handleActionBegin = async (args: any) => {
     const currentTime = new Date();
-    console.log('action begin', args);
     if (
       (args.requestType === 'eventCreate' || args.requestType === 'eventChange') &&
       args.data &&
@@ -60,34 +67,21 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
     ) {
       if (schedule.current) {
         const eventData = Array.isArray(args.data) ? args.data[0] : args.data;
-        const eventField: EventFieldsMapping = schedule.current.eventFields;
-        const startDate = eventData[eventField.startTime!];
-        const endDate = eventData[eventField.endTime!];
-        if (startDate < currentTime) {
-          args.cancel = true; // Huỷ nếu thời gian bắt đầu nằm trong quá khứ
+        const selectedDate = eventData.selectedDate;
+        const playEnd = eventData.playEnd;
+        const playStart = eventData.playStart;
+        const minEndDate = dayjs(playStart).add(1, 'hour');
+        if (dayjs(`${selectedDate} ${playStart}`).isBefore(dayjs(currentTime))) {
           toast({
             title: 'Đặt lịch thất bại',
-            description: 'Không thể chỉnh sửa hoặc tạo sự kiện trong thời gian quá khứ',
+            description: 'Không thể đặt lịch của ngày trước đó',
             status: 'error',
             duration: 5000,
             isClosable: true,
           });
-          return;
         }
-        if (!schedule.current.isSlotAvailable(startDate, endDate)) {
-          args.cancel = true; // Huỷ nếu slot không khả dụng
-          toast({
-            title: 'Đặt lịch thất bại',
-            description: 'Slot đã được đặt hoặc bị trùng với lịch trước đó',
-            status: 'error',
-            duration: 5000,
-            isClosable: true,
-          });
-          return;
-        }
-        const minEndDate = dayjs(startDate).add(1, 'hour');
-        if (dayjs(endDate).isBefore(minEndDate)) {
-          args.cancel = true;
+
+        if (dayjs(playEnd).isBefore(minEndDate) && !dayjs(playEnd).isSame(minEndDate)) {
           toast({
             title: 'Đặt lịch thất bại',
             description: 'Thời gian đặt lịch phải lơn hơn hoặc bằng 1 tiêng',
@@ -97,17 +91,16 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
           });
           return;
         }
-        args.data[0].paymentStatus = 'pending';
-        const bookingPost: BookingCreate = {
-          FullName: eventData.fullName,
-          CourtId: eventData.courtId,
-          StartTime: eventData.startTime,
-          EndTime: eventData.endTime,
-          PhoneNumber: eventData.phoneNumber,
+        const bookingPost: BookingByDay = {
+          fullName: eventData.fullName,
+          courtId: eventData.courtId,
+          fromDate: eventData.selectedDate,
+          fromTime: eventData.playStart + ':00',
+          toTime: eventData.playEnd + ':00',
+          phoneNumber: eventData.phoneNumber,
         };
 
         args.cancel = true;
-
         await createBooking(bookingPost, toast);
       }
     }
@@ -115,6 +108,13 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
       const elementId = args.data[0].id;
       await bookingClusterStore.cancelBooking(elementId, toast);
     }
+  };
+
+  const handleOnCellClick = (args: any) => {
+    const { startTime, endTime } = args;
+    setSelectedDate(dayjs(startTime).format('YYYY-MM-DD'));
+    setPlayStart(dayjs(startTime).format('HH:mm'));
+    setPlayEnd(dayjs(endTime).format('HH:mm'));
   };
   const handleRenderCell = (args: any) => {
     const currentTime = new Date();
@@ -136,6 +136,9 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
     if (Number(paymentStatus) == PaymentStatus.Pending) {
       args.element.classList.add('pending-payment');
     }
+    if(paymentStatus == PaymentStatus.Success && !isComplete){
+      args.element.classList.add('success-payment');
+    }
 
     if (isComplete) {
       args.element.classList.add('booking-complete');
@@ -150,7 +153,6 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
     }
   };
   const onPopupOpen = (args: any) => {
-    console.log(args);
     if (args.type === 'Editor') {
       setTimeout(() => {
         const saveButton = args.element.querySelector('.e-event-save');
@@ -159,6 +161,9 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
           if (saveButton) saveButton.setAttribute('disabled', '');
         } else {
           if (saveButton) saveButton.removeAttribute('disabled');
+          args.element.querySelector('#selectedDate').value = selectedDate;
+          args.element.querySelector('#playStart').value = playStart;
+          args.element.querySelector('#playEnd').value = playEnd;
         }
       }, 100);
     }
@@ -175,6 +180,30 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
       cancelButton.innerText = 'Hủy';
     }
   };
+  const handleEventClick = (args: any) => {
+    args.cancel = true; // Ngừng hành vi mặc định (mở popup chỉnh sửa)
+
+    const eventId = args.event.id;  // Lấy ID của sự kiện được click
+    // Chuyển hướng đến trang chi tiết của sự kiện
+    router.navigate(`/booking/chi-tiet/${eventId}`);
+  };
+
+  const eventTemplate = (props:any) => {
+    return (
+      <div className="template-wrap">
+        <div>
+          {props.fullName}
+        </div>
+        <div>
+          {props.phoneNumber}
+        </div>
+        <div className="time flex ">
+          {dayjs(props.startTime).format('HH:mm')} - {dayjs(props.endTime).format('HH:mm')}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       {!loadingInitialBookingPage && (
@@ -183,15 +212,18 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
           group={group}
           timeFormat="HH:mm"
           timeScale={{ enable: true, interval: 60, slotCount: 1 }}
-          workHours={{ highlight: true, start: '05:00', end: '22:00' }}
+          workHours={{ highlight: true, start: selectedCourtCluster.openTime.substring(0,5), end: selectedCourtCluster.closeTime.substring(0,5) }}
           startHour={selectedCourtCluster.openTime.substring(0, 5)}
           endHour={selectedCourtCluster.closeTime.substring(0, 5)}
           showQuickInfo={false}
           timezone="Asia/Bangkok"
+          cellClick={handleOnCellClick}
           editorTemplate={(props: any) => (
             <BookingEditorTemplateComponent
               {...props}
               courtOfClusterArray={selectedCourtCluster.courts} // Truyền dataSource vào editor template
+              playStart={playStart}
+              playEnd={playEnd}
             />
           )}
           cssClass="schedule-cell-dimension"
@@ -207,9 +239,10 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
           enableAdaptiveUI={true}
           navigating={async (args: any) => await handleNavigation(args)}
           popupOpen={onPopupOpen}
+          eventClick={handleEventClick}
         >
           <ViewsDirective>
-            <ViewDirective option="Week" dateFormat="dd-MMM-yyyy" />
+            <ViewDirective option="Week" dateFormat="dd-MMM-yyyy"  eventTemplate={eventTemplate}/>
           </ViewsDirective>
           <ResourcesDirective>
             <ResourceDirective

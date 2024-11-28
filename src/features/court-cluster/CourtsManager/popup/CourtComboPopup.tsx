@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { Form, Formik, FormikProps } from 'formik';
 import * as Yup from 'yup';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { CourtCombo } from '@/app/models/court.model';
 import CourtComboListTable from '../components/CourtComboListTableComponent';
 import { AiOutlineCalendar } from 'react-icons/ai';

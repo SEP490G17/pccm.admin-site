@@ -1,4 +1,4 @@
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store.ts';
 import { Card, CardBody, CardHeader, Center, Heading, Skeleton } from '@chakra-ui/react';
 

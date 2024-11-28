@@ -1,4 +1,4 @@
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import BookingTableComponent from './components/Booking/BookingTableComponent';
 import { useStore } from '@/app/stores/store';
 import { useCallback, useEffect, useMemo, useState } from 'react';

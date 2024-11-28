@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Flex, useDisclosure, Center, Heading } from '@chakra-ui/react';
+import { Button, Flex, useDisclosure, Center, Heading, useToast } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style.scss';
@@ -28,12 +28,13 @@ const BannerPage = observer(() => {
     { value: 0, label: 'Banner' },
     { value: 1, label: 'Sự kiện' },
   ]
+  const toast = useToast();
   useEffect(() => {
     if (bannerRegistry.size <= 1) {
       setLoadingInitial(true);
-      loadBanners().finally(() => setLoadingInitial(false));
+      loadBanners(toast).finally(() => setLoadingInitial(false));
     }
-  }, [bannerRegistry, setLoadingInitial, loadBanners]);
+  }, [bannerRegistry, setLoadingInitial, loadBanners, toast]);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -43,7 +44,7 @@ const BannerPage = observer(() => {
     if (scrollPosition >= documentHeight - 50) {
       bannerPageParams.skip = bannerRegistry.size;
       if (bannerPageParams.totalElement > bannerRegistry.size) {
-        loadBanners();
+        loadBanners(toast);
       }
     }
   }, [loadBanners, bannerPageParams, bannerRegistry]);
@@ -60,7 +61,7 @@ const BannerPage = observer(() => {
   const handleSearchDebounced = useMemo(() => {
     return debounce(async (e) => {
       setIsPending(false); // Tắt loading
-      await bannerStore.setSearchTerm(e.target.value);
+      await bannerStore.setSearchTerm(e.target.value,toast);
     }, 500);
   }, [setIsPending, bannerStore]);
 
@@ -86,7 +87,7 @@ const BannerPage = observer(() => {
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
             onChange={async (e) => {
               if (e) {
-                await bannerStore.setCategoryTerm(e.value.toString());
+                await bannerStore.setCategoryTerm(e.value.toString(),toast);
               }
             }}
             defaultValue={{
@@ -101,7 +102,7 @@ const BannerPage = observer(() => {
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
             onChange={async (e) => {
               if (e) {
-                await bannerStore.setStatusTerm(e.value.toString());
+                await bannerStore.setStatusTerm(e.value.toString(),toast);
               }
             }}
             defaultValue={{
@@ -135,7 +136,7 @@ const BannerPage = observer(() => {
             isLoading={loading}
             onClick={() => {
               bannerPageParams.skip = bannerRegistry.size;
-              loadBanners();
+              loadBanners(toast);
             }}
           >
             Xem thêm

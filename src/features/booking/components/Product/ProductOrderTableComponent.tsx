@@ -12,7 +12,7 @@ import {
   Thead,
   Tr,
 } from '@chakra-ui/react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 const ProductOrderTableComponent = observer(() => {
   const { bookingStore, courtClusterStore } = useStore();
   const { productOfClusterRegistry } = courtClusterStore;
@@ -46,6 +46,7 @@ const ProductOrderTableComponent = observer(() => {
 
   return (
     <>
+     
       <TableContainer className="mt-8">
         <Heading size={'sm'}>Danh sách hàng hoá</Heading>
         <Table className="mt-4">

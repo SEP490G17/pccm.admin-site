@@ -1,6 +1,6 @@
 import { Flex, Grid, GridItem, Heading, Spacer, Text } from '@chakra-ui/react';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { Product } from '@/app/models/product.model.ts';
 import { useStore } from '@/app/stores/store';
 import { PaymentStatus } from '@/app/models/payment.model';
@@ -59,7 +59,7 @@ const ProductCardItemSellComponent = observer(({ product }: Iprops) => {
                 Số lượng: {product.quantity}
               </Text>
               <Spacer />
-              <Heading size={'sm'}>Giá tiền : {product.price} VND</Heading>
+              <Heading size={'sm'}>Giá tiền : {product.price.toLocaleString('vn')} VND</Heading>
             </Flex>
           </GridItem>
         </Grid>

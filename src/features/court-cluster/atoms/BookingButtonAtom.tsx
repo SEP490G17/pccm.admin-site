@@ -4,7 +4,7 @@ import { Button, Flex, Tag, TagLabel, TagLeftIcon, useToast } from '@chakra-ui/r
 import { FC, useState } from 'react';
 import PaymentButtonAtom from './PaymentButtonAtom';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
 import { convertBookingStartAndEndUTCToG7 } from '@/app/helper/utils';
 import ModalAcceptButton from '@/features/booking/popups/accept-booking-conflict/ModalAcceptButton';
@@ -27,13 +27,13 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => 
   const onDenyOpen = () => setIsDenyModalOpen(true);
   const onDenyClose = () => setIsDenyModalOpen(false);
 
-  const handleAccepted = async () => {
-    await acceptedBooking(booking.id, toast).then((data) => {
-      if (data.res) {
-        bookingStore.bookingRegistry.set(data.res.id, convertBookingStartAndEndUTCToG7(data.res));
-      }
-    });
-  };
+  // const handleAccepted = async () => {
+  //   await acceptedBooking(booking.id, toast).then((data) => {
+  //     if (data.res) {
+  //       bookingStore.bookingRegistry.set(data.res.id, convertBookingStartAndEndUTCToG7(data.res));
+  //     }
+  //   });
+  // };
 
   const handleCompleted = async () => {
     await completeBooking(booking.id, toast).then((data) => {

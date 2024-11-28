@@ -2,7 +2,6 @@ import { CourtForTable, CourtStatus } from '@/app/models/court.model';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import {
   Flex,
-  IconButton,
   Switch,
   Table,
   TableContainer,
@@ -10,14 +9,12 @@ import {
   Td,
   Th,
   Thead,
-  Tooltip,
   Tr,
   useToast,
 } from '@chakra-ui/react';
 import { FC } from 'react';
-import { MdDelete } from 'react-icons/md';
 import CourtPricePopup from '../popup/CourtPricePopup';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
 import CourtComboPopup from '../popup/CourtComboPopup';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';

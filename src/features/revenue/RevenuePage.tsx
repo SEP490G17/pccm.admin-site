@@ -18,7 +18,7 @@ import { Formik, Form, FieldProps, Field } from 'formik';
 import SelectFieldAtoms from '@/app/common/form/SelectFieldAtoms';
 import { useStore } from '@/app/stores/store';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { ExpenseDetails, ExpenseDetailsDTO, FilterCourtClusterStatisticDetailsDTO, RevenueDetails } from '@/app/models/revenue.models';
 import { DatePicker } from 'antd';
 import agent from '@/app/api/agent';

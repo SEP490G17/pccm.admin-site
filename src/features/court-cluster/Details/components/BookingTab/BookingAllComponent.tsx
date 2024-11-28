@@ -1,6 +1,6 @@
 import { useStore } from '@/app/stores/store';
 import { Flex, Skeleton, useToast } from '@chakra-ui/react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import { debounce } from 'lodash';

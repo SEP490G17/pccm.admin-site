@@ -1,7 +1,7 @@
 import { Service } from '@/app/models/service.model.ts';
 import { useStore } from '@/app/stores/store';
 import { Flex, Grid, GridItem, Heading, Text } from '@chakra-ui/react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 interface IProps {
   service: Service;
 }

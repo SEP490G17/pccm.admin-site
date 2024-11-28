@@ -9,6 +9,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Stack,
+  useToast,
   VStack,
 } from '@chakra-ui/react';
 import './style.scss';
@@ -20,7 +21,7 @@ import FileUploadFieldAtoms from '@/app/common/form/FileUploadFieldAtoms';
 import { useStore } from '@/app/stores/store';
 import { ProductInput } from '@/app/models/product.model';
 import SelectFieldAtoms from '@/app/common/form/SelectFieldAtoms';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 
 interface IProp {
   isOpen: boolean;
@@ -47,6 +48,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
   const { categoryStore, courtClusterStore, productStore, uploadStore } = useStore();
   const { categoryOption } = categoryStore;
   const { courtClusterListAllOptions } = courtClusterStore;
+  const toast = useToast();
   return (
     <Modal isOpen={isOpen} onClose={() => { uploadStore.loading = false; onClose() }} size="6xl">
       <ModalOverlay />
@@ -80,7 +82,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                   productName: values.productName,
                   courtClusterId: Number(values.courtClusterId)
                 });
-                await productStore.createProduct(product);
+                await productStore.createProduct(product, toast);
                 onClose()
               }}
               validationSchema={validationSchema}

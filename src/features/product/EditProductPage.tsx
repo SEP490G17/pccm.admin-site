@@ -10,6 +10,7 @@ import {
   ModalOverlay,
   Skeleton,
   Stack,
+  useToast,
   VStack,
 } from '@chakra-ui/react';
 import './style.scss';
@@ -44,6 +45,7 @@ const EditProductPage = observer(({ isOpen, onClose }: IProp) => {
     categoryId: Yup.number().required('Thể loại không được bỏ trống'),
     courtClusterId: Yup.number().required('Khu không được bỏ trống'),
   });
+  const toast = useToast();
   const { productStore, uploadStore } = useStore();
   const { selectedProduct } = productStore;
   return (
@@ -87,7 +89,7 @@ const EditProductPage = observer(({ isOpen, onClose }: IProp) => {
                     courtClusterId: Number(values.courtClusterId),
                     thumbnailUrl: values.thumbnailUrl,
                   });
-                  await productStore.editProduct(product).finally(onClose);
+                  await productStore.editProduct(product,toast).finally(onClose);
                 }}
                 validationSchema={validationSchema}
               >

@@ -13,6 +13,7 @@ import {
   VStack,
   HStack,
   Stack,
+  useToast,
 } from '@chakra-ui/react';
 import * as Yup from 'yup';
 import { Form, Formik } from 'formik';
@@ -53,7 +54,7 @@ const CreateBannerPage = ({ isOpen, onClose }: IProp) => {
     type: Yup.number().required('Thể loại banner không được bỏ trống'),
     destination: Yup.number().required('Trang đích banner không được bỏ trống'),
   });
-
+  const toast = useToast();
 
   return (
     <>
@@ -90,7 +91,7 @@ const CreateBannerPage = ({ isOpen, onClose }: IProp) => {
                     linkUrl: values.linkUrl,
                     status: Number(values.status)
                   })
-                  await bannerStore.createBanner(banner)
+                  await bannerStore.createBanner(banner, toast)
                   onClose()
                 }
 

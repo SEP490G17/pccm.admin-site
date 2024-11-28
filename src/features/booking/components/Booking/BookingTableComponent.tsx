@@ -3,7 +3,7 @@ import { useStore } from '@/app/stores/store';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import BookingButtonAtom from '@/features/court-cluster/atoms/BookingButtonAtom';
 import { Table, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 
 const BookingTableComponent = observer(() => {
   const { bookingStore } = useStore();

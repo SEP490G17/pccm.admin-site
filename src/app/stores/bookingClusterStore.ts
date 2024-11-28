@@ -2,6 +2,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import agent from '../api/agent';
 import { catchErrorHandle } from '@/app/helper/utils.ts';
 import {
+  BookingByDay,
   BookingCreate,
   BookingForList,
   BookingModel,
@@ -52,6 +53,8 @@ export default class BookingClusterStore {
   // #endregion
 
   bookingTodayArray: BookingForList[] = [];
+
+  highlightedItemIds = new Set();
 
   constructor() {
     makeAutoObservable(this);
@@ -225,11 +228,7 @@ export default class BookingClusterStore {
     runInAction(() => {
       toast.close(pendingToast);
       if (err) {
-        toast(
-          BookingMessage.acceptFailure(
-            err?.response.data,
-          ),
-        );
+        toast(BookingMessage.acceptFailure(err?.response.data));
       }
       if (res) {
         toast(BookingMessage.acceptSuccess());
@@ -325,7 +324,7 @@ export default class BookingClusterStore {
     return { err, res };
   };
 
-  createBooking = async (booking: BookingCreate, toast: CreateToastFnReturn) => {
+  createBooking = async (booking: BookingByDay, toast: CreateToastFnReturn) => {
     const pendingToast = toast(CommonMessage.loadingMessage('Đặt lịch'));
     const [err, res] = await catchErrorHandle(agent.BookingAgent.create(booking));
     runInAction(() => {
@@ -333,12 +332,12 @@ export default class BookingClusterStore {
       if (err) {
         toast(BookingMessage.bookingFailure(err?.response?.data));
       }
-
       if (res) {
         toast(BookingMessage.bookingSuccess());
         this.setBooking(res);
         const convert = mapBookingToBookingForList(res);
         this.setBookingToday(convert);
+        this.loadBookingTodayArray();
         this.bookingAllRegistry.set(convert.id, convert);
       }
     });
@@ -360,19 +359,19 @@ export default class BookingClusterStore {
         this.setBooking(res);
         const convert = mapBookingToBookingForList(res);
         this.setBookingToday(convert);
+        this.loadBookingTodayArray();
         this.bookingAllRegistry.set(convert.id, convert);
       }
     });
   };
 
-  paymentSuccessBooking = async (id: number, toast: CreateToastFnReturn) => {
+  paymentSuccessBooking = async (id: number, includeOrder: boolean, toast: CreateToastFnReturn) => {
     const pending = toast(CommonMessage.loadingMessage('Xác thực thanh toán'));
-    const [err, res] = await catchErrorHandle(agent.BookingAgent.paymentSuccess(id));
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.paymentSuccess(id, includeOrder));
     runInAction(() => {
       if (res) {
         toast.close(pending);
         toast(BookingMessage.paymentSuccess());
-        console.log(res)
         this.bookingTodayRegistry.set(res.id, this.convertBookingStartAndEndUTCToG7(res));
         this.loadBookingTodayArray();
         this.setBookingAll(res);
@@ -447,7 +446,7 @@ export default class BookingClusterStore {
     return Array.from(this.bookingDenyRegistry.values());
   }
   get bookingAllArray() {
-    return Array.from(this.bookingAllRegistry.values());
+    return _.orderBy(Array.from(this.bookingAllRegistry.values()), ['id'], 'desc');
   }
   //#endregion
 
@@ -580,6 +579,57 @@ export default class BookingClusterStore {
   };
 
   //#endregion
+
+  //#endregion
+
+  //#region signalr
+  updateBookingSignalr = (booking: BookingForList) => {
+    if (booking.status === BookingStatus.Confirmed) {
+      this.bookingPendingRegistry.delete(booking.id);
+      this.setBookingAll(booking);
+      this.setBookingToday(this.convertBookingStartAndEndUTCToG7(booking));
+      this.loadBookingTodayArray();
+      this.setBooking(mapBookingResponseToBookingModel(booking));
+    }
+    if (booking.status === BookingStatus.Cancelled) {
+      this.bookingTodayRegistry.delete(booking.id);
+      this.bookingForScheduleRegistry.delete(booking.id);
+      this.loadBookingTodayArray();
+      this.setBookingAll(booking);
+      this.setBookingDeny(booking);
+    }
+    if (booking.status === BookingStatus.Declined) {
+      this.bookingTodayRegistry.delete(booking.id);
+      this.loadBookingTodayArray();
+      this.bookingForScheduleRegistry.delete(booking.id);
+      this.bookingPendingRegistry.delete(booking.id);
+      this.setBookingAll(booking);
+    }
+
+    if (booking.isSuccess) {
+      this.setBookingAll(booking);
+      this.setBookingToday(this.convertBookingStartAndEndUTCToG7(booking));
+      this.loadBookingTodayArray();
+    }
+
+    this.highlightItem(booking.id);
+  };
+
+  createBookingSignalr = (booking: BookingModel) => {
+    this.setBooking(booking);
+    const convert = mapBookingToBookingForList(booking);
+    this.setBookingToday(convert);
+    this.loadBookingTodayArray();
+    this.bookingAllRegistry.set(convert.id, convert);
+    this.highlightItem(booking.id);
+  };
+
+  highlightItem(itemId: number) {
+    this.highlightedItemIds.add(itemId); // Thêm ID vào danh sách highlight
+    setTimeout(() => {
+      this.highlightedItemIds.delete(itemId); // Xóa highlight sau 1 giây
+    }, 2000);
+  }
 
   //#endregion
 

@@ -3,17 +3,21 @@ import { Badge, Center, Grid, GridItem } from '@chakra-ui/react';
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import BookingButtonAtom from './BookingButtonAtom';
+import { observer } from 'mobx-react-lite';
+import { useStore } from '@/app/stores/store';
 
 interface BookingGridItemAtomProps {
   bookingToday: BookingForList;
   index: number;
 }
 
-const BookingGridItemAtom: FC<BookingGridItemAtomProps> = ({ bookingToday, index }) => {
+const BookingGridItemAtom: FC<BookingGridItemAtomProps> = observer(({ bookingToday, index }) => {
+  const {bookingClusterStore} = useStore();
+  const {highlightedItemIds} = bookingClusterStore;
   return (
       <Grid
         templateColumns={'repeat(24,1fr)'}
-        className="p-4 rounded-lg cursor-pointer"
+        className={`p-4 rounded-lg cursor-pointer ${highlightedItemIds.has(bookingToday.id)?'highlight-item':''}`}
         style={{ boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px' }}
       >
         <GridItem colSpan={20} as={Link} to={`/booking/chi-tiet/${bookingToday.id}`}>
@@ -48,6 +52,6 @@ const BookingGridItemAtom: FC<BookingGridItemAtomProps> = ({ bookingToday, index
         </GridItem>
       </Grid>
   );
-};
+});
 
 export default BookingGridItemAtom;

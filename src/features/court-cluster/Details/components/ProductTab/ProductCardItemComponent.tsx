@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom.tsx';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { Product } from '@/app/models/product.model.ts';
 import { useStore } from '@/app/stores/store.ts';
 import EditProductPage from '@/features/product/EditProductPage';

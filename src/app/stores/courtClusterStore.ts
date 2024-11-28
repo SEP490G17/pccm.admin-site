@@ -1,11 +1,10 @@
-import { Court, CourtCluster, CourtClusterListAll } from './../models/court.model';
+import { CourtCluster, CourtClusterListAll } from './../models/court.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleCourtData } from '../mock/court.mock';
 import { PageParams, ProductPageParams } from '../models/pageParams.model';
 import { catchErrorHandle, customFormatTime, sleep } from '../helper/utils';
 import agent from '../api/agent';
 import _ from 'lodash';
-import { toast } from 'react-toastify';
 import { PaginationModel } from '@/app/models/pagination.model.ts';
 import { Product } from '@/app/models/product.model.ts';
 import { Service } from '@/app/models/service.model.ts';
@@ -13,9 +12,11 @@ import {
   CourtClusterMessage,
   DefaultCourtClusterText,
 } from '../common/toastMessage/courtClusterMessage';
-import { CourtMessage } from '../common/toastMessage/courtMessage';
 import { CreateToastFnReturn } from '@chakra-ui/react';
 import { CommonMessage } from '../common/toastMessage/commonMessage';
+import { store } from './store';
+import { ServiceMessage } from '../common/toastMessage/serviceMessage';
+import { ProductMessage } from '../common/toastMessage/productMessage';
 
 export default class CourtClusterStore {
   //registry
@@ -23,9 +24,8 @@ export default class CourtClusterStore {
   courtClusterListAllRegistry = new Map<number, CourtClusterListAll>(); // registry cho option court
   productOfClusterRegistry = new Map<number, Product>();
   servicesOfClusterRegistry = new Map<number, Service>();
-  courtOfClusterRegistry = new Map<number, Court>();
   // selected
-  selectedCourtCluster?: CourtCluster ; //cụm sân đang được chọn (trang details, hoặc khi update)
+  selectedCourtCluster?: CourtCluster; //cụm sân đang được chọn (trang details, hoặc khi update)
   selectedTabs: number = 0;
   // page param
   courtPageParams = new PageParams(); // page param cho trang cụm sân
@@ -48,39 +48,15 @@ export default class CourtClusterStore {
   setLoadingInitialBookingPage = (load: boolean) => (this.loadingInitialBookingPage = load);
 
   //#region Court
-  loadCourtOfCluster = async (id: number, chakraToast: any) => {
-    if (id) {
-      this.loadingCourt = true;
-      const [error, res] = await catchErrorHandle(agent.CourtAgent.list(id));
-      runInAction(() => {
-        if (error) {
-          chakraToast(CourtMessage.loadCourtClusterFailure());
-        }
-        if (res) {
-          this.courtOfClusterRegistry.clear();
-          res.forEach(this.setCourt);
-        }
-        this.loadingCourt = false;
-      });
-    }
-  };
 
-  setCourt = (court: Court) => {
-    this.courtOfClusterRegistry.set(court.courtId, court);
-  };
-
-  get courtOfClusterArray() {
-    return Array.from(this.courtOfClusterRegistry.values());
-  }
   //#endRegion
 
   //#region Services
-  loadServicesOfCourtCluster = async (id: number) => {
+  loadServicesOfCourtCluster = async (id: number, toast: CreateToastFnReturn) => {
     if (id) {
       this.loadingServicesPage = true;
       const queryParams = new URLSearchParams();
       queryParams.append('skip', `${this.serviceCourtClusterPageParams.skip}`);
-      queryParams.append('pageSize', `${this.serviceCourtClusterPageParams.pageSize}`);
       queryParams.append('filter', `${id}`);
       if (this.serviceCourtClusterPageParams.searchTerm) {
         queryParams.append('search', this.serviceCourtClusterPageParams.searchTerm);
@@ -90,7 +66,7 @@ export default class CourtClusterStore {
       );
       runInAction(() => {
         if (error) {
-          toast.error('Lấy danh sách dịch vụ của sân thất bại');
+          toast(ServiceMessage.loadFailure());
         }
         if (res) {
           res.data.forEach(this.setServiceCourtCluster);
@@ -103,7 +79,7 @@ export default class CourtClusterStore {
   //#endRegion
 
   //#region Product
-  loadProductsOfCourtCluster = async (id: number) => {
+  loadProductsOfCourtCluster = async (id: number, toast: CreateToastFnReturn) => {
     if (id) {
       this.loadingProductsPage = true;
       const queryParams = new URLSearchParams();
@@ -121,9 +97,7 @@ export default class CourtClusterStore {
       );
       runInAction(() => {
         if (error) {
-          toast.error(
-            `Lấy danh sách sản phẩm của cụm sân ${this.selectedCourtCluster?.title} thất bại`,
-          );
+          toast(ProductMessage.loadingFailure());
           this.productCourtClusterPageParams.totalElement = 0;
         }
         if (res) {
@@ -138,7 +112,7 @@ export default class CourtClusterStore {
 
   //#region MainCRUD
   // 1. Load list court clusters for admin
-  loadCourtsCluster = async () => {
+  loadCourtsCluster = async (toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     const queryParams = new URLSearchParams();
     queryParams.append('skip', `${this.courtPageParams.skip}`);
@@ -153,7 +127,7 @@ export default class CourtClusterStore {
 
     runInAction(() => {
       if (error) {
-        toast.error('Tải danh sách cụm sân thất bại'); // Cải thiện thông báo lỗi nếu cần
+        toast(CourtClusterMessage.loadFailure()); // Cải thiện thông báo lỗi nếu cần
       }
       if (response) {
         response.data.forEach(this.setCourtCluster);
@@ -172,7 +146,8 @@ export default class CourtClusterStore {
     runInAction(() => {
       if (error) {
         chakraToast(CourtClusterMessage.loadDetailsFail());
-      } else {
+      }
+      if (response) {
         this.selectedCourtCluster = response;
       }
       this.loadingInitialDetailsPage = false;
@@ -245,10 +220,10 @@ export default class CourtClusterStore {
     }
   };
 
-  setSearchTerm = async (term: string) => {
+  setSearchTerm = async (term: string, toast: CreateToastFnReturn) => {
     this.courtPageParams.searchTerm = term;
     this.cleanCourtCache();
-    await this.loadCourtsCluster();
+    await this.loadCourtsCluster(toast);
   };
 
   get courtClusterArray() {
@@ -327,5 +302,17 @@ export default class CourtClusterStore {
         toast(CourtClusterMessage.editFailure());
       }
     });
+  };
+
+  clearDetailsCourtCluster = () => {
+    this.selectedCourtCluster = undefined;
+    this.productOfClusterRegistry.clear();
+    this.servicesOfClusterRegistry.clear();
+    store.bookingClusterStore.bookingAllRegistry.clear();
+    store.bookingClusterStore.bookingDenyRegistry.clear();
+    store.bookingClusterStore.bookingTodayRegistry.clear();
+    store.bookingClusterStore.bookingPendingRegistry.clear();
+    store.bookingClusterStore.loadBookingTodayArray();
+    store.bookingClusterStore.bookingForScheduleRegistry.clear();
   };
 }

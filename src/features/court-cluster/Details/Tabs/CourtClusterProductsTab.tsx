@@ -1,5 +1,5 @@
 import {Box, Grid, GridItem, Heading, Skeleton} from "@chakra-ui/react";
-import {observer} from "mobx-react";
+import {observer} from "mobx-react-lite";
 
 import ProductCardItemComponent from "@/features/court-cluster/Details/components/ProductTab/ProductCardItemComponent";
 import {useStore} from "@/app/stores/store.ts";

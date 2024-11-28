@@ -1,4 +1,3 @@
-import { Slide, ToastContainer } from 'react-toastify';
 import { Outlet } from 'react-router-dom';
 import { Box, Button, Center, Flex, Spacer, Text } from '@chakra-ui/react';
 import Header from './Header';
@@ -6,11 +5,9 @@ import Sidebar from './Sidebar';
 import { useStore } from '../stores/store';
 import { observer } from 'mobx-react-lite';
 import { AiOutlineLogout } from 'react-icons/ai';
-import { registerLicense } from "@syncfusion/ej2-base";
+import { registerLicense } from '@syncfusion/ej2-base';
 import { useEffect } from 'react';
-registerLicense(
- "ORg4AjUWIQA/Gnt2UlhhQlVMfV5DQmFAYVF2R2dJflx6dl1MY15BNQtUQF1hTX9TdUVjWn9XcHVRQ2lc"
-);
+registerLicense('ORg4AjUWIQA/Gnt2UlhhQlVMfV5DQmFAYVF2R2dJflx6dl1MY15BNQtUQF1hTX9TdUVjWn9XcHVRQ2lc');
 const App = observer(() => {
   const { authStore, commonStore } = useStore();
   useEffect(() => {
@@ -18,17 +15,10 @@ const App = observer(() => {
       authStore.getUser();
     }
   }, [authStore]);
-  if(!authStore.userApp) return;
+  if (!authStore.userApp) return;
   return (
     <>
-      <ToastContainer position="bottom-center" hideProgressBar theme="colored" transition={Slide}/>
-      <Box
-        color="blackAlpha.700"
-        p={0}
-        m={0}
-        fontWeight="bold"
-        className="main-layout"
-      >
+      <Box color="blackAlpha.700" p={0} m={0} fontWeight="bold" className="main-layout">
         <Flex
           as={'header'}
           justifyContent={'space-between'}

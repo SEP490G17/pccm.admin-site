@@ -2,7 +2,6 @@ import {
   getPaymentStatusColor,
   getPaymentStatusText,
   PaymentStatus,
-  PaymentType,
 } from '@/app/models/payment.model';
 import { useStore } from '@/app/stores/store';
 import {
@@ -17,7 +16,7 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import OrderDetailsPopUp from '../../popups/OrderDetailsPopup';
 
 import dayjs from 'dayjs';
@@ -26,17 +25,10 @@ import { CloseIcon } from '@chakra-ui/icons';
 import OrderPaymentButtonAtoms from './OrderPaymentButtonAtoms';
 
 const OrdersOfBookingComponent = observer(() => {
-  const { paymentStore, bookingStore } = useStore();
+  const { bookingStore } = useStore();
   const toast = useToast();
   const { selectedBooking } = bookingStore;
   if (!selectedBooking) return;
-  const handlePayment = async (orderId: number) => {
-    await paymentStore.getPayment(PaymentType.Order, orderId, toast).then((data) => {
-      if (data.res) {
-        window.open(data.res, '_blank');
-      }
-    });
-  };
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleOpenDetaisOrder = async (id: number) => {
     onOpen();

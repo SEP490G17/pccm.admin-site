@@ -20,7 +20,7 @@ import { useStore } from '@/app/stores/store';
 import { useEffect } from 'react';
 import NumberFieldAtom from '@/app/common/form/NumberFieldAtoms';
 import { ServiceEditDTO } from '@/app/models/service.model';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 
 interface IProp {
   isOpen: boolean;
