@@ -46,3 +46,37 @@ export class CreateUserDTO {
     }
   }
 }
+
+export class CreateStaffDTO {
+  userName: string = '';
+  phoneNumber: string = '';
+  email: string = '';
+  firstName: string = '';
+  lastName: string = '';
+  password: string = '';
+  positionId: number = 0;
+  courtCluster: number[] = [];
+
+  constructor(data?: Partial<CreateStaffDTO>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
+}
+
+export class UpdateStaffDTO {
+  staffDetailId: number = 0;
+  userName: string = '';
+  phoneNumber: string = '';
+  email: string = '';
+  firstName: string = '';
+  lastName: string = '';
+  positionId: number = 0;
+  courtCluster: number[] = [];
+
+  constructor(data?: Partial<UpdateStaffDTO>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
+}

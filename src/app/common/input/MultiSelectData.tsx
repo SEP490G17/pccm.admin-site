@@ -1,27 +1,31 @@
-import { InputProps } from '@chakra-ui/react';
-import Select from 'react-select';
+import Select, { MultiValue } from 'react-select';
 
-interface MultiSelectProps extends InputProps {
-    items: { name: string | number; value: string | number; }[];
+interface MultiSelectProps {
+    items: { value: string | number; label: string | number; }[];
+    value?: MultiValue<{ value: string | number; label: string | number }>;
+    onChange?: (value: MultiValue<{ value: string | number; label: string | number }>) => void;
 }
 
 const MultiSelectData: React.FC<MultiSelectProps> = (props) => {
-    const { items } = props
-    const options = items.map(item => ({
-        label: item.name,
-        value: item.value
-    }));
+    const { items, value, onChange } = props;
+    const options = items
+        .map(item => ({
+            value: item.value,
+            label: item.label,
+        }));
+
     return (
         <Select
             menuShouldScrollIntoView={false}
-            menuPlacement='top'
+            menuPlacement="top"
             closeMenuOnSelect={true}
-            defaultValue={options[0]}
             isMulti
             options={options}
-            placeholder='Chọn'
+            placeholder="Chọn"
+            value={value}
+            onChange={onChange}
         />
     );
-}
+};
 
 export default MultiSelectData

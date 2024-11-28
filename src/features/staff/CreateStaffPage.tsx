@@ -1,10 +1,8 @@
 import {
-  Badge,
   Button,
+  Flex,
   FormControl,
   FormLabel,
-  HStack,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -17,21 +15,53 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import './style/style.scss';
-import { Form, Formik } from 'formik';
+import { Form, Formik, Field } from 'formik';
 import MultiSelectData from '@/app/common/input/MultiSelectData';
 import { FaEdit } from 'react-icons/fa';
+import TextFieldAtoms from '@/app/common/form/TextFieldAtoms';
+import Select from 'react-select';
+import { useStore } from '@/app/stores/store';
+import { useEffect } from 'react';
+import * as Yup from 'yup';
+import NumberFieldAtom from '@/app/common/form/NumberFieldAtoms';
+import { CreateStaffDTO } from '@/app/models/user.model';
+import { observer } from 'mobx-react';
 
 const CreateStaffPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const courts = [
-    { name: 'Cụm sân 1', value: 'cum_san_1' },
-    { name: 'Cụm sân 2', value: 'cum_san_2' },
-    { name: 'Cụm sân 3', value: 'cum_san_3' },
-  ];
-  const roles = [
-    { name: 'Nhặt bóng', value: 1 },
-    { name: 'Quản lý booking', value: 2 },
-  ];
+  const { staffPositionStore, courtClusterStore, staffStore } = useStore();
+  const { StaffPositionArray } = staffPositionStore;
+  const { courtClusterListAllOptions } = courtClusterStore;
+  const validationSchema = Yup.object().shape({
+    firstName: Yup.string().required('Họ không được bỏ trống'),
+    lastName: Yup.string().required('Tên không được bỏ trống'),
+    username: Yup.string().required('Tên đăng nhập không được bỏ trống'),
+    email: Yup.string().email('Email không hợp lệ').required('Email không được bỏ trống'),
+    phonenumber: Yup.string()
+      .matches(/^[0-9]{10,11}$/, 'Số điện thoại không hợp lệ')
+      .required('Số điện thoại không được bỏ trống'),
+    password: Yup.string()
+      .required('Mật khẩu không được bỏ trống')
+      .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
+      .matches(/[a-z]/, 'Mật khẩu phải chứa ít nhất 1 chữ thường')
+      .matches(/[A-Z]/, 'Mật khẩu phải chứa ít nhất 1 chữ hoa')
+      .matches(/[0-9]/, 'Mật khẩu phải chứa ít nhất 1 chữ số')
+      .matches(/[@$!%*?&]/, 'Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt'),
+    repassword: Yup.string()
+      .required('Mật khẩu xác nhận không được bỏ trống')
+      .oneOf([Yup.ref('password')], 'Mật khẩu xác nhận không khớp'),
+    position: Yup.object().nullable().required('Chức vụ không được bỏ trống'),
+    courtcluster: Yup.array().min(1, 'Vui lòng chọn ít nhất một cụm sân').required('Cụm sân không được bỏ trống'),
+  });
+  const positionOptions = StaffPositionArray.map((position, index) => ({
+    value: index + 1,
+    label: position.name,
+  }));
+
+  useEffect(() => {
+    courtClusterStore.loadCourtClusterListAll();
+  }, [courtClusterStore]);
+
   return (
     <>
       <Button
@@ -58,130 +88,91 @@ const CreateStaffPage = () => {
           <ModalBody>
             <VStack spacing="20px" align="stretch">
               <Formik
-                initialValues={{ title: '', description: '' }}
-                onSubmit={(values) => {
-                  // handleSubmit(values);
+                initialValues={{
+                  firstName: '',
+                  lastName: '',
+                  username: '',
+                  email: '',
+                  phonenumber: '',
+                  password: '',
+                  repassword: '',
+                  position: positionOptions[2],
+                  courtcluster: [],
+                }}
+                validationSchema={validationSchema}
+                onSubmit={async (values) => {
+                  const data = new CreateStaffDTO({
+                    courtCluster: values.courtcluster,
+                    phoneNumber: values.phonenumber,
+                    email: values.email,
+                    firstName: values.firstName,
+                    lastName: values.lastName,
+                    userName: values.username,
+                    password: values.password,
+                    positionId: values.position.value
+                  })
+                  await staffStore.createStaff(data, onClose);
                 }}
               >
-                {(props) => (
-                  <Form>
-                    <FormControl isRequired>
-                      <FormLabel className="title_label">Tên nhân viên</FormLabel>
-                      <Input
-                        className="input_text"
-                        type="text"
-                        name="name"
-                        placeholder="Nhập"
-                        isRequired={true}
-                      />
-                    </FormControl>
-                    <HStack>
-                      <FormControl>
-                        <FormLabel className="title_label">Căn cước công dân</FormLabel>
-                        <Input
-                          name="cccd"
-                          placeholder="Nhập CCCD"
-                          type="number"
-                          maxLength={12}
-                          variant="outline"
-                          isRequired={true}
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel className="title_label">Số điện thoại</FormLabel>
-                        <Input
-                          name="sdt"
-                          placeholder="xxxxxxx"
-                          className="input_text"
-                          type="number"
-                          isRequired={true}
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel className="title_label">Lương ( VND )</FormLabel>
-                        <Input
-                          name="salary"
-                          placeholder="xxxxxxx"
-                          className="input_text"
-                          type="number"
-                          isRequired={true}
-                        />
-                      </FormControl>
-                    </HStack>
-                    <HStack>
-                      <FormControl width="205%">
-                        <FormLabel className="title_label">Chức vụ</FormLabel>
-                        <Input
-                          name="position"
-                          placeholder="Nhập chức vụ"
-                          className="input_text"
-                          type="text"
-                          isRequired={true}
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel className="title_label">Quyền</FormLabel>
-                        <MultiSelectData items={roles}></MultiSelectData>
-                      </FormControl>
-                    </HStack>
-                    <HStack>
-                      <FormControl>
-                        <FormLabel className="title_label">Ca làm việc</FormLabel>
-                        <Input
-                          name="position"
-                          placeholder="Tên ca"
-                          className="input_text"
-                          type="text"
-                          isRequired={true}
-                        />
-                      </FormControl>
-                      <FormControl>
-                        <FormLabel className="title_label">ㅤ</FormLabel>
-                        <HStack spacing="20px">
-                          <Badge colorScheme="green" fontSize="1em" padding="8px 16px">
-                            Giờ bắt đầu
-                          </Badge>
-                          <Input
-                            type="datetime-local"
-                            name="startDate"
-                            //onChange={handleChange}
-                            bg="#FFF"
-                            width="200px"
-                            isRequired={true}
-                          />
+                {({ handleSubmit, isSubmitting, setFieldValue }) => {
+                  return (
+                    <Form onSubmit={handleSubmit}>
+                      <Flex gap={3} justifyContent={'space-between'}>
+                        <TextFieldAtoms label="Họ" isRequired={true} placeholder="Nhập" name="firstName" />
+                        <TextFieldAtoms label="Tên" isRequired={true} placeholder="Nhập" name="lastName" />
+                      </Flex>
+                      <TextFieldAtoms label="Tên đăng nhập" isRequired={true} placeholder="Nhập" name="username" />
+                      <Flex gap={3} justifyContent={'space-between'}>
+                        <TextFieldAtoms label="Email" isRequired={true} placeholder="Nhập" name="email" type='email' />
+                        <NumberFieldAtom label="Số điện thoại" isRequired={true} placeholder="Nhập" name="phonenumber" type='tel' />
+                      </Flex>
+                      <Flex gap={3} justifyContent={'space-between'}>
+                        <TextFieldAtoms label="Mật khẩu" isRequired={true} placeholder="Nhập" name="password" type='password' />
+                        <TextFieldAtoms label="Xác nhận mật khẩu" isRequired={true} placeholder="Nhập" name="repassword" type='password' />
+                      </Flex>
+                      <Flex gap={3}>
+                        <FormControl>
+                          <FormLabel className="title_label">Chức vụ</FormLabel>
+                          <Field name="position">
+                            {() => (
+                              <Select
+                                options={positionOptions}
+                                onChange={(option) => setFieldValue('position', option)}
+                                isSearchable={true}
+                                defaultValue={positionOptions[0]}
+                                menuPlacement="top"
+                              />
+                            )}
+                          </Field>
+                        </FormControl>
+                        <FormControl>
+                          <FormLabel className="title_label">Làm việc ở cụm sân</FormLabel>
+                          <Field name="courtcluster">
+                            {() => (
+                              <MultiSelectData
+                                items={courtClusterListAllOptions}
+                                onChange={(options) => {
+                                  const values = options.map((option) => option.value);
+                                  setFieldValue('courtcluster', values);
+                                }}
+                              />
+                            )}
+                          </Field>
+                        </FormControl>
+                      </Flex>
+                      <Stack direction="row" justifyContent="flex-end" mt={9}>
+                        <Button className="save"
 
-                          <Badge colorScheme="red" fontSize="1em" padding="8px 16px">
-                            Giờ kết thúc
-                          </Badge>
-                          <Input
-                            type="datetime-local"
-                            name="endDate"
-                            //onChange={handleChange}
-                            bg="#FFF"
-                            width="200px"
-                            isRequired={true}
-                          />
-                        </HStack>
-                      </FormControl>
-                    </HStack>
-                    <FormControl>
-                      <FormLabel className="title_label">Làm việc ở cụm sâm</FormLabel>
-                      <MultiSelectData items={courts} />
-                    </FormControl>
-                    <Stack direction="row" justifyContent="flex-end" mt={9}>
-                      <Button className="delete" isLoading={props.isSubmitting} type="submit">
-                        Xóa
-                      </Button>
-                      <Button className="save" isLoading={props.isSubmitting} type="submit">
-                        Lưu
-                      </Button>
-                    </Stack>
-                  </Form>
-                )}
+                          isLoading={isSubmitting} type="submit">
+                          Thêm
+                        </Button>
+                      </Stack>
+                    </Form>
+                  )
+                }}
               </Formik>
             </VStack>
           </ModalBody>
-
           <ModalFooter></ModalFooter>
         </ModalContent>
       </Modal>
@@ -189,4 +180,4 @@ const CreateStaffPage = () => {
   );
 };
 
-export default CreateStaffPage;
+export default observer(CreateStaffPage);

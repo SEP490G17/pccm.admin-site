@@ -1,16 +1,20 @@
-import { Staff } from './../models/staff.model';
+import { Staff, StaffEdit } from './../models/staff.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleStaffData } from '../mock/staff.mock';
 import { PageParams } from '../models/pageParams.model';
 import { catchErrorHandle, sleep } from '../helper/utils';
-// import _ from 'lodash';
+import _ from 'lodash';
 import agent from '../api/agent';
 import { toast } from 'react-toastify';
+import { CreateStaffDTO, UpdateStaffDTO } from '../models/user.model';
 export default class StaffStore {
   staffRegistry = new Map<number, Staff>();
   staffArray: Staff[] = [];
   selectedStaff: Staff | undefined = undefined;
+  selectedStaffEdit: StaffEdit | undefined = undefined;
   loading: boolean = false;
+  loadingEdit: boolean = false;
+  loadingSearch: boolean = false;
   loadingInitial: boolean = false;
   staffPageParams = new PageParams();
   cleanupInterval: number | undefined = undefined;
@@ -21,7 +25,7 @@ export default class StaffStore {
   }
 
   loadStaffs = async () => {
-    this.loadingInitial = true;
+    this.loading = true;
     await runInAction(async () => {
       const queryParams = new URLSearchParams();
       queryParams.append('skip', `${this.staffPageParams.skip ?? 0}`);
@@ -64,6 +68,66 @@ export default class StaffStore {
     }
   };
 
+  detailStaffEdit = async (staffId: number) => {
+    this.loadingEdit = true;
+    try {
+      const data = await agent.Staffs.detailsEdit(staffId);
+      runInAction(() => {
+        this.selectedStaffEdit = data;
+        this.loadingEdit = false;
+      });
+      return data;
+    } catch (error) {
+      runInAction(() => {
+        this.loadingEdit = false;
+        console.error('Error creating news:', error);
+      });
+    }
+  };
+
+  createStaff = async (staffData: CreateStaffDTO, onClose: () => void) => {
+    this.loading = true;
+    try {
+      runInAction(() => {
+        agent.Account.createStaff(staffData)
+          .then((s) => {
+            this.setStaff(s);
+            toast.success('Tạo nhân viên thành công');
+            onClose();
+          })
+          .catch((error: any) => toast.error(error[0]));
+      });
+    } catch (error) {
+      runInAction(() => {
+        console.error('Tạo nhân viên fail:', error);
+      });
+    } finally {
+      this.loading = false;
+    }
+  };
+
+  updateStaff = async (staffData: UpdateStaffDTO, onClose: () => void) => {
+    this.loading = true;
+    try {
+      runInAction(() => {
+        agent.Staffs.updateStaff(staffData)
+          .then((s) => {
+            this.staffRegistry.set(s.id, s);
+            this.setStaff(s);
+            toast.success('Cập nhật nhân viên thành công');
+            onClose();
+          })
+          .catch((error: any) => toast.error(error[0]));
+      });
+    } catch (error) {
+      runInAction(() => {
+        console.error('Cập nhật nhân viên fail:', error);
+      });
+    } finally {
+      this.loading = false;
+    }
+  };
+
   //#region mock-up
   mockLoadStaffs = async () => {
     this.loading = true;
@@ -88,23 +152,23 @@ export default class StaffStore {
 
   //#region common
   setSearchTerm = async (term: string) => {
-    this.loadingInitial = true;
+    this.loadingSearch = true;
     this.staffPageParams.searchTerm = term;
     this.cleanStaffCache();
     await this.loadStaffs();
-    runInAction(() => (this.loadingInitial = false));
+    runInAction(() => (this.loadingSearch = false));
   };
 
   setCategoryTerm = async (term: string) => {
-    this.loadingInitial = true;
+    this.loadingSearch = true;
     this.staffPageParams.filter = term;
     this.cleanStaffCache();
     await this.loadStaffs();
-    runInAction(() => (this.loadingInitial = false));
+    runInAction(() => (this.loadingSearch = false));
   };
 
   get StaffArray() {
-    return Array.from(this.staffRegistry.values());
+    return _.orderBy(Array.from(this.staffRegistry.values()), ['id'], ['desc']);
   }
 
   //#region private methods

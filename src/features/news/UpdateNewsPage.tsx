@@ -83,7 +83,6 @@ const UpdateNewsPage = ({ isOpen, onClose }: IProp) => {
                     content: selectedNews?.content || "",
                   }}
                   onSubmit={async (values) => {
-                    console.error(values)
                     const News = new NewsDTO({
                       id: selectedNews?.id,
                       title: values.title,

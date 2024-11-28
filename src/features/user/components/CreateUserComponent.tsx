@@ -32,7 +32,13 @@ const CreateUserComponent = () => {
         email: Yup.string().required('Email không được bỏ trống'),
         firstName: Yup.string().required('Họ không được bỏ trống'),
         lastName: Yup.string().required('Tên không được bỏ trống'),
-        password: Yup.string().required('Mật khẩu không được bỏ trống'),
+        password: Yup.string()
+        .required('Mật khẩu không được bỏ trống')
+        .min(8, 'Mật khẩu phải có ít nhất 8 ký tự')
+        .matches(/[a-z]/, 'Mật khẩu phải chứa ít nhất 1 chữ thường')
+        .matches(/[A-Z]/, 'Mật khẩu phải chứa ít nhất 1 chữ hoa')
+        .matches(/[0-9]/, 'Mật khẩu phải chứa ít nhất 1 chữ số')
+        .matches(/[@$!%*?&]/, 'Mật khẩu phải chứa ít nhất 1 ký tự đặc biệt'),
         rePassword: Yup.string()
             .required('Mật khẩu xác nhận không được bỏ trống')
             .oneOf([Yup.ref('password')], 'Mật khẩu xác nhận không khớp'),
