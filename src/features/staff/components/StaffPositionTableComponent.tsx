@@ -1,4 +1,4 @@
-import { useStore } from '@/app/stores/store';
+import { store, useStore } from '@/app/stores/store';
 import {
   Center,
   Checkbox,
@@ -70,7 +70,10 @@ function StaffPositionTableComponent() {
 
   const applyToAll = async () => {
     await agent.StaffPositions.applyAll()
-      .then(() => toast.success("Cập nhật thành công"))
+      .then(() => (
+        store.staffStore.loadStaffs(),
+        toast.success("Cập nhật thành công")
+      ))
       .catch(() => toast.error("Cập nhật thất bại"))
   };
 

@@ -26,6 +26,19 @@ const StaffPage = observer(() => {
     });
   }, [loadStaffs, loadRoles, loadStaffPosition, setLoadingInitial]);
 
+  const handleScroll = useCallback(() => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    // Kiểm tra nếu cuộn gần đến cuối (có thể điều chỉnh giá trị 100 theo nhu cầu)
+    if (scrollPosition >= documentHeight - 50) {
+      staffPageParams.skip = staffRegistry.size;
+      if (staffPageParams.totalElement > staffRegistry.size) {
+        loadStaffs();
+      }
+    }
+  }, [loadStaffs, staffPageParams, staffRegistry]);
+
   const handleSearch = useCallback(
     debounce(async (e) => {
       setIsPending(false); // Bật loading khi người dùng bắt đầu nhập
@@ -46,6 +59,14 @@ const StaffPage = observer(() => {
     }))
   ];
 
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [handleScroll]);
+  
   return (
     <>
       <PageHeadingAtoms breadCrumb={[{ title: 'Nhân viên', to: '/nhan-vien' }]} />
