@@ -24,7 +24,7 @@ import {
   CourtPriceResponse,
 } from '../models/court.model';
 import { Service, ServiceDTO, ServiceEditDTO, ServiceLog } from '../models/service.model';
-import { Product, ProductInput, ProductLog } from '../models/product.model';
+import { Product, ProductImport, ProductInput, ProductLog } from '../models/product.model';
 import { StaffInputDTO, StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
@@ -208,6 +208,8 @@ const Products = {
   delete: (id: number): Promise<void> => requests.del(`/product/${id}`),
   update: (product: ProductInput, productId: number): Promise<Product> =>
     requests.put(`/product/${productId}`, product),
+  import: (product: ProductImport, productId: number): Promise<Product> =>
+    requests.put(`/product/import/${productId}`, product),
 };
 
 const CourtClusterAgent = {

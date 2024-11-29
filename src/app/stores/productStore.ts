@@ -1,4 +1,4 @@
-import { Product, ProductInput, ProductLog } from './../models/product.model';
+import { Product, ProductImport, ProductInput, ProductLog } from './../models/product.model';
 import { makeAutoObservable, runInAction } from 'mobx';
 import { sampleProductData } from '../mock/product.mock';
 import { ProductLogPageParams, ProductPageParams } from '../models/pageParams.model';
@@ -153,6 +153,25 @@ export default class ProductStore {
     }
   };
 
+  importProduct = async (product: ProductImport, toast: CreateToastFnReturn) => {
+    this.loading = true;
+    if (this.selectedIdProduct) {
+      const [error, res] = await catchErrorHandle<Product>(
+        agent.Products.import(product, this.selectedIdProduct),
+      );
+      runInAction(() => {
+        if (!error && res) {
+          this.setProduct(res);
+          store.courtClusterStore.productOfClusterRegistry.set(res.id, res);
+          toast(ProductMessage.updateSuccess());
+        }
+        if (error) {
+          toast(ProductMessage.updateFailure());
+        }
+        this.loading = false;
+      });
+    }
+  };
   //#endregion
 
   deleteProduct = async (id: number, toast: CreateToastFnReturn) => {
@@ -261,7 +280,7 @@ export default class ProductStore {
     runInAction(() => (this.loadingInitial = false));
   };
 
-  filterLogByLogType = async (logTypeId: number, toast:CreateToastFnReturn) => {
+  filterLogByLogType = async (logTypeId: number, toast: CreateToastFnReturn) => {
     this.loadingInitial = true;
     this.productLogPageParams.clearLazyPage();
     this.productLogPageParams.LogType = logTypeId;
@@ -270,7 +289,11 @@ export default class ProductStore {
     runInAction(() => (this.loadingInitial = false));
   };
 
-  filterLogByDate = async (date1: string | null, date2: string | null, toast:CreateToastFnReturn) => {
+  filterLogByDate = async (
+    date1: string | null,
+    date2: string | null,
+    toast: CreateToastFnReturn,
+  ) => {
     this.loadingInitial = true;
     this.productLogPageParams.clearLazyPage();
     this.productLogPageParams.fromDate = date1 ?? null;
