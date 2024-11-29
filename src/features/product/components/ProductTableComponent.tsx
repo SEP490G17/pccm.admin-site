@@ -8,17 +8,19 @@ import {
   Th,
   Tbody,
   Td,
-  IconButton,
   Box,
-  Center,
   useDisclosure,
   useToast,
+  Flex,
 } from '@chakra-ui/react';
-import { FaEdit } from 'react-icons/fa';
 import { observer } from 'mobx-react-lite';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import EditProductPage from '../EditProductPage';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
+import EditButtonAtom from '@/app/common/form/EditButtonAtom';
+import ImportButtonAtom from '@/app/common/form/ImportButtonAtom';
+import ImportProductPage from '../ImportProductPage';
+import { useState } from 'react';
 
 const ProductTableComponent = observer(() => {
   const { productStore } = useStore();
@@ -26,13 +28,23 @@ const ProductTableComponent = observer(() => {
     productStore;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
+  const [modalType, setModalType] = useState<'edit' | 'import' | null>(null);
+
   const handleOpenEdit = async (id: number) => {
-    onOpen();
+    setModalType('edit');
     await detailProduct(id, toast);
+    onOpen();
+  };
+
+  const handleOpenImport = async (id: number) => {
+    setModalType('import');
+    await detailProduct(id, toast);
+    onOpen();
   };
   const handleDelete = async (id: number) => {
     deleteProduct(id, toast);
   };
+
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -88,14 +100,14 @@ const ProductTableComponent = observer(() => {
                     })}
                   </Td>
                   <Td>
-                    <Center>
-                      <IconButton
-                        icon={<FaEdit />}
-                        aria-label="Edit"
-                        colorScheme="teal"
-                        size="sm"
-                        mr={2}
-                        onClick={async () => {
+                    <Flex gap="3">
+                      <ImportButtonAtom
+                        onImport={async () => {
+                          await handleOpenImport(product.id);
+                        }}
+                      />
+                      <EditButtonAtom
+                        onUpdate={async () => {
                           await handleOpenEdit(product.id);
                         }}
                       />
@@ -109,7 +121,7 @@ const ProductTableComponent = observer(() => {
                           await handleDelete(product.id);
                         }}
                       />
-                    </Center>
+                    </Flex>
                   </Td>
                 </Tr>
               ))}
@@ -122,7 +134,12 @@ const ProductTableComponent = observer(() => {
           Danh sách rỗng
         </Box>
       )}
-      <EditProductPage isOpen={isOpen} onClose={onClose} />
+      {modalType === 'edit' && (
+        <EditProductPage isOpen={isOpen} onClose={onClose} />
+      )}
+      {modalType === 'import' && (
+        <ImportProductPage isOpen={isOpen} onClose={onClose} />
+      )}
     </>
   );
 });

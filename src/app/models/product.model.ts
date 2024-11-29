@@ -28,6 +28,18 @@ export class ProductInput {
   }
 }
 
+export class ProductImport {
+  productId: number = 0;
+  quantity: number | '' = '';
+  importFee: number | '' = '';
+
+  constructor(data?: Partial<ProductImport>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
+}
+
 export interface ProductLog {
   id: number;
   productName: string;
