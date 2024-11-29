@@ -78,7 +78,7 @@ export default class UserStore {
       });
     } catch (error) {
       runInAction(() => {
-        console.error('Reset password fail:', error);
+        console.error('Tạo người dùng fail:', error);
       });
     } finally {
       this.loadingCreateUserByStaff = false;

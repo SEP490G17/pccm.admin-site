@@ -13,20 +13,28 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import { CgFileDocument } from "react-icons/cg";
+import { FaEdit } from 'react-icons/fa';
+import { CgFileDocument } from 'react-icons/cg';
 import StaffDetailPopUp from '@/features/staff/StaffDetailPopUp';
 import { useStore } from '@/app/stores/store';
+import UpdateStaffPage from '../UpdateStaffPage';
 
 function StaffTableComponent() {
   const { staffStore } = useStore();
-  const { loadingInitial, StaffArray, staffPageParams, detailStaff } = staffStore;
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { loadingInitial, StaffArray, staffPageParams, detailStaff, detailStaffEdit, loading } = staffStore;
 
+  const detailModal = useDisclosure();
+  const editModal = useDisclosure();
   const handleOpenDetail = async (id: number) => {
-    onOpen();
+    detailModal.onOpen();
     await detailStaff(id);
-  }
+  };
+
+  const handleOpenEdit = async (id: number) => {
+    editModal.onOpen();
+    await detailStaffEdit(id);
+  };
+
   return (
     <>
       <TableContainer bg={'white'} borderRadius={'md'} padding={0} mb="1.5rem">
@@ -43,7 +51,7 @@ function StaffTableComponent() {
             </Tr>
           </Thead>
           <Tbody>
-            {loadingInitial && <SkeletonTableAtoms numOfColumn={6} pageSize={staffPageParams.pageSize} />}
+            {loadingInitial && loading && <SkeletonTableAtoms numOfColumn={6} pageSize={staffPageParams.pageSize} />}
             {StaffArray.map((staff, index) => (
               <Tr key={staff.id}>
                 <Td>{index + 1}</Td>
@@ -69,17 +77,17 @@ function StaffTableComponent() {
                 <Td>
                   <Flex direction={'row'} gap={'2'}>
                     <IconButton
-                      icon={<CgFileDocument className='text-white text-lg' />}
+                      icon={<CgFileDocument className="text-white text-lg" />}
                       size={'sm'}
                       colorScheme="blue"
                       aria-label={'Details'}
                       onClick={() => handleOpenDetail(staff.id)}
                     />
-                    <IconButton icon={<FaEdit />} aria-label="Edit" colorScheme="orange" size="sm" />
                     <IconButton
-                      icon={<FaTrash />}
-                      aria-label="Delete"
-                      colorScheme="red"
+                      onClick={() => handleOpenEdit(staff.id)}
+                      icon={<FaEdit />}
+                      aria-label="Edit"
+                      colorScheme="orange"
                       size="sm"
                     />
                   </Flex>
@@ -89,7 +97,8 @@ function StaffTableComponent() {
           </Tbody>
         </Table>
       </TableContainer>
-      <StaffDetailPopUp isOpen={isOpen} onClose={onClose} />
+      <StaffDetailPopUp isOpen={detailModal.isOpen} onClose={detailModal.onClose} />
+      <UpdateStaffPage isOpen={editModal.isOpen} onClose={editModal.onClose} />
     </>
   );
 }

@@ -3,8 +3,10 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { router } from '../router/Routes';
 import { store } from '../stores/store';
 import {
+  CreateStaffDTO,
   CreateUserDTO,
   ResetPasswordDTO,
+  UpdateStaffDTO,
   User,
   UserFormValues,
   UserManager,
@@ -26,7 +28,7 @@ import { Product, ProductInput, ProductLog } from '../models/product.model';
 import { StaffInputDTO, StaffPosition } from '../models/role.model';
 import { ImageUpload } from '../models/upload.model';
 import { ICategory } from '../models/category.model';
-import { Staff } from '../models/staff.model';
+import { Staff, StaffEdit } from '../models/staff.model';
 import {
   DataExpend,
   DataTop,
@@ -252,6 +254,7 @@ const Account = {
   resetPassword: (email: ResetPasswordDTO) => requests.post<any>('/account/reset-password', email),
   createUserByStaff: (data: CreateUserDTO) =>
     requests.post<UserManager>('/account/registerByStaff', data),
+  createStaff: (data: CreateStaffDTO) => requests.post<Staff>('/account/createStaff', data),
 };
 
 const Users = {
@@ -265,6 +268,8 @@ const Staffs = {
   list: (queryParams: string = ''): Promise<PaginationModel<Staff>> =>
     requests.get(`/staff/${queryParams}`),
   details: (staffId: number): Promise<Staff> => requests.get(`/staff/${staffId}`),
+  detailsEdit: (staffId: number): Promise<StaffEdit> => requests.get(`/staff/edit/${staffId}`),
+  updateStaff: (data: UpdateStaffDTO) => requests.put<Staff>('/staff/editStaff', data),
 };
 
 const BookingAgent = {
