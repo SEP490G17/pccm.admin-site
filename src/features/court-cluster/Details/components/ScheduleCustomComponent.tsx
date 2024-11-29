@@ -4,7 +4,6 @@ import {
   Inject,
   ViewsDirective,
   ViewDirective,
-  EventFieldsMapping,
   ResourceDirective,
   ResourcesDirective,
 } from '@syncfusion/ej2-react-schedule';
@@ -14,7 +13,7 @@ import { useToast } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
-import { BookingByDay, BookingCreate } from '@/app/models/booking.model';
+import { BookingByDay } from '@/app/models/booking.model';
 import { PaymentStatus } from '@/app/models/payment.model';
 import BookingEditorTemplateComponent from '../components/BookingTab/BookingEditorTemplateComponent';
 import { CourtCluster } from '@/app/models/court.model';

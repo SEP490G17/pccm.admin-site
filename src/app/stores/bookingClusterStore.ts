@@ -616,8 +616,12 @@ export default class BookingClusterStore {
   };
 
   createBookingSignalr = (booking: BookingModel) => {
-    this.setBooking(booking);
     const convert = mapBookingToBookingForList(booking);
+    if (booking.status == BookingStatus.Confirmed) {
+      this.setBooking(booking);
+    }else{
+      this.setBookingPending(convert)
+    }
     this.setBookingToday(convert);
     this.loadBookingTodayArray();
     this.bookingAllRegistry.set(convert.id, convert);

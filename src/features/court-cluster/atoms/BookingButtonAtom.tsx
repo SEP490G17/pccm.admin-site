@@ -16,7 +16,7 @@ interface BookingButtonAtomProps {
 
 const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => {
   const { bookingClusterStore, bookingStore } = useStore();
-  const { acceptedBooking, completeBooking, cancelBooking } = bookingClusterStore;
+  const { completeBooking, cancelBooking } = bookingClusterStore;
   const toast = useToast();
   const [isAcceptModalOpen, setIsAcceptModalOpen] = useState(false);
   const [isDenyModalOpen, setIsDenyModalOpen] = useState(false);

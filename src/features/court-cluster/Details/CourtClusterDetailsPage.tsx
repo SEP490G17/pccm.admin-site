@@ -19,6 +19,7 @@ const CourtClusterDetailsPage = observer(() => {
   const { id } = useParams();
   const isMounted = useRef(false);
   useEffect(() => {
+    window.scroll(0,0)
     if (id && Number(id)) {
       if (!isMounted.current) {
         isMounted.current = true;
