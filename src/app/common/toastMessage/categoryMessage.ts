@@ -28,8 +28,8 @@ export const DefaultCategoryMessage = {
   delete: {
     title: 'Xóa thể loại',
     description: {
-      failure: 'Xóa thể loại thất bại',
-      success: 'Xóa thể loại thất bại',
+      failure: 'Xóa thể loại thất bại. Bạn cần xóa các sản phẩm có thể loại này trước!',
+      success: 'Xóa thể loại thành công',
     },
   },
 };
