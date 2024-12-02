@@ -127,7 +127,7 @@ const StaffPage = observer(() => {
         handleOnClick={() => {
           staffPageParams.skip = staffRegistry.size;
         }}
-        hidden={staffRegistry.size > staffPageParams.totalElement}
+        hidden={staffRegistry.size >= staffPageParams.totalElement}
         loading={loading}
       />
     </>

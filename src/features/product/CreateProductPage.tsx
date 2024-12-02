@@ -26,9 +26,10 @@ import { observer } from 'mobx-react-lite';
 interface IProp {
   isOpen: boolean;
   onClose: () => void;
+  selectedCourtClusterId?:number;
 }
 
-const CreateProductPage = ({ isOpen, onClose }: IProp) => {
+const CreateProductPage = observer(({ isOpen, onClose, selectedCourtClusterId = undefined }: IProp) => {
   const validationSchema = Yup.object().shape({
     productName: Yup.string().required('Tên sản phẩm không được bỏ trống'),
     quantity: Yup.number().required('Số lượng không được bỏ trống').positive('Giá nhập phải là số dương'),
@@ -68,7 +69,7 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
                 thumbnail: '',
                 description: '',
                 categoryId: categoryOption[0]?.value ?? 1,
-                courtClusterId: courtClusterListAllOptions[0]?.value ?? 1,
+                courtClusterId: selectedCourtClusterId ?? courtClusterListAllOptions[0]?.value??1,
               }}
               onSubmit={async (values) => {
                 const product = new ProductInput({
@@ -180,6 +181,6 @@ const CreateProductPage = ({ isOpen, onClose }: IProp) => {
       </ModalContent>
     </Modal>
   );
-};
+});
 
-export default observer(CreateProductPage);
+export default CreateProductPage;

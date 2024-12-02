@@ -1,5 +1,5 @@
 import { Service } from '@/app/models/service.model.ts';
-import { Flex, Grid, GridItem, Heading, Text, useDisclosure } from '@chakra-ui/react';
+import { Flex, Grid, GridItem, Heading, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import EditButtonAtom from '@/app/common/form/EditButtonAtom';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
@@ -9,12 +9,12 @@ interface IProps {
   service: Service;
 }
 const ServiceCardItemComponent = observer(({ service }: IProps) => {
-  const { serviceStore } = useStore();
+  const { serviceStore, commonStore } = useStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const toast = useToast();
   const handleOpenEdit = async (id: number) => {
     onOpen();
-    await serviceStore.detailService(id);
+    await serviceStore.detailService(id, toast);
   };
   return (
     <>
@@ -34,29 +34,33 @@ const ServiceCardItemComponent = observer(({ service }: IProps) => {
               <Text fontWeight={'medium'} fontSize={'0.9rem'}>
                 Mô tả: {service.description}
               </Text>
-              <Heading size={'sm'}>Giá tiền : {service.price.toLocaleString('vn')} VND</Heading>
+              <Heading size={'sm'}>Giá tiền : {Number(service.price).toLocaleString('vn')} VND</Heading>
             </Flex>
           </GridItem>
           <GridItem rowSpan={2} className={'flex justify-end float-end'}>
-            <Flex justifyContent="flex-end" className={'items-end gap-2'}>
-              <EditButtonAtom
-                onUpdate={async () => await handleOpenEdit(service.id)}
-                buttonSize={'md'}
-                buttonContent={'Sửa'}
-                name={'Hàng hoá'}
-                header="Chỉnh sửa"
-                buttonClassName="gap-2"
-              ></EditButtonAtom>
-              <DeleteButtonAtom
-                buttonSize={'md'}
-                name={'Hàng hóa'}
-                header={'Hàng hóa'}
-                loading={false}
-                buttonContent={'Xóa'}
-                buttonClassName={'gap-2 '}
-                onDelete={async () => {}}
-              />
-            </Flex>
+            {commonStore.isEditSuppliesAble() && (
+              <Flex justifyContent="flex-end" className={'items-end gap-2'}>
+                <EditButtonAtom
+                  onUpdate={async () => await handleOpenEdit(service.id)}
+                  buttonSize={'md'}
+                  buttonContent={'Sửa'}
+                  name={'Hàng hoá'}
+                  header="Chỉnh sửa"
+                  buttonClassName="gap-2"
+                ></EditButtonAtom>
+                <DeleteButtonAtom
+                  buttonSize={'md'}
+                  name={'Hàng hóa'}
+                  header={'Hàng hóa'}
+                  loading={false}
+                  buttonContent={'Xóa'}
+                  buttonClassName={'gap-2 '}
+                  onDelete={async () => {
+                    await serviceStore.deleteService(service.id, toast);
+                  }}
+                />
+              </Flex>
+            )}
           </GridItem>
         </Grid>
       </GridItem>

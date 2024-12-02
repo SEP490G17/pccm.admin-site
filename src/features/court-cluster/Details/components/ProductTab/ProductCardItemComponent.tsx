@@ -4,6 +4,8 @@ import {
   GridItem,
   Heading,
   Spacer,
+  Tag,
+  TagLabel,
   Text,
   useDisclosure,
   useToast,
@@ -21,14 +23,14 @@ interface Iprops {
 }
 
 const ProductCardItemComponent = observer(({ product }: Iprops) => {
-  const { productStore } = useStore();
+  const { productStore, commonStore } = useStore();
   const { detailProduct } = productStore;
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
   const handleOpenEdit = async (id: number) => {
     onOpen();
-    await detailProduct(id);
+    await detailProduct(id, toast);
   };
-  const toast = useToast();
   const handleDelete = async (id: number) => {
     await productStore.deleteProduct(id, toast);
   };
@@ -62,28 +64,36 @@ const ProductCardItemComponent = observer(({ product }: Iprops) => {
                 Số lượng: {product.quantity}
               </Text>
               <Spacer />
-              <Heading size={'sm'}>Giá tiền : {product.price} VND</Heading>
+              <Heading size={'sm'}>Giá tiền : {product.price.toLocaleString('vn')} VND</Heading>
             </Flex>
           </GridItem>
           <GridItem colSpan={4} className={'flex justify-end float-end'}>
             <Flex justifyContent="flex-end" className={'items-end gap-2'}>
-              <EditButtonAtom
-                onUpdate={async () => await handleOpenEdit(product.id)}
-                buttonSize={'md'}
-                buttonContent={'Sửa'}
-                name={'Hàng hoá'}
-                header="Chỉnh sửa"
-                buttonClassName="gap-2"
-              ></EditButtonAtom>
-              <DeleteButtonAtom
-                buttonSize={'md'}
-                name={'Hàng hóa'}
-                header={'Hàng hóa'}
-                loading={false}
-                buttonContent={'Xóa'}
-                buttonClassName={'gap-2 '}
-                onDelete={async () => await handleDelete(product.id)}
-              />
+              {commonStore.isEditSuppliesAble() ? (
+                <>
+                  <EditButtonAtom
+                    onUpdate={async () => await handleOpenEdit(product.id)}
+                    buttonSize={'md'}
+                    buttonContent={'Sửa'}
+                    name={'Hàng hoá'}
+                    header="Chỉnh sửa"
+                    buttonClassName="gap-2"
+                  ></EditButtonAtom>
+                  <DeleteButtonAtom
+                    buttonSize={'md'}
+                    name={'Hàng hóa'}
+                    header={'Hàng hóa'}
+                    loading={false}
+                    buttonContent={'Xóa'}
+                    buttonClassName={'gap-2 '}
+                    onDelete={async () => await handleDelete(product.id)}
+                  />
+                </>
+              ) : (
+                <Tag size={'md'} colorScheme={product.quantity > 0 ? 'green' : 'red'}>
+                  <TagLabel>Còn hàng</TagLabel>
+                </Tag>
+              )}
             </Flex>
           </GridItem>
         </Grid>

@@ -33,7 +33,7 @@ const BookingsPage = observer(() => {
     if (courtClusterListAllOptions.length <= 1) {
       loadCourtClusterListAll();
     }
-  }, [loadBookingAll, loadCourtClusterListAll, bookingPageParams, bookingRegistry, toast]);
+  }, [loadBookingAll, loadCourtClusterListAll, bookingPageParams, bookingRegistry, toast, courtClusterListAllOptions]);
 
   const handleScroll = useCallback(() => {
     const scrollPosition = window.scrollY + window.innerHeight;

@@ -45,6 +45,7 @@ export default class StaffStore {
           const { count, data } = res;
           data.forEach(this.setStaff);
           this.staffPageParams.totalElement = count;
+          this.staffPageParams.skip = this.staffRegistry.size;
         }
         this.loading = false;
       });

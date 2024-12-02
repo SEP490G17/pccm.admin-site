@@ -127,6 +127,7 @@ export default class ProductStore {
       if (res) {
         toast(ProductMessage.createSuccess());
         this.setProduct(res);
+        store.courtClusterStore.productOfClusterRegistry.set(res.id, res);
         this.loadProductsLog(toast);
       }
       this.loadingCreate = false;

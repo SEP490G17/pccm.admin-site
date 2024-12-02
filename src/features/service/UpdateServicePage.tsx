@@ -17,7 +17,6 @@ import { Form, Formik } from 'formik';
 import TextFieldAtoms from '@/app/common/form/TextFieldAtoms';
 import MultiSelectDataAtom from '@/app/common/form/MultiSelectDataAtom';
 import { useStore } from '@/app/stores/store';
-import { useEffect } from 'react';
 import NumberFieldAtom from '@/app/common/form/NumberFieldAtoms';
 import { ServiceEditDTO } from '@/app/models/service.model';
 import { observer } from 'mobx-react-lite';
@@ -31,10 +30,6 @@ const UpdateServicePage = observer(({ isOpen, onClose }: IProp) => {
   const { courtClusterStore, serviceStore } = useStore();
   const { courtClusterListAllOptions } = courtClusterStore;
   const { selectedService } = serviceStore;
-  useEffect(() => {
-    Promise.all([courtClusterStore.loadCourtClusterListAll()]);
-  }, [courtClusterStore]);
-
   const validationSchema = Yup.object().shape({
     service_name: Yup.string().required('Tiêu đề dịch vụ không được bỏ trống'),
     description: Yup.string().required('Mô tả không được bỏ trống'),

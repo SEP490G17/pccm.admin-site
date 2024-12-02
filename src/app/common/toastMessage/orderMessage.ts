@@ -3,19 +3,19 @@ import { DefaultSettingToast } from './commonMessage';
 
 export const DefaultOrderText = {
   title: {
-    create: 'Tạo Order',
+    save: 'Tạo Order',
     cancel: 'Hủy Order',
     payment: 'Xác thực thanh toán',
   },
 
   description: {
     success: {
-      create: 'Tạo đơn hàng thành công',
+      create: 'Lưu đơn hàng thành công',
       cancel: 'Hủy đơn hàng thành công',
       payment: 'Xác thực thanh toàn thành công',
     },
     failure: {
-      create: 'Tạo đơn hàng thất bại',
+      create: 'Lưu đơn hàng thất bại',
       cancel: 'Hủy đơn thất bại',
       payment: 'Xác thực thanh toán thất bại',
     },
@@ -24,7 +24,7 @@ export const DefaultOrderText = {
 
 export const OrderMessage = {
   createSuccess: (
-    title: string = DefaultOrderText.title.create,
+    title: string = DefaultOrderText.title.save,
     description: string = DefaultOrderText.description.success.create,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,
@@ -38,7 +38,7 @@ export const OrderMessage = {
 
   createFailure: (
     description: string = DefaultOrderText.description.failure.create,
-    title: string = DefaultOrderText.title.create,
+    title: string = DefaultOrderText.title.save,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,
   ): UseToastOptions => ({

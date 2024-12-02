@@ -112,22 +112,22 @@ export default class BannerStore {
       }
       this.setLoadingStatus(bannerId, false);
     });
+    return { err, res };
   };
 
-  deleteBanner = async (id: number) => {
+  deleteBanner = async (id: number, toast:CreateToastFnReturn) => {
     this.loading = true;
-    try {
-      await agent.Banners.delete(id);
-      runInAction(() => {
+    const [err,res] = await catchErrorHandle(agent.Banners.delete(id));
+    runInAction(()=>{
+      if (err) {
+        toast(BannerMessage.deleteFailure());
+      }
+      if (res) {
         this.bannerRegistry.delete(id);
-        this.loading = false;
-      });
-    } catch (error) {
-      runInAction(() => {
-        this.loading = false;
-        console.error('Error deleting banner:', error);
-      });
-    }
+      }
+      this.loading = false;
+    })
+    return { err, res };
   };
 
   //#endregion
@@ -206,7 +206,7 @@ export default class BannerStore {
   }
 
   //#region private methodsU
-  private setBanner = (banner: Banner) => {
+  readonly setBanner = (banner: Banner) => {
     banner.startDate = customFormatDate(new Date(banner.startDate));
     banner.endDate = customFormatDate(new Date(banner.endDate));
     this.bannerRegistry.set(banner.id, banner);

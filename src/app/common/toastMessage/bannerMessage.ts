@@ -21,7 +21,7 @@ export const DefaultBannerMessage = {
     title: 'Tạo banner',
     description: {
       failure: 'Tạo banner thất bại',
-      success: 'Tạo banner thành côngz',
+      success: 'Tạo banner thành công',
     },
   },
 
@@ -31,6 +31,13 @@ export const DefaultBannerMessage = {
       failure: 'Lấy chi tiết banner thất bại',
     },
   },
+
+  delete:{
+    title: 'Xóa banner',
+    description: {
+      failure: 'Xóa banner thất bại',
+    },
+  }
 };
 
 export const BannerMessage = {
@@ -46,6 +53,7 @@ export const BannerMessage = {
     duration,
     isClosable,
   }),
+
   createSuccess: (
     title: string = DefaultBannerMessage.create.title,
     description: string = DefaultBannerMessage.create.description.success,
@@ -87,7 +95,7 @@ export const BannerMessage = {
 
   updateFailure: (
     title: string = DefaultBannerMessage.update.title,
-    description: string = DefaultBannerMessage.update.description.success,
+    description: string = DefaultBannerMessage.update.description.failure,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,
   ): UseToastOptions => ({
@@ -110,4 +118,17 @@ export const BannerMessage = {
     duration,
     isClosable,
   }),
+
+  deleteFailure: (
+    title: string = DefaultBannerMessage.delete.title,
+    description: string = DefaultBannerMessage.delete.description.failure,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  })
 };

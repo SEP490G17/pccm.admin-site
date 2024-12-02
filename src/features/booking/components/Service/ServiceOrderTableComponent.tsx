@@ -24,7 +24,6 @@ const ServiceOrderTableComponent = observer(({booking}:IProps) => {
   const [startTime, endTime] = booking.bookingDetails.playTime.split('-');
   const playHours = calculateTimeDifferenceInHours(startTime, endTime);
   return (
-    <>
       <TableContainer className="mt-8">
         <Heading size={'sm'}>Danh sách dịch vụ</Heading>
         <Table className="mt-4">
@@ -68,7 +67,6 @@ const ServiceOrderTableComponent = observer(({booking}:IProps) => {
           </Tbody>
         </Table>
       </TableContainer>
-    </>
   );
 });
 

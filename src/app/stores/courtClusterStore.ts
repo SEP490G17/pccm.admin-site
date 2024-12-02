@@ -37,12 +37,17 @@ export default class CourtClusterStore {
   loadingInitial: boolean = false;
   loadingInitialDetailsPage: boolean = false;
   loadingProductsPage: boolean = false;
+  loadingInitialProductPage: boolean = false;
   loadingServicesPage: boolean = false;
+  loadingIntitialServicePage: boolean = false;
   loadingInitialBookingPage: boolean = false;
   loadingCourt: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
+    this.productCourtClusterPageParams.pageSize = 6;
+    this.serviceCourtClusterPageParams.pageSize = 6;
+
   }
 
   setLoadingInitialBookingPage = (load: boolean) => (this.loadingInitialBookingPage = load);
@@ -57,6 +62,7 @@ export default class CourtClusterStore {
       this.loadingServicesPage = true;
       const queryParams = new URLSearchParams();
       queryParams.append('skip', `${this.serviceCourtClusterPageParams.skip}`);
+      queryParams.append('pageSize',`${this.serviceCourtClusterPageParams.pageSize}`)
       queryParams.append('filter', `${id}`);
       if (this.serviceCourtClusterPageParams.searchTerm) {
         queryParams.append('search', this.serviceCourtClusterPageParams.searchTerm);
@@ -71,6 +77,7 @@ export default class CourtClusterStore {
         if (res) {
           res.data.forEach(this.setServiceCourtCluster);
           this.serviceCourtClusterPageParams.totalElement = res.count;
+          this.serviceCourtClusterPageParams.skip = this.servicesOfClusterRegistry.size;
         }
         this.loadingServicesPage = false;
       });
@@ -103,6 +110,7 @@ export default class CourtClusterStore {
         if (res) {
           res.data.forEach(this.setProductCourtCluster);
           this.productCourtClusterPageParams.totalElement = res.count;
+          this.productCourtClusterPageParams.skip = this.productOfClusterRegistry.size;
         }
         this.loadingProductsPage = false;
       });
@@ -242,11 +250,11 @@ export default class CourtClusterStore {
   }
 
   get productOfCourtClusterArray() {
-    return Array.from(this.productOfClusterRegistry.values());
+    return _.orderBy(Array.from(this.productOfClusterRegistry.values()),["id"],"desc");
   }
 
   get serviceOfCourtClusterArray() {
-    return Array.from(this.servicesOfClusterRegistry.values());
+    return _.orderBy(Array.from(this.servicesOfClusterRegistry.values()),["id"],"desc");
   }
 
   setSelectedTab = (index: number) => {
@@ -308,6 +316,10 @@ export default class CourtClusterStore {
     this.selectedCourtCluster = undefined;
     this.productOfClusterRegistry.clear();
     this.servicesOfClusterRegistry.clear();
+    this.productCourtClusterPageParams.clearLazyPage();
+    this.serviceCourtClusterPageParams.clearLazyPage();
+    this.productCourtClusterPageParams.searchTerm = '';
+    this.serviceCourtClusterPageParams.searchTerm = '';
     store.bookingClusterStore.bookingAllRegistry.clear();
     store.bookingClusterStore.bookingDenyRegistry.clear();
     store.bookingClusterStore.bookingTodayRegistry.clear();
@@ -315,4 +327,29 @@ export default class CourtClusterStore {
     store.bookingClusterStore.loadBookingTodayArray();
     store.bookingClusterStore.bookingForScheduleRegistry.clear();
   };
+
+  filterProductByCategory = async (
+    category: number,
+    courtClusterId: number,
+    toast: CreateToastFnReturn,
+  ) => {
+    this.productCourtClusterPageParams.clearLazyPage();
+    this.productOfClusterRegistry.clear();
+    this.productCourtClusterPageParams.category = category;
+    await this.loadProductsOfCourtCluster(courtClusterId, toast);
+  };
+
+  setLoadingInitialProductPage = (value:boolean)=>{
+    this.loadingInitialProductPage = value;
+  }
+
+  setLoadingInitialServicePage = (value:boolean)=>{
+    this.loadingIntitialServicePage = value;
+  }
+
+  setServiceSearchTemp = async (searchTemp:string, courtClusterId: number, toast:CreateToastFnReturn) =>{
+    this.productCourtClusterPageParams.clearLazyPage();
+    this.productCourtClusterPageParams.searchTerm = searchTemp;
+    return await this.loadServicesOfCourtCluster(courtClusterId,toast);
+  }
 }

@@ -54,7 +54,7 @@ import {
   IBookingWithCombo,
 } from '../models/booking.model';
 import { PaymentType } from '../models/payment.model';
-import { OrderModel, OrderOfBooking } from '../models/order.model';
+import { OrderModel, OrderModelUpdate, OrderOfBooking } from '../models/order.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -310,7 +310,7 @@ const PaymentAgent = {
 
 const OrderAgent = {
   create: (model: OrderModel) => requests.post<OrderOfBooking>(`/order/v1`, model),
-  details: (id: number) => requests.get<OrderModel>(`/order/v1/${id}`),
+  details: (id: number) => requests.get<OrderModelUpdate>(`/order/v1/${id}`),
   update: (model: OrderModel): Promise<OrderOfBooking> => requests.put(`/order/edit`, model),
   cancel: (id: number): Promise<any> => requests.put(`/order/cancel/${id}`, {}),
   paymentSuccess: (id: number): Promise<any> => requests.put(`/order/complete/${id}`, {}),

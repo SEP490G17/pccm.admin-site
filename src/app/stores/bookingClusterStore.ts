@@ -3,7 +3,6 @@ import agent from '../api/agent';
 import { catchErrorHandle } from '@/app/helper/utils.ts';
 import {
   BookingByDay,
-  BookingCreate,
   BookingForList,
   BookingModel,
   BookingStatus,
@@ -17,7 +16,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { PaginationModel } from '../models/pagination.model';
 import { BookingPageParams, BookingTodayPageParams } from '../models/pageParams.model';
-import { CreateToastFnReturn, useToast } from '@chakra-ui/react';
+import { CreateToastFnReturn } from '@chakra-ui/react';
 import { BookingMessage, DefaultBookingText } from '../common/toastMessage/bookingMessage';
 import { CommonMessage } from '../common/toastMessage/commonMessage';
 dayjs.extend(utc);
@@ -82,19 +81,17 @@ export default class BookingClusterStore {
           return;
         }
         if (res) {
-          console.group('Today');
           res.forEach((booking) => {
             this.setBooking(booking);
             const lichConvert = mapBookingToBookingForList(booking);
-
             this.setBookingToday(lichConvert);
           });
-          console.groupEnd();
         }
         this.loadingBookingForSchedule = false;
       });
     }
   };
+
   loadBookingDeny = async (toast: CreateToastFnReturn) => {
     if (this.courtClusterId) {
       this.loadingBookingDeny = true;
@@ -137,6 +134,7 @@ export default class BookingClusterStore {
       });
     }
   };
+
   loadBookingPending = async (toast: CreateToastFnReturn) => {
     if (this.courtClusterId) {
       this.loadingBookingPending = true;
@@ -177,6 +175,7 @@ export default class BookingClusterStore {
       });
     }
   };
+
   loadBookingAll = async (toast: CreateToastFnReturn) => {
     if (this.courtClusterId) {
       this.loadingBookingAll = true;
@@ -248,7 +247,7 @@ export default class BookingClusterStore {
     runInAction(() => {
       toast.close(pendingToast);
       if (err) {
-        toast(BookingMessage.completeFailure(undefined, err?.response.data));
+        toast(BookingMessage.completeFailure(err?.response.data));
       }
       if (res) {
         toast(BookingMessage.completeSuccess());
@@ -310,7 +309,7 @@ export default class BookingClusterStore {
     runInAction(() => {
       toast.close(pendingToast);
       if (err) {
-        toast(BookingMessage.cancelFailure(undefined, err.message));
+        toast(BookingMessage.cancelFailure(err?.response.data));
       }
       if (res) {
         this.bookingTodayRegistry.delete(res.id);
@@ -351,9 +350,7 @@ export default class BookingClusterStore {
       toast.close(pending);
       if (err) {
         toast(BookingMessage.bookingFailure(err?.response?.data));
-        return;
       }
-
       if (res) {
         toast(BookingMessage.bookingSuccess());
         this.setBooking(res);

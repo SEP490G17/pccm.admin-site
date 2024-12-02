@@ -6,24 +6,23 @@ import { useParams } from 'react-router-dom';
 
 import { Tabs, TabList, TabPanels, Tab, TabPanel, useToast } from '@chakra-ui/react';
 import CourtClusterDescriptionTab from './Tabs/CourtClusterDescriptionTab';
-import CourtClusterProductsTab from './Tabs/CourtClusterProductsTab';
-import CourtClusterServicesTab from './Tabs/CourtClusterServicesTab';
-import CourtClusterBookingTab from './Tabs/CourtClusterBookingTab';
 import CourtClusterDetailsHeaderComponent from './components/DetailsHeader/CourtClusterDetailsHeaderComponent';
+import { accessibleTabs } from '@/app/common/const/detailsCourtClusterTabs';
 
 const CourtClusterDetailsPage = observer(() => {
-  const { courtClusterStore, bookingClusterStore, signalrStore } = useStore();
+  const { courtClusterStore, bookingClusterStore, signalrStore, commonStore } = useStore();
   const { getDetailsCourtCluster } = courtClusterStore;
   const [selectedTabs, setSelectedTab] = useState(0);
   const chakraToast = useToast();
   const { id } = useParams();
   const isMounted = useRef(false);
   useEffect(() => {
-    window.scroll(0,0)
+    window.scroll(0, 0);
     if (id && Number(id)) {
       if (!isMounted.current) {
         isMounted.current = true;
       }
+      courtClusterStore.loadCourtClusterListAll();
       getDetailsCourtCluster(id, chakraToast);
       bookingClusterStore.setCourtClusterId(Number(id));
       signalrStore.createConnection().then(async () => {
@@ -45,6 +44,7 @@ const CourtClusterDetailsPage = observer(() => {
     chakraToast,
     courtClusterStore,
   ]);
+  const tabs = accessibleTabs(commonStore.getRoles());
 
   return (
     <div className={'mt-6 pb-8'}>
@@ -57,22 +57,16 @@ const CourtClusterDetailsPage = observer(() => {
       >
         <TabList border={'none'}>
           <Tab>Chi tiết</Tab>
-          <Tab>Booking</Tab>
-          <Tab>Sản phẩm</Tab>
-          <Tab>Dịch vụ</Tab>
+          {tabs.map((tab) => (
+            <Tab key={tab.label}>{tab.label}</Tab>
+          ))}
         </TabList>
 
         <TabPanels className="mt-8" minHeight={'50rem'}>
           <TabPanel p={0}>{selectedTabs === 0 && <CourtClusterDescriptionTab />}</TabPanel>
-          <TabPanel>
-            {selectedTabs === 1 && <CourtClusterBookingTab courtClusterId={Number(id)} />}
-          </TabPanel>
-          <TabPanel p={0}>
-            {selectedTabs === 2 && id && <CourtClusterProductsTab courtClusterId={Number(id)} />}
-          </TabPanel>
-          <TabPanel p={0}>
-            {selectedTabs === 3 && id && <CourtClusterServicesTab courtClusterId={Number(id)} />}
-          </TabPanel>
+          {tabs.map((tab, index) => (
+            <TabPanel p={0} key={index}>{selectedTabs === index + 1 && tab.component}</TabPanel>
+          ))}
         </TabPanels>
       </Tabs>
     </div>

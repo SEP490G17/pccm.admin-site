@@ -134,8 +134,8 @@ export const ServiceMessage = {
   }),
 
   createFailure: (
-    title: string = DefaultServiceText.create.title,
     description: string = DefaultServiceText.create.description.failure,
+    title: string = DefaultServiceText.create.title,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,
   ): UseToastOptions => ({

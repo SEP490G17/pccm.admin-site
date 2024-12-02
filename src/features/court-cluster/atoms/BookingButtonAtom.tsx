@@ -12,9 +12,10 @@ import ModalDenyButton from '@/features/booking/popups/ModalDenyButton';
 
 interface BookingButtonAtomProps {
   booking: BookingForList;
+  isDetails?: boolean;
 }
 
-const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => {
+const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking, isDetails = false }) => {
   const { bookingClusterStore, bookingStore } = useStore();
   const { completeBooking, cancelBooking } = bookingClusterStore;
   const toast = useToast();
@@ -60,7 +61,7 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => 
           </Button>
         )}
         {!booking.isSuccess && booking.paymentStatus == PaymentStatus.Pending && (
-          <PaymentButtonAtom bookingId={booking.id} paymentUrl={booking.paymentUrl} />
+          <PaymentButtonAtom bookingId={booking.id} paymentUrl={booking.paymentUrl} isDetail={isDetails} />
         )}
         {!booking.isSuccess && (
           <Button colorScheme="red" className="w-28" onClick={handleCancelBooking}>
@@ -114,7 +115,6 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => 
   }
   if (booking.status === BookingStatus.Declined) {
     return (
-      <>
         <Tag
           size={'lg'}
           className="w-full h-10 items-center flex justify-center"
@@ -125,7 +125,6 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking }) => 
           <TagLabel>Đã từ chối</TagLabel>
           <TagLeftIcon boxSize="12px" as={CloseIcon} color={'red.800'} />
         </Tag>
-      </>
     );
   }
 });

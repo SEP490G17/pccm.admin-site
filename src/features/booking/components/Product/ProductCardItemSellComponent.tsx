@@ -7,32 +7,38 @@ import { PaymentStatus } from '@/app/models/payment.model';
 
 interface Iprops {
   product: Product;
+  isEdit?:boolean;
 }
-const ProductCardItemSellComponent = observer(({ product }: Iprops) => {
+const ProductCardItemSellComponent = observer(({ product, isEdit }: Iprops) => {
   const { bookingStore } = useStore();
-  const { addProductToOrder, selectedProductItems, selectedOrder, orderOfBooking } = bookingStore;
+  const { addProductToOrder, selectedProductItems, selectedOrder, orderOfBooking, addProductToOrderUpdate,
+    updateProductItems
+
+   } = bookingStore;
 
   const checkIsPaymentSuccess = () => {
     return (
       selectedOrder &&
-      selectedOrder.id &&
       orderOfBooking.find((o) => o.id == selectedOrder.id)?.paymentStatus === PaymentStatus.Success
     );
   };
   const handleAddProductToOrder = (productId: number) => {
     if (!checkIsPaymentSuccess()) {
-      addProductToOrder(productId);
+      if(!isEdit){
+        addProductToOrder(productId);
+      }else{
+        addProductToOrderUpdate(productId);
+      }
     }
   };
-
+ const isSelected = isEdit ? (updateProductItems.get(product.id) !== undefined ) : (selectedProductItems.get(product.id) !== undefined)
 
   return (
-    <>
       <GridItem key={product.id} colSpan={{ base: 2, xl: 1 }}>
         <Grid
           templateColumns={'repeat(24,1fr)'}
           className={`h-44  px-3 py-3 rounded-md cursor-pointer 
-            ${selectedProductItems.get(product.id) !== undefined && 'bg-green-200'} `}
+            ${isSelected && 'bg-green-200'} `}
           gap={4}
           onClick={() => handleAddProductToOrder(product.id)}
           style={{ boxShadow: 'rgba(0, 0, 0, 0.16) 0px 1px 4px' }}
@@ -49,7 +55,7 @@ const ProductCardItemSellComponent = observer(({ product }: Iprops) => {
           </GridItem>
           <GridItem colSpan={12}>
             <Flex className={'flex-col py-2 gap-2 h-full'}>
-              <Heading fontSize={'1.5rem'} mb={1} fontWeight={'bold'}>
+              <Heading fontSize={'1.2rem'} mb={1} fontWeight={'bold'} className='overflow-hidden text-ellipsis whitespace-nowrap w-full'>
                 {product.productName}
               </Heading>
               <Text fontWeight={'medium'} fontSize={'0.9rem'}>
@@ -64,7 +70,6 @@ const ProductCardItemSellComponent = observer(({ product }: Iprops) => {
           </GridItem>
         </Grid>
       </GridItem>
-    </>
   );
 });
 

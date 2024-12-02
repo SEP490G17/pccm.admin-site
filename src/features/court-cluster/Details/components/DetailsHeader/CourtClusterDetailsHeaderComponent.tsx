@@ -25,7 +25,7 @@ import { Link } from 'react-router-dom';
 import PageHeadingAtoms from '@/features/atoms/PageHeadingAtoms';
 
 const CourtClusterDetailsHeaderComponent = observer(() => {
-  const { courtClusterStore } = useStore();
+  const { courtClusterStore, commonStore } = useStore();
 
   const { selectedCourtCluster, loadingInitialDetailsPage } = courtClusterStore;
   if (!selectedCourtCluster) return;
@@ -48,7 +48,7 @@ const CourtClusterDetailsHeaderComponent = observer(() => {
                 <Heading>{selectedCourtCluster.title}</Heading>
                 <AccordionIcon />
               </AccordionButton>
-              <Flex direction={'row'} gap={2} className='cursor-pointer'>
+              <Flex direction={'row'} gap={2} className="cursor-pointer">
                 <FaMapLocation />
                 <Text
                   onClick={() =>
@@ -68,22 +68,24 @@ const CourtClusterDetailsHeaderComponent = observer(() => {
               </Flex>
             </Flex>
             <Flex direction="column" className="justify-end">
-              <Flex direction="row" gap={5} justifyContent="center" className="mb-2">
-                <Button
-                  as={Link}
-                  to={`/cum-san/${selectedCourtCluster.id}/quan-ly-san`}
-                  colorScheme="blue"
-                >
-                  Quản lý sân
-                </Button>
-                <Button
-                  as={Link}
-                  to={`/cum-san/${selectedCourtCluster.id}/chinh-sua`}
-                  colorScheme="blue"
-                >
-                  Chỉnh sửa thông tin
-                </Button>
-              </Flex>
+              {commonStore.isEditClusterAble() && (
+                <Flex direction="row" gap={5} justifyContent="center" className="mb-2">
+                  <Button
+                    as={Link}
+                    to={`/cum-san/${selectedCourtCluster.id}/quan-ly-san`}
+                    colorScheme="blue"
+                  >
+                    Quản lý sân
+                  </Button>
+                  <Button
+                    as={Link}
+                    to={`/cum-san/${selectedCourtCluster.id}/chinh-sua`}
+                    colorScheme="blue"
+                  >
+                    Chỉnh sửa thông tin
+                  </Button>
+                </Flex>
+              )}
             </Flex>
           </Flex>
           <AccordionPanel>

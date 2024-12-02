@@ -22,9 +22,16 @@ const OrderCancelButtonComponent = observer(({ id }: OrderCancelButtonProps) => 
   const cancelRef = React.useRef<any>();
   const { bookingStore } = useStore();
   const toast = useToast();
+
   const handelCancel = async () => {
     onClose();
-    await bookingStore.cancelOrder(id, toast);
+    if (bookingStore.selectedBooking) {
+      await bookingStore.cancelOrder(
+        id,
+        bookingStore.selectedBooking.bookingDetails.courtClusterId,
+        toast,
+      );
+    }
   };
   return (
     <>

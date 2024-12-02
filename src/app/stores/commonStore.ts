@@ -49,6 +49,19 @@ export default class CommonStore {
     if (!roles || roles === 'null') return [];
     return roles.split(',').map((role) => role.trim());
   };
+
+  isEditClusterAble = () => {
+    const avaiableRoles = ["Admin", "Owner", "ManagerCourtCluster"];
+    return this.getRoles().some(role => avaiableRoles.includes(role));
+  };
+
+  isEditSuppliesAble = () =>{
+    const avaiableRoles = ["Admin", "Owner", "ManagerSupplies"];
+    return this.getRoles().some(role => avaiableRoles.includes(role));
+  }
+  
+
+
   setTokenSession = (token: string | null) => {
     if (token) sessionStorage.setItem('jwt', token);
   };

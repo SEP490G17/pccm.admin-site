@@ -13,24 +13,24 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom';
 import UpdateBannerPage from '../UpdateBannerPage';
-import { toast } from 'react-toastify';
 import LazyImageAtom from '@/features/atoms/LazyImageAtom.tsx';
 import EditButtonAtom from '@/app/common/form/EditButtonAtom';
 import { useEffect, useMemo, useState } from 'react';
 
 const BannerTableComponent = observer(() => {
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { bannerStore } = useStore();
+  const toast = useToast();
   const { loading, loadingInitial, bannerArray, bannerPageParams, deleteBanner } = bannerStore;
   const handleOpenEdit = async (id: number) => {
     onOpen();
-    await bannerStore.detailBanner(id);
-  }
+    await bannerStore.detailBanner(id, toast);
+  };
   const [localStatuses, setLocalStatuses] = useState<LocalStatuses>({});
   interface LocalStatuses {
     [key: number]: number;
@@ -44,7 +44,7 @@ const BannerTableComponent = observer(() => {
   }, [bannerArray]);
 
   useEffect(() => {
-    setLocalStatuses(prevStatuses => {
+    setLocalStatuses((prevStatuses) => {
       const bannerStatuses = { ...prevStatuses };
       for (const banner of bannerArray) {
         if (!(banner.id in prevStatuses)) {
@@ -57,15 +57,12 @@ const BannerTableComponent = observer(() => {
 
   const handleChangeStatus = async (id: number, currentStatus: number) => {
     const bannerStatus = currentStatus === 1 ? 0 : 1;
-    setLocalStatuses(prevStatuses => ({ ...prevStatuses, [id]: bannerStatus }));
-
-    try {
-      await bannerStore.changeStatus(id, bannerStatus);
-    } catch (error) {
-      setLocalStatuses(prevStatuses => ({ ...prevStatuses, [id]: currentStatus }));
-      toast.error("Cập nhật trạng thái thất bại");
-      console.error('Failed to update status:', error);
-    }
+    setLocalStatuses((prevStatuses) => ({ ...prevStatuses, [id]: bannerStatus }));
+    await bannerStore.changeStatus(id, bannerStatus, toast).then((data) => {
+      if (data.err) {
+        setLocalStatuses((prevStatuses) => ({ ...prevStatuses, [id]: currentStatus }));
+      }
+    });
   };
 
   return (
@@ -101,9 +98,11 @@ const BannerTableComponent = observer(() => {
                       borderRadius={'8px'}
                     />
                   </Td>
-                  <Td><Box whiteSpace="normal" wordBreak="break-word" overflowWrap="break-word">
-                    {banner.title}
-                  </Box></Td>
+                  <Td>
+                    <Box whiteSpace="normal" wordBreak="break-word" overflowWrap="break-word">
+                      {banner.title}
+                    </Box>
+                  </Td>
                   <Td>
                     <Box whiteSpace="normal" wordBreak="break-word" overflowWrap="break-word">
                       {banner.description}
@@ -120,32 +119,25 @@ const BannerTableComponent = observer(() => {
                       isChecked={localStatuses[banner.id] === 1}
                       isDisabled={bannerStore.isLoading(banner.id)}
                       onChange={() => {
-                        handleChangeStatus(banner.id, localStatuses[banner.id])
+                        handleChangeStatus(banner.id, localStatuses[banner.id]);
                       }}
                     />
                   </Td>
                   <Td>
                     <Flex gap="3">
-                      <EditButtonAtom
-                        onUpdate={async () => handleOpenEdit(banner.id)}
-                      />
+                      <EditButtonAtom onUpdate={async () => handleOpenEdit(banner.id)} />
 
                       <DeleteButtonAtom
                         buttonSize="sm"
                         name={banner.title}
                         loading={loading}
-                        header='Xóa banner'
+                        header="Xóa banner"
                         buttonClassName="gap-2"
                         onDelete={async () => {
-                          try {
-                            await deleteBanner(banner.id);
-                          } catch {
-                            toast.error("Xóa thất bại");
-                          }
+                          await deleteBanner(banner.id, toast);
                         }}
                       />
                     </Flex>
-
                   </Td>
                 </Tr>
               ))}

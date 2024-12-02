@@ -30,7 +30,7 @@ interface IProp {
   onClose: () => void;
 }
 
-const UpdateStaffPage = ({ isOpen, onClose }: IProp) => {
+const UpdateStaffPage = observer(({ isOpen, onClose }: IProp) => {
   const { staffPositionStore, courtClusterStore, staffStore } = useStore();
   const { StaffPositionArray } = staffPositionStore;
   const { courtClusterListAllOptions } = courtClusterStore;
@@ -56,7 +56,6 @@ const UpdateStaffPage = ({ isOpen, onClose }: IProp) => {
   }, [courtClusterStore]);
 
   return (
-    <>
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">
         <ModalOverlay />
         <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
@@ -114,7 +113,7 @@ const UpdateStaffPage = ({ isOpen, onClose }: IProp) => {
                           <FormControl>
                             <FormLabel className="title_label">Chức vụ</FormLabel>
                             <Field name="position">
-                              {({ field, form }) => (
+                              {({ field, form }:any) => (
                                 <Select
                                   {...field}
                                   options={positionOptions}
@@ -128,7 +127,7 @@ const UpdateStaffPage = ({ isOpen, onClose }: IProp) => {
                           <FormControl>
                             <FormLabel className="title_label">Làm việc ở cụm sân</FormLabel>
                             <Field name="courtcluster">
-                              {({ field, form }) => (
+                              {({ field, form }:any) => (
                                 <Select
                                   {...field}
                                   menuShouldScrollIntoView={false}
@@ -161,8 +160,7 @@ const UpdateStaffPage = ({ isOpen, onClose }: IProp) => {
           <ModalFooter></ModalFooter>
         </ModalContent>
       </Modal>
-    </>
   );
-};
+});
 
-export default observer(UpdateStaffPage);
+export default UpdateStaffPage;

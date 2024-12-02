@@ -23,6 +23,7 @@ export const DefaultBookingText = {
     title: 'Xác thực đặt lịch',
     description: {
       success: 'Xác thực đặt lịch thành công',
+      failure: 'Xác thực đặt lịch thất bại, có lỗi phát sinh',
     },
   },
 
@@ -123,7 +124,7 @@ export const BookingMessage = {
   }),
 
   acceptFailure: (
-    description: string = DefaultBookingText.accept.description.success,
+    description: string = DefaultBookingText.accept.description.failure,
     title: string = DefaultBookingText.accept.title,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,
@@ -134,6 +135,7 @@ export const BookingMessage = {
     duration,
     isClosable,
   }),
+
   acceptSuccess: (
     title: string = DefaultBookingText.accept.title,
     description: string = DefaultBookingText.accept.description.success,
@@ -146,6 +148,7 @@ export const BookingMessage = {
     duration,
     isClosable,
   }),
+
   cancelSuccess: (
     title: string = DefaultBookingText.cancel.title,
     description: string = DefaultBookingText.cancel.description.success,
@@ -158,9 +161,10 @@ export const BookingMessage = {
     duration,
     isClosable,
   }),
+
   cancelFailure: (
-    title: string = DefaultBookingText.cancel.title,
     description: string = DefaultBookingText.cancel.description.failure,
+    title: string = DefaultBookingText.cancel.title,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,
   ): UseToastOptions => ({
@@ -182,6 +186,7 @@ export const BookingMessage = {
     duration,
     isClosable,
   }),
+
   completeFailure: (
     description: string,
     title: string = DefaultBookingText.complete.title,
@@ -194,6 +199,7 @@ export const BookingMessage = {
     duration,
     isClosable,
   }),
+
   denySuccess: (
     title: string = DefaultBookingText.deny.title,
     description: string = DefaultBookingText.deny.description.success,
@@ -206,6 +212,7 @@ export const BookingMessage = {
     duration,
     isClosable,
   }),
+  
   denyFailure: (
     title: string = DefaultBookingText.deny.title,
     description: string = DefaultBookingText.deny.description.failure,

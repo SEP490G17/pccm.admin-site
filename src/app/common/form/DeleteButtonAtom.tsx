@@ -49,7 +49,7 @@ const DeleteButtonAtom: React.FC<DeleteProps> = ({
         hasArrow={true}
         buttonContent={props.buttonContent}
       />
-      <AlertDialog size={'2xl'} isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
+      <AlertDialog size={'2xl'} isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered={true}>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">

@@ -6,7 +6,14 @@ import {
   catchErrorHandle,
   convertBookingStartAndEndUTCToG7,
 } from '../helper/utils';
-import { OrderModel, OrderForProducts, OrderOfBooking } from '../models/order.model';
+import {
+  OrderModel,
+  ProductsForOrderCreate,
+  OrderOfBooking,
+  ProductForOrderDetails,
+  ServiceForOrderDetails,
+  OrderModelUpdate,
+} from '../models/order.model';
 import { CreateToastFnReturn } from '@chakra-ui/react';
 import { Product } from '../models/product.model';
 import { Service } from '../models/service.model';
@@ -17,7 +24,7 @@ import { OrderMessage } from '../common/toastMessage/orderMessage';
 import { CommonMessage, PaymentMessage } from '../common/toastMessage/commonMessage';
 import { store } from './store';
 import { PaymentStatus } from '../models/payment.model';
-
+import _ from 'lodash';
 export default class BookingStore {
   loadingInitial: boolean = false;
   loading: boolean = false;
@@ -31,7 +38,10 @@ export default class BookingStore {
   totalProductAmount = 0;
   totalServiceAmount = 0;
 
-  selectedOrder?: OrderModel;
+  selectedOrder?: OrderModelUpdate;
+  updateProductItems = new Map<number, ProductForOrderDetails>();
+  updateServiceItems = new Map<number, ServiceForOrderDetails>();
+
   bookingRegistry = new Map<number, BookingForList>();
   bookingPageParams = new BookingPageParams();
   constructor() {
@@ -146,26 +156,6 @@ export default class BookingStore {
   //#endregion
 
   //#region  Order function handle
-  getDetailsOrder = async (id: number, toast: CreateToastFnReturn) => {
-    this.clearOrderList();
-    this.loadingOrder = true;
-    const [err, res] = await catchErrorHandle(agent.OrderAgent.details(id));
-    runInAction(() => {
-      if (err) {
-        toast(BookingMessage.getDetailFailure());
-      }
-      if (res) {
-        this.selectedOrder = res;
-        res.orderForProducts.forEach((product) =>
-          this.selectedProductItems.set(product.productId, product.quantity),
-        );
-        res.orderForServices.forEach((service) =>
-          this.selectedServiceItems.set(service.serviceId, 1),
-        );
-      }
-      this.loadingOrder = false;
-    });
-  };
 
   pushOrderForBooking = (order: OrderOfBooking) => {
     if (this.selectedBooking) {
@@ -176,33 +166,7 @@ export default class BookingStore {
     }
   };
 
-  createOrder = async (bookingId: number, toast: CreateToastFnReturn) => {
-    const pending = toast(CommonMessage.loadingMessage('Tạo Order'));
-    const model: OrderModel = {
-      bookingId: bookingId,
-      orderForProducts: Array.from(this.selectedProductItems, ([productId, quantity]) => ({
-        productId,
-        quantity,
-      })),
-      orderForServices: Array.from(this.selectedServiceItems, ([serviceId]) => ({
-        serviceId,
-      })),
-    };
-    const [err, res] = await catchErrorHandle<OrderOfBooking>(agent.OrderAgent.create(model));
-    runInAction(() => {
-      toast.close(pending);
-      if (res) {
-        toast(OrderMessage.createSuccess());
-        this.pushOrderForBooking(res);
-      }
-      if (err) {
-        toast(OrderMessage.createFailure(err?.response?.data));
-      }
-    });
-    return { res, err };
-  };
-
-  cancelOrder = async (orderId: number, toast: CreateToastFnReturn) => {
+  cancelOrder = async (orderId: number, courtClusterId:number ,toast: CreateToastFnReturn) => {
     const pending = toast(CommonMessage.loadingMessage('Hủy Order'));
 
     const [err, res] = await catchErrorHandle<any>(agent.OrderAgent.cancel(orderId));
@@ -215,6 +179,13 @@ export default class BookingStore {
           const newOrder = { ...this.orderOfBooking[index] };
           newOrder.paymentStatus = PaymentStatus.Cancel;
           this.orderOfBooking[index] = newOrder;
+          const size = store.courtClusterStore.productOfClusterRegistry.size;
+          const oldPageSize = store.courtClusterStore.productCourtClusterPageParams.pageSize;
+          store.courtClusterStore.productCourtClusterPageParams.skip = 0;
+          store.courtClusterStore.productCourtClusterPageParams.pageSize = size;
+          store.courtClusterStore.loadProductsOfCourtCluster(courtClusterId,toast);
+          store.courtClusterStore.productCourtClusterPageParams.skip = size;
+          store.courtClusterStore.productCourtClusterPageParams.pageSize = oldPageSize;
         }
       }
       if (err) {
@@ -243,37 +214,6 @@ export default class BookingStore {
     });
   };
 
-  updateOrder = async (toast: CreateToastFnReturn) => {
-    if (this.selectedOrder) {
-      const pending = toast(CommonMessage.loadingMessage('UpdateOrder'));
-      this.selectedOrder = {
-        ...this.selectedOrder,
-        orderForProducts: Array.from(this.selectedProductItems, ([productId, quantity]) => ({
-          productId,
-          quantity,
-        })),
-        orderForServices: Array.from(this.selectedServiceItems, ([serviceId]) => ({
-          serviceId,
-        })),
-      };
-
-      const [err, res] = await catchErrorHandle<OrderOfBooking>(
-        agent.OrderAgent.update(this.selectedOrder),
-      );
-      runInAction(() => {
-        toast.close(pending);
-        if (res) {
-          toast(OrderMessage.createSuccess());
-          const index = this.orderOfBooking.findIndex((o) => o.id == this.selectedOrder?.id);
-          this.orderOfBooking[index] = res;
-        }
-        if (err) {
-          toast(OrderMessage.createFailure(err.message));
-        }
-      });
-      return { res, err };
-    }
-  };
   clearOrderList = () => {
     this.selectedProductItems.clear();
     this.selectedServiceItems.clear();
@@ -281,68 +221,12 @@ export default class BookingStore {
     this.totalServiceAmount = 0;
   };
 
-  addProductToOrder = (productId: number) => {
-    const total = this.selectedProductItems.get(productId);
-    if (total) {
-      this.selectedProductItems.set(productId, total + 1);
-    } else {
-      this.selectedProductItems.set(productId, 1);
-    }
-    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
-    if (product) {
-      product.quantity -= 1;
-      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
-    }
-  };
-
-  get arrayObjectProductConvert(): OrderForProducts[] {
-    return Array.from(this.selectedProductItems, ([productId, quantity]) => ({
-      productId,
-      quantity,
-    }));
+  get ProductUpdateArray() {
+    return Array.from(this.updateProductItems.values());
   }
 
-  minusProductToOrder = (productId: number) => {
-    const total = this.selectedProductItems.get(productId);
-    if (total && total > 1) {
-      this.selectedProductItems.set(productId, total - 1);
-    } else {
-      this.selectedProductItems.delete(productId);
-    }
-    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
-    if (product) {
-      product.quantity += 1;
-      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
-    }
-  };
-
-  removeProductFromOrder = (productId: number) => {
-    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
-    const quantity = this.selectedProductItems.get(productId);
-    if (product && quantity) {
-      product.quantity += quantity;
-      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
-    }
-    this.selectedProductItems.delete(productId);
-  };
-
-  addServiceToOrder = (serviceId: number) => {
-    const total = this.selectedServiceItems.get(serviceId);
-    if (!total) {
-      this.selectedServiceItems.set(serviceId, 1);
-    }
-  };
-
-  removeServiceFromOrder = (serviceId: number) => {
-    this.selectedServiceItems.delete(serviceId);
-  };
-
-  get ProductItemIdArray() {
-    return Array.from(this.selectedProductItems.keys());
-  }
-
-  get ServiceItemIdArray() {
-    return Array.from(this.selectedServiceItems.keys());
+  get ServiceUpdateArray() {
+    return Array.from(this.updateServiceItems.values());
   }
 
   getTotalProductAmount(productOfClusterRegistry?: Map<number, Product>) {
@@ -482,7 +366,301 @@ export default class BookingStore {
     });
   };
 
-  private setBooking = (booking: BookingForList) => {
+  readonly setBooking = (booking: BookingForList) => {
     this.bookingRegistry.set(booking.id, convertBookingStartAndEndUTCToG7(booking));
   };
+
+  //#region  create Order
+  createOrder = async (bookingId: number, toast: CreateToastFnReturn) => {
+    const pending = toast(CommonMessage.loadingMessage('Tạo Order'));
+    const model: OrderModel = {
+      bookingId: bookingId,
+      orderForProducts: Array.from(this.selectedProductItems, ([productId, quantity]) => ({
+        productId,
+        quantity,
+      })),
+      orderForServices: Array.from(this.selectedServiceItems, ([serviceId]) => ({
+        serviceId,
+      })),
+    };
+    const [err, res] = await catchErrorHandle<OrderOfBooking>(agent.OrderAgent.create(model));
+    runInAction(() => {
+      toast.close(pending);
+      if (res) {
+        toast(OrderMessage.createSuccess());
+        this.pushOrderForBooking(res);
+      }
+      if (err) {
+        toast(OrderMessage.createFailure(err?.response?.data));
+      }
+    });
+    return { res, err };
+  };
+
+  addProductToOrder = (productId: number) => {
+    const total = this.selectedProductItems.get(productId);
+    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
+    if (product && product.quantity > 0) {
+      product.quantity -= 1;
+      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
+      if (total) {
+        this.selectedProductItems.set(productId, total + 1);
+      } else {
+        this.selectedProductItems.set(productId, 1);
+      }
+    }
+  };
+
+  minusProductToOrder = (productId: number) => {
+    const total = this.selectedProductItems.get(productId);
+    if (total && total > 1) {
+      this.selectedProductItems.set(productId, total - 1);
+    } else {
+      this.selectedProductItems.delete(productId);
+    }
+    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
+    if (product) {
+      product.quantity += 1;
+      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
+    }
+  };
+
+  removeProductFromOrder = (productId: number) => {
+    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
+    const quantity = this.selectedProductItems.get(productId);
+    if (product && quantity) {
+      product.quantity += quantity;
+      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
+    }
+    this.selectedProductItems.delete(productId);
+  };
+
+  get ProductItemIdArray() {
+    return Array.from(this.selectedProductItems.keys());
+  }
+
+  get arrayObjectProductConvert(): ProductsForOrderCreate[] {
+    return Array.from(this.selectedProductItems, ([productId, quantity]) => ({
+      productId,
+      quantity,
+    }));
+  }
+
+  addServiceToOrder = (serviceId: number) => {
+    const total = this.selectedServiceItems.get(serviceId);
+    if (!total) {
+      this.selectedServiceItems.set(serviceId, 1);
+    }
+  };
+
+  removeServiceFromOrder = (serviceId: number) => {
+    this.selectedServiceItems.delete(serviceId);
+  };
+
+  get ServiceItemIdArray() {
+    return Array.from(this.selectedServiceItems.keys());
+  }
+
+  resetOnClose = () =>{
+    this.ProductItemIdArray.forEach((p) =>{
+      const productSelected = this.selectedProductItems.get(p);
+      if(productSelected){
+        const product = store.courtClusterStore.productOfClusterRegistry.get(p);
+        if(product){
+          product.quantity += productSelected;
+          store.courtClusterStore.productOfClusterRegistry.set(p, product);
+        }
+      }
+    })
+
+    this.selectedProductItems.clear();
+    this.selectedServiceItems.clear();
+    
+  }
+
+  //#endregion
+
+  //#region update Order
+
+  getDetailsOrder = async (id: number, toast: CreateToastFnReturn) => {
+    this.clearOrderList();
+    this.loadingOrder = true;
+    const [err, res] = await catchErrorHandle(agent.OrderAgent.details(id));
+    runInAction(() => {
+      if (err) {
+        toast(BookingMessage.getDetailFailure());
+      }
+      if (res) {
+        this.selectedOrder = res;
+        res.orderForProducts.forEach((product) =>
+          this.updateProductItems.set(product.productId, product),
+        );
+        res.orderForServices.forEach((service) =>
+          this.updateServiceItems.set(service.serviceId, service),
+        );
+      }
+      this.loadingOrder = false;
+    });
+  };
+
+  updateOrder = async (toast: CreateToastFnReturn) => {
+    if (this.selectedOrder) {
+      const pending = toast(CommonMessage.loadingMessage('UpdateOrder'));
+      const newOrderForProducts = Array.from(this.updateProductItems.values(), (item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      }));
+      const newOrderForServices = Array.from(this.updateServiceItems.values(), (item) => ({
+        serviceId: item.serviceId,
+      }));
+
+      const objectSend: OrderModel = {
+        bookingId: this.selectedOrder.bookingId,
+        orderForProducts: newOrderForProducts,
+        orderForServices: newOrderForServices,
+        id: this.selectedOrder.id,
+      };
+
+      const [err, res] = await catchErrorHandle<OrderOfBooking>(
+        agent.OrderAgent.update(objectSend),
+      );
+      runInAction(() => {
+        toast.close(pending);
+        if (res) {
+          toast(OrderMessage.createSuccess());
+          const index = this.orderOfBooking.findIndex((o) => o.id == this.selectedOrder?.id);
+          const newOrderOfBooking = [...this.orderOfBooking]
+          newOrderOfBooking[index] = res;
+          this.orderOfBooking = newOrderOfBooking;
+          if(this.selectedBooking){
+            const booking = { ...this.selectedBooking };
+            booking.ordersOfBooking = [...this.orderOfBooking];
+            this.selectedBooking = booking;
+          }
+        }
+        if (err) {
+          toast(OrderMessage.createFailure(err.message));
+        }
+      });
+      return { res, err };
+    }
+  };
+  addProductToOrderUpdate = (productId: number) => {
+    const orderProduct = this.updateProductItems.get(productId);
+    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
+    if (product && product.quantity > 0) {
+      product.quantity -= 1;
+      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
+      if (orderProduct) {
+        const newProduct = { ...orderProduct };
+        newProduct.quantity += 1;
+        this.updateProductItems.set(productId, newProduct);
+      } else {
+        const newProduct: ProductForOrderDetails = {
+          price: product.price,
+          currPrice: product.price,
+          totalPrice: product.price,
+          currTotalPrice: product.price,
+          productId,
+          productName: product.productName,
+          quantity: 1,
+        };
+        this.updateProductItems.set(productId, newProduct);
+      }
+    }
+  };
+
+  minusProductToOrderUpdate = (productId: number) => {
+    const orderProduct = this.updateProductItems.get(productId);
+    if (orderProduct && orderProduct.quantity > 1) {
+      const newOrder = {...orderProduct};
+      newOrder.quantity -= 1;
+      this.updateProductItems.set(productId, newOrder);
+    } else {
+      this.updateProductItems.delete(productId);
+    }
+
+    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
+    if (product) {
+      product.quantity += 1;
+      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
+    }
+  };
+
+  removeProductFromOrderUpdate = (productId: number) => {
+    const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
+    const orderProduct = this.updateProductItems.get(productId);
+    if (product && orderProduct) {
+      product.quantity += orderProduct.quantity;
+      store.courtClusterStore.productOfClusterRegistry.set(productId, product);
+    }
+    this.updateProductItems.delete(productId);
+  };
+
+  addServiceToOrderUpdate = (serviceId: number) => {
+    const check = this.updateServiceItems.get(serviceId);
+    const service = store.courtClusterStore.servicesOfClusterRegistry.get(serviceId); 
+    if (!check && service) {
+      const newService: ServiceForOrderDetails ={
+        serviceId: service.id,
+        serviceName:service.serviceName,
+        currPrice: service.price,
+        price: service.price,
+      }
+      this.updateServiceItems.set(serviceId, newService);
+    }
+  };
+
+  removeServiceFromOrderUpdate = (serviceId: number) => {
+    this.updateServiceItems.delete(serviceId);
+  };
+
+  getTotalProductAmountForUpdate(productOfClusterRegistry?: Map<number, Product>) {
+    if (
+      productOfClusterRegistry &&
+      this.ProductUpdateArray 
+    ) {
+      let sum = 0;
+      this.ProductUpdateArray.forEach((p) => {
+        const product = productOfClusterRegistry.get(p.productId);
+        if (product) {
+          sum += product.price * p.quantity;
+        }
+      });
+      this.totalProductAmount = sum;
+      return sum;
+    }
+    return 0;
+  }
+
+  getTotalServiceAmountForUpdate(serviceOfClusterRegistry?: Map<number, Service>) {
+    if (
+      this.selectedBooking &&
+      serviceOfClusterRegistry &&
+      this.updateServiceItems
+    ) {
+      const [startTime, endTime] = this.selectedBooking.bookingDetails.playTime.split('-');
+      const playHours = calculateTimeDifferenceInHours(startTime, endTime);
+      let sum = 0;
+      this.updateServiceItems.forEach((s) => {
+        const service = serviceOfClusterRegistry.get(s.serviceId);
+        if (service) {
+          sum += service.price * playHours;
+        }
+      });
+      this.totalServiceAmount = sum;
+      return sum;
+    }
+    return 0;
+  }
+
+  //#endregion
+
+  lastPayment = () =>{
+    if(this.selectedBooking){
+
+      return this.selectedBooking.bookingDetails.totalPrice + _.sumBy(this.selectedBooking.ordersOfBooking, 'totalAmount');
+    }
+    return 0;
+  }
 }

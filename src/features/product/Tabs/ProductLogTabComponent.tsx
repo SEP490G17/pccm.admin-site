@@ -61,6 +61,7 @@ const ProductLogTab = observer((props: IProps) => {
     loadProductsLog,
     productRegistry,
     productLogRegistry,
+    toast
   ]);
 
   const handleScroll = useCallback(() => {

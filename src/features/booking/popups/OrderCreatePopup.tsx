@@ -19,7 +19,7 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import BookingServicesTab from '../components/Booking/BookingServicesTab';
 import { BookingDetails } from '@/app/models/booking.model';
 import { observer } from 'mobx-react-lite';
@@ -34,13 +34,42 @@ interface OrderCreatePopupProps {
 const OrderCreatePopup: FC<OrderCreatePopupProps> = observer(({ booking }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [tabIndex, setTabIndex] = useState(0);
-  const { bookingStore } = useStore();
+  const { courtClusterStore, bookingStore, categoryStore } = useStore();
+  const {
+    loadProductsOfCourtCluster,
+    productOfClusterRegistry,
+    setLoadingInitialProductPage,
+    loadServicesOfCourtCluster,
+  } = courtClusterStore;
   const { createOrder } = bookingStore;
   const toast = useToast();
   const handleCreateOrder = async () => {
     await createOrder(booking.bookingDetails.id, toast);
     onClose();
   };
+  useEffect(() => {
+    if (productOfClusterRegistry.size <= 1) {
+      setLoadingInitialProductPage(true);
+      loadProductsOfCourtCluster(booking.bookingDetails.courtClusterId, toast).then(() => {
+        setLoadingInitialProductPage(false);
+      });
+    }
+    categoryStore.loadCategories(toast);
+    loadServicesOfCourtCluster(booking.bookingDetails.courtClusterId, toast).then();
+    return () => {
+      courtClusterStore.clearDetailsCourtCluster();
+    };
+  }, [
+    loadProductsOfCourtCluster,
+    productOfClusterRegistry,
+    booking.bookingDetails,
+    toast,
+    setLoadingInitialProductPage,
+    loadServicesOfCourtCluster,
+    courtClusterStore,
+    categoryStore,
+  ]);
+
   return (
     <>
       <Flex className="float-end">
@@ -55,7 +84,7 @@ const OrderCreatePopup: FC<OrderCreatePopupProps> = observer(({ booking }) => {
         </Button>
       </Flex>
 
-      <Modal isOpen={isOpen} onClose={onClose} size={'full'} id='order-details' isCentered>
+      <Modal isOpen={isOpen} onClose={onClose} size={'full'} id="order-details" isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -78,12 +107,12 @@ const OrderCreatePopup: FC<OrderCreatePopupProps> = observer(({ booking }) => {
 
                   <TabPanels minHeight={'50rem'}>
                     <TabPanel>
-                      {tabIndex === 0 && booking.bookingDetails.courtClusterId && (
+                      {tabIndex === 0 && booking.bookingDetails && (
                         <BookingProductTab courtClusterId={booking.bookingDetails.courtClusterId} />
                       )}
                     </TabPanel>
                     <TabPanel>
-                      {tabIndex === 1 && booking.bookingDetails.courtClusterId && (
+                      {tabIndex === 1 && booking.bookingDetails && (
                         <BookingServicesTab
                           courtClusterId={booking.bookingDetails.courtClusterId}
                         />
@@ -98,7 +127,14 @@ const OrderCreatePopup: FC<OrderCreatePopupProps> = observer(({ booking }) => {
             </Grid>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => {
+                bookingStore.resetOnClose();
+                onClose();
+              }}
+            >
               Đóng
             </Button>
             <Button variant="ghost" onClick={handleCreateOrder}>

@@ -16,14 +16,20 @@ import OrderCreatePopup from '../../popups/OrderCreatePopup';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '@/app/stores/store';
 import _ from 'lodash';
+import { Link } from 'react-router-dom';
 const BookingInfoComponent = observer(() => {
   const { bookingStore } = useStore();
-  const { selectedBooking: booking } = bookingStore;
+  const { selectedBooking: booking, orderOfBooking } = bookingStore;
   if (!booking) {
     return;
   }
   const { bookingDetails } = booking;
-  const lastPayment = bookingDetails.totalPrice + _.sumBy(booking.ordersOfBooking, 'totalAmount');
+  const lastPayment =
+    bookingDetails.totalPrice +
+    (_.sumBy(
+      orderOfBooking.filter((o) => o.paymentStatus == PaymentStatus.Pending),
+      'totalAmount',
+    ) ?? 0);
   const alreadyPay =
     bookingDetails.paymentStatus == PaymentStatus.Success
       ? bookingDetails.totalPrice
@@ -98,9 +104,11 @@ const BookingInfoComponent = observer(() => {
       </GridItem>
 
       <GridItem colSpan={21} className="text-start">
-        <Text fontSize={'xl'} fontWeight={'thin'}>
-          {bookingDetails.address}
-        </Text>
+        <Link className="cursor-pointer" to={`/cum-san/${bookingDetails.courtClusterId}/chi-tiet`}>
+          <Text fontSize={'xl'} fontWeight={'thin'}>
+            {bookingDetails.address}
+          </Text>
+        </Link>
       </GridItem>
       {bookingDetails.status === BookingStatus.Confirmed && (
         <>
@@ -141,7 +149,7 @@ const BookingInfoComponent = observer(() => {
       <GridItem colSpan={24}>
         <OrdersOfBookingComponent />
       </GridItem>
-      <GridItem colSpan={24} className='mt-10'>
+      <GridItem colSpan={24} className="mt-10">
         <Text fontSize={'xl'}>Tổng kết </Text>
       </GridItem>
       <GridItem colSpan={3}>
@@ -156,14 +164,14 @@ const BookingInfoComponent = observer(() => {
       <GridItem colSpan={3}>
         <Text fontSize={'xl'}>Đã trả: </Text>
       </GridItem>
-     
+
       <GridItem colSpan={21}>
         <Text fontSize={'xl'} fontWeight={'thin'}>
           {alreadyPay.toLocaleString('vn')} VND
         </Text>
       </GridItem>
       <GridItem colSpan={24}>
-        <hr/>
+        <hr />
       </GridItem>
       <GridItem colSpan={3}>
         <Text fontSize={'xl'}>Còn lại: </Text>
@@ -177,7 +185,7 @@ const BookingInfoComponent = observer(() => {
 
       <GridItem colSpan={24} className="mt-10">
         <Flex className="float-end">
-          <BookingButtonAtom booking={bookingDetails} />
+          <BookingButtonAtom isDetails={true} booking={bookingDetails} />
         </Flex>
       </GridItem>
     </Grid>

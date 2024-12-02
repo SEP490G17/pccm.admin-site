@@ -23,9 +23,14 @@ import { PaymentType } from '@/app/models/payment.model';
 interface PaymentButtonAtomProps {
   paymentUrl?: string;
   bookingId: number;
+  isDetail: boolean;
 }
 
-const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }) => {
+const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({
+  paymentUrl,
+  bookingId,
+  isDetail = false,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const cancelRef = React.useRef<HTMLButtonElement | null>(null);
   const { paymentStore, bookingClusterStore } = useStore();
@@ -76,7 +81,11 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
                 <Link
                   onClick={async () => {
                     await paymentStore.getPayment(PaymentType.Booking, bookingId, toast);
-                    window.open(paymentStore.paymentUrl, '_blank');
+                    if (isDetail) {
+                      window.location.href = paymentStore.paymentUrl;
+                    } else {
+                      window.open(paymentStore.paymentUrl, '_blank');
+                    }
                     bookingClusterStore.updateTodayUrlBooking(paymentStore.paymentUrl, bookingId);
                   }}
                 >
@@ -99,7 +108,7 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
                 Khách hàng đã trả tiền qua VNPay, đã nhận được tiền, nhưng chưa chuyển trạng thái
               </ListItem>
             </UnorderedList>
-            <Text className='mt-10 text-red-400 text-base'>
+            <Text className="mt-10 text-red-400 text-base">
               Bao gồm cả order bên trong:{' '}
               <Checkbox isChecked={includeOrder} onChange={() => setIncludeOrder(!includeOrder)} />{' '}
             </Text>
@@ -113,7 +122,7 @@ const PaymentButtonAtom: FC<PaymentButtonAtomProps> = ({ paymentUrl, bookingId }
               ml={3}
               onClick={async () => {
                 onClose();
-                await bookingClusterStore.paymentSuccessBooking(bookingId,includeOrder ,toast);
+                await bookingClusterStore.paymentSuccessBooking(bookingId, includeOrder, toast);
               }}
             >
               Xác thực đã thanh toán

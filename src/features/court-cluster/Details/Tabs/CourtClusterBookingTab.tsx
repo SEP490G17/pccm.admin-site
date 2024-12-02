@@ -16,10 +16,8 @@ import { useStore } from '@/app/stores/store';
 import BookingListComponent from '../components/BookingTab/BookingListComponent';
 import ScheduleCustomComponent from '../components/ScheduleCustomComponent';
 import ComboBookingComponent from '../components/ComboBookingComponent';
-interface IProps {
-  courtClusterId: number;
-}
-const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
+
+const CourtClusterBookingTab = observer(() => {
   const toast = useToast();
 
   const { courtClusterStore, bookingClusterStore: bookingStore } = useStore();
@@ -32,7 +30,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
     Promise.all([bookingStore.loadBookingForSchedule(toast)]).then(() =>
       setLoadingInitialBookingPage(false),
     );
-  }, [courtClusterId, bookingStore, setLoadingInitialBookingPage, toast, clearBookingForSchedule]);
+  }, [bookingStore, setLoadingInitialBookingPage, toast, clearBookingForSchedule]);
   if (!selectedCourtCluster) return;
   return (
     <Skeleton isLoaded={!loadingInitialBookingPage}>
@@ -49,7 +47,7 @@ const CourtClusterBookingTab = observer(({ courtClusterId }: IProps) => {
               <GridItem colSpan={{ base: 24, xl: 17 }}>
                 <ScheduleCustomComponent
                   selectedCourtCluster={selectedCourtCluster}
-                  courtClusterId={courtClusterId}
+                  courtClusterId={selectedCourtCluster.id}
                 />
               </GridItem>
               <GridItem colSpan={{ base: 24, xl: 7 }}>

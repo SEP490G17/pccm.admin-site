@@ -99,12 +99,21 @@ export default class ServiceStore {
     runInAction(() => {
       toast.close(pending);
       if (res) {
+        toast(ServiceMessage.createSuccess());
         this.loadServices(toast);
         this.loadServicesLog(toast);
-        toast(ServiceMessage.createSuccess());
+        if (store.courtClusterStore.selectedCourtCluster) {
+          const oldSkip = store.courtClusterStore.servicesOfClusterRegistry.size;
+          store.courtClusterStore.serviceCourtClusterPageParams.skip = 0;
+          store.courtClusterStore.loadServicesOfCourtCluster(
+            store.courtClusterStore.selectedCourtCluster?.id,
+            toast,
+          );
+          store.courtClusterStore.serviceCourtClusterPageParams.skip = oldSkip+1;
+        }
       }
       if (err) {
-        toast(ServiceMessage.createFailure());
+        toast(ServiceMessage.createFailure(err.response.data));
       }
       this.loading = false;
     });
@@ -156,6 +165,7 @@ export default class ServiceStore {
         toast(ServiceMessage.deleteSuccess());
         this.loadServicesLog(toast);
         this.serviceRegistry.delete(id);
+        store.courtClusterStore.servicesOfClusterRegistry.delete(id);
       }
       this.loading = false;
     });

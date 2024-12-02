@@ -31,7 +31,6 @@ export default class AuthStore {
           store.commonStore.setUserApp(res);
           this.userApp = res;
           router.navigate('/');
-          return;
       }
     });
     return { err, res };
