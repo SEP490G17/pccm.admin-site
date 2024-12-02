@@ -37,8 +37,8 @@ const BookingConflictGridItem: FC<BookingGridItemProps> = ({ bookingToday, index
               <GridItem colSpan={3}>{bookingToday.fullName}</GridItem>
               <GridItem colSpan={3}>{bookingToday.phoneNumber}</GridItem>
               <GridItem colSpan={3}>{bookingToday.playTime}</GridItem>
-              <GridItem colSpan={3}>{dayjs(bookingToday.startDay).format('DD/MM/YYYY')}</GridItem>
-              <GridItem colSpan={3}>{dayjs(bookingToday.endDay).format('DD/MM/YYYY')}</GridItem>
+              <GridItem colSpan={3}>{dayjs(bookingToday.startDay).add(7 , 'hour').format('DD/MM/YYYY')}</GridItem>
+              <GridItem colSpan={3}>{dayjs(bookingToday.endDay).add(7 , 'hour').format('DD/MM/YYYY')}</GridItem>
               <GridItem colSpan={2}>
                 <Badge fontSize="0.8em" colorScheme={bookingToday.recurrenceRule ? 'pink' : 'blue'}>
                   {bookingToday.recurrenceRule ? 'Đơn combo' : 'Đơn ngày'}
