@@ -20,13 +20,14 @@ export interface BookingConflict {
 
 export interface BookingModel {
   id: number;
+  courtClusterId?:number;
   phoneNumber: string;
   fullName: string;
   courtId: number;
   courtName: string;
   startTime: string; // Thời gian bắt đầu đặt sân
   endTime: string; // Thời gian kết thúc đặt sân
-  RecurrenceRule: string; // Thời lượng đặt sân
+  RecurrenceRule?: string; // Thời lượng đặt sân
   recurrenceRule?: string | undefined; // Th
   untilTime?: string;
   paymentStatus: number;
@@ -59,11 +60,13 @@ export interface BookingForList {
   playTime: string; // Thời gian bắt đầu đặt sân
   startDay: string;
   endDay: string;
+  untilDay: string;
   paymentStatus: number;
   paymentUrl?: string;
   status: number;
   isSuccess: boolean;
   totalPrice: number;
+  courtClusterId?:number;
   RecurrenceRule?: string;
   recurrenceRule?: string;
 }
@@ -88,7 +91,8 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
   const playTime = `${startTime.format('HH:mm')} - ${endTime.format('HH:mm')}`;
   // Format startDay and endDay in 'YYYY-MM-DD' in GMT+7
   const startDay = startTime.format('DD/MM/YYYY');
-  const endDay = untilTime ? untilTime.format('DD/MM/YYYY') : endTime.format('DD/MM/YYYY');
+  const endDay = endTime.format('DD/MM/YYYY');
+  const untilDay = untilTime?.format('DD/MM/YYYY');
   const recu = booking.RecurrenceRule ? booking.RecurrenceRule : booking.recurrenceRule;
   return {
     id: booking.id,
@@ -99,6 +103,7 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
     startDay: startDay,
     endDay: endDay,
     courtId: booking.courtId,
+    untilDay: untilDay??'',
     paymentStatus: booking.paymentStatus,
     paymentUrl: booking.paymentUrl,
     status: booking.status,
@@ -108,24 +113,29 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
     recurrenceRule: recu,
   };
 };
+
 export const mapBookingResponseToBookingModel = (booking: BookingForList): BookingModel => {
-  const recu = booking.RecurrenceRule ? booking.RecurrenceRule : booking.recurrenceRule;
+  const recu = booking.RecurrenceRule || booking.recurrenceRule;
+
+  // Định dạng thời gian theo yêu cầu
+  const formatTime = (time: string | undefined) =>
+    time ? dayjs(time).format('YYYY-MM-DD HH:mm:ss.SSSSSS') : '';
+
   return {
+    id: booking.id,
+    phoneNumber: booking.phoneNumber,
+    courtClusterId: booking.courtClusterId || 0, // Thêm courtClusterId
+    fullName: booking.fullName,
     courtId: booking.courtId ?? 0,
     courtName: booking.courtName,
-    endTime: booking.endDay,
-    startTime: booking.startDay,
+    startTime: formatTime(booking.startDay), // Định dạng thời gian
+    endTime: formatTime(booking.endDay), // Định dạng thời gian
+    recurrenceRule: recu ?? '',
     paymentStatus: booking.paymentStatus,
     paymentUrl: booking.paymentUrl,
     status: booking.status,
     isSuccess: booking.isSuccess,
-    fullName: booking.fullName,
-    phoneNumber: booking.phoneNumber,
-    totalPrice: booking.totalPrice,
-    RecurrenceRule: recu ?? '',
-    recurrenceRule: recu,
-    id: booking.id,
-    untilTime: '',
+    totalPrice: parseFloat(booking.totalPrice.toFixed(2)), // Đảm bảo đúng định dạng số
   };
 };
 

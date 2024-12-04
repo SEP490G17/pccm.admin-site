@@ -166,7 +166,7 @@ export default class BookingStore {
     }
   };
 
-  cancelOrder = async (orderId: number, courtClusterId:number ,toast: CreateToastFnReturn) => {
+  cancelOrder = async (orderId: number, courtClusterId: number, toast: CreateToastFnReturn) => {
     const pending = toast(CommonMessage.loadingMessage('Hủy Order'));
 
     const [err, res] = await catchErrorHandle<any>(agent.OrderAgent.cancel(orderId));
@@ -183,7 +183,7 @@ export default class BookingStore {
           const oldPageSize = store.courtClusterStore.productCourtClusterPageParams.pageSize;
           store.courtClusterStore.productCourtClusterPageParams.skip = 0;
           store.courtClusterStore.productCourtClusterPageParams.pageSize = size;
-          store.courtClusterStore.loadProductsOfCourtCluster(courtClusterId,toast);
+          store.courtClusterStore.loadProductsOfCourtCluster(courtClusterId, toast);
           store.courtClusterStore.productCourtClusterPageParams.skip = size;
           store.courtClusterStore.productCourtClusterPageParams.pageSize = oldPageSize;
         }
@@ -201,11 +201,8 @@ export default class BookingStore {
       toast.close(pending);
       if (res) {
         toast(PaymentMessage.success());
-        const index = this.orderOfBooking.findIndex((o) => o.id === id);
-        if (index) {
-          const newOrder = { ...this.orderOfBooking[index] };
-          newOrder.paymentStatus = PaymentStatus.Success;
-          this.orderOfBooking[index] = newOrder;
+        if (this.selectedBooking) {
+          this.getDetailsBooking(this.selectedBooking?.bookingDetails.id, toast);
         }
       }
       if (err) {
@@ -461,22 +458,21 @@ export default class BookingStore {
     return Array.from(this.selectedServiceItems.keys());
   }
 
-  resetOnClose = () =>{
-    this.ProductItemIdArray.forEach((p) =>{
+  resetOnClose = () => {
+    this.ProductItemIdArray.forEach((p) => {
       const productSelected = this.selectedProductItems.get(p);
-      if(productSelected){
+      if (productSelected) {
         const product = store.courtClusterStore.productOfClusterRegistry.get(p);
-        if(product){
+        if (product) {
           product.quantity += productSelected;
           store.courtClusterStore.productOfClusterRegistry.set(p, product);
         }
       }
-    })
+    });
 
     this.selectedProductItems.clear();
     this.selectedServiceItems.clear();
-    
-  }
+  };
 
   //#endregion
 
@@ -529,10 +525,10 @@ export default class BookingStore {
         if (res) {
           toast(OrderMessage.createSuccess());
           const index = this.orderOfBooking.findIndex((o) => o.id == this.selectedOrder?.id);
-          const newOrderOfBooking = [...this.orderOfBooking]
+          const newOrderOfBooking = [...this.orderOfBooking];
           newOrderOfBooking[index] = res;
           this.orderOfBooking = newOrderOfBooking;
-          if(this.selectedBooking){
+          if (this.selectedBooking) {
             const booking = { ...this.selectedBooking };
             booking.ordersOfBooking = [...this.orderOfBooking];
             this.selectedBooking = booking;
@@ -573,7 +569,7 @@ export default class BookingStore {
   minusProductToOrderUpdate = (productId: number) => {
     const orderProduct = this.updateProductItems.get(productId);
     if (orderProduct && orderProduct.quantity > 1) {
-      const newOrder = {...orderProduct};
+      const newOrder = { ...orderProduct };
       newOrder.quantity -= 1;
       this.updateProductItems.set(productId, newOrder);
     } else {
@@ -599,14 +595,14 @@ export default class BookingStore {
 
   addServiceToOrderUpdate = (serviceId: number) => {
     const check = this.updateServiceItems.get(serviceId);
-    const service = store.courtClusterStore.servicesOfClusterRegistry.get(serviceId); 
+    const service = store.courtClusterStore.servicesOfClusterRegistry.get(serviceId);
     if (!check && service) {
-      const newService: ServiceForOrderDetails ={
+      const newService: ServiceForOrderDetails = {
         serviceId: service.id,
-        serviceName:service.serviceName,
+        serviceName: service.serviceName,
         currPrice: service.price,
         price: service.price,
-      }
+      };
       this.updateServiceItems.set(serviceId, newService);
     }
   };
@@ -616,10 +612,7 @@ export default class BookingStore {
   };
 
   getTotalProductAmountForUpdate(productOfClusterRegistry?: Map<number, Product>) {
-    if (
-      productOfClusterRegistry &&
-      this.ProductUpdateArray 
-    ) {
+    if (productOfClusterRegistry && this.ProductUpdateArray) {
       let sum = 0;
       this.ProductUpdateArray.forEach((p) => {
         const product = productOfClusterRegistry.get(p.productId);
@@ -634,11 +627,7 @@ export default class BookingStore {
   }
 
   getTotalServiceAmountForUpdate(serviceOfClusterRegistry?: Map<number, Service>) {
-    if (
-      this.selectedBooking &&
-      serviceOfClusterRegistry &&
-      this.updateServiceItems
-    ) {
+    if (this.selectedBooking && serviceOfClusterRegistry && this.updateServiceItems) {
       const [startTime, endTime] = this.selectedBooking.bookingDetails.playTime.split('-');
       const playHours = calculateTimeDifferenceInHours(startTime, endTime);
       let sum = 0;
@@ -656,11 +645,13 @@ export default class BookingStore {
 
   //#endregion
 
-  lastPayment = () =>{
-    if(this.selectedBooking){
-
-      return this.selectedBooking.bookingDetails.totalPrice + _.sumBy(this.selectedBooking.ordersOfBooking, 'totalAmount');
+  lastPayment = () => {
+    if (this.selectedBooking) {
+      return (
+        this.selectedBooking.bookingDetails.totalPrice +
+        _.sumBy(this.selectedBooking.ordersOfBooking, 'totalAmount')
+      );
     }
     return 0;
-  }
+  };
 }

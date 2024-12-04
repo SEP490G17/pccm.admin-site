@@ -1,5 +1,5 @@
 import { BookingForList } from '@/app/models/booking.model';
-import { Box, Button, Center, Flex, Grid, GridItem, Link } from '@chakra-ui/react';
+import { Box, Center, Flex, Grid, GridItem, Link } from '@chakra-ui/react';
 import { FC } from 'react';
 import BookingGridItemAtom from '../../../atoms/BookingGridItemAtom';
 

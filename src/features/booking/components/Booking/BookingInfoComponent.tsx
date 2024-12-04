@@ -85,7 +85,7 @@ const BookingInfoComponent = observer(() => {
 
       <GridItem colSpan={21} className="text-start">
         <Text fontSize={'xl'} fontWeight={'thin'}>
-          Ngày {dayjs(bookingDetails.endDay).add(7, 'hour').format('DD/MM/YYYY')}
+          Ngày {dayjs(bookingDetails.untilDay ?? bookingDetails.endDay).add(7, 'hour').format('DD/MM/YYYY')}
         </Text>
       </GridItem>
       <GridItem colSpan={3}>

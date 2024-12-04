@@ -30,7 +30,8 @@ const OrderPaymentButtonAtoms = observer(({ orderId }: OrderPaymentProps) => {
   const { paymentStore, bookingStore } = useStore();
   const toast = useToast();
   const handlePaymentSuccessOrder = async () => {
-    await bookingStore.orderPaymentSuccess(orderId, toast);
+    await bookingStore.orderPaymentSuccess(orderId, toast).then(() => onClose());
+
   };
 
   return (

@@ -29,7 +29,7 @@ const BookingGridItemAtom: FC<BookingGridItemAtomProps> = observer(({ bookingTod
               <GridItem colSpan={3}>{bookingToday.phoneNumber}</GridItem>
               <GridItem colSpan={3}>{bookingToday.playTime}</GridItem>
               <GridItem colSpan={3}>Ngày {bookingToday.startDay}</GridItem>
-              <GridItem colSpan={3}>Ngày {bookingToday.endDay}</GridItem>
+              <GridItem colSpan={3}>Ngày {bookingToday.untilDay??bookingToday.endDay}</GridItem>
               <GridItem colSpan={2}>
                 {
                   <Badge

@@ -22,6 +22,8 @@ import { CommonMessage } from '../common/toastMessage/commonMessage';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 import _ from 'lodash';
+import { store } from './store';
+import { PaymentStatus } from '../models/payment.model';
 export default class BookingClusterStore {
   courtClusterId?: number;
   loadingSlot: boolean = false;
@@ -233,9 +235,11 @@ export default class BookingClusterStore {
         toast(BookingMessage.acceptSuccess());
         this.bookingPendingRegistry.delete(id);
         this.setBookingAll(res);
+        const bookingSchedule = mapBookingResponseToBookingModel(res);
+        console.log('schedule>>',bookingSchedule);
+        this.setBooking(mapBookingResponseToBookingModel(res));
         this.setBookingToday(this.convertBookingStartAndEndUTCToG7(res));
         this.loadBookingTodayArray();
-        this.setBooking(mapBookingResponseToBookingModel(res));
       }
     });
     return { err, res };
@@ -318,6 +322,13 @@ export default class BookingClusterStore {
         this.setBookingAll(res);
         this.bookingForScheduleRegistry.delete(res.id);
         this.setBookingDeny(res);
+        if(store.bookingStore.bookingRegistry.size > 0){
+          const booking = store.bookingStore.bookingRegistry.get(id);
+          if(booking){
+            booking.status = BookingStatus.Cancelled;
+            store.bookingStore.bookingRegistry.set(booking.id, booking);
+          }
+        }
       }
     });
     return { err, res };
@@ -372,6 +383,16 @@ export default class BookingClusterStore {
         this.bookingTodayRegistry.set(res.id, this.convertBookingStartAndEndUTCToG7(res));
         this.loadBookingTodayArray();
         this.setBookingAll(res);
+        if(store.bookingStore.selectedBooking){
+          store.bookingStore.getDetailsBooking(id, toast);
+        }
+        if(store.bookingStore.bookingRegistry.size > 0){
+          const booking = store.bookingStore.bookingRegistry.get(id);
+          if(booking){
+            booking.paymentStatus =  PaymentStatus.Success;
+            store.bookingStore.bookingRegistry.set(id, booking);
+          }
+        }
       }
       if (err) {
         toast(BookingMessage.paymentFailure(err?.response?.data));
@@ -410,11 +431,14 @@ export default class BookingClusterStore {
     const bookingEndTime = dayjs(booking.endDay, 'DD/MM/YYYY')
       .tz('Asia/Ho_Chi_Minh')
       .startOf('day');
+    const bookingUntilTime = dayjs(booking.untilDay, 'DD/MM/YYYY')
+      .tz('Asia/Ho_Chi_Minh')
+      .startOf('day');
     if (
       booking.status === BookingStatus.Confirmed &&
       (bookingStartTime.isSame(today, 'day') ||
         bookingEndTime.isSame(today, 'day') ||
-        (bookingStartTime.isBefore(today, 'day') && bookingEndTime.isAfter(today, 'day')))
+        (bookingStartTime.isBefore(today, 'day') && bookingUntilTime.isAfter(today, 'day')))
     ) {
       // Add to registry
       this.bookingTodayRegistry.set(booking.id, booking);
@@ -638,9 +662,11 @@ export default class BookingClusterStore {
   private convertBookingStartAndEndUTCToG7(booking: BookingForList) {
     const startTime = dayjs(booking.startDay).add(7, 'hour'); // Convert to GMT+7
     const endTime = dayjs(booking.endDay).add(7, 'hour'); // Convert to GMT+7
+    const untilTime = dayjs(booking.untilDay).add(7,'hour'); // Convert to GMT+7
     const startDay = startTime.format('DD/MM/YYYY');
     const endDay = endTime.format('DD/MM/YYYY');
-    return { ...booking, startDay, endDay };
+    const untilDay = untilTime.format('DD/MM/YYYY')
+    return { ...booking, startDay, endDay, untilDay };
   }
 
   clearBookingForSchedule() {

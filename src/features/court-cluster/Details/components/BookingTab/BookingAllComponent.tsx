@@ -90,7 +90,7 @@ const BookingAllComponent = observer(() => {
                   }
                 : null
             }
-            onChange={async ({ value }) => {
+            onChange={async ({ value }:any) => {
               await filterBookingAllByCourt(value, toast);
             }}
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
@@ -100,7 +100,7 @@ const BookingAllComponent = observer(() => {
             options={statusOption}
             placeholder="Loại đơn"
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
-            onChange={async (e) => {
+            onChange={async (e:any) => {
               if (e) {
                 await filterBookingAllByStatus(e.value, toast);
               }
