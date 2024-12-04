@@ -7,8 +7,8 @@ import { useState } from 'react';
 import * as Yup from 'yup';
 
 class Login {
-  username: string = '';
-  password: string = '';
+  username: string = 'courtOwner';
+  password: string = '123456aA@';
 
 }
 
@@ -29,7 +29,6 @@ function LoginFormComponent() {
     .finally(() => (isSubmitting(false)));
   };
   return (
-    <>
       <Formik
         initialValues={new Login()}
         validationSchema={validationSchema}
@@ -81,7 +80,6 @@ function LoginFormComponent() {
           </Box>
         )}
       </Formik>
-    </>
   );
 }
 

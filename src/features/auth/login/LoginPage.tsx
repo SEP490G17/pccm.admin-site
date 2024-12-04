@@ -6,7 +6,6 @@ import { observer } from 'mobx-react-lite';
 
 const LoginPage = observer(()=> {
   return (
-    <>
       <Flex
         align="center"
         justifyContent="flex-end"
@@ -45,7 +44,6 @@ const LoginPage = observer(()=> {
           </CardBody>
         </Card>
       </Flex>
-    </>
   );
 });
 
