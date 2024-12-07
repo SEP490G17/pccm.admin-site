@@ -4,6 +4,7 @@ export interface User {
   token: string;
   phoneNumber: string;
   roles: string[];
+  image: string;
 }
 export interface UserFormValues {
   username: string;
@@ -19,6 +20,16 @@ export interface UserManager {
   lockoutEnabled: boolean;
   lockoutEnd: string;
   isDisabled: boolean;
+}
+
+export interface Profile {
+  firstName: string;
+  lastName: string;
+  email: string;
+  imageUrl: string;
+  phoneNumber: string;
+  birthDate: string;
+  gender: boolean;
 }
 
 export class ResetPasswordDTO {
