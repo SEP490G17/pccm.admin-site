@@ -1,0 +1,139 @@
+.profile-page-container {
+  .avatar-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+
+    .ant-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
+      overflow: hidden;
+    }
+  }
+
+  .avatar-wrapper {
+    position: relative;
+    display: inline-block;
+
+    .avatar-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    &:hover .avatar-overlay {
+      display: flex;
+    }
+  }
+
+  .ant-form-item-label {
+    width: 100%;
+    text-align: left;
+  }
+
+  .form-container {
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .ant-input,
+    .ant-picker,
+    .ant-select {
+      width: 100%;
+    }
+  }
+
+  .edit-button {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  // Media Queries for responsiveness
+  @media (max-width: 768px) {
+    .form-container {
+      .form-row {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .ant-input,
+      .ant-picker,
+      .ant-select {
+        width: 100%;
+      }
+    }
+
+    .edit-button {
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+      align-items: stretch;
+    }
+
+    .avatar-wrapper {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
+    }
+
+    .ant-avatar {
+      width: 120px;
+      height: 120px;
+    }
+  }
+
+  // For mobile screens (max-width: 576px)
+  @media (max-width: 576px) {
+    .form-container {
+      padding: 10px;
+    }
+
+    .avatar-section {
+      margin-bottom: 30px;
+    }
+
+    .avatar-wrapper {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto;
+    }
+
+    .ant-avatar {
+      width: 80px;
+      height: 80px;
+    }
+
+    .form-row {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .edit-button {
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+      align-items: stretch;
+    }
+
+    .edit-button button {
+      width: 100%;
+    }
+  }
+}
