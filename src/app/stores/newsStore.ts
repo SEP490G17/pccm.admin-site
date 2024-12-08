@@ -205,4 +205,9 @@ export default class NewsStore {
   //#endregion
 
   //#endregion
+
+  reset = () =>{
+    this.newsRegistry.clear();
+    this.newsPageParams.reset();
+  }
 }

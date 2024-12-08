@@ -39,6 +39,7 @@ export default class AuthStore {
   logout = () => {
     localStorage.clear();
     sessionStorage.clear();
+    store.commonStore.clearAll();
     this.userApp = null;
     router.navigate('/login');
   };

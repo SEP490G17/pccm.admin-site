@@ -654,4 +654,9 @@ export default class BookingStore {
     }
     return 0;
   };
+
+  reset = () =>{
+    this.bookingRegistry.clear();
+    this.bookingPageParams.reset();
+  }
 }

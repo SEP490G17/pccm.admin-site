@@ -1,6 +1,7 @@
 import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import { ServeError } from '../models/serverError.model';
 import { User } from '../models/user.model';
+import { store } from './store';
 
 export default class CommonStore {
   error: ServeError | null = null;
@@ -84,5 +85,17 @@ export default class CommonStore {
       return localStorage.getItem('jwt');
     }
     return sessionStorage.getItem('jwt');
+  }
+
+  clearAll(){
+    store.courtClusterStore.reset();
+    store.bannerStore.reset();
+    store.bookingClusterStore.reset();
+    store.bookingStore.reset();
+    store.productStore.reset();
+    store.newsStore.reset();
+    store.serviceStore.reset();
+
+    
   }
 }

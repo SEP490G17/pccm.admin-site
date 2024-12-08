@@ -300,4 +300,12 @@ export default class ServiceStore {
     }
   }
   //#endregion
+
+  reset = () =>{
+    this.serviceRegistry.clear();
+    this.serviceLogRegistry.clear();
+
+    this.servicePageParams.reset();
+    this.serviceLogPageParams.reset();
+  }
 }

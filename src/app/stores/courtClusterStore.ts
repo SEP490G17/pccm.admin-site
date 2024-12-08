@@ -352,4 +352,14 @@ export default class CourtClusterStore {
     this.productCourtClusterPageParams.searchTerm = searchTemp;
     return await this.loadServicesOfCourtCluster(courtClusterId,toast);
   }
+
+  reset = () =>{
+    this.courtClusterRegistry.clear();
+    this.productOfClusterRegistry.clear();
+    this.servicesOfClusterRegistry.clear();
+    this.courtClusterListAllRegistry.clear();
+    this.courtPageParams.reset();
+    this.serviceCourtClusterPageParams.reset();
+    this.productCourtClusterPageParams.reset();
+  }
 }

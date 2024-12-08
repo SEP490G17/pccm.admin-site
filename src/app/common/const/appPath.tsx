@@ -7,6 +7,7 @@ import NewsMenuIcon from '@/features/atoms/menuIcon/NewsMenuIcon';
 import BannerMenuIcon from '@/features/atoms/menuIcon/BannerMenuIcon';
 import StatisticMenuIcon from '@/features/atoms/menuIcon/StatisticMenuIcon';
 import UsersManagerMenuIcon from '@/features/atoms/menuIcon/UsersManagerMenuIcon';
+import RevenueMenuIcon from '@/features/atoms/menuIcon/RevenueMenuIcon';
 
 export interface AppPath {
   key: number;
@@ -19,7 +20,7 @@ export const menuList: AppPath[] = [
   {
     key: 2,
     icon: (isSelected: boolean) => (
-      <StatisticMenuIcon
+      <RevenueMenuIcon
         width="1.5rem"
         height="1.5rem"
         color={isSelected ? '#00423D' : '#63748A'}

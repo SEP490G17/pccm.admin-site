@@ -27,6 +27,15 @@ export class PageParams implements IPageParams {
     this.totalElement = 0;
     this.skip = 0;
   };
+
+  reset = () =>{
+    this.totalElement = 0;
+    this.skip = 0;
+    this.searchTerm = undefined;
+    this.filter = undefined;
+    this.fromDate = null;
+    this.toDate = null;
+  }
 }
 
 export class ProductPageParams extends PageParams {
@@ -53,6 +62,7 @@ export class BookingPageParams extends PageParams {
   courtClusterId?: number;
   courtId?: number;
   status?: number;
+
 }
 
 export class BookingTodayPageParams extends PageParams {

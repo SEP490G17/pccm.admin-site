@@ -328,4 +328,12 @@ export default class ProductStore {
   }
 
   //#endregion
+
+  reset = () =>{
+    this.productRegistry.clear();
+    this.productLogRegistry.clear();
+
+    this.productPageParams.reset();
+    this.productLogPageParams.reset();
+  }
 }

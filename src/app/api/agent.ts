@@ -137,7 +137,7 @@ const Banners = {
 };
 const Services = {
   list: (queryParams: string = ''): Promise<PaginationModel<Service>> =>
-    requests.get(`/service${queryParams}`),
+    requests.get(`/service/admin${queryParams}`),
   listlogs: (queryParams: string = ''): Promise<PaginationModel<ServiceLog>> =>
     requests.get(`/service/log/${queryParams}`),
   details: (id: number): Promise<Service> => requests.get(`/service/${id}`),
@@ -200,7 +200,7 @@ const Categories = {
 
 const Products = {
   list: (queryParams: string = ''): Promise<PaginationModel<Product>> =>
-    requests.get(`/product/${queryParams}`),
+    requests.get(`/product/admin/${queryParams}`),
   listlogs: (queryParams: string = ''): Promise<PaginationModel<ProductLog>> =>
     requests.get(`/product/log/${queryParams}`),
   details: (id: number): Promise<ProductInput> => requests.get(`/product/${id}`),

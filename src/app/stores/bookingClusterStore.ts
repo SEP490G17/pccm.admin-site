@@ -677,4 +677,19 @@ export default class BookingClusterStore {
     this.bookingForScheduleRegistry.clear();
   }
   //#endregion
+
+
+  reset = () =>{
+    this.bookingAllRegistry.clear();
+    this.bookingDenyRegistry.clear();
+    this.bookingTodayRegistry.clear();
+    this.bookingPendingRegistry.clear();
+    this.bookingForScheduleRegistry.clear();
+
+    this.bookingAllPageParam.reset();
+    this.bookingDenyPageParam.reset();
+    this.bookingTodayPageParam.reset();
+    this.bookingPendingPageParam.reset();
+
+  }
 }
