@@ -1,7 +1,6 @@
 import { useStore } from '@/app/stores/store';
 import { observer } from 'mobx-react-lite';
 import {
-  Box,
   Flex,
   IconButton,
   Switch,
@@ -96,13 +95,12 @@ function UserTableComponents() {
               <Th w={'10rem'}>Số điện thoại</Th>
               <Th w={'10rem'}>Ngày mở khóa</Th>
               <Th w={'10rem'}>Trạng thái</Th>
-              <Th w={'10rem'}>Khóa người dùng</Th>
               <Th w={'10rem'}>Tùy chọn</Th>
             </Tr>
           </Thead>
           <Tbody>
             {loadingInitial ? (
-              <SkeletonTableAtoms numOfColumn={7} pageSize={userPageParams.pageSize} />
+              <SkeletonTableAtoms numOfColumn={6} pageSize={userPageParams.pageSize} />
             ) : (
               userArray.map((user, index) => (
                 <Tr key={user.email}>
@@ -112,13 +110,8 @@ function UserTableComponents() {
                   <Td>{user.phoneNumber}</Td>
                   <Td>{user.lockoutEnd ? dayjs(user.lockoutEnd).format('DD/MM/YYYY') : ''}</Td>
                   <Td>
-                    <Box color={user.isDisabled ? 'red' : 'var(--primary-color-600)'}>
-                      {user.isDisabled ? 'Không hoạt động' : 'Hoạt động'}
-                    </Box>
-                  </Td>
-                  <Td>
                     <Switch
-                      isChecked={localStatuses[user.username] === false}
+                      isChecked={localStatuses[user.username] === true}
                       isDisabled={userStore.isLoading(user.username)}
                       onChange={() => {
                         const previousStatus = localStatuses[user.username];

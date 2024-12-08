@@ -21,6 +21,7 @@ import { RoleBasedRedirect } from './HomeRouterConfigPage';
 import CourtClusterEditPage from '@/features/court-cluster/UpdateInfomation/CourtClusterEditPage';
 import CourtClusterCreatePage from '@/features/court-cluster/Create/CourtClusterCreatePage';
 import ForbiddenPage from '@/features/errors/Forbidden';
+import ProfilePage from '@/features/profile/ProfilePage';
 
 export const routes: RouteObject[] = [
   {
@@ -96,6 +97,10 @@ export const routes: RouteObject[] = [
         path: '',
         element: <RoleBasedRedirect />,
       },
+      {
+        path: 'thongtin',
+        element: <ProfilePage />
+      }
     ],
   },
   {

@@ -19,6 +19,7 @@ import {
     HStack,
     Stack,
     Skeleton,
+    useToast,
 
 } from '@chakra-ui/react';
 import { Formik } from 'formik';
@@ -35,6 +36,7 @@ interface IProp {
 const UpdateBannerPage = ({ isOpen, onClose }: IProp) => {
     const { bannerStore } = useStore();
     const { selectedBanner } = bannerStore;
+    const toast = useToast();
     const validationSchema = Yup.object().shape({
         title: Yup.string().required('Tiêu đề banner không được bỏ trống'),
         imageUrl: Yup.string().required('Ảnh banner không được bỏ trống'),
@@ -97,14 +99,14 @@ const UpdateBannerPage = ({ isOpen, onClose }: IProp) => {
                                             linkUrl: values.linkUrl,
                                             status: Number(values.status)
                                         })
-                                        await bannerStore.updateBanner(banner)
+                                        await bannerStore.updateBanner(banner, toast)
                                         onClose()
                                     }
 
                                     }
                                     validationSchema={validationSchema}
                                 >
-                                    {({ handleSubmit, isSubmitting, isValid, errors }) => {
+                                    {({ handleSubmit, isSubmitting }) => {
 
                                         return (
                                             <Form onSubmit={handleSubmit}>

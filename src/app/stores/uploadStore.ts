@@ -20,11 +20,29 @@ export default class UploadStore {
       if (res) {
         this.setImageRegistry(res, fileName);
       }
-      if(err){
+      if (err) {
         console.log(err);
       }
       this.loading = false;
+      return [err, res];
     });
+  };
+
+  upImageProfile = async (file: File, fileName: string) => {
+    this.loading = true;
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const image = await agent.UploadAgent.post(formData);
+      runInAction(() => {
+        this.setImageRegistry(image, fileName);
+      });
+      return image;
+    } finally {
+      runInAction(() => {
+        this.loading = false;
+      });
+    }
   };
 
   private setImageRegistry = (image: ImageUpload, fileName: string) => {

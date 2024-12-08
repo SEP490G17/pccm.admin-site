@@ -5,6 +5,7 @@ import { store } from '../stores/store';
 import {
   CreateStaffDTO,
   CreateUserDTO,
+  Profile,
   ResetPasswordDTO,
   UpdateStaffDTO,
   User,
@@ -55,6 +56,7 @@ import {
 } from '../models/booking.model';
 import { PaymentType } from '../models/payment.model';
 import { OrderModel, OrderModelUpdate, OrderOfBooking } from '../models/order.model';
+import { ChangePasswordInput, LoginDto, UpdateProfileDto } from '../models/account.model';
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -93,7 +95,7 @@ axios.interceptors.response.use(
         }
         break;
       case 403:
-        router.navigate('/forbidden')
+        router.navigate('/forbidden');
         break;
       case 404:
         router.navigate('/not-found');
@@ -257,6 +259,15 @@ const Account = {
   createUserByStaff: (data: CreateUserDTO) =>
     requests.post<UserManager>('/account/registerByStaff', data),
   createStaff: (data: CreateStaffDTO) => requests.post<Staff>('/account/createStaff', data),
+  profile: (): Promise<Profile> => requests.get(`/account/profile`),
+  updateProfile: (value: UpdateProfileDto): Promise<LoginDto> =>
+    requests.post(`/account/updateProfile`, value),
+  changePassword: (value: ChangePasswordInput): Promise<void> =>
+    requests.post(`/Account/change-password`, value),
+  forgotPassword: (email: string): Promise<void> =>
+    requests.post(`/account/forgot-password`, { email }),
+  confirmForgotPassword: (data: { token: string; newPassword: string }): Promise<void> =>
+    requests.post('/account/confirm-forgot-password', data),
 };
 
 const Users = {
@@ -299,7 +310,7 @@ const BookingAgent = {
   bookingWithCombo: (bookingWithCombo: IBookingWithCombo): Promise<any> =>
     requests.post(`/booking/combo`, bookingWithCombo),
 
-  paymentSuccess: (id: number, includeOrder:boolean): Promise<BookingForList> =>
+  paymentSuccess: (id: number, includeOrder: boolean): Promise<BookingForList> =>
     requests.put(`/booking/payment-success/${id}?includeOrder=${includeOrder}`, {}),
 };
 
