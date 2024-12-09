@@ -1,5 +1,6 @@
 import {
   Button,
+  Center,
   Flex,
   FormControl,
   FormLabel,
@@ -17,7 +18,6 @@ import {
 import './style/style.scss';
 import { Form, Formik, Field } from 'formik';
 import MultiSelectData from '@/app/common/input/MultiSelectData';
-import { FaEdit } from 'react-icons/fa';
 import TextFieldAtoms from '@/app/common/form/TextFieldAtoms';
 import Select from 'react-select';
 import { useStore } from '@/app/stores/store';
@@ -26,6 +26,8 @@ import * as Yup from 'yup';
 import NumberFieldAtom from '@/app/common/form/NumberFieldAtoms';
 import { CreateStaffDTO } from '@/app/models/user.model';
 import { observer } from 'mobx-react-lite';
+import ButtonPrimaryAtoms from '../atoms/ButtonPrimaryAtoms';
+import PlusIcon from '../atoms/PlusIcon';
 
 const CreateStaffPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -51,7 +53,9 @@ const CreateStaffPage = () => {
       .required('Mật khẩu xác nhận không được bỏ trống')
       .oneOf([Yup.ref('password')], 'Mật khẩu xác nhận không khớp'),
     position: Yup.object().nullable().required('Chức vụ không được bỏ trống'),
-    courtcluster: Yup.array().min(1, 'Vui lòng chọn ít nhất một cụm sân').required('Cụm sân không được bỏ trống'),
+    courtcluster: Yup.array()
+      .min(1, 'Vui lòng chọn ít nhất một cụm sân')
+      .required('Cụm sân không được bỏ trống'),
   });
   const positionOptions = StaffPositionArray.map((position, index) => ({
     value: index + 1,
@@ -64,20 +68,12 @@ const CreateStaffPage = () => {
 
   return (
     <>
-      <Button
-        colorScheme="teal"
-        size="md"
-        leftIcon={<FaEdit />}
-        width="149px"
-        height="35px"
-        background="#FFF"
-        color="black"
-        border="1px solid #ADADAD"
-        onClick={onOpen}
-      >
-        Thêm mới
-      </Button>
-
+      <ButtonPrimaryAtoms className="bg-primary-900" handleOnClick={onOpen} >
+        <Center gap={1}>
+          <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+          Thêm mới
+        </Center>
+      </ButtonPrimaryAtoms>
       <Modal isOpen={isOpen} onClose={onClose} size="6xl">
         <ModalOverlay />
         <ModalContent width="1164px" flexShrink="0" borderRadius="20px" bg="#FFF">
@@ -109,8 +105,8 @@ const CreateStaffPage = () => {
                     lastName: values.lastName,
                     userName: values.username,
                     password: values.password,
-                    positionId: values.position.value
-                  })
+                    positionId: values.position.value,
+                  });
                   await staffStore.createStaff(data, onClose);
                 }}
               >
@@ -118,17 +114,56 @@ const CreateStaffPage = () => {
                   return (
                     <Form onSubmit={handleSubmit}>
                       <Flex gap={3} justifyContent={'space-between'}>
-                        <TextFieldAtoms label="Họ" isRequired={true} placeholder="Nhập" name="firstName" />
-                        <TextFieldAtoms label="Tên" isRequired={true} placeholder="Nhập" name="lastName" />
+                        <TextFieldAtoms
+                          label="Họ"
+                          isRequired={true}
+                          placeholder="Nhập"
+                          name="firstName"
+                        />
+                        <TextFieldAtoms
+                          label="Tên"
+                          isRequired={true}
+                          placeholder="Nhập"
+                          name="lastName"
+                        />
                       </Flex>
-                      <TextFieldAtoms label="Tên đăng nhập" isRequired={true} placeholder="Nhập" name="username" />
+                      <TextFieldAtoms
+                        label="Tên đăng nhập"
+                        isRequired={true}
+                        placeholder="Nhập"
+                        name="username"
+                      />
                       <Flex gap={3} justifyContent={'space-between'}>
-                        <TextFieldAtoms label="Email" isRequired={true} placeholder="Nhập" name="email" type='email' />
-                        <NumberFieldAtom label="Số điện thoại" isRequired={true} placeholder="Nhập" name="phonenumber" type='tel' />
+                        <TextFieldAtoms
+                          label="Email"
+                          isRequired={true}
+                          placeholder="Nhập"
+                          name="email"
+                          type="email"
+                        />
+                        <NumberFieldAtom
+                          label="Số điện thoại"
+                          isRequired={true}
+                          placeholder="Nhập"
+                          name="phonenumber"
+                          type="tel"
+                        />
                       </Flex>
                       <Flex gap={3} justifyContent={'space-between'}>
-                        <TextFieldAtoms label="Mật khẩu" isRequired={true} placeholder="Nhập" name="password" type='password' />
-                        <TextFieldAtoms label="Xác nhận mật khẩu" isRequired={true} placeholder="Nhập" name="repassword" type='password' />
+                        <TextFieldAtoms
+                          label="Mật khẩu"
+                          isRequired={true}
+                          placeholder="Nhập"
+                          name="password"
+                          type="password"
+                        />
+                        <TextFieldAtoms
+                          label="Xác nhận mật khẩu"
+                          isRequired={true}
+                          placeholder="Nhập"
+                          name="repassword"
+                          type="password"
+                        />
                       </Flex>
                       <Flex gap={3}>
                         <FormControl>
@@ -161,14 +196,12 @@ const CreateStaffPage = () => {
                         </FormControl>
                       </Flex>
                       <Stack direction="row" justifyContent="flex-end" mt={9}>
-                        <Button className="save"
-
-                          isLoading={isSubmitting} type="submit">
+                        <Button className="save" isLoading={isSubmitting} type="submit">
                           Thêm
                         </Button>
                       </Stack>
                     </Form>
-                  )
+                  );
                 }}
               </Formik>
             </VStack>

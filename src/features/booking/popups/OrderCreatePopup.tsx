@@ -35,12 +35,8 @@ const OrderCreatePopup: FC<OrderCreatePopupProps> = observer(({ booking }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [tabIndex, setTabIndex] = useState(0);
   const { courtClusterStore, bookingStore, categoryStore } = useStore();
-  const {
-    loadProductsOfCourtCluster,
-    productOfClusterRegistry,
-    setLoadingInitialProductPage,
-    loadServicesOfCourtCluster,
-  } = courtClusterStore;
+  const { loadProductsOfCourtCluster, setLoadingInitialProductPage, loadServicesOfCourtCluster } =
+    courtClusterStore;
   const { createOrder } = bookingStore;
   const toast = useToast();
   const handleCreateOrder = async () => {
@@ -48,38 +44,29 @@ const OrderCreatePopup: FC<OrderCreatePopupProps> = observer(({ booking }) => {
     onClose();
   };
   useEffect(() => {
-    if (productOfClusterRegistry.size <= 1) {
-      setLoadingInitialProductPage(true);
-      loadProductsOfCourtCluster(booking.bookingDetails.courtClusterId, toast).then(() => {
-        setLoadingInitialProductPage(false);
-      });
-    }
     categoryStore.loadCategories(toast);
-    loadServicesOfCourtCluster(booking.bookingDetails.courtClusterId, toast).then();
     return () => {
       courtClusterStore.clearDetailsCourtCluster();
     };
-  }, [
-    loadProductsOfCourtCluster,
-    productOfClusterRegistry,
-    booking.bookingDetails,
-    toast,
-    setLoadingInitialProductPage,
-    loadServicesOfCourtCluster,
-    courtClusterStore,
-    categoryStore,
-  ]);
+    // Remove dependencies if stable references are guaranteed
+  }, []);
+
+  const handleCreateOrderOpen = async () => {
+    if (!booking.bookingDetails?.courtClusterId) return;
+
+    onOpen();
+    bookingStore.clearOrderList();
+    setLoadingInitialProductPage(true);
+    loadServicesOfCourtCluster(booking.bookingDetails.courtClusterId, toast);
+    loadProductsOfCourtCluster(booking.bookingDetails.courtClusterId, toast).then(() =>
+      setLoadingInitialProductPage(false),
+    );
+  };
 
   return (
     <>
       <Flex className="float-end">
-        <Button
-          onClick={() => {
-            onOpen();
-            bookingStore.clearOrderList();
-          }}
-          colorScheme="teal"
-        >
+        <Button onClick={handleCreateOrderOpen} colorScheme="teal">
           Tạo Order
         </Button>
       </Flex>
@@ -131,8 +118,12 @@ const OrderCreatePopup: FC<OrderCreatePopupProps> = observer(({ booking }) => {
               colorScheme="blue"
               mr={3}
               onClick={() => {
-                bookingStore.resetOnClose();
                 onClose();
+                bookingStore.resetOnClose();
+                courtClusterStore.productOfClusterRegistry.clear();
+                courtClusterStore.productCourtClusterPageParams.reset();
+                courtClusterStore.servicesOfClusterRegistry.clear();
+                courtClusterStore.serviceCourtClusterPageParams.reset();
               }}
             >
               Đóng

@@ -34,7 +34,7 @@ const ProfilePage: React.FC = () => {
                 phone: profileData.phoneNumber,
                 imageUrl: profileData.imageUrl,
                 birthday: profileData.birthDate ? dayjs(profileData.birthDate) : null,
-                gender: profileData.gender === null ? null : profileData.gender ? 'male' : 'female',
+                gender: profileData.gender,
             });
             setImageUrl(profileData.imageUrl);
         }
@@ -179,8 +179,8 @@ const ProfilePage: React.FC = () => {
                                         <Col xs={24} sm={24} md={24} lg={12}>
                                             <Form.Item labelCol={{ span: 24 }} label="Giới Tính" name="gender">
                                                 <Select disabled={!isEditing} placeholder="Chọn giới tính">
-                                                    <Option value="male">Nam</Option>
-                                                    <Option value="female">Nữ</Option>
+                                                    <Option value={true}>Nam</Option>
+                                                    <Option value={false}>Nữ</Option>
                                                 </Select>
                                             </Form.Item>
                                         </Col>

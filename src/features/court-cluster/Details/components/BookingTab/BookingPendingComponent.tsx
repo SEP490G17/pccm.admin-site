@@ -1,7 +1,7 @@
 import { useStore } from '@/app/stores/store';
-import { Flex, Skeleton, useToast } from '@chakra-ui/react';
+import { Flex, IconButton, Skeleton, Tooltip, useToast } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Select from 'react-select';
 import { debounce } from 'lodash';
 import dayjs, { Dayjs } from 'dayjs';
@@ -9,6 +9,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import BookingGridTableComponent from './BookingGridTableComponent';
 import InputSearchBoxAtoms from '@/features/atoms/InputSearchBoxAtoms';
 import { DatePicker } from 'antd';
+import { TfiReload } from 'react-icons/tfi';
 
 const BookingPendingComponent = observer(() => {
   // initial store
@@ -75,6 +76,15 @@ const BookingPendingComponent = observer(() => {
     },
     [handleSearchDebounced, setIsPending],
   );
+  const inputRef = useRef<HTMLInputElement>(null);
+  const handleReset = async () => {
+    bookingPendingRegistry.clear();
+    bookingPendingPageParam.reset();
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+    await bookingClusterStore.loadBookingPending(toast);
+  };
 
   return (
     <>
@@ -83,7 +93,7 @@ const BookingPendingComponent = observer(() => {
           <Select
             options={[{ value: 0, label: 'Tất cả' }, ...courtOptions]}
             placeholder="Sân"
-            defaultValue={
+            value={
               bookingPendingPageParam.courtId
                 ? {
                     value: bookingPendingPageParam.courtId,
@@ -92,14 +102,12 @@ const BookingPendingComponent = observer(() => {
                   }
                 : null
             }
-            onChange={async ({ value }) => {
+            onChange={async ({ value }: any) => {
               await filterBookingPendingByCourt(value, toast);
             }}
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
             isSearchable={true}
           />
-        </Flex>
-        <Flex gap={2}>
           <DatePicker.RangePicker
             showTime={{ format: 'HH:mm' }}
             format={'DD/MM/YYYY HH:mm'}
@@ -112,7 +120,7 @@ const BookingPendingComponent = observer(() => {
                 handleDateRangeChange(null, null);
               }
             }}
-            defaultValue={
+            value={
               bookingPendingPageParam.fromDate && bookingPendingPageParam.toDate
                 ? [
                     dayjs(bookingPendingPageParam.fromDate, 'DD/MM/YYYY'),
@@ -121,11 +129,22 @@ const BookingPendingComponent = observer(() => {
                 : undefined
             }
           />
+        </Flex>
+        <Flex gap={2}>
           <InputSearchBoxAtoms
             value={bookingPendingPageParam.searchTerm}
             isPending={isPending}
             handleChange={onSearchChange}
+            ref={inputRef}
           />
+          <Tooltip label={'Tải lại'} placement="top">
+            <IconButton
+              bg={'transparent'}
+              icon={<TfiReload />}
+              aria-label="Tải lại"
+              onClick={handleReset}
+            />
+          </Tooltip>
         </Flex>
       </Flex>
       {loadingBookingPending && bookingPendingRegistry.size == 0 && (

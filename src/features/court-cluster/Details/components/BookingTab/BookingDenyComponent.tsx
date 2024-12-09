@@ -1,14 +1,15 @@
 import { useStore } from '@/app/stores/store';
-import { Flex, Skeleton, useToast } from '@chakra-ui/react';
+import { Flex, IconButton, Skeleton, Tooltip, useToast } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Select from 'react-select';
 import { debounce } from 'lodash';
-import  dayjs, { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 import BookingGridTableComponent from './BookingGridTableComponent';
 import InputSearchBoxAtoms from '@/features/atoms/InputSearchBoxAtoms';
 import { DatePicker } from 'antd';
+import { TfiReload } from 'react-icons/tfi';
 
 const BookingDenyComponent = observer(() => {
   const { bookingClusterStore, courtClusterStore } = useStore();
@@ -64,8 +65,15 @@ const BookingDenyComponent = observer(() => {
     },
     [handleSearchDebounced, setIsPending],
   );
-
-
+  const inputRef = useRef<HTMLInputElement>(null);
+  const handleReset = async () => {
+    bookingDenyRegistry.clear();
+    bookingDenyPageParam.reset();
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+    await loadBookingDeny(toast);
+  };
   return (
     <>
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
@@ -73,24 +81,20 @@ const BookingDenyComponent = observer(() => {
           <Select
             options={[{ value: 0, label: 'Tất cả' }, ...courtOptions]}
             placeholder="Sân"
-            defaultValue={
+            value={
               bookingDenyPageParam.courtId
                 ? {
                     value: bookingDenyPageParam.courtId,
-                    label: courtOptions.find(
-                      (x) => x.value == bookingDenyPageParam.courtId)?.label,
+                    label: courtOptions.find((x) => x.value == bookingDenyPageParam.courtId)?.label,
                   }
                 : null
             }
-            onChange={async ({ value }) => {
+            onChange={async ({ value }: any) => {
               await filterBookingDenyByCourt(value, toast);
             }}
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
             isSearchable={true}
           />
-         
-        </Flex>
-        <Flex gap={2}>
           <DatePicker.RangePicker
             showTime={{ format: 'HH:mm' }}
             format={'DD/MM/YYYY HH:mm'}
@@ -103,18 +107,31 @@ const BookingDenyComponent = observer(() => {
                 handleDateRangeChange(null, null);
               }
             }}
-            defaultValue={
+            value={
               bookingDenyPageParam.fromDate && bookingDenyPageParam.toDate
-                ? [dayjs(bookingDenyPageParam.fromDate, 'DD/MM/YYYY'),
-                   dayjs(bookingDenyPageParam.fromDate, 'DD/MM/YYYY')]
+                ? [
+                    dayjs(bookingDenyPageParam.fromDate, 'DD/MM/YYYY'),
+                    dayjs(bookingDenyPageParam.fromDate, 'DD/MM/YYYY'),
+                  ]
                 : undefined
             }
           />
+        </Flex>
+        <Flex gap={2}>
           <InputSearchBoxAtoms
             value={bookingDenyPageParam.searchTerm}
             isPending={isPending}
             handleChange={onSearchChange}
+            ref={inputRef}
           />
+          <Tooltip label={'Tải lại'} placement="top">
+            <IconButton
+              bg={'transparent'}
+              icon={<TfiReload />}
+              aria-label="Tải lại"
+              onClick={async() => await handleReset()}
+            />
+          </Tooltip>
         </Flex>
       </Flex>
       {loadingBookingDeny && bookingDenyRegistry.size == 0 && (

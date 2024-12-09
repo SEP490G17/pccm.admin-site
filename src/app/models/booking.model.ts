@@ -86,13 +86,13 @@ export interface CourtPriceBooking {
 export const mapBookingToBookingForList = (booking: BookingModel): BookingForList => {
   const startTime = dayjs(booking.startTime).utc().add(7, 'hour'); // Convert to GMT+7
   const endTime = dayjs(booking.endTime).utc().add(7, 'hour'); // Convert to GMT+7
-  const untilTime = booking.untilTime ? dayjs(booking.untilTime) : null; // Convert to GMT+7
+  const untilTime = booking.untilTime != null ? dayjs(booking.untilTime) : null; // Convert to GMT+7
   // Format playTime in 24-hour format: HH:mm - HH:mm
   const playTime = `${startTime.format('HH:mm')} - ${endTime.format('HH:mm')}`;
   // Format startDay and endDay in 'YYYY-MM-DD' in GMT+7
   const startDay = startTime.format('DD/MM/YYYY');
   const endDay = endTime.format('DD/MM/YYYY');
-  const untilDay = untilTime?.format('DD/MM/YYYY');
+  const untilDay = untilTime != null ? untilTime?.format('DD/MM/YYYY') : null;
   const recu = booking.RecurrenceRule ? booking.RecurrenceRule : booking.recurrenceRule;
   return {
     id: booking.id,
@@ -103,7 +103,7 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
     startDay: startDay,
     endDay: endDay,
     courtId: booking.courtId,
-    untilDay: untilDay??'',
+    untilDay: untilDay,
     paymentStatus: booking.paymentStatus,
     paymentUrl: booking.paymentUrl,
     status: booking.status,

@@ -41,7 +41,7 @@ const OrderTotalInfoComponent = observer(({ isEdit }: OrderTotalInfoProps) => {
           {
           new Intl.NumberFormat('vi-VN').format(
             isEdit ? 
-            bookingStore.getTotalProductAmountForUpdate(productOfClusterRegistry):
+            bookingStore.getTotalProductAmountForUpdate():
             bookingStore.getTotalProductAmount(productOfClusterRegistry)
           )}{' '}
           VND
@@ -53,9 +53,9 @@ const OrderTotalInfoComponent = observer(({ isEdit }: OrderTotalInfoProps) => {
         <Heading size={'sm'}>
           {new Intl.NumberFormat('vi-VN').format(
             isEdit ?
-            bookingStore.getTotalServiceAmountForUpdate(servicesOfClusterRegistry) :
+            bookingStore.getTotalServiceAmountForUpdate() :
             bookingStore.getTotalServiceAmount(servicesOfClusterRegistry),
-          )}{' '}
+          )}
           VND
         </Heading>
       </Flex>

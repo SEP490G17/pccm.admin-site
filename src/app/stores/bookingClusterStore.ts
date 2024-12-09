@@ -662,10 +662,10 @@ export default class BookingClusterStore {
   private convertBookingStartAndEndUTCToG7(booking: BookingForList) {
     const startTime = dayjs(booking.startDay).add(7, 'hour'); // Convert to GMT+7
     const endTime = dayjs(booking.endDay).add(7, 'hour'); // Convert to GMT+7
-    const untilTime = dayjs(booking.untilDay).add(7,'hour'); // Convert to GMT+7
+    const untilTime = booking.untilDay != null ? dayjs(booking.untilDay).add(7,'hour') : null; // Convert to GMT+7
     const startDay = startTime.format('DD/MM/YYYY');
     const endDay = endTime.format('DD/MM/YYYY');
-    const untilDay = untilTime.format('DD/MM/YYYY')
+    const untilDay = untilTime != null ? untilTime.format('DD/MM/YYYY') : null;
     return { ...booking, startDay, endDay, untilDay };
   }
 

@@ -1,11 +1,12 @@
 import { useStore } from '@/app/stores/store';
 import { observer } from 'mobx-react-lite';
 import BookingGridTableComponent from './BookingGridTableComponent';
-import { Flex, useToast } from '@chakra-ui/react';
+import { Flex, IconButton, Skeleton, Tooltip, useToast } from '@chakra-ui/react';
 import Select from 'react-select';
 import InputSearchBoxAtoms from '@/features/atoms/InputSearchBoxAtoms';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { debounce } from 'lodash';
+import { TfiReload } from 'react-icons/tfi';
 
 const BookingTodayComponent = observer(() => {
   const { bookingClusterStore: bookingStore, courtClusterStore } = useStore();
@@ -58,7 +59,7 @@ const BookingTodayComponent = observer(() => {
             placeholder="Sân"
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
             isSearchable={true}
-            onChange={(e) => {
+            onChange={(e: any) => {
               bookingTodaySetFilterTerm(e.value);
             }}
             defaultValue={
@@ -76,7 +77,7 @@ const BookingTodayComponent = observer(() => {
             placeholder="Loại"
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
             isSearchable={true}
-            onChange={(e) => {
+            onChange={(e: any) => {
               bookingTodaySetCategoryTerm(e.value);
             }}
             defaultValue={
@@ -90,13 +91,25 @@ const BookingTodayComponent = observer(() => {
             }
           ></Select>
         </Flex>
-        <InputSearchBoxAtoms
-          value={bookingTodayPageParam.searchTerm}
-          handleChange={onSearchChange}
-          isPending={isPending}
-        />
+        <Flex gap={2}>
+          <InputSearchBoxAtoms
+            value={bookingTodayPageParam.searchTerm}
+            handleChange={onSearchChange}
+            isPending={isPending}
+          />
+          <Tooltip label={'Tải lại'} placement="top">
+            <IconButton
+              bg={'transparent'}
+              icon={<TfiReload />}
+              aria-label="Tải lại"
+              onClick={() => bookingStore.loadBookingForSchedule(toast)}
+            />
+          </Tooltip>
+        </Flex>
       </Flex>
-      <BookingGridTableComponent bookingArray={bookingTodayArray} />
+      <Skeleton isLoaded={!bookingStore.loadingBookingForSchedule} h={'30rem'}>
+        <BookingGridTableComponent bookingArray={bookingTodayArray} />
+      </Skeleton>
     </>
   );
 });

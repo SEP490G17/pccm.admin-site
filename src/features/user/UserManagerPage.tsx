@@ -91,7 +91,7 @@ const UserManagerPage = observer(() => {
                         isSearchable={true}
                     ></Select>
 
-                    <CreateUserComponent></CreateUserComponent>
+                    <CreateUserComponent/>
 
 
                 </Flex>

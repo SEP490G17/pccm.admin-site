@@ -28,10 +28,10 @@ export class PageParams implements IPageParams {
     this.skip = 0;
   };
 
-  reset = () =>{
+  reset (){
     this.totalElement = 0;
     this.skip = 0;
-    this.searchTerm = undefined;
+    this.searchTerm = '';
     this.filter = undefined;
     this.fromDate = null;
     this.toDate = null;
@@ -41,6 +41,12 @@ export class PageParams implements IPageParams {
 export class ProductPageParams extends PageParams {
   courtCluster?: number;
   category?: number;
+
+  reset(){
+    super.reset();
+    this.category = undefined;
+    this.courtCluster = undefined;
+  }
 }
 
 export class BannerPageParams extends PageParams {
@@ -62,6 +68,13 @@ export class BookingPageParams extends PageParams {
   courtClusterId?: number;
   courtId?: number;
   status?: number;
+
+  reset() {
+    super.reset();
+    this.courtClusterId = undefined;
+    this.courtId = undefined;
+    this.status = undefined;
+  }
 
 }
 
