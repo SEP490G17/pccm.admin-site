@@ -5,6 +5,8 @@ import agent from '../api/agent';
 import { catchErrorHandle } from '../helper/utils';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
+import { CreateToastFnReturn } from '@chakra-ui/react';
+import { UserMessage } from '../common/toastMessage/userMessage';
 
 export default class UserStore {
   userRegistry = new Map<string, UserManager>();
@@ -85,20 +87,24 @@ export default class UserStore {
     }
   };
 
-  changeStatus = async (username: string, status: boolean) => {
+  changeStatus = async (username: string, status: boolean, toast:CreateToastFnReturn) => {
     this.setLoadingStatus(username, true);
-    await runInAction(async () => {
-      await agent.Users.changestatus(username, status)
-        .then((s) => {
-          this.setUser(s);
-          toast.success('Cập nhật người dùng thành công');
-        })
-        .catch((error) => {
-          console.error('Error creating product:', error);
-          toast.error('Cập nhật người dùng thất bại');
-          throw error;
-        })
-        .finally(() => this.setLoadingStatus(username, false));
+    const [err, res] = await catchErrorHandle(agent.Users.changestatus(username, status));
+    runInAction(() => {
+      if (res) {
+        toast(UserMessage.statusChangeSuccess());
+      }
+
+      if (err) {
+        toast(UserMessage.statusChangeFailure());
+        const user = this.userRegistry.get(username);
+        if(user){
+          user.isDisabled = !user.isDisabled
+          this.setUser(user);
+        }
+      }
+
+      this.setLoadingStatus(username, false);
     });
   };
 
@@ -179,8 +185,8 @@ export default class UserStore {
   // };
   //#endregion
   //#region private methods
-  private setUser = (user: UserManager) => {
-    this.userRegistry.set(user.email, user);
+  setUser = (user: UserManager) => {
+    this.userRegistry.set(user.username, user);
   };
 
   private cleanUserCache = () => {

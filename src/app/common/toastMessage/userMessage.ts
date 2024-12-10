@@ -8,6 +8,14 @@ export const DefaultUserMessage = {
       success: 'Cập nhật thông tin người dùng thành công',
     },
   },
+
+  statusChange:{
+    title: 'Cập nhật trạng thái người dùng',
+    description: {
+      success: 'Cập nhật trạng thái người dùng thành công',
+      failure: 'Cập nhật trạng thái người dùng thất bại'
+    },
+  }
 };
 
 export const ChangePasswordMessage = {
@@ -62,6 +70,33 @@ export const UserMessage = {
   changePasswordFailure: (
     title: string = ChangePasswordMessage.status.title,
     description: string,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'error',
+    duration,
+    isClosable,
+  }),
+
+
+  statusChangeSuccess: (
+    description:string= DefaultUserMessage.statusChange.description.success,
+    title: string = DefaultUserMessage.statusChange.title,
+    duration: number = DefaultSettingToast.duration,
+    isClosable: boolean = DefaultSettingToast.isClosable,
+  ): UseToastOptions => ({
+    title,
+    description,
+    status: 'success',
+    duration,
+    isClosable,
+  }),
+
+  statusChangeFailure: (
+    description:string= DefaultUserMessage.statusChange.description.failure,
+    title: string = DefaultUserMessage.statusChange.title,
     duration: number = DefaultSettingToast.duration,
     isClosable: boolean = DefaultSettingToast.isClosable,
   ): UseToastOptions => ({
