@@ -53,7 +53,7 @@ const ProductCardItemSellComponent = observer(({ product, isEdit = false }: Ipro
         <GridItem colSpan={12} className={'h-full flex items-center'}>
           <LazyImageAtom
             width={'14.5rem'}
-            maxHeight={'9rem'}
+            height={'9rem'}
             objectFit={'cover'}
             className={'rounded-md'}
             src={product.thumbnailUrl}

@@ -8,9 +8,12 @@ interface IProps {
 }
 const ServiceCardItemSellComponent = observer(({ service, isEdit = false }: IProps) => {
   const { bookingStore } = useStore();
-  const { addServiceToOrder, selectedServiceItems, addServiceToOrderUpdate, updateServiceItems } = bookingStore;
+  const { addServiceToOrder, selectedServiceItems, addServiceToOrderUpdate, updateServiceItems } =
+    bookingStore;
 
-  const isSelected = isEdit ? updateServiceItems.get(service.id) !== undefined : selectedServiceItems.get(service.id) !== undefined;
+  const isSelected = isEdit
+    ? updateServiceItems.get(service.id) !== undefined
+    : selectedServiceItems.get(service.id) !== undefined;
 
   return (
     <GridItem key={service.id} colSpan={{ base: 2, xl: 1 }}>
@@ -35,7 +38,19 @@ const ServiceCardItemSellComponent = observer(({ service, isEdit = false }: IPro
         </GridItem>
         <GridItem rowSpan={4}>
           <Flex className={'flex-col py-2 gap-3 h-full'}>
-            <Text fontWeight={'medium'} fontSize={'0.9rem'}>
+            <Text
+              fontWeight={'medium'}
+              fontSize={'0.9rem'}
+              style={{
+                wordBreak: 'break-word', // Bẻ từ bất kỳ vị trí nào nếu quá dài
+                overflowWrap: 'break-word', // Ngắt dòng tại từ nếu quá dài
+                overflow: 'hidden', // Ẩn phần nội dung thừa
+                textOverflow: 'ellipsis', // Thêm dấu "..." nếu cần
+                display: '-webkit-box',
+                WebkitLineClamp: 2, // Giới hạn số dòng
+                WebkitBoxOrient: 'vertical',
+              }}
+            >
               Mô tả: {service.description}
             </Text>
             <Heading size={'sm'}>Giá tiền : {service.price} VND</Heading>
