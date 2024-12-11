@@ -22,6 +22,7 @@ import CourtClusterEditPage from '@/features/court-cluster/UpdateInfomation/Cour
 import CourtClusterCreatePage from '@/features/court-cluster/Create/CourtClusterCreatePage';
 import ForbiddenPage from '@/features/errors/Forbidden';
 import ProfilePage from '@/features/profile/ProfilePage';
+import ConfirmForgotPassword from '@/features/auth/forgotpassword/ConfirmForgotPassword';
 
 export const routes: RouteObject[] = [
   {
@@ -124,6 +125,10 @@ export const routes: RouteObject[] = [
     path: '*',
     element: <Navigate replace to="/not-found" />,
   },
+  {
+    path: "/confirm-forgot-password",
+    element: <ConfirmForgotPassword />,
+  }
 ];
 
 export const router = createBrowserRouter(routes);
