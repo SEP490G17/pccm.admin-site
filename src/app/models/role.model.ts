@@ -1,4 +1,5 @@
 export interface StaffPosition {
+  id: number;
   name: string;
   defaultRoles: string[];
 }
