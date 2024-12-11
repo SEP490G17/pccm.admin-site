@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Flex, Box, Heading, Divider } from '@chakra-ui/react';
+import { Flex, Heading, Divider } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useStore } from '../../app/stores/store';
 import './style/style.scss';
@@ -11,6 +11,7 @@ import StaffTableComponent from './components/StaffTableComponent';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
 import StaffPositionTableComponent from './components/StaffPositionTableComponent';
 import Select from 'react-select';
+import { runInAction } from 'mobx';
 
 const StaffPage = observer(() => {
   const { staffStore, staffPositionStore } = useStore();
@@ -22,7 +23,9 @@ const StaffPage = observer(() => {
   useEffect(() => {
     setLoadingInitial(true);
     Promise.all([loadStaffs(), loadRoles(), loadStaffPosition()]).then(() => {
-      setLoadingInitial(false);
+      runInAction(() =>{
+        setLoadingInitial(false);
+      })
     });
   }, [loadStaffs, loadRoles, loadStaffPosition, setLoadingInitial]);
 
@@ -52,11 +55,11 @@ const StaffPage = observer(() => {
   };
 
   const positionOptions = [
-    { value: -1, label: "Tất cả" },
+    { value: -1, label: 'Tất cả' },
     ...StaffPositionArray.map((position, index) => ({
       value: index,
-      label: position.name
-    }))
+      label: position.name,
+    })),
   ];
 
   useEffect(() => {
@@ -66,7 +69,7 @@ const StaffPage = observer(() => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [handleScroll]);
-  
+
   return (
     <>
       <PageHeadingAtoms breadCrumb={[{ title: 'Nhân viên', to: '/nhan-vien' }]} />
@@ -111,16 +114,20 @@ const StaffPage = observer(() => {
             defaultValue={{
               value: staffPageParams.filter ?? -1,
               label:
-                positionOptions.find(option => option.value.toString() === staffPageParams.filter)?.label ?? 'Tất cả',
+                positionOptions.find((option) => option.value.toString() === staffPageParams.filter)
+                  ?.label ?? 'Tất cả',
             }}
           ></Select>
-
-          <CreateStaffPage />
         </Flex>
 
-        <Box textAlign="right">
-          <InputSearchBoxAtoms value={staffPageParams.searchTerm} handleChange={onSearchChange} isPending={isPending} />
-        </Box>
+        <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
+          <InputSearchBoxAtoms
+            value={staffPageParams.searchTerm}
+            handleChange={onSearchChange}
+            isPending={isPending}
+          />
+          <CreateStaffPage />
+        </Flex>
       </Flex>
       <StaffTableComponent />
       <LoadMoreButtonAtoms

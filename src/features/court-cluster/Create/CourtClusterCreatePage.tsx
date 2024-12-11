@@ -71,6 +71,7 @@ const CourtClusterCreatePage = observer(() => {
   const courtPriceSchema = Yup.object().shape({
     courtName: Yup.string().required('Không được bỏ trống'),
     courtPrice: Yup.array()
+      .min(1, 'Cần có ít nhất 1 khoảng giá')
       .of(
         Yup.object().shape({
           fromTime: Yup.string().required('Không được bỏ trống'),
@@ -147,11 +148,10 @@ const CourtClusterCreatePage = observer(() => {
       .min(2, 'Phải có ít nhất 2 ảnh')
       .max(4, 'Tối đa 4 ảnh')
       .required('Không được bỏ trống'),
-    courtDetails: Yup.array().of(courtPriceSchema).required('Không được bỏ trống'),
+    courtDetails: Yup.array().of(courtPriceSchema).required('Không được bỏ trống').min(1,'Cần có ít nhất 1 sân'),
   });
   const toast = useToast();
   return (
-    <>
       <Card>
         <CardBody>
           <Formik
@@ -344,7 +344,6 @@ const CourtClusterCreatePage = observer(() => {
           </Formik>
         </CardBody>
       </Card>
-    </>
   );
 });
 

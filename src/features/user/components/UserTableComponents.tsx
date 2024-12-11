@@ -12,6 +12,7 @@ import {
   Thead,
   Tooltip,
   Tr,
+  useToast,
 } from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import { CgFileDocument } from 'react-icons/cg';
@@ -43,12 +44,14 @@ function UserTableComponents() {
     });
   }, [userArray]);
 
+  const toast = useToast();
+
   const handleChangeStatus = async (id: string, currentStatus: boolean) => {
     const userStatus = currentStatus === true ? false : true;
     setLocalStatuses(prevStatuses => ({ ...prevStatuses, [id]: userStatus }));
 
     try {
-      await userStore.changeStatus(id, userStatus);
+      await userStore.changeStatus(id, userStatus, toast);
     } catch {
       setLocalStatuses(prevStatuses => ({ ...prevStatuses, [id]: currentStatus }));
     }

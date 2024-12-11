@@ -611,14 +611,11 @@ export default class BookingStore {
     this.updateServiceItems.delete(serviceId);
   };
 
-  getTotalProductAmountForUpdate(productOfClusterRegistry?: Map<number, Product>) {
-    if (productOfClusterRegistry && this.ProductUpdateArray) {
+  getTotalProductAmountForUpdate() {
+    if (this.ProductUpdateArray) {
       let sum = 0;
       this.ProductUpdateArray.forEach((p) => {
-        const product = productOfClusterRegistry.get(p.productId);
-        if (product) {
-          sum += product.price * p.quantity;
-        }
+        sum += p.price * p.quantity;
       });
       this.totalProductAmount = sum;
       return sum;
@@ -626,16 +623,13 @@ export default class BookingStore {
     return 0;
   }
 
-  getTotalServiceAmountForUpdate(serviceOfClusterRegistry?: Map<number, Service>) {
-    if (this.selectedBooking && serviceOfClusterRegistry && this.updateServiceItems) {
+  getTotalServiceAmountForUpdate() {
+    if (this.selectedBooking && this.updateServiceItems) {
       const [startTime, endTime] = this.selectedBooking.bookingDetails.playTime.split('-');
       const playHours = calculateTimeDifferenceInHours(startTime, endTime);
       let sum = 0;
       this.updateServiceItems.forEach((s) => {
-        const service = serviceOfClusterRegistry.get(s.serviceId);
-        if (service) {
-          sum += service.price * playHours;
-        }
+        sum += s.price * playHours;
       });
       this.totalServiceAmount = sum;
       return sum;
@@ -653,5 +647,10 @@ export default class BookingStore {
       );
     }
     return 0;
+  };
+
+  reset = () => {
+    this.bookingRegistry.clear();
+    this.bookingPageParams.reset();
   };
 }

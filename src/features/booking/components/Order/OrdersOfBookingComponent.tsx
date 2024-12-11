@@ -25,14 +25,21 @@ import { CloseIcon } from '@chakra-ui/icons';
 import OrderPaymentButtonAtoms from './OrderPaymentButtonAtoms';
 
 const OrdersOfBookingComponent = observer(() => {
-  const { bookingStore } = useStore();
+  const { bookingStore, courtClusterStore } = useStore();
   const toast = useToast();
   const { selectedBooking } = bookingStore;
+  const { loadProductsOfCourtCluster, setLoadingInitialProductPage, loadServicesOfCourtCluster } =
+  courtClusterStore;
   if (!selectedBooking) return;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleOpenDetaisOrder = async (id: number) => {
     onOpen();
     await bookingStore.getDetailsOrder(id, toast);
+    setLoadingInitialProductPage(true);
+    await loadServicesOfCourtCluster(selectedBooking.bookingDetails.courtClusterId, toast);
+    await loadProductsOfCourtCluster(selectedBooking.bookingDetails.courtClusterId, toast).then(() =>
+      setLoadingInitialProductPage(false),
+    );
   };
   return (
     <>
@@ -111,7 +118,13 @@ const OrdersOfBookingComponent = observer(() => {
           </GridItem>
         </Grid>
       ))}
-      <OrderDetailsPopUp isOpen={isOpen} onClose={onClose} />
+      <OrderDetailsPopUp isOpen={isOpen} onClose={()=>{
+        onClose();
+        courtClusterStore.productCourtClusterPageParams.reset();
+        courtClusterStore.serviceCourtClusterPageParams.reset();
+        courtClusterStore.productOfClusterRegistry.clear();
+        courtClusterStore.servicesOfClusterRegistry.clear();
+      }} />
     </>
   );
 });

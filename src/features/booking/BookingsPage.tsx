@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react-lite';
 import BookingTableComponent from './components/Booking/BookingTableComponent';
 import { useStore } from '@/app/stores/store';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Flex, Heading, useToast } from '@chakra-ui/react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Flex, Heading, IconButton, Tooltip, useToast } from '@chakra-ui/react';
 import PageHeadingAtoms from '../atoms/PageHeadingAtoms';
 import Select from 'react-select';
 import { DatePicker } from 'antd';
@@ -10,6 +10,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import LoadMoreButtonAtoms from '../atoms/LoadMoreButtonAtoms';
 import InputSearchBoxAtoms from '../atoms/InputSearchBoxAtoms';
 import { debounce } from 'lodash';
+import { TfiReload } from 'react-icons/tfi';
 
 const BookingsPage = observer(() => {
   const { bookingStore, courtClusterStore } = useStore();
@@ -92,7 +93,15 @@ const BookingsPage = observer(() => {
     },
     [handleSearchLog, setIsPending],
   );
-
+  const inputRef = useRef<HTMLInputElement>(null);
+  const handleReset = async () => {
+    bookingRegistry.clear();
+    bookingPageParams.reset();
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+    await loadBookingAll(toast);
+  };
   return (
     <>
       <PageHeadingAtoms breadCrumb={[{ title: 'Booking', to: '/booking' }]} />
@@ -103,7 +112,7 @@ const BookingsPage = observer(() => {
           <Select
             options={[{ value: 0, label: 'Tất cả' }, ...courtClusterListAllOptions]}
             placeholder="Cụm sân"
-            defaultValue={{
+            value={{
               value: bookingPageParams.courtClusterId ?? 0,
               label:
                 courtClusterListAllOptions.find((x) => x.value == bookingPageParams.courtClusterId)
@@ -126,7 +135,7 @@ const BookingsPage = observer(() => {
                 await filterByStatus(e.value, toast);
               }
             }}
-            defaultValue={{
+            value={{
               value: bookingPageParams.status ?? 0,
               label:
                 statusOption.find(option => option.value === bookingPageParams.status)?.label ?? 'Tất cả',
@@ -135,13 +144,13 @@ const BookingsPage = observer(() => {
           ></Select>
         </Flex>
 
-        <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
+        <Flex textAlign="right" flexWrap={'wrap'} gap={2}>
           <DatePicker.RangePicker
             showTime={{ format: 'HH:mm' }}
             format={'DD/MM/YYYY HH:mm'}
             placeholder={['Ngày bắt đầu', 'Ngày kết thúc']}
             style={{ border: '0.5px solid #ADADAD', height: '40px' }}
-            defaultValue={
+            value={
               bookingPageParams.fromDate && bookingPageParams.toDate
                 ? [dayjs(bookingPageParams.fromDate, 'DD/MM/YYYY'), dayjs(bookingPageParams.fromDate, 'DD/MM/YYYY')]
                 : undefined
@@ -154,7 +163,14 @@ const BookingsPage = observer(() => {
               }
             }}
           />
-          <InputSearchBoxAtoms value={bookingPageParams.searchTerm} isPending={isPending} handleChange={onSearchChange} />
+          <InputSearchBoxAtoms value={bookingPageParams.searchTerm} isPending={isPending} handleChange={onSearchChange} ref={inputRef}/>
+          <Tooltip label={'Tải lại'} placement="top">
+            <IconButton
+              icon={<TfiReload />}
+              aria-label="Tải lại"
+              onClick={handleReset}
+            />
+          </Tooltip>
         </Flex>
       </Flex>
       <BookingTableComponent />

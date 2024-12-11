@@ -1,5 +1,5 @@
 import { Box, Input, InputGroup, InputRightElement, Spinner } from '@chakra-ui/react';
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { FaSearch } from 'react-icons/fa';
 
 interface IProp {
@@ -8,7 +8,7 @@ interface IProp {
   value?: string;
 }
 
-const InputSearchBoxAtoms = ({ handleChange, isPending = false, value  }: IProp) => {
+const InputSearchBoxAtoms = forwardRef<HTMLInputElement, IProp>(({ handleChange, isPending = false, value  }: IProp,ref) => {
     
   return (
     <Box textAlign="right">
@@ -27,6 +27,7 @@ const InputSearchBoxAtoms = ({ handleChange, isPending = false, value  }: IProp)
           borderRadius="4px"
           onChange={handleChange}
           defaultValue={value}
+          ref={ref}
         />
         <InputRightElement width="4.5rem">
           {isPending ? <Spinner size={'sm'} /> : <FaSearch />}
@@ -34,6 +35,6 @@ const InputSearchBoxAtoms = ({ handleChange, isPending = false, value  }: IProp)
       </InputGroup>
     </Box>
   );
-};
+});
 
 export default InputSearchBoxAtoms;

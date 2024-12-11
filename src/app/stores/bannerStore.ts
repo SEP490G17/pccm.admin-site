@@ -247,4 +247,12 @@ export default class BannerStore {
   //#endregion
 
   //#endregion
+
+  reset = () =>{
+    this.bannerRegistry.clear();
+    this.bannerPageParams.clearLazyPage();
+    this.bannerPageParams.searchTerm = '';
+    this.bannerPageParams.status = '';
+    this.bannerPageParams.category = '';
+  }
 }

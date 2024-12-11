@@ -24,20 +24,13 @@ const BookingInfoComponent = observer(() => {
     return;
   }
   const { bookingDetails } = booking;
-  const lastPayment =
-    bookingDetails.totalPrice +
-    (_.sumBy(
-      orderOfBooking.filter((o) => o.paymentStatus == PaymentStatus.Pending),
-      'totalAmount',
-    ) ?? 0);
+  const lastPayment = bookingDetails.totalPrice + (_.sumBy(orderOfBooking, 'totalAmount') ?? 0);
   const alreadyPay =
-    bookingDetails.paymentStatus == PaymentStatus.Success
-      ? bookingDetails.totalPrice
-      : 0 +
-        _.sumBy(
-          booking.ordersOfBooking.filter((c) => c.paymentStatus == PaymentStatus.Success),
-          'totalAmount',
-        );
+    (bookingDetails.paymentStatus == PaymentStatus.Success ? bookingDetails.totalPrice : 0) +
+    _.sumBy(
+      orderOfBooking.filter((c) => c.paymentStatus == 2),
+      'totalAmount',
+    );
   return (
     <Grid templateColumns={'repeat(24, 1fr)'} className="min-h-[30rem]" gap={2}>
       <GridItem colSpan={3}>
@@ -58,6 +51,30 @@ const BookingInfoComponent = observer(() => {
         <Text fontSize={'xl'} fontWeight={'thin'}>
           {bookingDetails.phoneNumber}
         </Text>
+      </GridItem>
+
+      <GridItem colSpan={3}>
+        <Text fontSize={'xl'}>Cụm sân:</Text>
+      </GridItem>
+
+      <GridItem colSpan={21} className="text-start">
+        <Link className="cursor-pointer" to={`/cum-san/${bookingDetails.courtClusterId}/chi-tiet`}>
+          <Text fontSize={'xl'} fontWeight={'thin'}>
+            {bookingDetails.courtClusterName}
+          </Text>
+        </Link>
+      </GridItem>
+
+      <GridItem colSpan={3}>
+        <Text fontSize={'xl'}>Sân:</Text>
+      </GridItem>
+
+      <GridItem colSpan={21} className="text-start">
+        <Link className="cursor-pointer" to={`/cum-san/${bookingDetails.courtClusterId}/chi-tiet`}>
+          <Text fontSize={'xl'} fontWeight={'thin'}>
+            {bookingDetails.courtName}
+          </Text>
+        </Link>
       </GridItem>
 
       <GridItem colSpan={3}>
@@ -85,7 +102,10 @@ const BookingInfoComponent = observer(() => {
 
       <GridItem colSpan={21} className="text-start">
         <Text fontSize={'xl'} fontWeight={'thin'}>
-          Ngày {dayjs(bookingDetails.untilDay ?? bookingDetails.endDay).add(7, 'hour').format('DD/MM/YYYY')}
+          Ngày{' '}
+          {dayjs(bookingDetails.untilDay ?? bookingDetails.endDay)
+            .add(7, 'hour')
+            .format('DD/MM/YYYY')}
         </Text>
       </GridItem>
       <GridItem colSpan={3}>
@@ -99,17 +119,7 @@ const BookingInfoComponent = observer(() => {
           </Badge>
         </Text>
       </GridItem>
-      <GridItem colSpan={3}>
-        <Text fontSize={'xl'}>Thuê tại:</Text>
-      </GridItem>
 
-      <GridItem colSpan={21} className="text-start">
-        <Link className="cursor-pointer" to={`/cum-san/${bookingDetails.courtClusterId}/chi-tiet`}>
-          <Text fontSize={'xl'} fontWeight={'thin'}>
-            {bookingDetails.address}
-          </Text>
-        </Link>
-      </GridItem>
       {bookingDetails.status === BookingStatus.Confirmed && (
         <>
           <GridItem colSpan={3}>

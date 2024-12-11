@@ -1,7 +1,7 @@
 import { useStore } from '@/app/stores/store';
-import { Flex, Skeleton, useToast } from '@chakra-ui/react';
+import { Flex, IconButton, Skeleton, Tooltip, useToast } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Select from 'react-select';
 import { debounce } from 'lodash';
 import dayjs, { Dayjs } from 'dayjs';
@@ -9,6 +9,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import BookingGridTableComponent from './BookingGridTableComponent';
 import InputSearchBoxAtoms from '@/features/atoms/InputSearchBoxAtoms';
 import { DatePicker } from 'antd';
+import { TfiReload } from 'react-icons/tfi';
 
 const BookingAllComponent = observer(() => {
   const { bookingClusterStore, courtClusterStore } = useStore();
@@ -66,6 +67,7 @@ const BookingAllComponent = observer(() => {
     },
     [handleSearchDebounced, setIsPending],
   );
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const statusOption = [
     { value: -1, label: 'Tất cả' },
@@ -75,6 +77,16 @@ const BookingAllComponent = observer(() => {
     { value: 2, label: 'Đã từ chối' },
     { value: 3, label: 'Đã bị hủy' },
   ];
+
+  const handleReset = async () => {
+    bookingAllRegistry.clear();
+    bookingAllPageParam.reset();
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+    await loadBookingAll(toast);
+  };
+
   return (
     <>
       <Flex width="100%" justifyContent="space-between" alignItems="flex-end" mb="1.5rem">
@@ -82,15 +94,16 @@ const BookingAllComponent = observer(() => {
           <Select
             options={[{ value: 0, label: 'Tất cả' }, ...courtOptions]}
             placeholder="Sân"
-            defaultValue={
+            value={
               bookingAllPageParam.courtId
                 ? {
                     value: bookingAllPageParam.courtId,
-                    label: courtOptions.find((x) => x.value == bookingAllPageParam.courtId)?.label,
+                    label: courtOptions.find((x) => x.value == bookingAllPageParam.courtId)
+                      ?.label,
                   }
                 : null
             }
-            onChange={async ({ value }:any) => {
+            onChange={async ({ value }: any) => {
               await filterBookingAllByCourt(value, toast);
             }}
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
@@ -100,12 +113,12 @@ const BookingAllComponent = observer(() => {
             options={statusOption}
             placeholder="Loại đơn"
             className="w-56 rounded border-[1px solid #ADADAD] shadow-none hover:border-[1px solid #ADADAD]"
-            onChange={async (e:any) => {
+            onChange={async (e: any) => {
               if (e) {
                 await filterBookingAllByStatus(e.value, toast);
               }
             }}
-            defaultValue={
+            value={
               bookingAllPageParam.status
                 ? {
                     value: statusOption.find((x) => x.value == bookingAllPageParam.status)?.value,
@@ -129,7 +142,7 @@ const BookingAllComponent = observer(() => {
                 handleDateRangeChange(null, null);
               }
             }}
-            defaultValue={
+            value={
               bookingAllPageParam.fromDate && bookingAllPageParam.toDate
                 ? [
                     dayjs(bookingAllPageParam.fromDate, 'DD/MM/YYYY'),
@@ -143,6 +156,14 @@ const BookingAllComponent = observer(() => {
             isPending={isPending}
             handleChange={onSearchChange}
           />
+          <Tooltip label={'Tải lại'} placement="top">
+            <IconButton
+              bg={'transparent'}
+              icon={<TfiReload />}
+              aria-label="Tải lại"
+              onClick={handleReset}
+            />
+          </Tooltip>
         </Flex>
       </Flex>
       {loadingBookingAll && bookingAllRegistry.size == 0 && (

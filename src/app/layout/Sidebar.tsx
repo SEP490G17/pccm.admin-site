@@ -16,10 +16,14 @@ const Sidebar = observer(() => {
   useEffect(() => {
     const menuList = getMenuList(commonStore.getRoles());
     setMenu(menuList);
+  }, [commonStore]);
+  
+  useEffect(() => {
     commonStore.setSelectedMenuItem(
       menu.find((menu) => _.includes(location.pathname, menu.path))?.key ?? 1,
     );
-  }, [commonStore, setMenu, location, menu]);
+  }, [location.pathname, menu, commonStore]);
+  
   return (
     <Flex flexDirection={'column'}>
       <Flex

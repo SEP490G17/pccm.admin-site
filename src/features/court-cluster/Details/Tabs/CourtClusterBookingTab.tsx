@@ -27,9 +27,7 @@ const CourtClusterBookingTab = observer(() => {
   useEffect(() => {
     setLoadingInitialBookingPage(true);
     bookingStore.clearBookingForSchedule();
-    Promise.all([bookingStore.loadBookingForSchedule(toast)]).then(() =>
-      setLoadingInitialBookingPage(false),
-    );
+    bookingStore.loadBookingForSchedule(toast).then(() => setLoadingInitialBookingPage(false));
   }, [bookingStore, setLoadingInitialBookingPage, toast, clearBookingForSchedule]);
   if (!selectedCourtCluster) return;
   return (
