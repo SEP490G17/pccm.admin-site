@@ -13,23 +13,61 @@ const ForgotPopUp: React.FC<ForgotPopUpProps> = ({ token }) => {
     const [errors, setErrors] = useState<{ newPassword?: string; confirmPassword?: string }>({});
     const toast = useToast();
 
+    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        setFormData({ ...formData, [id]: value });
+
+        // Clear error as soon as the user starts typing
+        if (id === 'newPassword') {
+            setErrors(prev => ({ ...prev, newPassword: undefined }));
+            validatePassword(value);
+        }
+    };
+
+    const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target;
+        setFormData({ ...formData, confirmPassword: value });
+
+        // Clear error as soon as the user starts typing
+        setErrors(prev => ({ ...prev, confirmPassword: undefined }));
+        validateConfirmPassword(value);
+    };
+
+    const validatePassword = (password: string) => {
+        const newErrors: { newPassword?: string } = {};
+
+        if (password.length < 8) {
+            newErrors.newPassword = 'Mật khẩu phải có ít nhất 8 ký tự!';
+        } else if (!/[A-Z]/.test(password)) {
+            newErrors.newPassword = 'Mật khẩu phải có ít nhất một chữ hoa!';
+        } else if (!/[a-z]/.test(password)) {
+            newErrors.newPassword = 'Mật khẩu phải có ít nhất một chữ thường!';
+        } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+            newErrors.newPassword = 'Mật khẩu phải có ít nhất một ký tự đặc biệt!';
+        }
+
+        setErrors(prev => ({ ...prev, ...newErrors }));
+    };
+
+    const validateConfirmPassword = (confirmPassword: string) => {
+        // Check if confirm password matches new password
+        if (confirmPassword !== formData.newPassword) {
+            setErrors(prev => ({ ...prev, confirmPassword: 'Mật khẩu xác nhận không khớp!' }));
+        } else {
+            // Clear error if passwords match
+            setErrors(prev => ({ ...prev, confirmPassword: undefined }));
+        }
+    };
+
     const handleSubmit = async (values: { newPassword: string; confirmPassword: string }) => {
         setErrors({});
 
-        if (!values.newPassword) {
-            setErrors(prev => ({ ...prev, newPassword: 'Vui lòng nhập mật khẩu!' }));
+        if (!values.newPassword || errors.newPassword) {
             return;
         }
-        if (values.newPassword.length < 6) {
-            setErrors(prev => ({ ...prev, newPassword: 'Mật khẩu phải có ít nhất 6 ký tự!' }));
-            return;
-        }
+
         if (!values.confirmPassword) {
             setErrors(prev => ({ ...prev, confirmPassword: 'Vui lòng xác nhận mật khẩu!' }));
-            return;
-        }
-        if (values.newPassword !== values.confirmPassword) {
-            setErrors(prev => ({ ...prev, confirmPassword: 'Mật khẩu xác nhận không khớp!' }));
             return;
         }
 
@@ -73,7 +111,8 @@ const ForgotPopUp: React.FC<ForgotPopUpProps> = ({ token }) => {
                             id="newPassword"
                             type="password"
                             value={formData.newPassword}
-                            onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+                            onChange={handlePasswordChange}
+                            onBlur={(e) => validatePassword(e.target.value)}
                             placeholder="Nhập mật khẩu mới"
                         />
                         {errors.newPassword && <Text color="red.500" mt={2}>{errors.newPassword}</Text>}
@@ -85,7 +124,8 @@ const ForgotPopUp: React.FC<ForgotPopUpProps> = ({ token }) => {
                             id="confirmPassword"
                             type="password"
                             value={formData.confirmPassword}
-                            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                            onChange={handleConfirmPasswordChange}
+                            onBlur={(e) => validateConfirmPassword(e.target.value)}
                             placeholder="Nhập lại mật khẩu mới"
                         />
                         {errors.confirmPassword && <Text color="red.500" mt={2}>{errors.confirmPassword}</Text>}
