@@ -13,6 +13,7 @@ import {
   ModalOverlay,
   Stack,
   useDisclosure,
+  useToast,
   VStack,
 } from '@chakra-ui/react';
 import './style/style.scss';
@@ -33,6 +34,7 @@ const CreateStaffPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { staffPositionStore, courtClusterStore, staffStore } = useStore();
   const { StaffPositionArray } = staffPositionStore;
+  const toast = useToast();
   const { courtClusterListAllOptions } = courtClusterStore;
   const validationSchema = Yup.object().shape({
     firstName: Yup.string().required('Họ không được bỏ trống'),
@@ -107,7 +109,7 @@ const CreateStaffPage = () => {
                     password: values.password,
                     positionId: values.position.value,
                   });
-                  await staffStore.createStaff(data, onClose);
+                  await staffStore.createStaff(data, onClose, toast);
                 }}
               >
                 {({ handleSubmit, isSubmitting, setFieldValue }) => {

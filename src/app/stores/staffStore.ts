@@ -88,25 +88,25 @@ export default class StaffStore {
     }
   };
 
-  createStaff = async (staffData: CreateStaffDTO, onClose: () => void) => {
+  createStaff = async (
+    staffData: CreateStaffDTO,
+    onClose: () => void,
+    toast: CreateToastFnReturn,
+  ) => {
     this.loading = true;
-    try {
-      runInAction(() => {
-        agent.Account.createStaff(staffData)
-          .then((s) => {
-            this.setStaff(s);
-            toast.success('Tạo nhân viên thành công');
-            onClose();
-          })
-          .catch((error: any) => toast.error(error[0]));
-      });
-    } catch (error) {
-      runInAction(() => {
-        console.error('Tạo nhân viên fail:', error);
-      });
-    } finally {
+    const [err, res] = await catchErrorHandle(agent.Account.createStaff(staffData));
+    runInAction(() => {
+      if (err) {
+        toast(StaffMessage.createFailure(undefined, err));
+      }
+      if (res) {
+        toast(StaffMessage.createSuccess());
+        this.setStaff(res);
+        onClose();
+      }
       this.loading = false;
-    }
+    });
+    return { err, res };
   };
 
   updateStaff = async (
