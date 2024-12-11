@@ -236,8 +236,7 @@ export default class BookingClusterStore {
         this.bookingPendingRegistry.delete(id);
         this.setBookingAll(res);
         const bookingSchedule = mapBookingResponseToBookingModel(res);
-        console.log('schedule>>',bookingSchedule);
-        this.setBooking(mapBookingResponseToBookingModel(res));
+        this.setBooking(bookingSchedule);
         this.setBookingToday(this.convertBookingStartAndEndUTCToG7(res));
         this.loadBookingTodayArray();
       }

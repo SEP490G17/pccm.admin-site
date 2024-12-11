@@ -124,7 +124,7 @@ const BookingPendingComponent = observer(() => {
               bookingPendingPageParam.fromDate && bookingPendingPageParam.toDate
                 ? [
                     dayjs(bookingPendingPageParam.fromDate, 'DD/MM/YYYY'),
-                    dayjs(bookingPendingPageParam.fromDate, 'DD/MM/YYYY'),
+                    dayjs(bookingPendingPageParam.toDate, 'DD/MM/YYYY'),
                   ]
                 : undefined
             }

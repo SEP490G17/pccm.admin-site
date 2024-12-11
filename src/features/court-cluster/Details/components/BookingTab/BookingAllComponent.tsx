@@ -81,6 +81,7 @@ const BookingAllComponent = observer(() => {
   const handleReset = async () => {
     bookingAllRegistry.clear();
     bookingAllPageParam.reset();
+    bookingAllPageParam.clearLazyPage();
     if (inputRef.current) {
       inputRef.current.value = '';
     }
@@ -146,7 +147,7 @@ const BookingAllComponent = observer(() => {
               bookingAllPageParam.fromDate && bookingAllPageParam.toDate
                 ? [
                     dayjs(bookingAllPageParam.fromDate, 'DD/MM/YYYY'),
-                    dayjs(bookingAllPageParam.fromDate, 'DD/MM/YYYY'),
+                    dayjs(bookingAllPageParam.toDate, 'DD/MM/YYYY'),
                   ]
                 : undefined
             }
@@ -155,6 +156,7 @@ const BookingAllComponent = observer(() => {
             value={bookingAllPageParam.searchTerm}
             isPending={isPending}
             handleChange={onSearchChange}
+            ref={inputRef}
           />
           <Tooltip label={'Tải lại'} placement="top">
             <IconButton

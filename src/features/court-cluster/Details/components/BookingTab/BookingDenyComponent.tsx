@@ -111,7 +111,7 @@ const BookingDenyComponent = observer(() => {
               bookingDenyPageParam.fromDate && bookingDenyPageParam.toDate
                 ? [
                     dayjs(bookingDenyPageParam.fromDate, 'DD/MM/YYYY'),
-                    dayjs(bookingDenyPageParam.fromDate, 'DD/MM/YYYY'),
+                    dayjs(bookingDenyPageParam.toDate, 'DD/MM/YYYY'),
                   ]
                 : undefined
             }
