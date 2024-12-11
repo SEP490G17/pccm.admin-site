@@ -7,6 +7,8 @@ import _ from 'lodash';
 import agent from '../api/agent';
 import { toast } from 'react-toastify';
 import { CreateStaffDTO, UpdateStaffDTO } from '../models/user.model';
+import { CreateToastFnReturn } from '@chakra-ui/react';
+import { StaffMessage } from '../common/toastMessage/staffMessage';
 export default class StaffStore {
   staffRegistry = new Map<number, Staff>();
   staffArray: Staff[] = [];
@@ -107,26 +109,26 @@ export default class StaffStore {
     }
   };
 
-  updateStaff = async (staffData: UpdateStaffDTO, onClose: () => void) => {
+  updateStaff = async (
+    staffData: UpdateStaffDTO,
+    onClose: () => void,
+    toast: CreateToastFnReturn,
+  ) => {
     this.loading = true;
-    try {
-      runInAction(() => {
-        agent.Staffs.updateStaff(staffData)
-          .then((s) => {
-            this.staffRegistry.set(s.id, s);
-            this.setStaff(s);
-            toast.success('Cập nhật nhân viên thành công');
-            onClose();
-          })
-          .catch((error: any) => toast.error(error[0]));
-      });
-    } catch (error) {
-      runInAction(() => {
-        console.error('Cập nhật nhân viên fail:', error);
-      });
-    } finally {
+    const [err, res] = await catchErrorHandle(agent.Staffs.updateStaff(staffData));
+    runInAction(() => {
+      if (err) {
+        toast(StaffMessage.updateFailure(undefined, err));
+      }
+      if (res) {
+        toast(StaffMessage.updateSuccess());
+        this.staffRegistry.set(res.id, res);
+        this.setStaff(res);
+        onClose();
+      }
       this.loading = false;
-    }
+    });
+    return { err, res };
   };
 
   //#region mock-up

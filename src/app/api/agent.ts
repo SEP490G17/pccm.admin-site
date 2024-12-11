@@ -184,7 +184,8 @@ const Revenue = {
 const StaffPositions = {
   list: (): Promise<StaffPosition[]> => requests.get(`/staffPosition`),
   update: (data: StaffInputDTO[]): Promise<string[]> => requests.post(`/staffPosition`, data),
-  applyAll: (): Promise<StaffPosition[]> => requests.get(`/staffPosition/applyToAll`),
+  applyAll: (data: StaffInputDTO[]): Promise<StaffPosition[]> =>
+    requests.post(`/staffPosition/applyToAll`, data),
 };
 
 const Roles = {
