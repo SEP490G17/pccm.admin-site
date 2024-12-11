@@ -5,6 +5,7 @@ import { Box, Button, Checkbox, Flex, Link, Text } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import * as Yup from 'yup';
+import ForgotPasswordPopUp from '../forgotpassword/ForgotPasswordPopUp';
 
 class Login {
   username: string = 'courtOwner';
@@ -17,24 +18,26 @@ function LoginFormComponent() {
     username: Yup.string().required('Username/SDT bắt buộc'),
     password: Yup.string().required('Password bắt buộc'),
   });
+  const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
   const [err, setErr] = useState('');
   const { authStore } = useStore();
   const handleSubmit = async (value: UserFormValues, { isSubmitting }: any) => {
     await authStore.login(value)
-    .then((data)=>{
-      if(data.err){
-        setErr(data.err?.response?.data)
-      }
-    })
-    .finally(() => (isSubmitting(false)));
+      .then((data) => {
+        if (data.err) {
+          setErr(data.err?.response?.data)
+        }
+      })
+      .finally(() => (isSubmitting(false)));
   };
   return (
-      <Formik
-        initialValues={new Login()}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ handleSubmit, isValid, isSubmitting }) => (
+    <Formik
+      initialValues={new Login()}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      {({ handleSubmit, isValid, isSubmitting }) => (
+        <>
           <Box px={{ base: 0, lg: '7.188rem' }}>
             {err && <Text className='text-red-500 mb-4'>{err}</Text>}
             <Form onSubmit={handleSubmit}>
@@ -74,12 +77,17 @@ function LoginFormComponent() {
                 đăng nhập
               </Flex>
               <Flex align={'center'} justifyContent={'center'}>
-                <Link href="/reset-password">Quên mật khẩu?</Link>
+                <Link color="#115363" onClick={() => setForgotPasswordVisible(true)}>Quên mật khẩu?</Link>
               </Flex>
             </Flex>
           </Box>
-        )}
-      </Formik>
+          <ForgotPasswordPopUp
+            visible={forgotPasswordVisible}
+            onClose={() => setForgotPasswordVisible(false)}
+          />
+        </>
+      )}
+    </Formik>
   );
 }
 
