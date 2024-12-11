@@ -84,6 +84,7 @@ export class UpdateStaffDTO {
   lastName: string = '';
   positionId: number = 0;
   courtCluster: number[] = [];
+  roleAdd: string[] = [];
 
   constructor(data?: Partial<UpdateStaffDTO>) {
     if (data) {

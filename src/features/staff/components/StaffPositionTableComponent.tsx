@@ -1,4 +1,4 @@
-import { store, useStore } from '@/app/stores/store';
+import { useStore } from '@/app/stores/store';
 import {
   Center,
   Checkbox,
@@ -11,18 +11,19 @@ import {
   Th,
   Thead,
   Tr,
+  useToast,
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import ButtonPrimaryAtoms from '@/features/atoms/ButtonPrimaryAtoms';
 import { useEffect, useState } from 'react';
 import { StaffInputDTO } from '@/app/models/role.model';
-import agent from '@/app/api/agent';
-import { toast } from 'react-toastify';
+
 
 function StaffPositionTableComponent() {
   const { staffPositionStore, staffStore } = useStore();
-  const { staffRoles, StaffPositionArray, loading } = staffPositionStore;
+  const { staffRoles, StaffPositionArray, loading, loadingUpdate, updateRole, applyAll } = staffPositionStore;
   const { loadingInitial } = staffStore;
+  const toast = useToast();
   const [checkedStates, setCheckedStates] = useState<boolean[][]>([]);
 
   useEffect(() => {
@@ -50,7 +51,7 @@ function StaffPositionTableComponent() {
     });
   };
 
-  const updateRoleStaff = async () => {
+  const roleToUpdate = () => {
     const data = StaffPositionArray.map((position, positionIndex) => ({
       name: position.name,
       roles: staffRoles.filter((role, roleIndex) => checkedStates[positionIndex][roleIndex]),
@@ -63,18 +64,19 @@ function StaffPositionTableComponent() {
       });
       inputDtos.push(inputDto);
     });
-    await agent.StaffPositions.update(inputDtos)
-      .then(() => toast.success("Cập nhật thành công"))
-      .catch(() => toast.error("Cập nhật thất bại"))
+    return inputDtos;
+  }
+
+  const updateRoleStaff = async () => {
+    const inputDtos = roleToUpdate();
+    await updateRole(inputDtos, toast);
   };
 
+
+
   const applyToAll = async () => {
-    await agent.StaffPositions.applyAll()
-      .then(() => (
-        store.staffStore.loadStaffs(),
-        toast.success("Cập nhật thành công")
-      ))
-      .catch(() => toast.error("Cập nhật thất bại"))
+    const inputDtos = roleToUpdate();
+    await applyAll(inputDtos, toast);
   };
 
   return (
@@ -116,10 +118,10 @@ function StaffPositionTableComponent() {
       </TableContainer>
       <Flex justifyContent={'end'} gap={2} mt={4}>
         <ButtonPrimaryAtoms loading={loading} className="text-sm" handleOnClick={applyToAll}>
-          Apply to All
+          Áp dụng tất cả
         </ButtonPrimaryAtoms>
-        <ButtonPrimaryAtoms loading={loading} className="text-sm" handleOnClick={updateRoleStaff}>
-          Update Change
+        <ButtonPrimaryAtoms loading={loadingUpdate} className="text-sm" handleOnClick={updateRoleStaff}>
+          Thay đổi cập nhật
         </ButtonPrimaryAtoms>
       </Flex>
     </>

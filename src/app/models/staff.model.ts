@@ -17,4 +17,10 @@ export interface StaffEdit {
   phoneNumber: string;
   position: string;
   courtCluster: number[];
+  roleAdd: RolesAdd[];
+}
+
+export interface RolesAdd {
+  id: string;
+  name: string;
 }

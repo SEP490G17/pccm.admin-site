@@ -2,10 +2,14 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import _ from 'lodash';
 import { StaffInputDTO, StaffPosition } from '../models/role.model';
 import agent from '../api/agent';
+import { CreateToastFnReturn } from '@chakra-ui/react';
+import { catchErrorHandle } from '../helper/utils';
+import { StaffMessage } from '../common/toastMessage/staffMessage';
 export default class StaffPositionStore {
   staffPositionRegistry = new Map<string, StaffPosition>();
   staffRoles: string[] = [];
   loading: boolean = false;
+  loadingUpdate: boolean = false;
 
   constructor() {
     makeAutoObservable(this);
@@ -29,22 +33,34 @@ export default class StaffPositionStore {
     });
   };
 
-  applyAll = async () => {
+  applyAll = async (data: StaffInputDTO[], toast: CreateToastFnReturn) => {
     this.loading = true;
-    await runInAction(async () => {
-      await agent.StaffPositions.applyAll().then((positions) =>
-        positions.forEach(this.setStaffPosition),
-      );
+    const [err, res] = await catchErrorHandle(agent.StaffPositions.applyAll(data));
+    runInAction(() => {
+      if (err) {
+        toast(StaffMessage.updateRoleFailure(undefined, err));
+      }
+      if (res) {
+        toast(StaffMessage.updateRoleSuccess());
+      }
       this.loading = false;
     });
+    return { err, res };
   };
 
-  updateRoles = async (data: StaffInputDTO[]) => {
-    this.loading = true;
-    await runInAction(async () => {
-      await agent.StaffPositions.update(data).then((roles) => (this.staffRoles = roles));
-      this.loading = false;
+  updateRole = async (data: StaffInputDTO[], toast: CreateToastFnReturn) => {
+    this.loadingUpdate = true;
+    const [err, res] = await catchErrorHandle(agent.StaffPositions.update(data));
+    runInAction(() => {
+      if (err) {
+        toast(StaffMessage.updateRoleFailure(undefined, err));
+      }
+      if (res) {
+        toast(StaffMessage.updateRoleSuccess());
+      }
+      this.loadingUpdate = false;
     });
+    return { err, res };
   };
 
   get StaffPositionArray() {
