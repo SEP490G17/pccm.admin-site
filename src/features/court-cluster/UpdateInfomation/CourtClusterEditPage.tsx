@@ -42,7 +42,7 @@ const CourtClusterEditPage = observer(() => {
       address: Yup.string().required('Địa chỉ là bắt buộc'),
       images: Yup.array()
         .of(Yup.string().url('URL không hợp lệ'))
-        .min(4, 'Cần ít nhất 4 ảnh')
+        .min(2, 'Cần ít nhất 4 ảnh')
         .required('Ảnh là bắt buộc'),
     })
     .test('open-time-before-close-time', 'Giờ mở cửa phải nhỏ hơn giờ đóng cửa', function (values) {

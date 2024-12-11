@@ -63,5 +63,5 @@ export function calculateTimeDifferenceInHours(startTime: string, endTime: strin
 
   const differenceInHours = differenceInMinutes / 60;
 
-  return differenceInHours;
+  return parseFloat(differenceInHours.toFixed(2));
 }

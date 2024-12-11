@@ -348,8 +348,9 @@ export default class CourtClusterStore {
   }
 
   setServiceSearchTemp = async (searchTemp:string, courtClusterId: number, toast:CreateToastFnReturn) =>{
-    this.productCourtClusterPageParams.clearLazyPage();
-    this.productCourtClusterPageParams.searchTerm = searchTemp;
+    this.serviceCourtClusterPageParams.clearLazyPage();
+    this.serviceCourtClusterPageParams.searchTerm = searchTemp;
+    this.servicesOfClusterRegistry.clear();
     return await this.loadServicesOfCourtCluster(courtClusterId,toast);
   }
 
