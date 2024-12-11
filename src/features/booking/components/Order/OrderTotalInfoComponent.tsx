@@ -42,7 +42,7 @@ const OrderTotalInfoComponent = observer(({ isEdit }: OrderTotalInfoProps) => {
           new Intl.NumberFormat('vi-VN').format(
             isEdit ? 
             bookingStore.getTotalProductAmountForUpdate():
-            bookingStore.getTotalProductAmount(productOfClusterRegistry)
+            bookingStore.getTotalProductAmount()
           )}{' '}
           VND
         </Heading>

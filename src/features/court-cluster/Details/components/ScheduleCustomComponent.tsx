@@ -78,6 +78,7 @@ const ScheduleCustomComponent = observer(({ selectedCourtCluster }: IProps) => {
             duration: 5000,
             isClosable: true,
           });
+          return;
         }
 
         if (dayjs(playEnd).isBefore(minEndDate) && !dayjs(playEnd).isSame(minEndDate)) {

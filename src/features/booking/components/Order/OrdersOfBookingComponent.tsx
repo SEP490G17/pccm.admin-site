@@ -33,6 +33,13 @@ const OrdersOfBookingComponent = observer(() => {
   if (!selectedBooking) return;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleOpenDetaisOrder = async (id: number) => {
+    bookingStore.selectedOrder = undefined;
+    courtClusterStore.productCourtClusterPageParams.reset();
+    courtClusterStore.serviceCourtClusterPageParams.reset();
+    courtClusterStore.productOfClusterRegistry.clear();
+    courtClusterStore.servicesOfClusterRegistry.clear();
+    bookingStore.updateProductItems.clear();
+    bookingStore.updateServiceItems.clear();
     onOpen();
     await bookingStore.getDetailsOrder(id, toast);
     setLoadingInitialProductPage(true);

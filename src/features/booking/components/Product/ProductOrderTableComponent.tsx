@@ -14,8 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 const ProductOrderTableComponent = observer(() => {
-  const { bookingStore, courtClusterStore } = useStore();
-  const { productOfClusterRegistry } = courtClusterStore;
+  const { bookingStore } = useStore();
   const {
     ProductItemIdArray,
     selectedProductItems,
@@ -58,13 +57,13 @@ const ProductOrderTableComponent = observer(() => {
         </Thead>
         <Tbody>
           {ProductItemIdArray.map((productItemId) => {
-            const product = productOfClusterRegistry.get(productItemId);
+            const product = selectedProductItems.get(productItemId);
             if (product) {
-              const total = product.price * (selectedProductItems.get(productItemId) ?? 0);
+              const total = product.price * product.quantity;
               return (
                 <Tr key={product.id}>
                   <Td >{product.productName}</Td>
-                  <Td>{selectedProductItems.get(productItemId)}</Td>
+                  <Td>{product.quantity}</Td>
                   <Td>{new Intl.NumberFormat('vi-VN').format(product.price)} VND</Td>
                   <Td>{new Intl.NumberFormat('vi-VN').format(total)} VND</Td>
                   <Td>

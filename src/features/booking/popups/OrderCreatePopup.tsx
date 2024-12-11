@@ -49,11 +49,17 @@ const OrderCreatePopup: FC<OrderCreatePopupProps> = observer(({ booking }) => {
       courtClusterStore.clearDetailsCourtCluster();
     };
     // Remove dependencies if stable references are guaranteed
-  }, []);
+  }, [categoryStore,toast,courtClusterStore]);
 
   const handleCreateOrderOpen = async () => {
     if (!booking.bookingDetails?.courtClusterId) return;
-
+    bookingStore.resetOnClose();
+    courtClusterStore.productOfClusterRegistry.clear();
+    courtClusterStore.productCourtClusterPageParams.reset();
+    courtClusterStore.productCourtClusterPageParams.clearLazyPage();
+    courtClusterStore.servicesOfClusterRegistry.clear();
+    courtClusterStore.serviceCourtClusterPageParams.reset();
+    courtClusterStore.serviceCourtClusterPageParams.clearLazyPage();
     onOpen();
     bookingStore.clearOrderList();
     setLoadingInitialProductPage(true);
@@ -122,8 +128,10 @@ const OrderCreatePopup: FC<OrderCreatePopupProps> = observer(({ booking }) => {
                 bookingStore.resetOnClose();
                 courtClusterStore.productOfClusterRegistry.clear();
                 courtClusterStore.productCourtClusterPageParams.reset();
+                courtClusterStore.productCourtClusterPageParams.clearLazyPage();
                 courtClusterStore.servicesOfClusterRegistry.clear();
                 courtClusterStore.serviceCourtClusterPageParams.reset();
+                courtClusterStore.serviceCourtClusterPageParams.clearLazyPage();
               }}
             >
               Đóng

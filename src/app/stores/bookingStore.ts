@@ -8,7 +8,6 @@ import {
 } from '../helper/utils';
 import {
   OrderModel,
-  ProductsForOrderCreate,
   OrderOfBooking,
   ProductForOrderDetails,
   ServiceForOrderDetails,
@@ -33,8 +32,8 @@ export default class BookingStore {
   bookingConflict: BookingForList[] = [];
   selectedBooking?: BookingDetails;
   orderOfBooking: OrderOfBooking[] = [];
-  selectedProductItems = new Map<number, number>();
-  selectedServiceItems = new Map<number, number>();
+  selectedProductItems = new Map<number, Product>();
+  selectedServiceItems = new Map<number, Service>();
   totalProductAmount = 0;
   totalServiceAmount = 0;
 
@@ -226,18 +225,14 @@ export default class BookingStore {
     return Array.from(this.updateServiceItems.values());
   }
 
-  getTotalProductAmount(productOfClusterRegistry?: Map<number, Product>) {
+  getTotalProductAmount() {
     if (
-      productOfClusterRegistry &&
       this.selectedProductItems &&
       this.selectedProductItems.size > 0
     ) {
       let sum = 0;
-      this.selectedProductItems.forEach((quantity, productId) => {
-        const product = productOfClusterRegistry.get(productId);
-        if (product) {
-          sum += product.price * quantity;
-        }
+      this.selectedProductItems.forEach((product) => {
+          sum += product.price * product.quantity;
       });
       this.totalProductAmount = sum;
       return sum;
@@ -372,8 +367,8 @@ export default class BookingStore {
     const pending = toast(CommonMessage.loadingMessage('Tạo Order'));
     const model: OrderModel = {
       bookingId: bookingId,
-      orderForProducts: Array.from(this.selectedProductItems, ([productId, quantity]) => ({
-        productId,
+      orderForProducts: Array.from(this.selectedProductItems.values(), ({id,quantity}) => ({
+        productId:id,
         quantity,
       })),
       orderForServices: Array.from(this.selectedServiceItems, ([serviceId]) => ({
@@ -395,23 +390,29 @@ export default class BookingStore {
   };
 
   addProductToOrder = (productId: number) => {
-    const total = this.selectedProductItems.get(productId);
+    const check = this.selectedProductItems.get(productId);
     const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
     if (product && product.quantity > 0) {
       product.quantity -= 1;
       store.courtClusterStore.productOfClusterRegistry.set(productId, product);
-      if (total) {
-        this.selectedProductItems.set(productId, total + 1);
+      if (check) {
+        const selectedProduct = {...product};
+        selectedProduct.quantity = check.quantity +=1;
+        this.selectedProductItems.set(productId, selectedProduct);
       } else {
-        this.selectedProductItems.set(productId, 1);
+        const selectProduct = {...product};
+        selectProduct.quantity =1;
+        this.selectedProductItems.set(productId, selectProduct);
       }
     }
   };
 
   minusProductToOrder = (productId: number) => {
     const total = this.selectedProductItems.get(productId);
-    if (total && total > 1) {
-      this.selectedProductItems.set(productId, total - 1);
+    if (total && total.quantity > 1) {
+      const selectedProduct = {...total};
+      selectedProduct.quantity = total.quantity - 1;
+      this.selectedProductItems.set(productId, selectedProduct);
     } else {
       this.selectedProductItems.delete(productId);
     }
@@ -424,9 +425,9 @@ export default class BookingStore {
 
   removeProductFromOrder = (productId: number) => {
     const product = store.courtClusterStore.productOfClusterRegistry.get(productId);
-    const quantity = this.selectedProductItems.get(productId);
-    if (product && quantity) {
-      product.quantity += quantity;
+    const selectedProduct = this.selectedProductItems.get(productId);
+    if (product && selectedProduct) {
+      product.quantity += selectedProduct.quantity;
       store.courtClusterStore.productOfClusterRegistry.set(productId, product);
     }
     this.selectedProductItems.delete(productId);
@@ -436,17 +437,15 @@ export default class BookingStore {
     return Array.from(this.selectedProductItems.keys());
   }
 
-  get arrayObjectProductConvert(): ProductsForOrderCreate[] {
-    return Array.from(this.selectedProductItems, ([productId, quantity]) => ({
-      productId,
-      quantity,
-    }));
+  get arrayObjectProductConvert(): Product[] {
+    return Array.from(this.selectedProductItems.values());
   }
 
   addServiceToOrder = (serviceId: number) => {
     const total = this.selectedServiceItems.get(serviceId);
-    if (!total) {
-      this.selectedServiceItems.set(serviceId, 1);
+    const service = store.courtClusterStore.servicesOfClusterRegistry.get(serviceId);
+    if (!total && service) {
+      this.selectedServiceItems.set(serviceId, service);
     }
   };
 
@@ -459,17 +458,6 @@ export default class BookingStore {
   }
 
   resetOnClose = () => {
-    this.ProductItemIdArray.forEach((p) => {
-      const productSelected = this.selectedProductItems.get(p);
-      if (productSelected) {
-        const product = store.courtClusterStore.productOfClusterRegistry.get(p);
-        if (product) {
-          product.quantity += productSelected;
-          store.courtClusterStore.productOfClusterRegistry.set(p, product);
-        }
-      }
-    });
-
     this.selectedProductItems.clear();
     this.selectedServiceItems.clear();
   };
