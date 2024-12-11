@@ -61,8 +61,6 @@ export default class CommonStore {
     return this.getRoles().some(role => avaiableRoles.includes(role));
   }
   
-
-
   setTokenSession = (token: string | null) => {
     if (token) sessionStorage.setItem('jwt', token);
   };

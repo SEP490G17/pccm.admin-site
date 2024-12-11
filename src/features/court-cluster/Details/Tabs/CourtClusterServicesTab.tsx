@@ -21,7 +21,7 @@ import { debounce } from 'lodash';
 import LoadMoreButtonAtoms from '@/features/atoms/LoadMoreButtonAtoms';
 
 const CourtClusterServicesTab = observer(() => {
-  const { courtClusterStore } = useStore();
+  const { courtClusterStore, commonStore } = useStore();
   const toast = useToast();
   const {
     loadingServicesPage,
@@ -32,14 +32,16 @@ const CourtClusterServicesTab = observer(() => {
     setServiceSearchTemp,
     servicesOfClusterRegistry,
     loadingIntitialServicePage,
-    setLoadingInitialServicePage
+    setLoadingInitialServicePage,
   } = courtClusterStore;
   if (!selectedCourtCluster) return;
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     setLoadingInitialServicePage(true);
-    loadServicesOfCourtCluster(selectedCourtCluster.id, toast).then(()=>setLoadingInitialServicePage(false));
+    loadServicesOfCourtCluster(selectedCourtCluster.id, toast).then(() =>
+      setLoadingInitialServicePage(false),
+    );
   }, [selectedCourtCluster, loadServicesOfCourtCluster, toast, setLoadingInitialServicePage]);
 
   const [isPending, setIsPending] = useState(false);
@@ -71,12 +73,14 @@ const CourtClusterServicesTab = observer(() => {
             isPending={isPending}
             handleChange={onSearchChange}
           />
-          <ButtonPrimaryAtoms className="bg-primary-900" handleOnClick={onOpen}>
-            <Center gap={1}>
-              <PlusIcon color="white" height="1.5rem" width="1.5rem" />
-              Thêm mới
-            </Center>
-          </ButtonPrimaryAtoms>
+          {commonStore.isEditSuppliesAble() && (
+            <ButtonPrimaryAtoms className="bg-primary-900" handleOnClick={onOpen}>
+              <Center gap={1}>
+                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+                Thêm mới
+              </Center>
+            </ButtonPrimaryAtoms>
+          )}
         </Flex>
       </Flex>
 
@@ -107,7 +111,11 @@ const CourtClusterServicesTab = observer(() => {
           ))}
         </Grid>
       )}
-      <CreateServicePage isOpen={isOpen} onClose={onClose} selectedCourtClusterId={selectedCourtCluster.id} />
+      <CreateServicePage
+        isOpen={isOpen}
+        onClose={onClose}
+        selectedCourtClusterId={selectedCourtCluster.id}
+      />
     </Box>
   );
 });

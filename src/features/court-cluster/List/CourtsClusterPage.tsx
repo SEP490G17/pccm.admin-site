@@ -12,9 +12,9 @@ import PlusIcon from '@/features/atoms/PlusIcon';
 import { debounce } from 'lodash';
 
 const CourtClusterPage = observer(() => {
-  const { courtClusterStore } = useStore();
+  const { courtClusterStore, commonStore } = useStore();
   const { loadCourtsCluster, courtPageParams } = courtClusterStore;
-  const toast= useToast();
+  const toast = useToast();
 
   useEffect(() => {
     if (courtClusterStore.courtClusterRegistry.size == 0) {
@@ -50,15 +50,18 @@ const CourtClusterPage = observer(() => {
               handleChange={onSearchChange}
               isPending={isPending}
             />
-            <ButtonPrimaryAtoms
-              className="bg-primary-900"
-              handleOnClick={() => router.navigate('/cum-san/tao')}
-            >
-              <Center gap={1}>
-                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
-                Thêm mới
-              </Center>
-            </ButtonPrimaryAtoms>
+
+            {commonStore.isEditClusterAble() && (
+              <ButtonPrimaryAtoms
+                className="bg-primary-900"
+                handleOnClick={() => router.navigate('/cum-san/tao')}
+              >
+                <Center gap={1}>
+                  <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+                  Thêm mới
+                </Center>
+              </ButtonPrimaryAtoms>
+            )}
           </Flex>
         </Box>
       </Flex>

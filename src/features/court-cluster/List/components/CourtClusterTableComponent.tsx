@@ -24,7 +24,7 @@ import { Link } from 'react-router-dom';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
 const CourtClusterTableComponent = observer(() => {
-  const { courtClusterStore } = useStore();
+  const { courtClusterStore, commonStore } = useStore();
   const { courtClusterArray, loading, loadingInitial, deleteCourtCluster, visibleToggle } =
     courtClusterStore;
   const toast = useToast();
@@ -90,34 +90,38 @@ const CourtClusterTableComponent = observer(() => {
                       colorScheme={courtCluster.isVisible ? 'blue' : 'red'}
                       className="w-36"
                     >
-                      <TagLabel className='text-center'>{courtCluster.isVisible ? 'Hiển thị' : 'Không hiển thị'}</TagLabel>
+                      <TagLabel className="text-center">
+                        {courtCluster.isVisible ? 'Hiển thị' : 'Không hiển thị'}
+                      </TagLabel>
                     </Tag>
                   </Td>
                   <Td>
                     <Flex className={'items-center gap-2.5 flex-row'}>
-                      <Tooltip
-                        hasArrow
-                        placement="top"
-                        label={courtCluster.isVisible ? 'Tắt hiển thị' : 'Hiển thị'}
-                        bg="gray.300"
-                        color="black"
-                      >
-                        <IconButton
-                          as={Link}
-                          className="w-12"
-                          icon={
-                            courtCluster.isVisible ? (
-                              <FaRegEyeSlash className="text-xl" />
-                            ) : (
-                              <FaRegEye className="text-xl" />
-                            )
-                          }
-                          size={'md'}
-                          colorScheme={courtCluster.isVisible ? 'gray' : 'teal'}
-                          aria-label={'Details'}
-                          onClick={() => handleVisible(courtCluster.id, courtCluster.isVisible)}
-                        />
-                      </Tooltip>
+                      {commonStore.isEditClusterAble() && (
+                        <Tooltip
+                          hasArrow
+                          placement="top"
+                          label={courtCluster.isVisible ? 'Tắt hiển thị' : 'Hiển thị'}
+                          bg="gray.300"
+                          color="black"
+                        >
+                          <IconButton
+                            as={Link}
+                            className="w-12"
+                            icon={
+                              courtCluster.isVisible ? (
+                                <FaRegEyeSlash className="text-xl" />
+                              ) : (
+                                <FaRegEye className="text-xl" />
+                              )
+                            }
+                            size={'md'}
+                            colorScheme={courtCluster.isVisible ? 'gray' : 'teal'}
+                            aria-label={'Details'}
+                            onClick={() => handleVisible(courtCluster.id, courtCluster.isVisible)}
+                          />
+                        </Tooltip>
+                      )}
 
                       <Tooltip
                         hasArrow
@@ -136,6 +140,8 @@ const CourtClusterTableComponent = observer(() => {
                           aria-label={'Details'}
                         />
                       </Tooltip>
+                      {commonStore.isEditClusterAble() && (
+
                       <DeleteButtonAtom
                         className="w-12"
                         buttonSize="md"
@@ -145,7 +151,7 @@ const CourtClusterTableComponent = observer(() => {
                         onDelete={async () => {
                           await handleDelete(courtCluster.id);
                         }}
-                      />
+                      />)}
                     </Flex>
                   </Td>
                 </Tr>

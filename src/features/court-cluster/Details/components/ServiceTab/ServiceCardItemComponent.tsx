@@ -31,9 +31,21 @@ const ServiceCardItemComponent = observer(({ service }: IProps) => {
           </GridItem>
           <GridItem rowSpan={4}>
             <Flex className={'flex-col py-2 gap-3 h-full'}>
-              <Text fontWeight={'medium'} fontSize={'0.9rem'}>
-                Mô tả: {service.description}
-              </Text>
+            <Text
+              fontWeight={'medium'}
+              fontSize={'0.9rem'}
+              style={{
+                wordBreak: 'break-word', // Bẻ từ bất kỳ vị trí nào nếu quá dài
+                overflowWrap: 'break-word', // Ngắt dòng tại từ nếu quá dài
+                overflow: 'hidden', // Ẩn phần nội dung thừa
+                textOverflow: 'ellipsis', // Thêm dấu "..." nếu cần
+                display: '-webkit-box',
+                WebkitLineClamp: 2, // Giới hạn số dòng
+                WebkitBoxOrient: 'vertical',
+              }}
+            >
+              Mô tả: {service.description}
+            </Text>
               <Heading size={'sm'}>Giá tiền : {Number(service.price).toLocaleString('vn')} VND</Heading>
             </Flex>
           </GridItem>

@@ -82,6 +82,7 @@ const ProductTableComponent = observer(() => {
                       src={product.thumbnailUrl}
                       alt={product.productName}
                       width="10rem"
+                      height={"6rem"}
                       objectFit="cover"
                       borderRadius="md"
                     />

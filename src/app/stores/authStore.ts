@@ -65,5 +65,8 @@ export default class AuthStore {
       this.userApp = user;
       store.commonStore.setUserApp(user);
     });
+    if(user.roles.length == 0){
+      store.authStore.logout();
+    }
   };
 }

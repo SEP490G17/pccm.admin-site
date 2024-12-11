@@ -95,7 +95,9 @@ const BannerTableComponent = observer(() => {
                       src={banner.imageUrl}
                       alt={banner.title}
                       width="10rem"
+                      height={'6rem'}
                       borderRadius={'8px'}
+                      className='object-cover'
                     />
                   </Td>
                   <Td>

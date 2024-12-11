@@ -21,7 +21,7 @@ import Select from 'react-select';
 import LoadMoreButtonAtoms from '@/features/atoms/LoadMoreButtonAtoms';
 
 const CourtClusterProductsTab = observer(() => {
-  const { courtClusterStore, categoryStore } = useStore();
+  const { courtClusterStore, categoryStore, commonStore } = useStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const {
@@ -33,7 +33,7 @@ const CourtClusterProductsTab = observer(() => {
     filterProductByCategory,
     productCourtClusterPageParams,
     loadingInitialProductPage,
-    setLoadingInitialProductPage
+    setLoadingInitialProductPage,
   } = courtClusterStore;
   if (!selectedCourtCluster) return;
   const { loadCategories, categoryOption } = categoryStore;
@@ -42,18 +42,17 @@ const CourtClusterProductsTab = observer(() => {
     loadCategories(toast);
     if (productOfClusterRegistry.size <= 1) {
       setLoadingInitialProductPage(true);
-      loadProductsOfCourtCluster(selectedCourtCluster.id, toast).then(()=>{
+      loadProductsOfCourtCluster(selectedCourtCluster.id, toast).then(() => {
         setLoadingInitialProductPage(false);
       });
     }
-    
   }, [
     loadCategories,
     loadProductsOfCourtCluster,
     productOfClusterRegistry.size,
     toast,
     selectedCourtCluster,
-    setLoadingInitialProductPage
+    setLoadingInitialProductPage,
   ]);
 
   const handleChangeCategory = async ({ value }: { value: number; label: string }) => {
@@ -94,14 +93,16 @@ const CourtClusterProductsTab = observer(() => {
             }
           ></Select>
         </Flex>
-        <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
-          <ButtonPrimaryAtoms className="bg-primary-900" handleOnClick={onOpen}>
-            <Center gap={1}>
-              <PlusIcon color="white" height="1.5rem" width="1.5rem" />
-              Thêm mới
-            </Center>
-          </ButtonPrimaryAtoms>
-        </Flex>
+        {commonStore.isEditSuppliesAble() && (
+          <Flex textAlign="right" flexWrap={'wrap'} gap={'1rem'}>
+            <ButtonPrimaryAtoms className="bg-primary-900" handleOnClick={onOpen}>
+              <Center gap={1}>
+                <PlusIcon color="white" height="1.5rem" width="1.5rem" />
+                Thêm mới
+              </Center>
+            </ButtonPrimaryAtoms>
+          </Flex>
+        )}
       </Flex>
       {!loadingInitialProductPage && (
         <>
@@ -110,8 +111,14 @@ const CourtClusterProductsTab = observer(() => {
               <ProductCardItemComponent key={product.id} product={product} />
             ))}
           </Grid>
-          <Flex className='float-end'>
-            <LoadMoreButtonAtoms hidden={productOfClusterRegistry.size >= productCourtClusterPageParams.totalElement} loading={loadingProductsPage} handleOnClick={()=>{loadProductsOfCourtCluster(selectedCourtCluster.id, toast)}}/>
+          <Flex className="float-end">
+            <LoadMoreButtonAtoms
+              hidden={productOfClusterRegistry.size >= productCourtClusterPageParams.totalElement}
+              loading={loadingProductsPage}
+              handleOnClick={() => {
+                loadProductsOfCourtCluster(selectedCourtCluster.id, toast);
+              }}
+            />
           </Flex>
         </>
       )}
@@ -124,7 +131,14 @@ const CourtClusterProductsTab = observer(() => {
           ))}
         </Grid>
       )}
-      <CreateProductPage isOpen={isOpen} onClose={onClose} selectedCourtClusterId={selectedCourtCluster.id}/>
+
+      {commonStore.isEditSuppliesAble() && (
+        <CreateProductPage
+          isOpen={isOpen}
+          onClose={onClose}
+          selectedCourtClusterId={selectedCourtCluster.id}
+        />
+      )}
     </Box>
   );
 });
