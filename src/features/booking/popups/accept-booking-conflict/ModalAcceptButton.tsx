@@ -35,7 +35,7 @@ const ModalAcceptButton = ({ booking, isOpen, onClose }: ModalAcceptButtonProps)
             const bookingConflict: BookingConflict = {
                 BookingId: booking.id,
                 CourtId: booking.courtId,
-                FromDate: dayjs(booking.startDay).add(7, 'hour').toISOString(),
+                FromDate: dayjs(booking.startDay, 'DD/MM/YYYY', true).add(7, 'hour').toISOString(),
                 FromTime: dayjs(startTime, 'HH:mm').format('HH:mm:ss'),
                 ToTime: dayjs(endTime, 'HH:mm').format('HH:mm:ss'),
             };
