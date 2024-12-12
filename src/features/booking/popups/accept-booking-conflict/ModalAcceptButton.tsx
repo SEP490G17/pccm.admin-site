@@ -98,7 +98,7 @@ const ModalAcceptButton = ({ booking, isOpen, onClose }: ModalAcceptButtonProps)
                             <GridItem colSpan={2}>Hành động</GridItem>
                         </Grid>
                         <Skeleton isLoaded={!bookingStore.loadingConflict}>
-                            {bookingStore.bookingConflict.map((booking, index) => {
+                            {bookingStore.bookingConflictArray.map((booking, index) => {
                                 ids.push(booking.id);
                                 return (
                                     <BookingConflictGridItem
