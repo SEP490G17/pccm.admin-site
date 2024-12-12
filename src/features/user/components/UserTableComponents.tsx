@@ -20,7 +20,6 @@ import { useDisclosure } from '@chakra-ui/react';
 import UserDetailPopUp from '@/features/user/UserDetailPopUp';
 import ResetPasswordDialog from './ResetPasswordDialog';
 import { ResetPasswordDTO } from '@/app/models/user.model';
-import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 
 function UserTableComponents() {
@@ -96,7 +95,6 @@ function UserTableComponents() {
               <Th w={'10rem'}>Tên đăng kí</Th>
               <Th w={'15rem'}>Email</Th>
               <Th w={'10rem'}>Số điện thoại</Th>
-              <Th w={'10rem'}>Ngày mở khóa</Th>
               <Th w={'10rem'}>Trạng thái</Th>
               <Th w={'10rem'}>Tùy chọn</Th>
             </Tr>
@@ -111,7 +109,6 @@ function UserTableComponents() {
                   <Td>{user.fullName}</Td>
                   <Td>{user.email}</Td>
                   <Td>{user.phoneNumber}</Td>
-                  <Td>{user.lockoutEnd ? dayjs(user.lockoutEnd).format('DD/MM/YYYY') : ''}</Td>
                   <Td>
                     <Switch
                       isChecked={localStatuses[user.username] === true}

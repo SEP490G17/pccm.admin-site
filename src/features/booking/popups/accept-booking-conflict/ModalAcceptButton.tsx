@@ -32,10 +32,15 @@ const ModalAcceptButton = ({ booking, isOpen, onClose }: ModalAcceptButtonProps)
     useEffect(() => {
         if (isOpen && booking && booking.playTime) {
             const [startTime, endTime] = booking.playTime.split(' - ');
+            const parsedDate = dayjs(booking.startDay, 'YYYY-MM-DDTHH:mm:ss', true).isValid()
+                ? dayjs(booking.startDay)
+                : dayjs(booking.startDay, 'DD/MM/YYYY', true);
+
+            const fromDate = parsedDate.add(7, 'hour').toISOString();
             const bookingConflict: BookingConflict = {
                 BookingId: booking.id,
                 CourtId: booking.courtId,
-                FromDate: dayjs(booking.startDay).add(7, 'hour').toISOString(),
+                FromDate: fromDate,
                 FromTime: dayjs(startTime, 'HH:mm').format('HH:mm:ss'),
                 ToTime: dayjs(endTime, 'HH:mm').format('HH:mm:ss'),
             };
@@ -93,7 +98,7 @@ const ModalAcceptButton = ({ booking, isOpen, onClose }: ModalAcceptButtonProps)
                             <GridItem colSpan={2}>Hành động</GridItem>
                         </Grid>
                         <Skeleton isLoaded={!bookingStore.loadingConflict}>
-                            {bookingStore.bookingConflict.map((booking, index) => {
+                            {bookingStore.bookingConflictArray.map((booking, index) => {
                                 ids.push(booking.id);
                                 return (
                                     <BookingConflictGridItem

@@ -282,6 +282,27 @@ export default class BookingClusterStore {
     return { err, res };
   };
 
+  denySingleConflictBooking = async (id: number, toast: CreateToastFnReturn) => {
+    const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.deny.title));
+    const [err, res] = await catchErrorHandle(agent.BookingAgent.denyBooking(id));
+    runInAction(() => {
+      toast.close(pendingToast);
+      if (err) {
+        toast(BookingMessage.denyFailure());
+      }
+      if (res) {
+        this.bookingTodayRegistry.delete(res.id);
+        this.loadBookingTodayArray();
+        this.bookingForScheduleRegistry.delete(res.id);
+        this.bookingPendingRegistry.delete(id);
+        store.bookingStore.bookingConflictRegistry.delete(res.id);
+        toast(BookingMessage.denySuccess());
+        this.setBookingAll(res);
+      }
+    });
+    return { err, res };
+  };
+
   denyConflictBooking = async (data: number[], toast: CreateToastFnReturn) => {
     const pendingToast = toast(CommonMessage.loadingMessage(DefaultBookingText.deny.title));
     const [err, res] = await catchErrorHandle(agent.BookingAgent.denyBookingConflict(data));
@@ -321,9 +342,9 @@ export default class BookingClusterStore {
         this.setBookingAll(res);
         this.bookingForScheduleRegistry.delete(res.id);
         this.setBookingDeny(res);
-        if(store.bookingStore.bookingRegistry.size > 0){
+        if (store.bookingStore.bookingRegistry.size > 0) {
           const booking = store.bookingStore.bookingRegistry.get(id);
-          if(booking){
+          if (booking) {
             booking.status = BookingStatus.Cancelled;
             store.bookingStore.bookingRegistry.set(booking.id, booking);
           }
@@ -382,13 +403,13 @@ export default class BookingClusterStore {
         this.bookingTodayRegistry.set(res.id, this.convertBookingStartAndEndUTCToG7(res));
         this.loadBookingTodayArray();
         this.setBookingAll(res);
-        if(store.bookingStore.selectedBooking){
+        if (store.bookingStore.selectedBooking) {
           store.bookingStore.getDetailsBooking(id, toast);
         }
-        if(store.bookingStore.bookingRegistry.size > 0){
+        if (store.bookingStore.bookingRegistry.size > 0) {
           const booking = store.bookingStore.bookingRegistry.get(id);
-          if(booking){
-            booking.paymentStatus =  PaymentStatus.Success;
+          if (booking) {
+            booking.paymentStatus = PaymentStatus.Success;
             store.bookingStore.bookingRegistry.set(id, booking);
           }
         }
@@ -639,8 +660,8 @@ export default class BookingClusterStore {
     const convert = mapBookingToBookingForList(booking);
     if (booking.status == BookingStatus.Confirmed) {
       this.setBooking(booking);
-    }else{
-      this.setBookingPending(convert)
+    } else {
+      this.setBookingPending(convert);
     }
     this.setBookingToday(convert);
     this.loadBookingTodayArray();
@@ -661,7 +682,7 @@ export default class BookingClusterStore {
   private convertBookingStartAndEndUTCToG7(booking: BookingForList) {
     const startTime = dayjs(booking.startDay).add(7, 'hour'); // Convert to GMT+7
     const endTime = dayjs(booking.endDay).add(7, 'hour'); // Convert to GMT+7
-    const untilTime = booking.untilDay != null ? dayjs(booking.untilDay).add(7,'hour') : null; // Convert to GMT+7
+    const untilTime = booking.untilDay != null ? dayjs(booking.untilDay).add(7, 'hour') : null; // Convert to GMT+7
     const startDay = startTime.format('DD/MM/YYYY');
     const endDay = endTime.format('DD/MM/YYYY');
     const untilDay = untilTime != null ? untilTime.format('DD/MM/YYYY') : null;
@@ -677,8 +698,7 @@ export default class BookingClusterStore {
   }
   //#endregion
 
-
-  reset = () =>{
+  reset = () => {
     this.bookingAllRegistry.clear();
     this.bookingDenyRegistry.clear();
     this.bookingTodayRegistry.clear();
@@ -689,6 +709,5 @@ export default class BookingClusterStore {
     this.bookingDenyPageParam.reset();
     this.bookingTodayPageParam.reset();
     this.bookingPendingPageParam.reset();
-
-  }
+  };
 }
