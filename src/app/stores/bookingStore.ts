@@ -29,7 +29,6 @@ export default class BookingStore {
   loading: boolean = false;
   loadingOrder: boolean = false;
   loadingConflict: boolean = false;
-  bookingConflict: BookingForList[] = [];
   selectedBooking?: BookingDetails;
   orderOfBooking: OrderOfBooking[] = [];
   selectedProductItems = new Map<number, Product>();
@@ -40,7 +39,7 @@ export default class BookingStore {
   selectedOrder?: OrderModelUpdate;
   updateProductItems = new Map<number, ProductForOrderDetails>();
   updateServiceItems = new Map<number, ServiceForOrderDetails>();
-
+  bookingConflictRegistry = new Map<number, BookingForList>();
   bookingRegistry = new Map<number, BookingForList>();
   bookingPageParams = new BookingPageParams();
   constructor() {
@@ -131,6 +130,10 @@ export default class BookingStore {
 
   get bookingArray() {
     return Array.from(this.bookingRegistry.values());
+  }
+
+  get bookingConflictArray() {
+    return Array.from(this.bookingConflictRegistry.values());
   }
 
   getDetailsBooking = async (id: number, toast: CreateToastFnReturn) => {
@@ -226,13 +229,10 @@ export default class BookingStore {
   }
 
   getTotalProductAmount() {
-    if (
-      this.selectedProductItems &&
-      this.selectedProductItems.size > 0
-    ) {
+    if (this.selectedProductItems && this.selectedProductItems.size > 0) {
       let sum = 0;
       this.selectedProductItems.forEach((product) => {
-          sum += product.price * product.quantity;
+        sum += product.price * product.quantity;
       });
       this.totalProductAmount = sum;
       return sum;
@@ -352,7 +352,10 @@ export default class BookingStore {
         toast(BookingMessage.getConfligFailure());
       }
       if (res) {
-        this.bookingConflict = res;
+        this.bookingConflictRegistry.clear();
+        res.forEach((booking) => {
+          this.setBookingConflict(booking);
+        });
       }
       this.loadingConflict = false;
     });
@@ -362,13 +365,17 @@ export default class BookingStore {
     this.bookingRegistry.set(booking.id, convertBookingStartAndEndUTCToG7(booking));
   };
 
+  readonly setBookingConflict = (booking: BookingForList) => {
+    this.bookingConflictRegistry.set(booking.id, convertBookingStartAndEndUTCToG7(booking));
+  };
+
   //#region  create Order
   createOrder = async (bookingId: number, toast: CreateToastFnReturn) => {
     const pending = toast(CommonMessage.loadingMessage('Tạo Order'));
     const model: OrderModel = {
       bookingId: bookingId,
-      orderForProducts: Array.from(this.selectedProductItems.values(), ({id,quantity}) => ({
-        productId:id,
+      orderForProducts: Array.from(this.selectedProductItems.values(), ({ id, quantity }) => ({
+        productId: id,
         quantity,
       })),
       orderForServices: Array.from(this.selectedServiceItems, ([serviceId]) => ({
@@ -396,12 +403,12 @@ export default class BookingStore {
       product.quantity -= 1;
       store.courtClusterStore.productOfClusterRegistry.set(productId, product);
       if (check) {
-        const selectedProduct = {...product};
-        selectedProduct.quantity = check.quantity +=1;
+        const selectedProduct = { ...product };
+        selectedProduct.quantity = check.quantity += 1;
         this.selectedProductItems.set(productId, selectedProduct);
       } else {
-        const selectProduct = {...product};
-        selectProduct.quantity =1;
+        const selectProduct = { ...product };
+        selectProduct.quantity = 1;
         this.selectedProductItems.set(productId, selectProduct);
       }
     }
@@ -410,7 +417,7 @@ export default class BookingStore {
   minusProductToOrder = (productId: number) => {
     const total = this.selectedProductItems.get(productId);
     if (total && total.quantity > 1) {
-      const selectedProduct = {...total};
+      const selectedProduct = { ...total };
       selectedProduct.quantity = total.quantity - 1;
       this.selectedProductItems.set(productId, selectedProduct);
     } else {
