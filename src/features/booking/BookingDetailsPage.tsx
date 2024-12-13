@@ -44,7 +44,7 @@ const BookingDetailsPage = observer(() => {
     return () => {
       clearDetailsBooking();
     };
-  }, [getDetailsBooking, id, toast, clearDetailsBooking]);
+  }, [getDetailsBooking, id, toast, clearDetailsBooking,onOpen,payment]);
   const cancelRef = React.useRef<any>();
   return (
     <>
