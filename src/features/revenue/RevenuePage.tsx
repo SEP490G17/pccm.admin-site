@@ -13,6 +13,7 @@ import {
     Th,
     Thead,
     Tr,
+    Tooltip
 } from '@chakra-ui/react';
 import { Formik, Form, FieldProps, Field } from 'formik';
 import SelectFieldAtoms from '@/app/common/form/SelectFieldAtoms';
@@ -203,9 +204,11 @@ const RevenuePage = observer(() => {
                                                     <Th color="white" borderRight="1px solid #ddd">Mã số</Th>
                                                     <Th color="white" borderRight="1px solid #ddd">Thành tiền</Th>
                                                     <Th color="white" width="50px" textAlign={'center'}>
+                                                        <Tooltip hasArrow placement='top' label="Xuất file Excel" bg="gray.300" color="black">
                                                         <Button colorScheme="green" onClick={handleExportExcel}>
                                                             <FaRegFileExcel />
                                                         </Button>
+                                                        </Tooltip>
                                                     </Th>
                                                 </Tr>
                                             </Thead>
