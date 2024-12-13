@@ -304,8 +304,8 @@ const BookingAgent = {
   denyBooking: (id: number): Promise<BookingForList> => requests.put(`/booking/deny/${id}`, {}),
   denyBookingConflict: (ids: number[]): Promise<BookingForList[]> =>
     requests.put(`/booking/denybookingConflict`, ids),
-  exportBill: (courtClusterId: number): Promise<any> =>
-    requests.get(`/bill/billbooking/${courtClusterId}`),
+  exportBill: (bookingId: number, orderId: number[]): Promise<any> =>
+    requests.post(`/bill/billbooking`, {bookingId: bookingId, orderId: orderId}),
   exportBillOrder: (orderId: number): Promise<any> => requests.get(`/bill/billorder/${orderId}`),
 
   bookingWithCombo: (bookingWithCombo: IBookingWithCombo): Promise<any> =>
