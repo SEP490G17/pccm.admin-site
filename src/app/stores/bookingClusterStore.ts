@@ -481,10 +481,10 @@ export default class BookingClusterStore {
     return Array.from(this.bookingForScheduleRegistry.values());
   }
   get bookingPendingArray() {
-    return Array.from(this.bookingPendingRegistry.values());
+    return _.orderBy(Array.from(this.bookingPendingRegistry.values()),['id'], 'desc');
   }
   get bookingDenyArray() {
-    return Array.from(this.bookingDenyRegistry.values());
+    return _.orderBy(Array.from(this.bookingDenyRegistry.values()),['id'], 'desc');
   }
   get bookingAllArray() {
     return _.orderBy(Array.from(this.bookingAllRegistry.values()), ['id'], 'desc');
@@ -630,7 +630,11 @@ export default class BookingClusterStore {
       this.setBookingAll(booking);
       this.setBookingToday(this.convertBookingStartAndEndUTCToG7(booking));
       this.loadBookingTodayArray();
-      this.setBooking(mapBookingResponseToBookingModel(booking));
+      const mapbooking = mapBookingResponseToBookingModel(booking);
+      this.setBooking(mapbooking);
+      console.log('booking noti>>>',booking);
+      console.log('booking map>>>',mapbooking);
+
     }
     if (booking.status === BookingStatus.Cancelled) {
       this.bookingTodayRegistry.delete(booking.id);
@@ -658,10 +662,13 @@ export default class BookingClusterStore {
 
   createBookingSignalr = (booking: BookingModel) => {
     const convert = mapBookingToBookingForList(booking);
+    console.log('booking>>', booking);
+    console.log('booking convert >>', convert);
+
     if (booking.status == BookingStatus.Confirmed) {
       this.setBooking(booking);
     } else {
-      this.setBookingPending(convert);
+      this.bookingPendingRegistry.set(convert.id,convert);
     }
     this.setBookingToday(convert);
     this.loadBookingTodayArray();

@@ -1,7 +1,11 @@
 import dayjs from 'dayjs';
 import { OrderOfBooking } from './order.model';
 import { ThemeTypings } from '@chakra-ui/react';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
 export interface BookingCreate {
   PhoneNumber: string;
   FullName: string;
@@ -60,7 +64,7 @@ export interface BookingForList {
   playTime: string; // Thời gian bắt đầu đặt sân
   startDay: string;
   endDay: string;
-  untilDay: string;
+  untilDay: string|null;
   paymentStatus: number;
   paymentUrl?: string;
   status: number;
@@ -84,8 +88,17 @@ export interface CourtPriceBooking {
 }
 
 export const mapBookingToBookingForList = (booking: BookingModel): BookingForList => {
-  const startTime = dayjs(booking.startTime).utc().add(7, 'hour'); // Convert to GMT+7
-  const endTime = dayjs(booking.endTime).utc().add(7, 'hour'); // Convert to GMT+7
+  console.group('convert booking')
+  console.log('booking start init: ', booking.startTime)
+  console.log('booking end init: ', booking.endTime)
+
+  const startTime = dayjs(booking.startTime).utc().add(7, 'hour').local(); // Convert to GMT+7
+  const endTime = dayjs(booking.endTime).utc().add(7, 'hour').local(); // Convert to GMT+7
+
+  console.log('booking start convert: ', startTime);
+  console.log('booking end convert: ', endTime);
+
+
   const untilTime = booking.untilTime != null ? dayjs(booking.untilTime) : null; // Convert to GMT+7
   // Format playTime in 24-hour format: HH:mm - HH:mm
   const playTime = `${startTime.format('HH:mm')} - ${endTime.format('HH:mm')}`;
@@ -94,6 +107,14 @@ export const mapBookingToBookingForList = (booking: BookingModel): BookingForLis
   const endDay = endTime.format('DD/MM/YYYY');
   const untilDay = untilTime != null ? untilTime?.format('DD/MM/YYYY') : null;
   const recu = booking.RecurrenceRule ? booking.RecurrenceRule : booking.recurrenceRule;
+
+  console.log('booking start day', startDay);
+  console.log('booking end day', endDay);
+  console.log('playTime', playTime);
+
+
+  console.groupEnd();
+
   return {
     id: booking.id,
     phoneNumber: booking.phoneNumber,
