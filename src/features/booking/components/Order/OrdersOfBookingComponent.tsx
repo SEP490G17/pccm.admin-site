@@ -29,7 +29,7 @@ const OrdersOfBookingComponent = observer(() => {
   const toast = useToast();
   const { selectedBooking } = bookingStore;
   const { loadProductsOfCourtCluster, setLoadingInitialProductPage, loadServicesOfCourtCluster } =
-  courtClusterStore;
+    courtClusterStore;
   if (!selectedBooking) return;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const handleOpenDetaisOrder = async (id: number) => {
@@ -83,7 +83,7 @@ const OrdersOfBookingComponent = observer(() => {
             <Flex gap={4}>
               {order.paymentStatus == PaymentStatus.Pending && (
                 <>
-                  <OrderPaymentButtonAtoms orderId={order.id}/>
+                  <OrderPaymentButtonAtoms orderId={order.id} />
                   <OrderCancelButtonComponent id={order.id} />
                 </>
               )}
@@ -98,17 +98,17 @@ const OrdersOfBookingComponent = observer(() => {
                   >
                     Xem chi tiết
                   </Button>
-                  <Button
-                    colorScheme="red"
-                    className="w-28"
-                    onClick={() => {
-                      bookingStore.exportBillOrder(order.id);
-                    }}
-                  >
-                    In hoá đơn
-                  </Button>
                 </>
               )}
+              <Button
+                colorScheme="gray"
+                className="w-28"
+                onClick={() => {
+                  bookingStore.exportBillOrder(order.id);
+                }}
+              >
+                In hoá đơn
+              </Button>
               {order.paymentStatus === PaymentStatus.Cancel && (
                 <Tag
                   size={'lg'}
@@ -125,7 +125,7 @@ const OrdersOfBookingComponent = observer(() => {
           </GridItem>
         </Grid>
       ))}
-      <OrderDetailsPopUp isOpen={isOpen} onClose={()=>{
+      <OrderDetailsPopUp isOpen={isOpen} onClose={() => {
         onClose();
         courtClusterStore.productCourtClusterPageParams.reset();
         courtClusterStore.serviceCourtClusterPageParams.reset();
