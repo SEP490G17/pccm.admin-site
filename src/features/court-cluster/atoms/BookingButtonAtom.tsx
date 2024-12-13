@@ -56,7 +56,7 @@ const BookingButtonAtom: FC<BookingButtonAtomProps> = observer(({ booking, isDet
             Hoàn thành
           </Button>
         )}
-        {!booking.isSuccess && booking.paymentStatus == PaymentStatus.Pending && (
+        {!booking.isSuccess && booking.paymentStatus != PaymentStatus.Success && (
           <PaymentButtonAtom bookingId={booking.id} paymentUrl={booking.paymentUrl} isDetail={isDetails} />
         )}
         {!booking.isSuccess && (
