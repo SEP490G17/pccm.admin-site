@@ -264,10 +264,10 @@ export default class BookingStore {
   //#endregion
 
   //#region  bill
-  exportBill = (courtClusterId: number) => {
+  exportBill = (bookingId: number, orderId: number[]) => {
     runInAction(async () => {
       try {
-        const response = await agent.BookingAgent.exportBill(courtClusterId);
+        const response = await agent.BookingAgent.exportBill(bookingId, orderId);
         const byteCharacters = atob(response.fileContents);
         const byteArrays = [];
 

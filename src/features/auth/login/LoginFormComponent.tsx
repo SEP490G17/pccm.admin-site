@@ -5,6 +5,7 @@ import { Box, Button, Checkbox, Flex, Link, Text } from '@chakra-ui/react';
 import { Form, Formik } from 'formik';
 import { useState } from 'react';
 import * as Yup from 'yup';
+import ForgotPasswordPopUp from '../forgotpassword/ForgotPasswordPopUp';
 
 class Login {
   username: string = 'courtOwner';
@@ -17,6 +18,7 @@ function LoginFormComponent() {
     username: Yup.string().required('Username/SDT bắt buộc'),
     password: Yup.string().required('Password bắt buộc'),
   });
+  const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
   const [err, setErr] = useState('');
   const { authStore } = useStore();
   const handleSubmit = async (value: UserFormValues, { isSubmitting }: any) => {
@@ -35,6 +37,7 @@ function LoginFormComponent() {
         onSubmit={handleSubmit}
       >
         {({ handleSubmit, isValid, isSubmitting }) => (
+          <>
           <Box px={{ base: 0, lg: '7.188rem' }}>
             {err && <Text className='text-red-500 mb-4'>{err}</Text>}
             <Form onSubmit={handleSubmit}>
@@ -74,10 +77,15 @@ function LoginFormComponent() {
                 đăng nhập
               </Flex>
               <Flex align={'center'} justifyContent={'center'}>
-                <Link href="/reset-password">Quên mật khẩu?</Link>
+                <Link color="#115363" onClick={() => setForgotPasswordVisible(true)}>Quên mật khẩu?</Link>
               </Flex>
             </Flex>
           </Box>
+           <ForgotPasswordPopUp
+            visible={forgotPasswordVisible}
+            onClose={() => setForgotPasswordVisible(false)}
+          />
+        </>
         )}
       </Formik>
   );

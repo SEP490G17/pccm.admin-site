@@ -5,7 +5,6 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogOverlay,
-  Button,
   Card,
   CardBody,
   CardHeader,
@@ -21,12 +20,13 @@ import { useLocation, useParams } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import { useStore } from '@/app/stores/store';
 import { observer } from 'mobx-react-lite';
+import ExportBillModal from './popups/ExportBill/ExportBillComponent';
 
 const BookingDetailsPage = observer(() => {
   const { id } = useParams();
   const { bookingStore } = useStore();
   const toast = useToast();
-  const { loadingInitial, getDetailsBooking, exportBill, clearDetailsBooking } = bookingStore;
+  const { loadingInitial, getDetailsBooking, clearDetailsBooking } = bookingStore;
   window.scrollTo(0, 0);
   const { search } = useLocation();
   const query = new URLSearchParams(search); // Tạo đối tượng URLSearchParams
@@ -44,7 +44,7 @@ const BookingDetailsPage = observer(() => {
     return () => {
       clearDetailsBooking();
     };
-  }, [getDetailsBooking, id, toast, clearDetailsBooking,onOpen,payment]);
+  }, [getDetailsBooking, id, toast, clearDetailsBooking, onOpen, payment]);
   const cancelRef = React.useRef<any>();
   return (
     <>
@@ -59,15 +59,8 @@ const BookingDetailsPage = observer(() => {
           <CardHeader>
             <Flex justifyContent={'space-between'}>
               <Heading size={'xl'}>Chi tiết booking {id}</Heading>
-              <Button
-                onClick={() => {
-                  if (id && !isNaN(Number(id))) {
-                    exportBill(Number(id));
-                  }
-                }}
-              >
-                Xuất hóa đơn
-              </Button>
+
+              <ExportBillModal bookingId={id}></ExportBillModal>
             </Flex>
           </CardHeader>
           <CardBody>
