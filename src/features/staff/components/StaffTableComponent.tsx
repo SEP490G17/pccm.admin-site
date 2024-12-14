@@ -11,6 +11,7 @@ import {
   Thead,
   Tr,
   useDisclosure,
+  Tooltip
 } from '@chakra-ui/react';
 import SkeletonTableAtoms from '@/features/atoms/SkeletonTableAtoms';
 import { FaEdit } from 'react-icons/fa';
@@ -76,20 +77,24 @@ function StaffTableComponent() {
                 </Td>
                 <Td>
                   <Flex direction={'row'} gap={'2'}>
-                    <IconButton
-                      icon={<CgFileDocument className="text-white text-lg" />}
-                      size={'sm'}
-                      colorScheme="blue"
-                      aria-label={'Details'}
-                      onClick={() => handleOpenDetail(staff.id)}
-                    />
-                    <IconButton
-                      onClick={() => handleOpenEdit(staff.id)}
-                      icon={<FaEdit />}
-                      aria-label="Edit"
-                      colorScheme="orange"
-                      size="sm"
-                    />
+                    <Tooltip hasArrow placement='top' label="Xem chi tiết" bg="gray.300" color="black">
+                      <IconButton
+                        icon={<CgFileDocument className="text-white text-lg" />}
+                        size={'sm'}
+                        colorScheme="blue"
+                        aria-label={'Details'}
+                        onClick={() => handleOpenDetail(staff.id)}
+                      />
+                    </Tooltip>
+                    <Tooltip hasArrow placement='top' label="Sửa" bg="gray.300" color="black">
+                      <IconButton
+                        onClick={() => handleOpenEdit(staff.id)}
+                        icon={<FaEdit />}
+                        aria-label="Edit"
+                        colorScheme="orange"
+                        size="sm"
+                      />
+                    </Tooltip>
                   </Flex>
                 </Td>
               </Tr>
