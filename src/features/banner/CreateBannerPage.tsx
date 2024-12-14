@@ -141,7 +141,7 @@ const CreateBannerPage = ({ isOpen, onClose }: IProp) => {
                           label='Thể loại'
                           name='type'
                           isRequired={true}
-                          options={[{ value: 1, label: "Banner" }, { value: 2, label: "Event" }]}
+                          options={[{ value: 0, label: "Banner" }, { value: 1, label: "Event" }]}
                         ></SelectFieldAtoms>
 
                         <SelectFieldAtoms
