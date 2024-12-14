@@ -26,6 +26,7 @@ import * as Yup from 'yup';
 import { CommonMessage } from '@/app/common/toastMessage/commonMessage';
 import agent from '@/app/api/agent';
 import { router } from '@/app/router/Routes';
+import { useStore } from '@/app/stores/store';
 
 export interface CourtClusterCreatePage2Formik {
   title: string;
@@ -151,6 +152,10 @@ const CourtClusterCreatePage = observer(() => {
     courtDetails: Yup.array().of(courtPriceSchema).required('Không được bỏ trống').min(1,'Cần có ít nhất 1 sân'),
   });
   const toast = useToast();
+
+  const {courtClusterStore} = useStore();
+  
+
   return (
       <Card>
         <CardBody>
@@ -169,6 +174,9 @@ const CourtClusterCreatePage = observer(() => {
                     status: 'success',
                     isClosable: true,
                   });
+                  courtClusterStore.courtClusterRegistry.clear();
+                  courtClusterStore.courtPageParams.reset();
+                  courtClusterStore.courtPageParams.clearLazyPage();
                   router.navigate('/cum-san');
                 })
                 .catch((err) => {
