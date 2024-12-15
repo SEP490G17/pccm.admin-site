@@ -86,7 +86,7 @@ const CourtListTableComponent: FC<CourtListTableComponentProps> = observer(
                         courtId={court.courtId}
                         courtPrices={court.courtPrices}
                       />
-                      <CourtComboPopup courtId={court.courtId} courtCombos={court.courtCombos} />
+                      <CourtComboPopup courtId={court.courtId} courtCombos={court.courtCombos} openTime={openTime} closeTime={closeTime}/>
 
                       <DeleteButtonAtom
                         buttonSize="sm"

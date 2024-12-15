@@ -7,6 +7,7 @@ import {
   FormErrorMessage,
   Grid,
   GridItem,
+  Heading,
   Input,
   Modal,
   ModalBody,
@@ -113,7 +114,13 @@ const CourtCreatePopup = ({ openTime, closeTime, courtClusterId }: CourtCreatePo
           {(props: FormikProps<CourtCreateFormik>) => (
             <Form>
               <ModalContent>
-                <ModalHeader>Thêm mới sân</ModalHeader>
+                <ModalHeader>
+                  <Heading size={'lg'}>Thêm mới sân</Heading>
+                  <Heading size={'sm'} className="mt-4 mb-0 pb-0">
+                    Giờ mở cửa {openTime.split(':')[0]}h:{openTime.split(':')[1]}p -{' '}
+                    {closeTime.split(':')[0]}h:{closeTime.split(':')[1]}p
+                  </Heading>
+                </ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
                   <Grid

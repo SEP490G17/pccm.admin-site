@@ -24,11 +24,13 @@ import { useStore } from '@/app/stores/store';
 interface ICourtComboProps {
   courtCombos: CourtCombo[];
   courtId: number;
+  openTime: string;
+  closeTime: string;
 }
 interface CourtComboFormik {
   courtCombos: CourtCombo[];
 }
-const CourtComboPopup = observer(({ courtCombos, courtId }: ICourtComboProps) => {
+const CourtComboPopup = observer(({ courtCombos, courtId, openTime, closeTime }: ICourtComboProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const CourtComboSchema = Yup.object().shape({
     courtCombos: Yup.array().of(
@@ -79,6 +81,10 @@ const CourtComboPopup = observer(({ courtCombos, courtId }: ICourtComboProps) =>
               <ModalContent>
                 <ModalHeader>
                   <Heading size={'lg'}>Bảng giá combo</Heading>
+                  <Heading size={'sm'} className="mt-4 mb-0 pb-0">
+                    Giờ mở cửa {openTime.split(':')[0]}h:{openTime.split(':')[1]}p -{' '}
+                    {closeTime.split(':')[0]}h:{closeTime.split(':')[1]}p
+                  </Heading>
                 </ModalHeader>
                 <ModalCloseButton />
 
