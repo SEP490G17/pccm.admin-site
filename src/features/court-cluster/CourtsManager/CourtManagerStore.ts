@@ -111,7 +111,11 @@ export default class CourtManagerStore {
     runInAction(() => {
       toast.close(pending);
       if (err) {
-        toast(CourtMessage.removeCourtFailure());
+        if (typeof err.response.data == 'string') {
+          toast(CourtMessage.removeCourtFailure(err.response.data));
+        } else {
+          toast(CourtMessage.removeCourtFailure());
+        }
       }
       if (res) {
         toast(CourtMessage.removeCourtSuccess());

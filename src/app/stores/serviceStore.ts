@@ -109,11 +109,15 @@ export default class ServiceStore {
             store.courtClusterStore.selectedCourtCluster?.id,
             toast,
           );
-          store.courtClusterStore.serviceCourtClusterPageParams.skip = oldSkip+1;
+          store.courtClusterStore.serviceCourtClusterPageParams.skip = oldSkip + 1;
         }
       }
       if (err) {
-        toast(ServiceMessage.createFailure(err.response.data));
+        if (typeof err.response.data == 'string') {
+          toast(ServiceMessage.createFailure(err.response.data));
+        } else {
+          toast(ServiceMessage.createFailure());
+        }
       }
       this.loading = false;
     });
@@ -301,11 +305,11 @@ export default class ServiceStore {
   }
   //#endregion
 
-  reset = () =>{
+  reset = () => {
     this.serviceRegistry.clear();
     this.serviceLogRegistry.clear();
 
     this.servicePageParams.reset();
     this.serviceLogPageParams.reset();
-  }
+  };
 }

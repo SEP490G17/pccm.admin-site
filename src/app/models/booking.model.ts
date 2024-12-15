@@ -73,6 +73,7 @@ export interface BookingForList {
   courtClusterId?:number;
   RecurrenceRule?: string;
   recurrenceRule?: string;
+  createdAt:string;
 }
 
 export interface BookingInfo extends BookingForList {

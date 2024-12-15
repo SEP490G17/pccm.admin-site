@@ -21,12 +21,13 @@ import React, { useEffect } from 'react';
 import { useStore } from '@/app/stores/store';
 import { observer } from 'mobx-react-lite';
 import ExportBillModal from './popups/ExportBill/ExportBillComponent';
+import dayjs from 'dayjs';
 
 const BookingDetailsPage = observer(() => {
   const { id } = useParams();
   const { bookingStore } = useStore();
   const toast = useToast();
-  const { loadingInitial, getDetailsBooking, clearDetailsBooking } = bookingStore;
+  const { loadingInitial, getDetailsBooking, clearDetailsBooking, selectedBooking } = bookingStore;
   window.scrollTo(0, 0);
   const { search } = useLocation();
   const query = new URLSearchParams(search); // Tạo đối tượng URLSearchParams
@@ -58,8 +59,15 @@ const BookingDetailsPage = observer(() => {
         <Card className="mt-5">
           <CardHeader>
             <Flex justifyContent={'space-between'}>
-              <Heading size={'xl'}>Chi tiết booking {id}</Heading>
-
+              <div>
+                <Heading size={'xl'}>Chi tiết booking {id}</Heading>
+                <p className="font-thin text-xl mt-2">
+                  Ngày đặt:{' '}
+                  {selectedBooking?.bookingDetails.createdAt &&
+                    dayjs(selectedBooking?.bookingDetails.createdAt)
+                      .format('HH:mm DD/MM/YYYY')}
+                </p>
+              </div>
               <ExportBillModal bookingId={id}></ExportBillModal>
             </Flex>
           </CardHeader>
@@ -95,7 +103,8 @@ const BookingDetailsPage = observer(() => {
                     Thanh toán thành công!
                   </h3>
                   <p className="text-gray-600 my-2 py-2">
-                    Đơn đặt lịch {bookingStore.selectedBooking?.bookingDetails.id} đã được thanh toán thành công
+                    Đơn đặt lịch {bookingStore.selectedBooking?.bookingDetails.id} đã được thanh
+                    toán thành công
                   </p>
                 </div>
               </div>
