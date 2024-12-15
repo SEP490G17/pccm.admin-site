@@ -9,14 +9,12 @@ const ConfirmForgotPassword = () => {
     const navigate = useNavigate();
 
     if (!isArgonautDomain) {
-        console.error("Truy cập từ domain không hợp lệ:", currentUrl);
-        navigate('/404');
+        navigate('/server-error');
         return null;
     }
 
     if (!token) {
-        console.error("Không tìm thấy token trong URL.");
-        navigate('/404');
+        navigate('/server-error');
         return null;
     }
 
