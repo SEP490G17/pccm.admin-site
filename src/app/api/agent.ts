@@ -266,9 +266,9 @@ const Account = {
   changePassword: (value: ChangePasswordInput): Promise<void> =>
     requests.post(`/Account/change-password`, value),
   forgotPassword: (email: string): Promise<void> =>
-    requests.post(`/account/forgot-password`, { email }),
+    requests.post(`/account/forgot-password-admin`, { email }),
   confirmForgotPassword: (data: { token: string; newPassword: string }): Promise<void> =>
-    requests.post('/account/confirm-forgot-password', data),
+    requests.post('/account/confirm-forgot-password-admin', data),
 };
 
 const Users = {
