@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import {
   Box,
+  Button,
   Flex,
   IconButton,
   Table,
@@ -22,11 +23,20 @@ import DeleteButtonAtom from '@/app/common/form/DeleteButtonAtom.tsx';
 import { CgFileDocument } from 'react-icons/cg';
 import { Link } from 'react-router-dom';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
+import LoadMoreButtonAtoms from '@/features/atoms/LoadMoreButtonAtoms';
 
 const CourtClusterTableComponent = observer(() => {
   const { courtClusterStore, commonStore } = useStore();
-  const { courtClusterArray, loading, loadingInitial, deleteCourtCluster, visibleToggle } =
-    courtClusterStore;
+  const {
+    courtClusterArray,
+    loading,
+    loadingInitial,
+    deleteCourtCluster,
+    visibleToggle,
+    courtPageParams,
+    loadCourtsCluster,
+    courtClusterRegistry
+  } = courtClusterStore;
   const toast = useToast();
   const handleDelete = async (id: number) => {
     await deleteCourtCluster(id, toast);
@@ -141,17 +151,17 @@ const CourtClusterTableComponent = observer(() => {
                         />
                       </Tooltip>
                       {commonStore.isEditClusterAble() && (
-
-                      <DeleteButtonAtom
-                        className="w-12"
-                        buttonSize="md"
-                        name={courtCluster.title}
-                        header={'Cụm sân'}
-                        loading={loading}
-                        onDelete={async () => {
-                          await handleDelete(courtCluster.id);
-                        }}
-                      />)}
+                        <DeleteButtonAtom
+                          className="w-12"
+                          buttonSize="md"
+                          name={courtCluster.title}
+                          header={'Cụm sân'}
+                          loading={loading}
+                          onDelete={async () => {
+                            await handleDelete(courtCluster.id);
+                          }}
+                        />
+                      )}
                     </Flex>
                   </Td>
                 </Tr>
@@ -160,6 +170,15 @@ const CourtClusterTableComponent = observer(() => {
           </Tbody>
         </Table>
       </TableContainer>
+
+      <LoadMoreButtonAtoms
+        handleOnClick={() => {
+          courtPageParams.skip = courtClusterRegistry.size;
+          loadCourtsCluster(toast);
+        }}
+        hidden={courtClusterRegistry.size >= courtPageParams.totalElement}
+        loading={loading}
+      />
       {courtClusterArray.length === 0 && !loadingInitial && !loading && (
         <Box textAlign="center" mt={4} color="red.500" fontSize={20}>
           Danh sách rỗng
